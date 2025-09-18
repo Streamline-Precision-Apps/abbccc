@@ -17,7 +17,9 @@ import { toast } from "sonner";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Fields as FormField } from "./types";
+import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
 export default function useSubmissionDataById(id: string) {
+  const { refresh } = useDashboardData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -158,6 +160,7 @@ export default function useSubmissionDataById(id: string) {
       await handleDelete(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
+      refresh();
     }
   };
 

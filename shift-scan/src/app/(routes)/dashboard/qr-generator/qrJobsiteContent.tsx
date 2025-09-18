@@ -20,9 +20,15 @@ type Option = {
 
 type QrJobsiteProps = {
   generatedList: Option[];
+  refresh: () => Promise<void>;
+  loading: boolean;
 };
 
-export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
+export default function QrJobsiteContent({
+  generatedList,
+  refresh,
+  loading,
+}: QrJobsiteProps) {
   const [selectedJobSite, setSelectedJobSite] = useState<Option | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -66,6 +72,8 @@ export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
     <Grids rows={"7"} gap={"5"} cols={"3"}>
       <Holds className="row-start-1 row-end-7 col-span-3 h-full">
         <NewCodeFinder
+          isLoading={loading}
+          onRefresh={refresh}
           options={generatedList}
           selectedOption={selectedJobSite}
           onSelect={handleSearchSelectChange}
@@ -83,7 +91,7 @@ export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
           <Images
             src="/qrCode.svg"
             alt="Team"
-            className="w-8 h-8 mx-auto"
+            className="w-6 h-6 mx-auto"
             titleImg={""}
             titleImgAlt={""}
           />
@@ -94,7 +102,7 @@ export default function QrJobsiteContent({ generatedList }: QrJobsiteProps) {
         className="row-start-7 row-end-8 col-start-2 col-end-4 h-full"
       >
         <Buttons background={"green"} onClick={handleNew}>
-          <Titles size={"h4"}>{t("CreateNewJobsite")}</Titles>
+          <Titles size={"sm"}>{t("CreateNewJobsite")}</Titles>
         </Buttons>
       </Holds>
 

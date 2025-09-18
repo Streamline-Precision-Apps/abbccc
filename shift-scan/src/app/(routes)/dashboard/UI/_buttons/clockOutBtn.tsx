@@ -45,6 +45,7 @@ export default function ClockOutBtn({
                   titleImg={"/clockOut.svg"}
                   titleImgAlt={"clock Out Icon"}
                   color={"red"}
+                  textSize={"h6"}
                   handleEvent={() => {
                     if (logs.length === 0) {
                       router.push("/dashboard/clock-out");
@@ -60,6 +61,7 @@ export default function ClockOutBtn({
                   titleImg={"/clockOut.svg"}
                   titleImgAlt={"clock Out Icon"}
                   color={"red"}
+                  textSize={"h6"}
                   handleEvent={() => {
                     if (logs.length === 0) {
                       router.push("/dashboard/clock-out");
@@ -75,6 +77,7 @@ export default function ClockOutBtn({
                   color={"red"}
                   text={"ClockOut"}
                   titleImg={"/clockOut.svg"}
+                  textSize={"h6"}
                   titleImgAlt={"clock Out Icon"}
                   handleEvent={() => {
                     if (logs.length === 0) {
@@ -96,6 +99,7 @@ export default function ClockOutBtn({
                 text={"ClockOut"}
                 titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
+                textSize={"h6"}
                 // handleEvent={() => handleShowAdditionalButtons("clockOut")}
                 handleEvent={() => {
                   if (logs.length === 0) {
@@ -116,6 +120,7 @@ export default function ClockOutBtn({
                 text={"ClockOut"}
                 titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
+                textSize={"h6"}
                 handleEvent={() => {
                   if (logs.length === 0) {
                     router.push("/dashboard/clock-out");
@@ -133,6 +138,7 @@ export default function ClockOutBtn({
                 text={"ClockOut"}
                 titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
+                textSize={"h6"}
                 handleEvent={() => {
                   if (logs.length === 0) {
                     router.push("/dashboard/clock-out");
@@ -152,6 +158,7 @@ export default function ClockOutBtn({
               text={"ClockOut"}
               titleImg={"/clockOut.svg"}
               titleImgAlt={"clock Out Icon"}
+              textSize={"h6"}
               color={"red"}
               handleEvent={() => {
                 if (logs.length === 0) {
@@ -167,6 +174,7 @@ export default function ClockOutBtn({
               text={"ClockOut"}
               titleImg={"/clockOut.svg"}
               titleImgAlt={"clock Out Icon"}
+              textSize={"h6"}
               color={"red"}
               handleEvent={() => {
                 if (logs.length === 0) {
@@ -184,6 +192,7 @@ export default function ClockOutBtn({
                 text={"ClockOut"}
                 titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
+                textSize={"h6"}
                 handleEvent={() => {
                   if (logs.length === 0) {
                     router.push("/dashboard/clock-out");
@@ -201,6 +210,7 @@ export default function ClockOutBtn({
                 text={"ClockOut"}
                 titleImg={"/clockOut.svg"}
                 titleImgAlt={"clock Out Icon"}
+                textSize={"h6"}
                 handleEvent={() => {
                   if (logs.length === 0) {
                     router.push("/dashboard/clock-out");
@@ -255,21 +265,21 @@ export default function ClockOutBtn({
                           type === "equipment"
                             ? "/dashboard/equipment"
                             : type === "mechanic"
-                            ? `/dashboard/mechanic/projects/${
-                                logs.find((log) => log.type === type)
-                                  ?.maintenanceId
-                              }`
-                            : type === "Trucking Assistant"
-                            ? "/dashboard/truckingAssistant"
-                            : type === "tasco"
-                            ? "/dashboard/tasco"
-                            : undefined
+                              ? `/dashboard/mechanic/projects/${
+                                  logs.find((log) => log.type === type)
+                                    ?.maintenanceId
+                                }`
+                              : type === "Trucking Assistant"
+                                ? "/dashboard/truckingAssistant"
+                                : type === "tasco"
+                                  ? "/dashboard/tasco"
+                                  : undefined
                         }
                         className="w-full py-3"
                       >
                         <Texts size="p3">{type} </Texts>
                       </Buttons>
-                    )
+                    ),
                   )}
                 </Holds>
               </Holds>

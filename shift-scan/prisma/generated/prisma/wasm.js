@@ -352,6 +352,14 @@ exports.Prisma.TimeSheetScalarFieldEnum = {
   wasInjured: 'wasInjured'
 };
 
+exports.Prisma.MechanicProjectsScalarFieldEnum = {
+  id: 'id',
+  timeSheetId: 'timeSheetId',
+  hours: 'hours',
+  equipmentId: 'equipmentId',
+  description: 'description'
+};
+
 exports.Prisma.MaintenanceLogScalarFieldEnum = {
   id: 'id',
   timeSheetId: 'timeSheetId',
@@ -464,7 +472,9 @@ exports.Prisma.TimeSheetChangeLogScalarFieldEnum = {
   changedBy: 'changedBy',
   changedAt: 'changedAt',
   changes: 'changes',
-  changeReason: 'changeReason'
+  changeReason: 'changeReason',
+  wasStatusChange: 'wasStatusChange',
+  numberOfChanges: 'numberOfChanges'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -610,7 +620,8 @@ exports.WorkType = exports.$Enums.WorkType = {
 
 exports.OwnershipType = exports.$Enums.OwnershipType = {
   OWNED: 'OWNED',
-  LEASED: 'LEASED'
+  LEASED: 'LEASED',
+  RENTAL: 'RENTAL'
 };
 
 exports.Condition = exports.$Enums.Condition = {
@@ -743,6 +754,7 @@ exports.Prisma.ModelName = {
   Report: 'Report',
   ReportRun: 'ReportRun',
   TimeSheet: 'TimeSheet',
+  mechanicProjects: 'mechanicProjects',
   MaintenanceLog: 'MaintenanceLog',
   Maintenance: 'Maintenance',
   TascoLog: 'TascoLog',

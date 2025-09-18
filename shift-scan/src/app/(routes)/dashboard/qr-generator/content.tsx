@@ -34,6 +34,7 @@ const EquipmentCodesSchema = z.object({
   id: z.string(),
   qrId: z.string(),
   name: z.string(),
+  code: z.string().nullable().optional(),
 });
 
 // Zod schema for equipment list response
@@ -52,89 +53,118 @@ export default function QRGeneratorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("returnUrl") || "/dashboard";
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingJobsite, setLoadingJobsite] = useState<boolean>(false);
+  const [loadingEquipment, setLoadingEquipment] = useState<boolean>(false);
   const [generatedJobsiteList, setGeneratedJobsiteList] = useState<Option[]>(
     [],
   );
   const [generatedEquipmentList, setGeneratedEquipmentList] = useState<
     Option[]
   >([]);
+  const [jobsiteRefreshKey, setJobsiteRefreshKey] = useState<number>(0);
+  const [equipmentRefreshKey, setEquipmentRefreshKey] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        setLoading(true);
+  const refreshEquipment = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setEquipmentRefreshKey((k) => k + 1);
+  };
+  const refreshJobsites = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setJobsiteRefreshKey((k) => k + 1);
+  };
 
-        // Fetch equipment data
+  const fetchEquipment = async () => {
+    try {
+      const equipmentRes = await fetch("/api/getEquipment");
+      if (equipmentRes.ok) {
+        const equipmentData = await equipmentRes.json();
         try {
-          const equipmentRes = await fetch("/api/getEquipment");
-
-          if (equipmentRes.ok) {
-            const equipmentData = await equipmentRes.json();
-
-            try {
-              EquipmentListSchema.parse(equipmentData);
-              setGeneratedEquipmentList(
-                equipmentData.map((item: EquipmentCodes) => ({
-                  id: item.id,
-                  label: item.name.toUpperCase(),
-                  code: item.qrId.toUpperCase(),
-                })),
-              );
-            } catch (error) {
-              if (error instanceof z.ZodError) {
-                console.error("Validation error in equipment data:", error);
-                setGeneratedEquipmentList([]);
-              }
-            }
-          } else {
-            console.error("Failed to fetch equipment data");
+          EquipmentListSchema.parse(equipmentData);
+          const sortedEquipment = [...equipmentData].sort((a, b) => {
+            const aIsPending = !a.code;
+            const bIsPending = !b.code;
+            if (aIsPending && !bIsPending) return -1;
+            if (!aIsPending && bIsPending) return 1;
+            return 0;
+          });
+          setGeneratedEquipmentList(
+            sortedEquipment.map((item: EquipmentCodes) => ({
+              id: item.id,
+              label: `${item.code ? item.code.toUpperCase() : "Pending"} - ${item.name.toUpperCase()}`,
+              code: item.qrId.toUpperCase(),
+            })),
+          );
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in equipment data:", error);
             setGeneratedEquipmentList([]);
           }
-        } catch (equipError) {
-          console.error("Error fetching equipment data:", equipError);
-          setGeneratedEquipmentList([]);
         }
-
-        // Fetch jobsite data
+      } else {
+        console.error("Failed to fetch equipment data");
+        setGeneratedEquipmentList([]);
+      }
+    } catch (equipError) {
+      console.error("Error fetching equipment data:", equipError);
+      setGeneratedEquipmentList([]);
+    } finally {
+      setLoadingEquipment(false);
+    }
+  };
+  const fetchJobsites = async () => {
+    try {
+      const jobsiteRes = await fetch("/api/getJobsites");
+      if (jobsiteRes.ok) {
+        const jobsiteData = await jobsiteRes.json();
         try {
-          const jobsiteRes = await fetch("/api/getJobsites");
-
-          if (jobsiteRes.ok) {
-            const jobsiteData = await jobsiteRes.json();
-
-            try {
-              JobsiteListSchema.parse(jobsiteData);
-              setGeneratedJobsiteList(
-                jobsiteData.map((item: JobCodes) => ({
-                  id: item.id,
-                  label: item.name.toUpperCase(),
-                  code: item.qrId.toUpperCase(),
-                })),
-              );
-            } catch (error) {
-              if (error instanceof z.ZodError) {
-                console.error("Validation error in jobsite data:", error);
-                setGeneratedJobsiteList([]);
-              }
-            }
-          } else {
-            console.error("Failed to fetch jobsite data");
+          JobsiteListSchema.parse(jobsiteData);
+          setGeneratedJobsiteList(
+            jobsiteData.map((item: JobCodes) => ({
+              id: item.id,
+              label: item.name.toUpperCase(),
+              code: item.qrId.toUpperCase(),
+            })),
+          );
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            console.error("Validation error in jobsite data:", error);
             setGeneratedJobsiteList([]);
           }
-        } catch (jobError) {
-          console.error("Error fetching jobsite data:", jobError);
-          setGeneratedJobsiteList([]);
         }
-      } catch (error) {
-        console.error("Error in fetchAllData:", error);
-      } finally {
-        setLoading(false);
+      } else {
+        console.error("Failed to fetch jobsite data");
+        setGeneratedJobsiteList([]);
       }
-    };
+    } catch (jobError) {
+      console.error("Error fetching jobsite data:", jobError);
+      setGeneratedJobsiteList([]);
+    } finally {
+      setLoadingJobsite(false);
+    }
+  };
 
-    fetchAllData();
+  useEffect(() => {
+    setLoading(true);
+    setLoadingEquipment(true);
+    setLoadingJobsite(true);
+
+    Promise.all([fetchEquipment(), fetchJobsites()]).finally(() => {
+      setLoading(false);
+    });
   }, []);
+
+  useEffect(() => {
+    if (equipmentRefreshKey === 0) return;
+    setLoadingEquipment(true);
+    fetchEquipment();
+  }, [equipmentRefreshKey]);
+
+  useEffect(() => {
+    if (jobsiteRefreshKey === 0) return;
+    setLoadingJobsite(true);
+    fetchJobsites();
+  }, [jobsiteRefreshKey]);
 
   return (
     <>
@@ -145,14 +175,7 @@ export default function QRGeneratorContent() {
         }`}
       >
         <TitleBoxes position={"row"} onClick={() => router.push(url)}>
-          <Titles size={"h2"}>{t("QrGenerator")}</Titles>
-          <Images
-            src="/qrCode.svg"
-            alt="Team"
-            className="w-8 h-8"
-            titleImg={""}
-            titleImgAlt={""}
-          />
+          <Titles size={"xl"}>{t("QrGenerator")}</Titles>
         </TitleBoxes>
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
@@ -166,7 +189,9 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h2"}>{t("Jobsite")}</Titles>
+              <Titles size={"lg"} className="w-full">
+                {t("Jobsite")}
+              </Titles>
             </NewTab>
             <NewTab
               onClick={() => setActiveTab(2)}
@@ -176,7 +201,7 @@ export default function QRGeneratorContent() {
               titleImageAlt=""
               animatePulse={loading}
             >
-              <Titles size={"h3"}>{t("EquipmentTitle")}</Titles>
+              <Titles size={"lg"}>{t("EquipmentTitle")}</Titles>
             </NewTab>
           </Holds>
           <Holds
@@ -220,10 +245,18 @@ export default function QRGeneratorContent() {
             ) : (
               <Contents width={"section"} className="py-5">
                 {activeTab === 1 && (
-                  <QrJobsiteContent generatedList={generatedJobsiteList} />
+                  <QrJobsiteContent
+                    generatedList={generatedJobsiteList}
+                    refresh={refreshJobsites}
+                    loading={loadingJobsite}
+                  />
                 )}
                 {activeTab === 2 && (
-                  <QrEquipmentContent generatedList={generatedEquipmentList} />
+                  <QrEquipmentContent
+                    generatedList={generatedEquipmentList}
+                    refresh={refreshEquipment}
+                    loading={loadingEquipment}
+                  />
                 )}
               </Contents>
             )}

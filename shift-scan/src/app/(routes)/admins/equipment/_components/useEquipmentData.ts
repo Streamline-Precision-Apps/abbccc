@@ -4,6 +4,8 @@ import QRCode from "qrcode";
 import { deleteEquipment } from "@/actions/AssetActions";
 import { useSidebar } from "@/components/ui/sidebar";
 import { FilterOptions } from "./FilterPopover";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { set } from "lodash";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -15,7 +17,7 @@ export interface EquipmentSummary {
   name: string;
   description: string;
   memo?: string;
-  ownershipType?: "OWNED" | "LEASED";
+  ownershipType?: "OWNED" | "LEASED" | "RENTAL";
   equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
@@ -43,6 +45,7 @@ export interface EquipmentSummary {
   };
 }
 export const useEquipmentData = () => {
+  const { refresh } = useDashboardData();
   const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
     [],
   );
@@ -73,6 +76,7 @@ export const useEquipmentData = () => {
   //Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [useFilters, setUseFilters] = useState(false);
+  const [searchBarActive, setSearchBarActive] = useState(false);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -82,9 +86,11 @@ export const useEquipmentData = () => {
         setLoading(true);
         let url = "";
         if (showPendingOnly) {
-          url = `/api/getEquipmentDetails?status=pending`;
-        }
-        if (useFilters) {
+          url = `/api/getEquipmentDetails?status=pending&filters=${JSON.stringify(filters)}`;
+        } else if (searchBarActive) {
+          // If searching, get all equipment in one page (no pagination)
+          url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
+        } else if (useFilters) {
           url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
         } else {
           url = `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`;
@@ -97,11 +103,7 @@ export const useEquipmentData = () => {
         setEquipmentDetails(data.equipment);
         setTotal(data.total);
         setTotalPages(data.totalPages);
-        setPendingCount(
-          data.equipment.filter(
-            (item: EquipmentSummary) => item.approvalStatus === "PENDING",
-          ).length,
-        );
+        setPendingCount(data.pendingEquipment);
       } catch (error) {
         console.error("Failed to fetch equipment details:", error);
       } finally {
@@ -109,7 +111,22 @@ export const useEquipmentData = () => {
       }
     };
     fetchEquipmentSummaries();
-  }, [refreshKey, page, pageSize, showPendingOnly, useFilters]);
+  }, [
+    refreshKey,
+    page,
+    pageSize,
+    showPendingOnly,
+    useFilters,
+    searchBarActive,
+  ]);
+
+  useEffect(() => {
+    if (searchTerm.trim() !== "") {
+      setSearchBarActive(true);
+    } else {
+      setSearchBarActive(false);
+    }
+  }, [searchTerm]);
 
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
@@ -126,6 +143,7 @@ export const useEquipmentData = () => {
       await deleteEquipment(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
+      refresh();
       rerender();
     }
   };
@@ -247,8 +265,7 @@ export const useEquipmentData = () => {
     const matchesSearch =
       !term ||
       item.name.toLowerCase().includes(term) ||
-      (item.make?.toLowerCase().includes(term) ?? false) ||
-      (item.model?.toLowerCase().includes(term) ?? false);
+      (item.code?.toLowerCase().includes(term) ?? false);
 
     if (!matchesSearch) return false;
 

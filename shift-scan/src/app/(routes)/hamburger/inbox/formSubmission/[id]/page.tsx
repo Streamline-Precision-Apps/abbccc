@@ -508,10 +508,21 @@ export default function DynamicForm({
         formTitle,
       );
 
-      console.log("Form submission result:", result);
-
       if (result) {
-        console.log("Form submitted successfully, redirecting...");
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "form-submissions",
+            title: "New Form Submission",
+            message: `A form submission has been made and is awaiting approval`,
+            link: `/admins/forms/${result.formTemplateId}`,
+          }),
+        });
+        await response.json();
+
         // Ensure the save is complete before navigating
         setTimeout(() => {
           router.back(); // Redirect after a small delay to ensure save completes

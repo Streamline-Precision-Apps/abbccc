@@ -3,6 +3,7 @@ import { ApprovalStatus } from "@/lib/enums";
 import { useState, useEffect } from "react";
 import { deleteJobsite } from "@/actions/AssetActions";
 import QRCode from "qrcode";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 
 export type JobsiteSummary = {
   id: string;
@@ -23,6 +24,7 @@ export type JobsiteSummary = {
 };
 
 export const useJobsiteData = () => {
+  const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [jobsiteDetails, setJobsiteDetails] = useState<JobsiteSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -88,6 +90,7 @@ export const useJobsiteData = () => {
       await deleteJobsite(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
+      refresh();
       rerender();
     }
   };

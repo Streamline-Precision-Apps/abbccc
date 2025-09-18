@@ -123,7 +123,7 @@ export default function EquipmentLogContent() {
             }
           >
             <TitleBoxes onClick={() => router.push("/dashboard")}>
-              <Titles size={"h2"}>{t("Current")}</Titles>
+              <Titles size={"lg"}>{t("Current")}</Titles>
             </TitleBoxes>
           </Holds>
 
@@ -147,7 +147,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Clock"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>{t("CurrentLogs")}</Titles>
+                    <Titles size={"md"}>{t("CurrentLogs")}</Titles>
                   </NewTab>
                   <NewTab
                     onClick={() => setActive(2)}
@@ -156,7 +156,7 @@ export default function EquipmentLogContent() {
                     titleImageAlt="Finished logs Icon"
                     isComplete={true}
                   >
-                    <Titles size={"h4"}>{t("FinishedLogs")}</Titles>
+                    <Titles size={"md"}>{t("FinishedLogs")}</Titles>
                   </NewTab>
                 </Holds>
 
@@ -176,7 +176,7 @@ export default function EquipmentLogContent() {
                               background={"darkGray"}
                               className="w-full py-2"
                             >
-                              <Titles size={"h4"}>{t("LogNew")}</Titles>
+                              <Titles size={"md"}>{t("LogNew")}</Titles>
                             </Buttons>
                           </Holds>
                         </>
@@ -200,7 +200,7 @@ export default function EquipmentLogContent() {
                                     router.push("/dashboard/equipment/log-new")
                                   }
                                 >
-                                  <Titles size={"h4"}>{t("LogNew")}</Titles>
+                                  <Titles size={"md"}>{t("LogNew")}</Titles>
                                 </Buttons>
                               </Holds>
                             </>
@@ -288,7 +288,7 @@ export default function EquipmentLogContent() {
                                   }
                                   className="w-full py-2"
                                 >
-                                  <Titles size={"h4"}>{t("LogNew")}</Titles>
+                                  <Titles size={"sm"}>{t("LogNew")}</Titles>
                                 </Buttons>
                               </Holds>
                             </>

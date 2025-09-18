@@ -77,6 +77,7 @@ export default function ClockOutContent({
   const [employeeId, setEmployeeId] = useState<string>("");
   const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
   const [wasInjured, setWasInjured] = useState<boolean>(false);
+  const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
 
   useEffect(() => {
     console.log("currentStep: ", step);
@@ -106,6 +107,19 @@ export default function ClockOutContent({
   const prevStep = () => {
     setStep((prevStep) => prevStep - 1); // Increment function
   };
+
+  useEffect(() => {
+    const getRecentTimeCard = async () => {
+      try {
+        const response = await fetch("/api/getRecentTimecard");
+        const data = await response.json();
+        setCurrentTimesheetId(data.id);
+      } catch (error) {
+        console.error("Error fetching recent time card:", error);
+      }
+    };
+    getRecentTimeCard();
+  }, []);
 
   // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {
@@ -193,6 +207,7 @@ export default function ClockOutContent({
               checked={checked}
               handleCheckboxChange={handleCheckboxChange}
               setLoading={setLoading}
+              loading={loading}
             />
           </Holds>
         </Contents>
@@ -233,6 +248,7 @@ export default function ClockOutContent({
           loading={loading}
           timesheets={timesheets}
           setReviewYourTeam={() => {}}
+          currentTimesheetId={currentTimesheetId}
         />
       );
     }
@@ -287,6 +303,7 @@ export default function ClockOutContent({
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}
         wasInjured={wasInjured}
+        timeSheetId={currentTimesheetId}
       />
     );
   } else {

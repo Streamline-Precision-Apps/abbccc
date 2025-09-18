@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
-import { Images } from "../(reusable)/images";
-import { PermissionsBadge } from "../(settings)/PermissionsBadge";
 
 export default function HamburgerMenuNew() {
   const [image, setImage] = useState("");
@@ -11,19 +9,20 @@ export default function HamburgerMenuNew() {
   useEffect(() => {
     const fetchImage = async () => {
       const CachedImage = localStorage.getItem("userProfileImage");
-      if (CachedImage) {
+      if (CachedImage && CachedImage !== "Updating") {
         setImage(CachedImage);
         return;
-      }
-      try {
-        const fetched = await fetch("/api/getUserImage");
-        const data = await fetched.json();
-        if (data.image) {
-          setImage(data.image);
-          localStorage.setItem("userProfileImage", data.image);
+      } else {
+        try {
+          const fetched = await fetch("/api/getUserImage");
+          const data = await fetched.json();
+          if (data.image) {
+            setImage(data.image);
+            localStorage.setItem("userProfileImage", data.image);
+          }
+        } catch (error) {
+          console.error("Error fetching image:", error);
         }
-      } catch (error) {
-        console.error("Error fetching image:", error);
       }
     };
     fetchImage();
@@ -33,7 +32,7 @@ export default function HamburgerMenuNew() {
     <Holds
       position={"row"}
       background={"white"}
-      className="row-start-1 row-end-2 h-full p-2"
+      className="row-start-1 row-end-2 h-full p-2 py-3"
     >
       <Holds className="w-24 h-full flex flex-col items-center justify-center relative">
         <Buttons
@@ -57,13 +56,8 @@ export default function HamburgerMenuNew() {
         </div>
       </Holds>
 
-      <Holds className="w-full h-full justify-center">
-        <Images
-          titleImg="/logo.svg"
-          titleImgAlt="logo"
-          position={"left"}
-          className="relative h-full w-full mx-auto"
-        />
+      <Holds className="w-full h-full justify-center items-center">
+        <img src={"/logo.svg"} alt="logo" className="max-w-16" />
       </Holds>
 
       <Holds className="w-24 h-full justify-center">

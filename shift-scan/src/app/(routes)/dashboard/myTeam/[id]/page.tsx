@@ -10,10 +10,9 @@ import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
 
-// Zod schema for CrewMember type
 const CrewMemberSchema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -30,8 +29,13 @@ const CrewApiResponseSchema = z.tuple([
 
 type CrewMember = z.infer<typeof CrewMemberSchema>;
 
-export default function Content() {
+export default function Content({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [crewMembers, setCrewMembers] = useState<CrewMember[]>([]);
+
   const [crewType, setCrewType] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [titles, setTitles] = useState<string>("");
@@ -39,29 +43,30 @@ export default function Content() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const url = searchParams.get("rPath");
-  const timeCard = searchParams.get("timecard");
-  const params = useParams();
-  const { id } = params;
+
+  const { id } = use(params);
 
   useEffect(() => {
     const fetchCrewData = async () => {
       try {
         setIsLoading(true);
+        // Fetch Cache information
+        const crewRes = await fetch(`/api/getCrewById/${id}`);
+        const [members, type] = await crewRes.json();
 
-        const response = await fetch(`/api/getCrewById/${id}`);
-        const data = await response.json();
+        // Fetch dynamic crew status
+        const statusRes = await fetch(`/api/crewStatus/${id}`);
+        const statusData = await statusRes.json();
 
-        // Validate the API response
-        try {
-          const [members, type] = CrewApiResponseSchema.parse(data);
-          setCrewMembers(members);
-          setCrewType(type);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            console.error("Validation error in crew data:", error);
-            return;
-          }
-        }
+        const membersWithStatus = members.map((member: CrewMember) => {
+          const status = statusData.Users.find(
+            (u: CrewMember) => u.id === member.id,
+          );
+          return { ...member, clockedIn: status?.clockedIn ?? false };
+        });
+
+        setCrewMembers(membersWithStatus);
+        setCrewType(type);
       } catch (error) {
         console.error("Error fetching crew data:", error);
       } finally {
@@ -94,7 +99,7 @@ export default function Content() {
             <TitleBoxes
               onClick={() => router.push(`/dashboard/myTeam?rPath=${url}`)}
             >
-              <Titles size={"h2"}>{titles}</Titles>
+              <Titles size={"lg"}>{titles}</Titles>
             </TitleBoxes>
           </Holds>
 
@@ -130,7 +135,7 @@ export default function Content() {
                             className="w-full h-full py-2 relative"
                           >
                             <Holds position={"row"} className="w-full gap-x-4">
-                              <Holds size={"20"} className="relative">
+                              <Holds className="w-24 relative">
                                 <Images
                                   titleImg={
                                     member.image
@@ -147,13 +152,13 @@ export default function Content() {
                                 />
                                 <Holds
                                   background={
-                                    member.clockedIn ? "green" : "red"
+                                    member.clockedIn ? "green" : "gray"
                                   }
                                   className="absolute top-1 right-0 w-3 h-3 rounded-full p-1.5 border-[3px] border-black"
                                 />
                               </Holds>
-                              <Holds size={"80"}>
-                                <Titles position={"left"} size="h4">
+                              <Holds className="w-full">
+                                <Titles position={"left"} size="lg">
                                   {member.firstName} {member.lastName}
                                 </Titles>
                               </Holds>

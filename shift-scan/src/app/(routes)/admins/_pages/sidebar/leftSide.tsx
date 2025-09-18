@@ -19,6 +19,8 @@ import NotificationModal from "./NotificationModal";
 import { useDashboardData } from "./DashboardDataContext";
 import { useUserProfile } from "./UserImageContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import useFcmToken from "@/hooks/useFcmToken";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -27,7 +29,7 @@ export default function LeftSidebar() {
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const { data } = useDashboardData();
   const { image, name, role, loading } = useUserProfile();
-
+  const { token, notificationPermissionStatus } = useFcmToken();
   const Page = [
     {
       id: 1,
@@ -102,10 +104,14 @@ export default function LeftSidebar() {
                 return (
                   <SidebarMenuItem
                     key={item.id}
-                    className={`flex flex-row items-center  px-2 rounded-lg ${isActive ? "bg-app-dark-blue hover:bg-app-dark-blue/90 " : ""} `}
+                    className={`flex flex-row items-center  px-2 rounded-lg ${isActive ? "bg-app-dark-blue hover:bg-app-dark-blue/90 " : "hover:bg-white/20"} `}
                   >
                     <SidebarMenuButton asChild>
-                      <a href={item.link} className="h-full w-full gap-4">
+                      <Link
+                        href={item.link}
+                        prefetch={true}
+                        className="h-full w-full gap-4"
+                      >
                         <img
                           src={`/${isActive ? item.white : item.img}.svg`}
                           alt={item.title}
@@ -116,7 +122,7 @@ export default function LeftSidebar() {
                         >
                           {item.title}
                         </span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                     {/* Display badge if there is a count greater than 0 */}
 

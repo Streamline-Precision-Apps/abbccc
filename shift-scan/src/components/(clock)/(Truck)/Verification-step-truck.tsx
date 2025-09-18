@@ -121,6 +121,21 @@ export default function TruckVerificationStep({
 
       // Use the new transaction-based function
       const response = await handleTruckTimeSheet(formData);
+      if (response && type === "switchJobs") {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecard-submission",
+            title: "New Timesheet Submission",
+            message: `A new submission has been created and is pending approval.`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        await response.json();
+      }
 
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
@@ -315,6 +330,7 @@ export default function TruckVerificationStep({
                       onClick={() => handleSubmit()}
                       background={"green"}
                       className=" w-full h-full py-2"
+                      disabled={loading}
                     >
                       <Titles size={"h2"}>{t("StartDay")}</Titles>
                     </Buttons>

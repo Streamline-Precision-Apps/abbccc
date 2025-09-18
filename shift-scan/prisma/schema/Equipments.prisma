@@ -41,6 +41,7 @@ model Equipment {
   UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+  Maintenance           mechanicProjects[]
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
@@ -55,6 +56,7 @@ enum Condition {
 enum OwnershipType {
   OWNED
   LEASED
+  RENTAL
 }
 
 // purpose is to show all employee interactions with the equipment

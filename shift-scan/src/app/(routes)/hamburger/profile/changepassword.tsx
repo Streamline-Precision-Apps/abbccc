@@ -65,7 +65,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
 
     if (!validatePassword(newPassword)) {
       setBannerMessage(
-        "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol."
+        "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol.",
       );
       setShowBanner(true);
       return;
@@ -88,7 +88,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
-        "There was an error updating your password. Please try again."
+        "There was an error updating your password. Please try again.",
       );
       setShowBanner(true);
     }
@@ -141,7 +141,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
             size="full"
             className="rounded-none"
           >
-            <Texts size="p6">{bannerMessage}</Texts>
+            <Texts size="sm">{bannerMessage}</Texts>
           </Holds>
         )}
 

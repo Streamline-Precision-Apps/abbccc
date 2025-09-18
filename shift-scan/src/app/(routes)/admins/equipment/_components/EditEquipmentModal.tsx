@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 import { updateEquipmentAsset } from "@/actions/AssetActions";
 import { toast } from "sonner";
+import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 
 type Equipment = {
   id: string;
@@ -26,7 +27,7 @@ type Equipment = {
   name: string;
   description: string;
   memo?: string;
-  ownershipType?: "OWNED" | "LEASED";
+  ownershipType?: "OWNED" | "LEASED" | "RENTAL";
   equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
@@ -64,6 +65,7 @@ export default function EditEquipmentModal({
   pendingEditId: string;
   rerender: () => void;
 }) {
+  const { refresh } = useDashboardData();
   const { equipmentDetails, loading } = useEquipmentDataById(pendingEditId);
   const [formData, setFormData] = useState<Equipment | null>(null);
   const [originalForm, setOriginalForm] = useState<Equipment | null>(null);
@@ -253,6 +255,7 @@ export default function EditEquipmentModal({
       if (result?.success) {
         toast.success("Equipment updated successfully.", { duration: 3000 });
         cancel();
+        refresh();
         rerender();
       } else {
         throw new Error(result?.message || "Failed to update equipment.");

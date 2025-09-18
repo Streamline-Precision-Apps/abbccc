@@ -71,7 +71,7 @@ export function Combobox({
             obj && typeof obj === "object"
               ? (obj as Record<string, unknown>)[k]
               : undefined,
-          option
+          option,
         );
       return (value ?? "")
         .toString()
@@ -91,30 +91,35 @@ export function Combobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={`w-full justify-between text-xs overflow-hidden ${
+            className={`w-full justify-between text-sm md:text-xs py-2 h-auto min-h-[40px] overflow-hidden ${
               showError && listData.length < 1 ? "border-red-500" : ""
             }`}
             disabled={disabled}
             onBlur={() => setTouched(true)}
           >
-            {value && value.length > 0
-              ? options
-                  .filter((option) => value.includes(option.value))
-                  .map((option) => option.label)
-                  .join(", ")
-              : placeholder}
-            <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <span className="truncate">
+              {value && value.length > 0
+                ? options
+                    .filter((option) => value.includes(option.value))
+                    .map((option) => option.label)
+                    .join(", ")
+                : placeholder}
+            </span>
+            <ChevronsUpDownIcon className="ml-2 h-5 w-5 md:h-4 md:w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 min-w-[200px] text-xs ">
-          <Command>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[300px] overflow-hidden text-sm md:text-xs">
+          <Command className="w-full">
             <CommandInput
               placeholder={`Search...`}
               value={search}
               onValueChange={setSearch}
+              className="h-9 px-3 text-sm"
             />
-            <CommandList>
-              <CommandEmpty>No option found.</CommandEmpty>
+            <CommandList className="max-h-[230px] overflow-auto">
+              <CommandEmpty className="py-3 text-center">
+                No option found.
+              </CommandEmpty>
               <CommandGroup>
                 {filteredOptions.map((option) => {
                   const checked = value.includes(option.value);
@@ -131,14 +136,26 @@ export function Combobox({
                         }
                         onChange(newValue);
                       }}
+                      className="py-2 px-2 cursor-pointer"
                     >
-                      <CheckIcon
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          checked ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      {option.label}
+                      <div className="flex items-center w-full gap-2">
+                        <div
+                          className={cn(
+                            "flex-shrink-0 h-5 w-5 rounded border flex items-center justify-center",
+                            checked
+                              ? "bg-green-500 border-green-500"
+                              : "border-gray-300",
+                          )}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "h-3.5 w-3.5 text-white",
+                              checked ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                        </div>
+                        <span className="flex-1 truncate">{option.label}</span>
+                      </div>
                     </CommandItem>
                   );
                 })}
@@ -147,6 +164,9 @@ export function Combobox({
           </Command>
         </PopoverContent>
       </Popover>
+      {showError && listData.length < 1 && (
+        <p className="mt-1 text-xs text-red-500">{errorMessage}</p>
+      )}
     </div>
   );
 }

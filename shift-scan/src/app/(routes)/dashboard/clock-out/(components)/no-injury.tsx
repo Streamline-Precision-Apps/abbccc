@@ -31,89 +31,72 @@ export const PreInjuryReport = ({
     <Bases>
       <Contents>
         <Holds background={"white"} className="h-full ">
-          <Grids rows={"8"} gap={"5"}>
-            <Holds className="row-start-1 row-end-2 h-full w-full ">
-              <TitleBoxes onClick={prevStep}>
-                <Holds className="h-full justify-end items-end">
-                  <Holds position={"row"} className="justify-center gap-2">
-                    <Titles size={"h2"}>{t("EndWorkDay")}</Titles>
-                    <Images
-                      titleImg="/endDay.svg"
-                      titleImgAlt="end work day"
-                      className="max-w-8 h-auto"
-                    />
-                  </Holds>
+          <TitleBoxes onClick={prevStep} className="h-24">
+            <Holds className="h-full justify-end items-end">
+              <Holds position={"row"} className="justify-center gap-2">
+                <Titles size={"lg"}>{t("EndWorkDay")}</Titles>
+                <Images
+                  titleImg="/endDay.svg"
+                  titleImgAlt="end work day"
+                  className="max-w-6 h-auto"
+                />
+              </Holds>
+            </Holds>
+          </TitleBoxes>
+
+          <Contents width={"section"} className="h-full py-5">
+            <Texts size={"p5"}>{t("SignatureAcknowledgement")}</Texts>
+            <Holds className="border-[3px] border-black rounded-[10px] h-32 my-5">
+              {loading ? (
+                <Holds className="my-auto">
+                  <Spinner />
                 </Holds>
-              </TitleBoxes>
-            </Holds>
-
-            <Holds className="row-start-2 row-end-3 h-full">
-              <Contents width={"section"}>
-                <Texts size={"p5"}>{t("SignatureAcknowledgement")}</Texts>
-              </Contents>
-            </Holds>
-
-            <Holds className="row-start-3 row-end-5 h-full ">
-              <Contents width={"section"}>
-                <Holds className="border-[3px] border-black rounded-[10px] h-full">
-                  {loading ? (
-                    <Holds className="my-auto">
-                      <Spinner />
-                    </Holds>
+              ) : (
+                <Holds className="my-auto">
+                  {base64String ? (
+                    <Images
+                      titleImg={base64String}
+                      titleImgAlt={"Loading signature"}
+                      className="w-[60%] mx-auto"
+                    />
                   ) : (
                     <Holds className="my-auto">
-                      {base64String ? (
-                        <Images
-                          titleImg={base64String}
-                          titleImgAlt={"Loading signature"}
-                          className="w-[40%] mx-auto"
-                        />
-                      ) : (
-                        <Holds className="my-auto">
-                          <Texts size={"p2"}>{t("NoSignature")}</Texts>
-                        </Holds>
-                      )}
+                      <Texts size={"md"}>{t("NoSignature")}</Texts>
                     </Holds>
                   )}
                 </Holds>
-              </Contents>
+              )}
             </Holds>
-            <Holds className="row-start-5 row-end-6">
-              <Contents width={"section"}>
-                <Holds position={"row"}>
-                  <Holds className="w-fit pr-6">
-                    <CheckBox
-                      id="injury-checkbox"
-                      name="injury-verify"
-                      onChange={handleCheckboxChange}
-                      checked={checked}
-                      size={2.5}
-                    />
-                  </Holds>
-                  <Holds className="w-full">
-                    <Texts size={"p3"} position={"left"}>
-                      {t("ThisIsMySignature")}
-                    </Texts>
-                  </Holds>
-                </Holds>
-              </Contents>
+            <Holds position={"row"}>
+              <Holds className="w-fit pr-6">
+                <CheckBox
+                  id="injury-checkbox"
+                  name="injury-verify"
+                  onChange={handleCheckboxChange}
+                  checked={checked}
+                  size={2.5}
+                />
+              </Holds>
+              <Holds className="w-full">
+                <Texts size={"md"} position={"left"}>
+                  {t("ThisIsMySignature")}
+                </Texts>
+              </Holds>
             </Holds>
+          </Contents>
 
-            <Holds className="row-start-8 row-end-9 h-full pb-5 ">
-              <Contents width={"section"} className="h-full">
-                <Buttons
-                  background={checked ? "orange" : "red"}
-                  onClick={handleNextStepAndSubmit}
-                  disabled={loading}
-                  className="w-full h-full "
-                >
-                  <Titles size={"h2"}>
-                    {checked ? t("Continue") : t("ReportInjury")}
-                  </Titles>
-                </Buttons>
-              </Contents>
-            </Holds>
-          </Grids>
+          <Contents width={"section"} className="my-5 h-[70px]">
+            <Buttons
+              background={checked ? "orange" : "red"}
+              onClick={handleNextStepAndSubmit}
+              disabled={loading}
+              className="h-[60px] w-full "
+            >
+              <Titles size={"lg"}>
+                {checked ? t("Continue") : t("ReportInjury")}
+              </Titles>
+            </Buttons>
+          </Contents>
         </Holds>
       </Contents>
     </Bases>

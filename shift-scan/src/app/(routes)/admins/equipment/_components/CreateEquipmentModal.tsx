@@ -282,6 +282,7 @@ export default function CreateEquipmentModal({
                       <SelectContent>
                         <SelectItem value="OWNED">Owned</SelectItem>
                         <SelectItem value="LEASED">Leased</SelectItem>
+                        <SelectItem value="RENTAL">Rental</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

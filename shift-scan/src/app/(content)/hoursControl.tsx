@@ -39,11 +39,11 @@ export default function ControlComponent({
   const [currentIndex, setCurrentIndex] = useState(1);
   const [initialIndexSet, setInitialIndexSet] = useState(false); // Track if initial index is set
   const dailyHoursCache = useRef<{ date: string; hours: number }[] | null>(
-    null
+    null,
   ); // caching calculated hours
   const calculateDailyHours = useCalculateDailyHours(); // hook to calculate work hours per day
   const containerRef = useRef<ScrollTimeoutDiv>(
-    null!
+    null!,
   ) as React.MutableRefObject<ScrollTimeoutDiv>; // ref to the scrolling container
   const wasProgrammaticScroll = useRef(false); // flag to distinguish between user and programmatic scroll
 
@@ -82,7 +82,7 @@ export default function ControlComponent({
     // Clamp scrolling within container bounds
     scrollLeft = Math.max(
       0,
-      Math.min(scrollLeft, container.scrollWidth - container.clientWidth)
+      Math.min(scrollLeft, container.scrollWidth - container.clientWidth),
     );
 
     wasProgrammaticScroll.current = true;
@@ -119,18 +119,18 @@ export default function ControlComponent({
       "todayStr",
       todayStr,
       "normalizedDailyHours",
-      normalizedDailyHours.map((d) => d.date)
+      normalizedDailyHours.map((d) => d.date),
     );
     // Find the index of today in the normalizedDailyHours
     const todayIndex = normalizedDailyHours.findIndex(
-      (d) => d.date === todayStr
+      (d) => d.date === todayStr,
     );
     if (todayIndex === -1) {
       // eslint-disable-next-line no-console
       console.warn(
         "Today's date not found in dailyHours:",
         todayStr,
-        normalizedDailyHours.map((d) => d.date)
+        normalizedDailyHours.map((d) => d.date),
       );
     }
     // Account for placeholder at the start
@@ -147,7 +147,7 @@ export default function ControlComponent({
     let scrollLeft = (currentIndex - 1) * panelWidth;
     scrollLeft = Math.max(
       0,
-      Math.min(scrollLeft, container.scrollWidth - container.clientWidth)
+      Math.min(scrollLeft, container.scrollWidth - container.clientWidth),
     );
     container.style.scrollBehavior = "auto";
     container.style.scrollSnapType = "none";
@@ -188,7 +188,7 @@ export default function ControlComponent({
     let closestIndex = Math.round(scrollLeft / panelWidth) + 1;
     closestIndex = Math.min(
       Math.max(closestIndex, 1),
-      extendedDailyHours.length - 2
+      extendedDailyHours.length - 2,
     );
     setScrollingIndex(closestIndex); // Only visually highlight, don't setCurrentIndex
   };
@@ -209,7 +209,7 @@ export default function ControlComponent({
     let closestIndex = Math.round(scrollLeft / panelWidth) + 1;
     closestIndex = Math.min(
       Math.max(closestIndex, 1),
-      extendedDailyHours.length - 2
+      extendedDailyHours.length - 2,
     );
     if (closestIndex !== currentIndex) {
       setCurrentIndex(closestIndex);
@@ -275,9 +275,9 @@ export default function ControlComponent({
   // JSX Layout: Grid layout with top panel, center scrollable view, and bottom nav
   // ----------------------------------------
   return (
-    <Grids rows="6" gap="5" className="h-full w-full">
+    <Grids rows="6" gap={"2"} className="h-full w-full">
       {/* Top panel controls */}
-      <Holds position="row" className="row-span-1 h-full w-full">
+      <Holds position="row" className="row-span-1 h-full gap-2 w-full">
         <TopControlPanel returnToMain={returnToMain} />
       </Holds>
       {/* Center panel with horizontally scrollable day panels */}

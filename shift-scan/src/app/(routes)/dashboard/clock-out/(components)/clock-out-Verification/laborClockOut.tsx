@@ -41,44 +41,29 @@ export const LaborClockOut = ({
   commentsValue,
   pendingTimeSheets,
   wasInjured,
+  timeSheetId,
 }: {
   prevStep: () => void;
   commentsValue: string;
   pendingTimeSheets: TimeSheet | undefined;
   wasInjured: boolean;
+  timeSheetId: number | undefined;
 }) => {
+  // const { token, notificationPermissionStatus } = useFcmToken();
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { data: session } = useSession();
-  const awaitAllProcesses = async () => {
-    // Fetch data for a form submit and process them concurrently
-    setLoading(true);
-    await processOne();
-    // remove cookies from previous session and clear local storage
-    await processTwo();
-    setLoading(false);
-    return router.push("/dashboard");
-  };
 
-  async function processOne() {
+  async function handleSubmitTimeSheet() {
     try {
+      setLoading(true);
       console.log("🔶🔶🔶 PROCESS ONE STARTING 🔶🔶🔶");
       // Step 1: Get the recent timecard ID.
-      const response = await fetch("/api/getRecentTimecard");
-      const tsId = await response.json();
-      const timeSheetId = tsId.id;
-      console.log("🔶 Retrieved timecard ID:", timeSheetId);
-
-      if (!timeSheetId) {
-        alert("No valid TimeSheet ID was found. Please try again later.");
-        console.error("🔶 No valid TimeSheet ID found");
-        return;
-      }
 
       const formData = new FormData();
-      formData.append("id", timeSheetId);
+      formData.append("id", timeSheetId?.toString() || "");
       formData.append("userId", session?.user.id?.toString() || "");
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
@@ -94,34 +79,30 @@ export const LaborClockOut = ({
       });
 
       const result = await updateTimeSheet(formData);
-      console.log("🔶 updateTimeSheet completed with result:", result);
-      console.log("🔶🔶🔶 PROCESS ONE COMPLETED 🔶🔶🔶");
+      if (result) {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecard-submission",
+            title: "New Timesheet Submission",
+            message: `A new submission has been created and is pending approval.`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        const data = await response.json();
+        console.log("Time Card response", data);
+      }
+      // clear the saved storage
+      await fetch("/api/cookies?method=deleteAll");
+      localStorage.clear();
+
+      setLoading(false);
+      router.push("/dashboard");
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
-    }
-  }
-
-  async function processTwo() {
-    try {
-      console.log("🟦🟦🟦 PROCESS TWO STARTING 🟦🟦🟦");
-
-      // Step 1: Delete cookies
-      console.log("🟦 Deleting cookies");
-      const cookieResponse = await fetch("/api/cookies?method=deleteAll");
-      console.log("🟦 Cookie deletion response status:", cookieResponse.status);
-
-      // Step 2: Clear localStorage
-      console.log("🟦 Clearing localStorage");
-      const localStorageKeys = Object.keys(localStorage);
-      console.log(
-        `🟦 Clearing ${localStorageKeys.length} items from localStorage`,
-      );
-      localStorage.clear();
-      console.log("🟦 localStorage cleared");
-
-      console.log("🟦🟦🟦 PROCESS TWO COMPLETED 🟦🟦🟦");
-    } catch (error) {
-      console.error("🔴 Failed in process two:", error);
     }
   }
 
@@ -139,133 +120,123 @@ export const LaborClockOut = ({
             loading ? `h-full w-full  opacity-[0.50]` : `h-full w-full `
           }
         >
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            <Holds className="h-full w-full row-start-1 row-end-2 ">
-              <TitleBoxes onClick={prevStep}>
-                <Holds className="h-full justify-end">
-                  <Holds position={"row"} className="justify-center gap-3">
-                    <Titles size={"h1"} position={"right"}>
-                      {t("ClockOut")}
-                    </Titles>
+          <TitleBoxes onClick={prevStep} className="h-24">
+            <Holds className="h-full justify-end">
+              <Holds position={"row"} className="justify-center gap-3">
+                <Titles size={"lg"} position={"right"}>
+                  {t("ClockOut")}
+                </Titles>
 
-                    <Images
-                      titleImg="/clockOut.svg"
-                      titleImgAlt="Verify"
-                      className="max-w-8 h-auto"
+                <Images
+                  titleImg="/clockOut.svg"
+                  titleImgAlt="Verify"
+                  className="max-w-6 h-auto"
+                />
+              </Holds>
+            </Holds>
+          </TitleBoxes>
+
+          <Contents width={"section"}>
+            <Holds
+              background={"timeCardYellow"}
+              className="h-full w-full rounded-[10px] border-[3px] border-black mt-8"
+            >
+              <Holds className="h-full w-full px-3 py-2">
+                <Holds position={"row"} className="justify-between">
+                  <Texts size={"p7"} className="font-bold">
+                    {date.toLocaleDateString()}
+                  </Texts>
+                  <Texts size={"p7"}>
+                    {date.toLocaleTimeString("en-US", {
+                      hour: "numeric",
+                      minute: "numeric",
+                      second: "numeric",
+                      hour12: false,
+                    })}
+                  </Texts>
+                </Holds>
+                <Holds className="h-full w-full py-5">
+                  <Labels htmlFor="laborType" size={"p5"} position={"left"}>
+                    {t("LaborType")}
+                  </Labels>
+                  {pendingTimeSheets?.workType === "TASCO" ? (
+                    <Inputs
+                      state="disabled"
+                      name="laborType"
+                      className="text-center"
+                      variant={"white"}
+                      data={
+                        pendingTimeSheets?.TascoLogs[0].laborType ===
+                        "tascoAbcdLabor"
+                          ? t("TascoLabor")
+                          : t("TascoOperator")
+                      }
                     />
-                  </Holds>
-                </Holds>
-              </TitleBoxes>
-            </Holds>
-
-            {/* form Grid */}
-            <Holds className="row-start-2 row-end-8 h-full w-full ">
-              <Contents width={"section"}>
-                <Holds
-                  background={"timeCardYellow"}
-                  className="h-full w-full rounded-[10px] border-[3px] border-black mt-8"
-                >
-                  <Holds className="h-full w-full px-3 py-2">
-                    <Holds position={"row"} className="justify-between">
-                      <Texts size={"p7"} className="font-bold">
-                        {date.toLocaleDateString()}
-                      </Texts>
-                      <Texts size={"p7"}>
-                        {date.toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "numeric",
-                          second: "numeric",
-                          hour12: false,
-                        })}
-                      </Texts>
-                    </Holds>
-                    <Holds className="h-full w-full py-5">
+                  ) : (
+                    <Inputs
+                      state="disabled"
+                      name="laborType"
+                      className="text-center"
+                      variant={"white"}
+                      data={
+                        pendingTimeSheets?.workType === "LABOR"
+                          ? t("GeneralLabor")
+                          : pendingTimeSheets?.workType === "TRUCK_DRIVER"
+                            ? t("TruckDriver")
+                            : pendingTimeSheets?.workType === "MECHANIC"
+                              ? t("Mechanic")
+                              : ""
+                      }
+                    />
+                  )}
+                  {pendingTimeSheets?.workType === "TASCO" && (
+                    <>
                       <Labels htmlFor="laborType" size={"p5"} position={"left"}>
-                        {t("LaborType")}
-                      </Labels>
-                      {pendingTimeSheets?.workType === "TASCO" ? (
-                        <Inputs
-                          state="disabled"
-                          name="laborType"
-                          className="text-center"
-                          variant={"white"}
-                          data={
-                            pendingTimeSheets?.TascoLogs[0].laborType ===
-                            "tascoAbcdLabor"
-                              ? t("TascoLabor")
-                              : t("TascoOperator")
-                          }
-                        />
-                      ) : (
-                        <Inputs
-                          state="disabled"
-                          name="laborType"
-                          className="text-center"
-                          variant={"white"}
-                          data={
-                            pendingTimeSheets?.workType === "LABOR"
-                              ? t("GeneralLabor")
-                              : pendingTimeSheets?.workType === "TRUCK_DRIVER"
-                                ? t("TruckDriver")
-                                : pendingTimeSheets?.workType === "MECHANIC"
-                                  ? t("Mechanic")
-                                  : ""
-                          }
-                        />
-                      )}
-                      {pendingTimeSheets?.workType === "TASCO" && (
-                        <>
-                          <Labels
-                            htmlFor="laborType"
-                            size={"p5"}
-                            position={"left"}
-                          >
-                            {t("ShiftType")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="laborType"
-                            className="text-center"
-                            variant={"white"}
-                            data={
-                              pendingTimeSheets?.TascoLogs[0].shiftType || ""
-                            }
-                          />
-                        </>
-                      )}
-                      <Labels htmlFor="jobsiteId" size={"p5"} position={"left"}>
-                        {t("JobSite")}
+                        {t("ShiftType")}
                       </Labels>
                       <Inputs
                         state="disabled"
-                        name="jobsiteId"
+                        name="laborType"
                         className="text-center"
                         variant={"white"}
-                        data={pendingTimeSheets?.Jobsite.name || ""}
+                        data={pendingTimeSheets?.TascoLogs[0].shiftType || ""}
                       />
-                      <Labels htmlFor="costcode" size={"p6"} position={"left"}>
-                        {t("CostCode")}
-                      </Labels>
-                      <Inputs
-                        state="disabled"
-                        name="costcode"
-                        variant={"white"}
-                        className="text-center"
-                        data={pendingTimeSheets?.costcode || ""}
-                      />
-                    </Holds>
-                  </Holds>
+                    </>
+                  )}
+                  <Labels htmlFor="jobsiteId" size={"p5"} position={"left"}>
+                    {t("JobSite")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="jobsiteId"
+                    className="text-center"
+                    variant={"white"}
+                    data={pendingTimeSheets?.Jobsite.name || ""}
+                  />
+                  <Labels htmlFor="costcode" size={"p6"} position={"left"}>
+                    {t("CostCode")}
+                  </Labels>
+                  <Inputs
+                    state="disabled"
+                    name="costcode"
+                    variant={"white"}
+                    className="text-center"
+                    data={pendingTimeSheets?.costcode || ""}
+                  />
                 </Holds>
-              </Contents>
+              </Holds>
             </Holds>
-            <Holds className="row-start-8 row-end-9 w-full h-full pb-5 ">
-              <Contents width={"section"} className="">
-                <Buttons background={"red"} onClick={awaitAllProcesses}>
-                  <Titles size={"h2"}>{t("EndDay")}</Titles>
-                </Buttons>
-              </Contents>
-            </Holds>
-          </Grids>
+          </Contents>
+
+          <Contents width={"section"} className="my-5 h-[70px]">
+            <Buttons
+              background={"red"}
+              onClick={handleSubmitTimeSheet}
+              className="h-[60px] w-full"
+            >
+              <Titles size={"lg"}>{t("EndDay")}</Titles>
+            </Buttons>
+          </Contents>
         </Holds>
       </Contents>
     </Bases>

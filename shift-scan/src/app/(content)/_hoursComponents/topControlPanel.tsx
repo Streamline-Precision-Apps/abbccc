@@ -14,20 +14,27 @@ export default function TopControlPanel({ returnToMain }: Props) {
   const t = useTranslations("Home");
   return (
     <>
-      <Holds size={"20"} className="h-full mr-5">
-        <Buttons background={"red"} onClick={returnToMain}>
-          <Images
-            titleImg={"/arrowBack.svg"}
-            titleImgAlt="return"
-            className="mx-auto w-8 h-auto object-contain"
-          />
-        </Buttons>
-      </Holds>
-      <Holds size={"80"} className="h-full">
-        <Buttons href={"/timesheets"} background={"green"}>
-          <Titles size={"h5"}>{t("TimeSheet-Label")}</Titles>
-        </Buttons>
-      </Holds>
+      <Buttons
+        background={"red"}
+        onClick={returnToMain}
+        shadow={"none"}
+        className="w-[50px] h-[40px] justify-center items-center"
+      >
+        <Images
+          titleImg={"/arrowLeftSymbol.svg"}
+          titleImgAlt="return"
+          className="mx-auto w-5 h-auto object-contain"
+        />
+      </Buttons>
+
+      <Buttons
+        shadow={"none"}
+        href={"/timesheets"}
+        background={"green"}
+        className="w-full h-[40px] py-2"
+      >
+        <Titles size={"sm"}>{t("TimeSheet-Label")}</Titles>
+      </Buttons>
     </>
   );
 }

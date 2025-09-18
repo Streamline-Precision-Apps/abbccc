@@ -1,4 +1,5 @@
 "use server";
+import { ClockOutComment } from "@/actions/timeSheetActions";
 import { auth } from "@/auth";
 import NewClockProcess from "@/components/(clock)/newclockProcess";
 import { Bases } from "@/components/(reusable)/bases";
@@ -36,6 +37,10 @@ export default async function SwitchJobs() {
   // Fetch cookie data
   const { timeSheetId, jobSiteId, costCode, workRole, switchLaborType } =
     await getCookieData();
+
+  // by user id finds the timecard comment if it exists for switch jobs
+  const clockOutComment = await ClockOutComment({ userId: user.id });
+
   return (
     <Bases>
       <Contents>
@@ -55,6 +60,7 @@ export default async function SwitchJobs() {
             costCode={costCode}
             workRole={workRole}
             switchLaborType={switchLaborType}
+            clockOutComment={clockOutComment}
           />
         </Holds>
       </Contents>

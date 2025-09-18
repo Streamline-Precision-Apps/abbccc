@@ -18,7 +18,7 @@ import {
   FormTemplateStatus,
   CreatedVia,
   materialUnit,
-} from "@prisma/client";
+} from "../../prisma/generated/prisma/client";
 
 export {
   FormStatus,

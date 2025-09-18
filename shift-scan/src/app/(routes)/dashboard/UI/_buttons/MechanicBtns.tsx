@@ -24,25 +24,12 @@ export default function MechanicBtn({
 
   useEffect(() => {
     const checkCookie = async () => {
-      if (isOnline) {
-        try {
-          const response = await fetch(
-            "/api/cookies?method=get&name=mechanicProjectID"
-          );
-          const data = await response.json();
-          console.log(data);
-          setProjectID(data);
-        } catch (error) {
-          console.error("Failed to fetch mechanic project ID:", error);
-          // Use offline fallback
-          const offlineProjectID = localStorage.getItem("mechanicProjectID");
-          setProjectID(offlineProjectID || "");
-        }
-      } else {
-        // When offline, use localStorage fallback
-        const offlineProjectID = localStorage.getItem("mechanicProjectID");
-        setProjectID(offlineProjectID || "");
-      }
+      const response = await fetch(
+        "/api/cookies?method=get&name=mechanicProjectID",
+      );
+      const data = await response.json();
+      console.log(data);
+      setProjectID(data);
     };
 
     checkCookie();
@@ -55,11 +42,12 @@ export default function MechanicBtn({
           titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
+          textSize={"h6"}
           handleEvent={() => {
             router.push(
               projectID
                 ? `/dashboard/mechanic/projects/${projectID}`
-                : "/dashboard/mechanic"
+                : "/dashboard/mechanic",
             );
           }}
         />
@@ -69,11 +57,12 @@ export default function MechanicBtn({
           titleImg={"/mechanic.svg"}
           titleImgAlt={"Mechanic Icon"}
           color={"green"}
+          textSize={"h6"}
           handleEvent={() => {
             router.push(
               projectID
                 ? `/dashboard/mechanic/projects/${projectID}`
-                : "/dashboard/mechanic"
+                : "/dashboard/mechanic",
             );
           }}
         />

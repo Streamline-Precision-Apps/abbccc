@@ -31,23 +31,32 @@ export default function VerticalLayout({
   titleImgAlt: string;
   text: string;
   handleEvent?: () => void;
-  textSize?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  textSize?:
+    | "h1"
+    | "h2"
+    | "h3"
+    | "h4"
+    | "h5"
+    | "h6"
+    | "lg"
+    | "md"
+    | "sm"
+    | "xs";
 }) {
   const t = useTranslations("Widgets");
   return (
-    <Buttons background={color} onClick={handleEvent} className="h-full w-full">
-      <Grids rows={"2"} gap={"0"} className="h-full w-full p-5">
-        <Holds className="row-span-2 h-full pb-0.5 ">
-          <Images
-            titleImg={titleImg}
-            titleImgAlt={titleImgAlt}
-            className="m-auto h-full w-full"
-          />
-        </Holds>
-        <Holds className="row-span-1 h-full justify-center">
-          <Titles size={textSize}>{t(text)}</Titles>
-        </Holds>
-      </Grids>
+    <Buttons
+      background={color}
+      onClick={handleEvent}
+      className="h-full w-full flex flex-col justify-center items-center space-y-1 "
+    >
+      <img
+        src={titleImg}
+        alt={titleImgAlt}
+        className="h-full w-full max-h-[40px] max-w-[40px] object-contain"
+      />
+
+      <Titles size={textSize}>{t(text)}</Titles>
     </Buttons>
   );
 }

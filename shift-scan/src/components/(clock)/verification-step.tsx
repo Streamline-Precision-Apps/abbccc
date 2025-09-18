@@ -156,6 +156,28 @@ export default function VerificationStep({
         formData,
       );
 
+      // If online and switching jobs, send notification
+      if (response && type === "switchJobs") {
+        try {
+          const notificationResponse = await fetch("/api/notifications/send-multicast", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: "timecard-submission",
+              title: "New Timesheet Submission",
+              message: `A new submission has been created and is pending approval.`,
+              link: `/admins/timesheets`,
+            }),
+          });
+          await notificationResponse.json();
+        } catch (notificationError) {
+          console.warn("Failed to send notification:", notificationError);
+          // Don't fail the entire operation if notification fails
+        }
+      }
+
       // Update state and redirect
       const timesheetId = response || "";
       const timesheetIdNumber = timesheetId ? parseInt(timesheetId, 10) : 0;
@@ -345,6 +367,7 @@ export default function VerificationStep({
                     onClick={() => handleSubmit()}
                     background={"green"}
                     className=" w-full h-full py-2"
+                    disabled={loading}
                   >
                     <Titles size={"h2"}>
                       {!isOnline ? t("SaveOffline") : t("StartDay")}

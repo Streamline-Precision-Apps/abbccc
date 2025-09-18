@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
-import { sendNotificationToTopic } from "./notificationSender";
 
 export async function getJobsiteForms() {
   try {
@@ -35,7 +34,6 @@ export async function createJobsite(formData: FormData) {
   console.log("Creating jobsite...");
   console.log(formData);
 
-  const submitterName = formData.get("submitterName") as string;
   const name = formData.get("temporaryJobsiteName") as string;
   const code = formData.get("code") as string;
   const createdById = formData.get("createdById") as string;
@@ -49,25 +47,11 @@ export async function createJobsite(formData: FormData) {
 
   try {
     await prisma.$transaction(async (prisma) => {
-      // If newAddress is checked, try to find existing client by name or address
-      let addressRecord = null;
-
-      // Try to find client by address if not found by name
-      if (address && city && state && zipCode) {
-        addressRecord = await prisma.address.findFirst({
-          where: {
-            street: address,
-            city,
-            state,
-            zipCode,
-          },
-        });
-      }
-
       // Check for duplicate jobsite name
       const existingJobsites = await prisma.jobsite.findMany({
         where: { name },
       });
+
       if (existingJobsites.length > 0) {
         throw new Error("A jobsite with the same name already exists.");
       }
@@ -78,16 +62,15 @@ export async function createJobsite(formData: FormData) {
         qrId,
         description: creationComment,
         creationReason: creationReasoning,
+        approvalStatus: "PENDING",
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        CCTags: {
+          connect: { id: "All" }, // Ensure 'All' tag is connected
+        },
+        createdBy: createdById ? { connect: { id: createdById } } : undefined,
       };
-
-      if (createdById) {
-        (data as Prisma.JobsiteCreateInput).createdBy = {
-          connect: { id: createdById },
-        };
-      }
 
       if (address && city && state && zipCode) {
         // Try to find address first using findFirst for type safety
@@ -115,38 +98,9 @@ export async function createJobsite(formData: FormData) {
       }
 
       // Create the jobsite and get the created record
-      const createdJobsite = await prisma.jobsite.create({
+      await prisma.jobsite.create({
         data,
       });
-
-      await prisma.jobsite.update({
-        where: { id: createdJobsite.id },
-        data: {
-          CCTags: {
-            connect: { id: "All" }, // Ensure 'All' tag is connected
-          },
-        },
-      });
-
-      // If address is linked, update Address.Jobsite relation
-      if (createdJobsite.addressId) {
-        await prisma.address.update({
-          where: { id: createdJobsite.addressId },
-          data: {
-            Jobsite: {
-              connect: { id: createdJobsite.id },
-            },
-          },
-        });
-      }
-      if (createdJobsite) {
-        await sendNotificationToTopic({
-          topic: "items",
-          title: "New Jobsite Created",
-          message: `A new jobsite has been created: ${createdJobsite.name}`,
-          link: `/admins/jobsites`,
-        });
-      }
 
       revalidatePath("/dashboard/qr-generator");
     });

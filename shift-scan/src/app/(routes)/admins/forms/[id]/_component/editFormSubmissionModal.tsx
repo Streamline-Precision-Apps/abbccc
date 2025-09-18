@@ -27,6 +27,7 @@ import RenderSearchAssetField from "../../_components/RenderSearchAssetField";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
+import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
 
 export default function EditFormSubmissionModal({
   id,
@@ -39,6 +40,7 @@ export default function EditFormSubmissionModal({
   formTemplate: FormIndividualTemplate | null;
   onSuccess: () => void;
 }) {
+  const { refresh } = useDashboardData();
   const { data: session } = useSession();
 
   const adminUserId = session?.user.id || null;
@@ -283,6 +285,8 @@ export default function EditFormSubmissionModal({
 
       if (res.success) {
         toast.success("Submission updated successfully", { duration: 3000 });
+
+        refresh();
         onSuccess();
       } else {
         toast.error(res.error || "Failed to update submission", {

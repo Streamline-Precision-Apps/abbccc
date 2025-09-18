@@ -13,11 +13,7 @@ export default async function Index() {
 
   return (
     <Bases>
-      <Contents>
-        <Grids rows={"7"} gap={"5"}>
-          <ChangePassword userId={userId} />
-        </Grids>
-      </Contents>
+      <ChangePassword userId={userId} />
     </Bases>
   );
 }

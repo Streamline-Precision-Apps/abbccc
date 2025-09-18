@@ -462,14 +462,6 @@
   "launch_handler": {
     "client_mode": "auto"
   },
-  "screenshots": [
-    {
-      "src": "screenshots/screen1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "label": "Main dashboard"
-    }
-  ],
   "orientation": "portrait",
   "display": "standalone",
   "categories": ["business", "productivity", "timekeeping"]

@@ -199,7 +199,10 @@
     "ClockInIcon": "Icono Clockin"
   },
   "TimeSheet": {
-    "EnterDate": "Ingrese la fecha",
+    "TimecardId": "ID: #",
+    "Duration": "Duración",
+    "WorkHours": "Horas",
+    "EnterDate": "Buscar registros de horas por fecha",
     "MyTimecards": "Mis tarjeta de tiempo",
     "ViewTimecards": "Ver las tarjetas de tiempo",
     "LoadingTimecards": "Cargando tarjetas de tiempo ...",
@@ -321,7 +324,23 @@
     "scanError": "El código QR no existe. ",
     "Notes": "Notas adicionales"
   },
+  "CodeFinder": {
+    "PullToRefresh": "Tirar para actualizar",
+    "ReleaseToRefresh": "Suelte para actualizar",
+    "Refreshing": "Actualizando..."
+  },
   "Generator": {
+    "JobsiteDetails": "Detalles del sitio ",
+    "OwnershipTypeLabel": "Tipo de propiedad",
+    "SelectOwnershipType": "Seleccione el tipo de propiedad",
+    "EquipmentDetails": "Detalles del equipo",
+    "Street": "Calle",
+    "CityLabel": "Ciudad",
+    "SelectState": "Seleccionar Estado",
+    "ZipCodeLabel": "Código postal",
+    "TemporaryJobsiteCodeLabel": "Código del sitio de trabajo temporal",
+    "TemporaryJobsiteNameLabel": "Nombre del sitio de trabajo temporal",
+    "JobsiteDescription": "Descripción del sitio de trabajo",
     "SelectDestination": "Ingrese la ubicación actual...",
     "CreateEquipment": "Crear equipos",
     "EquipmentInfo": "Información del equipo",
@@ -360,7 +379,7 @@
     "IsActive": "¿Está activo el sitio?",
     "Temporary": "Temporario",
     "NameExample": "Ingrese un nombre para el sitio",
-    "Address": "Nueva dirección",
+    "Address": "Información de dirección",
     "NewAddress": "¿Nueva dirección?",
     "ClientName": "Nombre del cliente",
     "AddressInformation": "Ingrese la dirección de la calle aquí ...",
@@ -379,6 +398,7 @@
     "Truck": "Camión",
     "Equipment": "Equipo general",
     "Vehicle": "Vehículo",
+    "Trailer": "Tráiler",
     "EquipmentTitle": "Equipo",
     "Name": "Nombre",
     "NamePlaceholder": "Ingrese el nombre del equipo",
@@ -602,7 +622,7 @@
     "TascoLabor": "Tasco Labor",
     "UsageTime": "Tiempo de uso",
     "NA": "N / A",
-    "PullToRefresh": "(Tire para refrescar)"
+    "PullToRefresh": "(Tirar para actualizar)"
   },
   "Clock": {
     "NoResultsFound": "No se encontraron resultados",
@@ -1134,9 +1154,11 @@
   "Hamburger-ChangePassword": {
     "ChangePassword": "Cambiar la contraseña",
     "PasswordRequirements": "Requisitos de contraseña",
-    "NumberCriteriaLabel": "123",
-    "SpecialCharacterCriteriaLabel": "símbolo",
-    "LengthCriteriaLabel": "8+ Longitud",
+    "NumberCriteriaLabel": "Al menos un número (0-9)",
+    "SpecialCharacterCriteriaLabel": "Al menos un personaje especial",
+    "CapitalCriteriaLabel": "Al menos una letra mayúscula (A-Z)",
+    "LowerCriteriaLabel": "Al menos una letra minúscula (A-Z)",
+    "LengthCriteriaLabel": "Mínimo 8 caracteres",
     "NewPassword": "Nueva contraseña",
     "ConfirmPassword": "confirmar Contraseña"
   },
@@ -1367,6 +1389,24 @@
     "Delay": "Demora",
     "NoDelay": "Sin retraso",
     "DelayStatus": "Estado de retraso",
-    "SubmitProject": "Proyecto de envío"
+    "SubmitProject": "Proyecto de envío",
+    "HoursWorked": "Horas trabajadas",
+    "EnterHoursWorked": "Ingresar horas trabajadas...",
+    "RepairDescription": "Descripción de la reparación",
+    "DescribeRepair": "Describa la reparación...",
+    "Submit": "Enviar",
+    "CreateNewProject": "Crear nuevo proyecto",
+    "LoadingProjects": "Cargando proyectos...",
+    "Submitting": "Enviando...",
+    "Hours": "Horas",
+    "UpdateProject": "Actualizar proyecto",
+    "Update": "Actualizar",
+    "Updating": "Actualizando...",
+    "PullToRefresh": "Desliza para actualizar",
+    "ReleaseToRefresh": "Suelta para actualizar",
+    "RefreshingProjects": "Actualizando proyectos...",
+    "DeleteProject": "Eliminar proyecto",
+    "DeleteProjectConfirmation": "¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.",
+    "Deleting": "Eliminando..."
   }
 }

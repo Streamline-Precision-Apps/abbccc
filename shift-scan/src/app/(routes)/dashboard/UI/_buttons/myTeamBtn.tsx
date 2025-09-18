@@ -8,6 +8,7 @@ export default function MyTeamWidget() {
     <WidgetContainer
       titleImg="/team.svg"
       titleImgAlt="my team"
+      textSize={"h6"}
       text={"MyTeam"}
       background={"lightBlue"}
       translation={"Widgets"}

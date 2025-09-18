@@ -12,7 +12,7 @@ model User {
   laborView            Boolean
   mechanicView         Boolean
   permission           Permission           @default(USER)
-  image                String?
+  image                String? //change this to url of image 
   startDate            DateTime?            @default(now())
   terminationDate      DateTime?
   accountSetup         Boolean              @default(false)

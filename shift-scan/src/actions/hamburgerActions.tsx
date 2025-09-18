@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { sendNotificationToTopic } from "./notificationSender";
 
 enum FormStatus {
   PENDING = "PENDING",
@@ -281,34 +280,6 @@ export async function saveDraftToPending(
 
       console.log("Submission updated successfully:", updatedSubmission.id);
 
-      // Trigger form submission notification
-      try {
-        // Get the user information for the notification
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-        });
-
-        // Get the form template for form type
-        await prisma.formTemplate.findUnique({
-          where: { id: formTemplateId },
-          select: { name: true },
-        });
-
-        // Send notification for form submission
-        await sendNotificationToTopic({
-          topic: "form-submissions",
-          title: "New Form Submission",
-          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
-          link: `/admins/forms/${formTemplateId}`,
-        });
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[saveDraftToPending] Error triggering notification:",
-          notifyError,
-        );
-      }
-
       return updatedSubmission;
     } else {
       // Create new draft
@@ -323,34 +294,6 @@ export async function saveDraftToPending(
           submittedAt: new Date().toISOString(),
         },
       });
-
-      // Trigger form submission notification for new submissions
-      try {
-        // Get the user information for the notification
-        const user = await prisma.user.findUnique({
-          where: { id: userId },
-        });
-
-        // Get the form template for form type
-        await prisma.formTemplate.findUnique({
-          where: { id: formTemplateId },
-          select: { name: true },
-        });
-
-        // Send notification for form submission
-        await sendNotificationToTopic({
-          topic: "form-submissions",
-          title: "New Form Submission",
-          message: `A new form submission has been made by ${user?.firstName} ${user?.lastName}:`,
-          link: `/admins/forms/${formTemplateId}`,
-        });
-      } catch (notifyError) {
-        // Log but don't fail the whole operation if notification fails
-        console.error(
-          "[saveDraftToPending] Error triggering notification:",
-          notifyError,
-        );
-      }
 
       return newSubmission;
     }

@@ -15,12 +15,13 @@ export type TimesheetSubmission = {
     startTime: string | null;
     endTime: string | null;
     workType: string;
+    comments: string;
   };
-  maintenanceLogs: Array<{
-    startTime: string;
-    endTime: string;
-    maintenanceId: string;
-  }>;
+  // maintenanceLogs: Array<{
+  //   startTime: string;
+  //   endTime: string;
+  //   maintenanceId: string;
+  // }>;
   truckingLogs: Array<{
     truckNumber: string;
     trailerNumber: string | null;
@@ -85,25 +86,26 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
         ? new Date(data.form.startTime)
         : new Date(),
       endTime: data.form.endTime ? new Date(data.form.endTime) : new Date(),
+      comment: data.form.comments,
     };
     const timesheet = await tx.timeSheet.create({
       data: timesheetData,
     });
 
-    // Maintenance Logs
-    for (const log of data.maintenanceLogs) {
-      if (!log.maintenanceId) continue;
-      const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
-        TimeSheet: { connect: { id: timesheet.id } },
-        User: { connect: { id: data.form.user.id } },
-        Maintenance: { connect: { id: log.maintenanceId } },
-        startTime: log.startTime ? new Date(log.startTime) : new Date(),
-        endTime: log.endTime ? new Date(log.endTime) : new Date(),
-      };
-      await tx.maintenanceLog.create({
-        data: maintenanceLogData,
-      });
-    }
+    // Maintenance Logs no need for now
+    // for (const log of data.maintenanceLogs) {
+    //   if (!log.maintenanceId) continue;
+    //   const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
+    //     TimeSheet: { connect: { id: timesheet.id } },
+    //     User: { connect: { id: data.form.user.id } },
+    //     Maintenance: { connect: { id: log.maintenanceId } },
+    //     startTime: log.startTime ? new Date(log.startTime) : new Date(),
+    //     endTime: log.endTime ? new Date(log.endTime) : new Date(),
+    //   };
+    //   await tx.maintenanceLog.create({
+    //     data: maintenanceLogData,
+    //   });
+    // }
 
     // Trucking Logs
     for (const tlog of data.truckingLogs) {
@@ -296,6 +298,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
   const editorId = formData.get("editorId") as string;
   const changesJson = formData.get("changes") as string;
   const changeReason = formData.get("changeReason") as string;
+  const wasStatusChanged = formData.get("wasStatusChanged") === "true";
+  const numberOfChanges = Number(formData.get("numberOfChanges")) || 0;
 
   if (!id || !dataJson) {
     throw new Error("Timesheet ID and data are required for update.");
@@ -303,6 +307,15 @@ export async function adminUpdateTimesheet(formData: FormData) {
 
   if (!editorId) {
     throw new Error("Editor ID is required for tracking changes.");
+  }
+
+  const editorFullName = await prisma.user.findUnique({
+    where: { id: editorId },
+    select: { firstName: true, lastName: true },
+  });
+
+  if (!editorFullName) {
+    throw new Error("You are not permitted to edit");
   }
 
   // Parse the changes and data
@@ -318,6 +331,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
           changedBy: editorId,
           changes: changes,
           changeReason: changeReason || "No reason provided",
+          wasStatusChange: wasStatusChanged,
+          numberOfChanges: numberOfChanges,
         },
       });
     }
@@ -478,5 +493,8 @@ export async function adminUpdateTimesheet(formData: FormData) {
   });
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
-  return true;
+  return {
+    success: true,
+    editorLog: editorFullName,
+  };
 }

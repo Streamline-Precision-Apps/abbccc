@@ -112,7 +112,17 @@ export async function GET(req: Request) {
           },
           _count: {
             select: {
-              ChangeLogs: true, // Count the number of ChangeLogs
+              ChangeLogs: {
+                where: {
+                  OR: [
+                    { numberOfChanges: { gt: 1 } }, // more than one change
+                    {
+                      numberOfChanges: 1,
+                      wasStatusChange: false, // single change, but not status
+                    },
+                  ],
+                },
+              }, // Count the number of ChangeLogs
             },
           },
         },
@@ -192,7 +202,17 @@ export async function GET(req: Request) {
           },
           _count: {
             select: {
-              ChangeLogs: true, // Count the number of ChangeLogs
+              ChangeLogs: {
+                where: {
+                  OR: [
+                    { numberOfChanges: { gt: 1 } }, // more than one change
+                    {
+                      numberOfChanges: 1,
+                      wasStatusChange: false, // single change, but not status
+                    },
+                  ],
+                },
+              }, // Count the number of ChangeLogs
             },
           },
         },
@@ -275,7 +295,17 @@ export async function GET(req: Request) {
           },
           _count: {
             select: {
-              ChangeLogs: true, // Count the number of ChangeLogs
+              ChangeLogs: {
+                where: {
+                  OR: [
+                    { numberOfChanges: { gt: 1 } }, // more than one change
+                    {
+                      numberOfChanges: 1,
+                      wasStatusChange: false, // single change, but not status
+                    },
+                  ],
+                },
+              }, // Count the number of ChangeLogs
             },
           },
         },

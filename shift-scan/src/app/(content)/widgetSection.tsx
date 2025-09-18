@@ -28,7 +28,7 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
   const [toggle, setToggle] = useState(true);
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
   const { payPeriodSheets, pageView, setPageView, loading } = usePayPeriodData(
-    setPayPeriodTimeSheets
+    setPayPeriodTimeSheets,
   );
 
   // Derived values
@@ -248,7 +248,7 @@ function WidgetButtonsSection({
           titleImg="/clockIn.svg"
           titleImgAlt={t("ClockInIcon")}
           text={"Clock-btn" + (pageView === "break" ? "-break" : "")}
-          textSize={isManager ? "h2" : "h1"}
+          textSize={isManager ? "h3" : "h3"}
           background={"green"}
           translation={"Home"}
           href={pageView === "break" ? "/break" : "/clock"}

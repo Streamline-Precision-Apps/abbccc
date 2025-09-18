@@ -30,7 +30,7 @@ const TitleBoxVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 interface TitleBoxProps
@@ -67,6 +67,7 @@ const TitleBoxes: FC<TitleBoxProps> = ({
         background={"none"}
         position={"left"}
         shadow={"none"}
+        type={"button"}
         className="w-12 h-12 absolute top-0 left-3 z-50"
       >
         <Images

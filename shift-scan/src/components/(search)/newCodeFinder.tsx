@@ -5,8 +5,8 @@ import { Holds } from "../(reusable)/holds";
 import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import { Buttons } from "../(reusable)/buttons";
-import { Texts } from "../(reusable)/texts";
 import { Images } from "../(reusable)/images";
+import { PullToRefresh } from "../(animations)/pullToRefresh";
 
 type Option = {
   id: string;
@@ -15,12 +15,14 @@ type Option = {
 };
 
 type CodeFinderProps = {
-  options: Option[]; // Pass options directly instead of generating internally
-  selectedOption: Option | null; // Controlled selected value
-  onSelect: (option: Option | null) => void; // Selection handler
+  options: Option[];
+  selectedOption: Option | null;
+  onSelect: (option: Option | null) => void;
   placeholder?: string;
   label?: string;
   className?: string;
+  onRefresh?: () => Promise<void>;
+  isLoading?: boolean;
 };
 
 export default function CodeFinder({
@@ -30,19 +32,17 @@ export default function CodeFinder({
   placeholder = "Search...",
   label,
   className = "",
+  onRefresh,
+  isLoading,
 }: CodeFinderProps) {
-  const t = useTranslations("Clock");
   const [searchTerm, setSearchTerm] = useState("");
-
+  const t = useTranslations("CodeFinder");
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options;
-
     return options
       .filter((option) => {
         const searchLower = searchTerm.toLowerCase();
         const labelLower = option.label.toLowerCase();
-
-        // More comprehensive search that checks if the search term appears anywhere in the label
         return labelLower.includes(searchLower);
       })
       .sort((a, b) => a.label.localeCompare(b.label));
@@ -66,7 +66,7 @@ export default function CodeFinder({
             className="h-full w-full border-[3px] border-b-none border-black rounded-b-none justify-center items-center"
             onClick={clearSelection}
           >
-            <Titles size={"h4"} className="text-center text-black">
+            <Titles size={"md"} className="text-center text-black">
               {selectedOption.label.length > 21
                 ? selectedOption.label.slice(0, 21) + "..."
                 : selectedOption.label}
@@ -83,42 +83,120 @@ export default function CodeFinder({
       </Holds>
       <Holds
         background={"darkBlue"}
-        className="row-start-2 row-end-9 h-full border-[3px] border-black rounded-[10px] rounded-t-none overflow-y-auto no-scrollbar"
+        className="row-start-2 row-end-9 h-full border-[3px] border-black rounded-[10px] rounded-t-none overflow-hidden"
       >
-        {filteredOptions.length > 0 ? (
-          filteredOptions.map((option) => (
-            <Holds key={option.code} className="p-2">
-              <Buttons
-                shadow={"none"}
-                className={`p-2 cursor-pointer ${
-                  selectedOption?.code === option.code
-                    ? "bg-app-green"
-                    : "bg-white"
-                }`}
-                onClick={() =>
-                  selectedOption?.code === option.code
-                    ? clearSelection()
-                    : onSelect(option)
-                }
-              >
-                <Titles size={"h4"}>{option.label}</Titles>
-              </Buttons>
-            </Holds>
-          ))
+        {onRefresh ? (
+          <PullToRefresh
+            onRefresh={onRefresh}
+            bgColor="bg-darkBlue/70"
+            textColor="text-white"
+            pullText={t("PullToRefresh")}
+            releaseText={t("ReleaseToRefresh")}
+            refreshingText=""
+            containerClassName="h-full"
+          >
+            <OptionsList
+              filteredOptions={filteredOptions}
+              selectedOption={selectedOption}
+              onSelect={onSelect}
+              clearSelection={clearSelection}
+              isLoading={isLoading}
+            />
+          </PullToRefresh>
         ) : (
-          <Holds className="h-full w-full p-1.5">
-            <Holds
-              background={"white"}
-              className="flex justify-center items-center h-full w-full bg-opacity-10 relative"
-            >
-              <p className="text-neutral-100 text-lg">{t("NoResultsFound")}</p>
-            </Holds>
-          </Holds>
+          <div className="h-full overflow-y-auto no-scrollbar">
+            <OptionsList
+              filteredOptions={filteredOptions}
+              selectedOption={selectedOption}
+              onSelect={onSelect}
+              clearSelection={clearSelection}
+              isLoading={isLoading}
+            />
+          </div>
         )}
       </Holds>
     </Grids>
   );
 }
+
+// Extracted Options List component for reusability
+const OptionsList = ({
+  filteredOptions,
+  selectedOption,
+  onSelect,
+  clearSelection,
+  isLoading,
+}: {
+  filteredOptions: Option[];
+  selectedOption: Option | null;
+  onSelect: (option: Option | null) => void;
+  clearSelection: () => void;
+  isLoading?: boolean;
+}) => {
+  const t = useTranslations("Clock");
+  if (filteredOptions.length > 0) {
+    return filteredOptions.map((option) => (
+      <Holds key={option.code} className="p-2">
+        <Buttons
+          shadow={"none"}
+          className={`p-2 cursor-pointer ${
+            selectedOption?.code === option.code ? "bg-app-green" : "bg-white"
+          }`}
+          onClick={() =>
+            selectedOption?.code === option.code
+              ? clearSelection()
+              : onSelect(option)
+          }
+        >
+          <Titles size={"md"}>
+            {option.label.length > 21
+              ? option.label.slice(0, 21) + "..."
+              : option.label}
+          </Titles>
+        </Buttons>
+      </Holds>
+    ));
+  } else if (isLoading) {
+    return (
+      <Holds className="h-full w-full flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <svg
+            className="animate-spin h-6 w-6 text-white mb-2"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p className="text-white text-lg">{t("Loading")}</p>
+        </div>
+      </Holds>
+    );
+  } else {
+    return (
+      <Holds className="h-full w-full p-1.5">
+        <Holds
+          background={"white"}
+          className="flex justify-center items-center h-full w-full bg-opacity-10 relative"
+        >
+          <p className="text-neutral-100 text-lg">{t("NoResultsFound")}</p>
+        </Holds>
+      </Holds>
+    );
+  }
+};
 
 // Simplified SearchBar component
 const SearchBar = ({
@@ -153,7 +231,6 @@ const SearchBar = ({
             placeholder={placeholder}
             className="w-full placeholder:text-center text-left h-full placeholder-gray-500 placeholder:text-xl focus:outline-none rounded-[10px]"
             aria-label={label || "Search"}
-            autoFocus
             autoComplete="off"
           />
         </Holds>

@@ -49,6 +49,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const [changeReason, setChangeReason] = useState("");
   const { data: session } = useSession();
   const { refresh } = useDashboardData();
+
   const editor = session?.user?.id;
 
   // Fetch dropdown and related data
@@ -129,6 +130,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
 
       // Generate changes record by comparing original form with current form
       const changes: Record<string, { old: unknown; new: unknown }> = {};
+      let wasStatusChanged = false;
+      let numberOfChanges = 0;
 
       // Check basic fields
       if (form.startTime !== originalForm.startTime) {
@@ -136,6 +139,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.startTime,
           new: form.startTime,
         };
+        numberOfChanges++;
       }
 
       if (form.endTime !== originalForm.endTime) {
@@ -143,6 +147,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.endTime,
           new: form.endTime,
         };
+        numberOfChanges++;
       }
 
       if (JSON.stringify(form.date) !== JSON.stringify(originalForm.date)) {
@@ -150,6 +155,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.date,
           new: form.date,
         };
+        numberOfChanges++;
       }
 
       if (form.workType !== originalForm.workType) {
@@ -157,13 +163,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.workType,
           new: form.workType,
         };
-      }
-
-      if (form.comment !== originalForm.comment) {
-        changes["comment"] = {
-          old: originalForm.comment,
-          new: form.comment,
-        };
+        numberOfChanges++;
       }
 
       if (form.status !== originalForm.status) {
@@ -171,6 +171,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.status,
           new: form.status,
         };
+        wasStatusChanged = true;
+        numberOfChanges++;
       }
 
       // Check relations
@@ -183,6 +185,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             ? `${form.User.firstName} ${form.User.lastName}`
             : null,
         };
+        numberOfChanges++;
       }
 
       if (form.Jobsite?.id !== originalForm.Jobsite?.id) {
@@ -190,6 +193,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.Jobsite?.name,
           new: form.Jobsite?.name,
         };
+        numberOfChanges++;
       }
 
       if (form.CostCode?.name !== originalForm.CostCode?.name) {
@@ -197,6 +201,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           old: originalForm.CostCode?.name,
           new: form.CostCode?.name,
         };
+        numberOfChanges++;
       }
 
       // If no changes were made, inform the user
@@ -212,9 +217,24 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       formData.append("changes", JSON.stringify(changes));
       formData.append("editorId", editor || "");
       formData.append("changeReason", changeReason);
+      formData.append("wasStatusChanged", wasStatusChanged.toString());
+      formData.append("numberOfChanges", numberOfChanges.toString());
 
       const result = await adminUpdateTimesheet(formData);
-      if (result) {
+      if (result.success) {
+        const response = await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "timecards-changes",
+            title: "A Timecard was Modified",
+            message: `Timecard was modified by ${result.editorLog.firstName} ${result.editorLog.lastName}`,
+            link: `/admins/timesheets`,
+          }),
+        });
+        await response.json();
         refresh();
       }
 

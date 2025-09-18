@@ -24,6 +24,7 @@ type Props = {
   numberOfRoles: number;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
+  clockOutComment: string | undefined;
 };
 
 export default function SwitchJobsMultiRoles({
@@ -34,6 +35,7 @@ export default function SwitchJobsMultiRoles({
   numberOfRoles,
   clockInRoleTypes,
   setClockInRoleTypes,
+  clockOutComment,
 }: Props) {
   const t = useTranslations("Clock");
   const { data: session } = useSession();
@@ -75,6 +77,10 @@ export default function SwitchJobsMultiRoles({
   };
 
   useEffect(() => {
+    setCommentsValue(clockOutComment || "");
+  }, [clockOutComment]);
+
+  useEffect(() => {
     setSubmittable(commentsValue.length >= 3);
   }, [commentsValue]);
 
@@ -102,6 +108,7 @@ export default function SwitchJobsMultiRoles({
                   </Labels>
                   <TextAreas
                     name="comments"
+                    value={commentsValue}
                     onChange={(e) => {
                       setCommentsValue(e.target.value);
                     }}
@@ -168,6 +175,7 @@ export default function SwitchJobsMultiRoles({
                   onChange={(e) => {
                     setCommentsValue(e.target.value);
                   }}
+                  value={commentsValue}
                   placeholder={t("TodayIDidTheFollowing")}
                   className="w-full h-full"
                   maxLength={40}

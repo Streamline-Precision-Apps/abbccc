@@ -27,13 +27,18 @@ const LabelVariants = cva(
         p7: "text-xs",
         p8: "text-[10px]",
         p9: "text-[8px]",
+        xs: "text-xs",
+        sm: "text-sm",
+        md: "text-base",
+        lg: "text-lg",
+        xl: "text-xl",
       },
     },
     defaultVariants: {
       text: "black",
       size: "p2",
     },
-  }
+  },
 );
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here

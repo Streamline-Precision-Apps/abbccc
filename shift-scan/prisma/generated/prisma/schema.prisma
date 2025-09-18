@@ -107,6 +107,7 @@ model Equipment {
   UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
   UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
   DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
+  Maintenance           mechanicProjects[]
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
@@ -121,6 +122,7 @@ enum Condition {
 enum OwnershipType {
   OWNED
   LEASED
+  RENTAL
 }
 
 // purpose is to show all employee interactions with the equipment
@@ -303,12 +305,24 @@ model TimeSheet {
   wasInjured            Boolean?               @default(false)
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
+  Maintenance           mechanicProjects[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   TruckingLogs          TruckingLog[]
-  ChangeLogs            TimeSheetChangeLog[]   @relation("TimeSheetChanges") // Add relation to change logs
+  ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+}
+
+// new prosed model
+model mechanicProjects {
+  id          Int       @id @default(autoincrement())
+  timeSheetId Int
+  hours       Float?
+  equipmentId String
+  description String? // full notes
+  TimeSheet   TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
 }
 
 model MaintenanceLog {
@@ -452,16 +466,17 @@ enum materialUnit {
 
 // New model for tracking TimeSheet changes
 model TimeSheetChangeLog {
-  id           String   @id @default(uuid())
-  timeSheetId  Int
-  changedBy    String // User ID who made the change
-  changedAt    DateTime @default(now())
-  changes      Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
-  changeReason String? // Optional reason for the change
-
+  id              String    @id @default(uuid())
+  timeSheetId     Int
+  changedBy       String // User ID who made the change
+  changedAt       DateTime  @default(now())
+  changes         Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
+  changeReason    String? // Optional reason for the change
+  wasStatusChange Boolean   @default(false) // Flag to indicate if the change was related to status
+  numberOfChanges Int       @default(0) // Number of fields changed
   // Relations
-  TimeSheet TimeSheet @relation("TimeSheetChanges", fields: [timeSheetId], references: [id], onDelete: Cascade)
-  User      User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+  TimeSheet       TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  User            User      @relation("ChangedByUser", fields: [changedBy], references: [id])
 
   @@index([timeSheetId])
   @@index([changedBy])
@@ -482,7 +497,7 @@ model User {
   laborView            Boolean
   mechanicView         Boolean
   permission           Permission           @default(USER)
-  image                String?
+  image                String? //change this to url of image 
   startDate            DateTime?            @default(now())
   terminationDate      DateTime?
   accountSetup         Boolean              @default(false)
@@ -691,6 +706,13 @@ enum FormTemplateCategory {
   INCIDENT
   FINANCE
   OTHER
+  //  HR – hiring, onboarding, leave, evaluations
+  // Finance – payroll, reimbursements, invoices, taxes
+  // Operations – scheduling, approvals, workflows
+  // Compliance – policies, contracts, regulatory forms
+  // Clients – intake, feedback, orders, agreements
+  // IT – access requests, troubleshooting, equipment use
+  // Safety – incidents, inspections, maintenance
 }
 
 enum CreatedVia {
