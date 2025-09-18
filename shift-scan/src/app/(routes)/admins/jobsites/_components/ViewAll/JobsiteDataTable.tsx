@@ -23,7 +23,8 @@ import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobsiteSummary } from "../useJobsiteData";
-import { jobsiteTableColumns } from "./jobsiteTableColumns";
+import { getJobsiteTableColumns } from "./jobsiteTableColumns";
+import { useRouter } from "next/navigation";
 
 interface JobsiteDataTableProps {
   data: JobsiteSummary[];
@@ -56,15 +57,13 @@ export function JobsiteDataTable({
   onQrClick,
   showPendingOnly,
 }: JobsiteDataTableProps) {
+  const router = useRouter();
   // Create column definitions with the action handlers
   const columns = useMemo(() => {
-    // Copy the base columns
-    const cols = [...jobsiteTableColumns];
-
+    const cols = getJobsiteTableColumns(router);
     // Find and update the actions column
     const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
     if (actionsColumnIndex >= 0) {
-      // Replace with a new definition that includes our handlers
       cols[actionsColumnIndex] = {
         ...cols[actionsColumnIndex],
         cell: ({ row }) => {
@@ -129,9 +128,8 @@ export function JobsiteDataTable({
         },
       };
     }
-
     return cols;
-  }, [onEditClick, onDeleteClick, onQrClick]);
+  }, [router, onEditClick, onDeleteClick, onQrClick]);
 
   const table = useReactTable({
     data,

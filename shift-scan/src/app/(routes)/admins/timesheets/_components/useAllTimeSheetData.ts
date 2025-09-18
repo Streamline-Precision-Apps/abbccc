@@ -72,7 +72,17 @@ export type timesheetPending = {
   length: number;
 };
 
-export default function AdminTimesheets() {
+export default function AdminTimesheets({
+  jobsiteId,
+  costCode,
+  equipmentId,
+  userId,
+}: {
+  jobsiteId: string | null;
+  costCode: string | null;
+  equipmentId: string | null;
+  userId: string | null;
+}) {
   const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -114,28 +124,37 @@ export default function AdminTimesheets() {
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
+  // Build filter query params from optional filters
+  const buildFilterQuery = () => {
+    const params = new URLSearchParams();
+    if (jobsiteId) params.append("jobsiteId", jobsiteId);
+    if (costCode) params.append("costCode", costCode);
+    if (equipmentId) params.append("equipmentId", equipmentId);
+    if (userId) params.append("userId", userId);
+    return params.toString();
+  };
+
   // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
   const fetchTimesheets = async (pendingOnly = false) => {
     try {
       setLoading(true);
       let response;
+      const filterQuery = buildFilterQuery();
+      const encodedSearch = encodeURIComponent(searchTerm.trim());
       if (pendingOnly) {
-        const encodedSearch = encodeURIComponent(searchTerm.trim());
         response = await fetch(
-          `/api/getAllTimesheetInfo?status=pending&search=${encodedSearch}`,
+          `/api/getAllTimesheetInfo?status=pending&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
           {
             next: { tags: ["timesheets"] },
           },
         );
         const data = await response.json();
-        // If API returns array, set as allTimesheets
         setAllTimesheets(data.timesheets || []);
         setTotalPages(data.totalPages);
         setTotal(data.total || 0);
       } else {
-        const encodedSearch = encodeURIComponent(searchTerm.trim());
         response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
+          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
           {
             next: { tags: ["timesheets"] },
           },

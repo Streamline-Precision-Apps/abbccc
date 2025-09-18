@@ -29,8 +29,18 @@ import useAllTimeSheetData from "./_components/useAllTimeSheetData";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import Spinner from "@/components/(animations)/spinner";
+import { useRouter, useSearchParams } from "next/navigation";
+import { X } from "lucide-react";
 
 export default function AdminTimesheets() {
+  const searchParams = useSearchParams();
+  const jobsiteId = searchParams.get("jobsiteId");
+  const costCode = searchParams.get("costCode");
+  const equipmentId = searchParams.get("equipmentId");
+  const userId = searchParams.get("userId");
+  const router = useRouter();
+  const hasParams = Array.from(searchParams.entries()).length > 0;
+
   const {
     inputValue,
     setInputValue,
@@ -67,7 +77,26 @@ export default function AdminTimesheets() {
     handleDeleteConfirm,
     handlePageSizeChange,
     handleExport,
-  } = useAllTimeSheetData();
+  } = useAllTimeSheetData({
+    jobsiteId,
+    costCode,
+    equipmentId,
+    userId,
+  });
+
+  const handleClearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    // Remove specific params
+    params.delete("jobsiteId");
+    params.delete("costCode");
+    params.delete("equipmentId");
+    params.delete("userId");
+    // Push new URL without those params
+    router.push(
+      `/admins/timesheets${params.toString() ? "?" + params.toString() : ""}`,
+    );
+    rerender();
+  };
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
@@ -155,6 +184,28 @@ export default function AdminTimesheets() {
                 </div>
               </PopoverContent>
             </Popover>
+            {hasParams && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-white h-full w-full max-w-[40px] ml-2 justify-center items-center"
+                    onClick={handleClearFilters}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </TooltipTrigger>
+
+                <TooltipContent
+                  side="top"
+                  align="center"
+                  className="w-[120px] justify-center"
+                >
+                  Remove Filters
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
         <div className="w-full h-full flex flex-row justify-end items-center gap-2">

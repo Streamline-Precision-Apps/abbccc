@@ -21,6 +21,9 @@ export type JobsiteSummary = {
     state: string;
     zipCode: string;
   };
+  _count: {
+    TimeSheets: number;
+  };
 };
 
 export const useJobsiteData = () => {

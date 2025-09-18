@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/hover-card";
 import { SquareCheck, SquareX } from "lucide-react";
 import { highlight } from "@/app/(routes)/admins/_pages/higlight";
+import { Button } from "@/components/ui/button";
 
-// Define the column configuration
-export const jobsiteTableColumns: ColumnDef<JobsiteSummary>[] = [
+// Define the column configuration as a function that takes router
+export const getJobsiteTableColumns = (
+  router: ReturnType<typeof import("next/navigation").useRouter>,
+): ColumnDef<JobsiteSummary>[] => [
   {
     accessorKey: "name",
     header: "Name & Description",
@@ -121,6 +124,36 @@ export const jobsiteTableColumns: ColumnDef<JobsiteSummary>[] = [
               </div>
             </HoverCardContent>
           </HoverCard>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "timecardCount",
+    header: "Timecards",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-default underline decoration-dotted">
+                {row.original._count?.TimeSheets || 0}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  router.push(
+                    "/admins/timesheets?jobsiteId=" + row.original.code,
+                  )
+                }
+              >
+                <p className="text-xs">View Timecards</p>
+              </Button>
+            </TooltipContent>
+          </Tooltip>
         </div>
       );
     },

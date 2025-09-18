@@ -30,11 +30,25 @@ export async function GET(req: Request) {
 
   // Parse pagination params
   const { searchParams } = new URL(req.url);
+
   const status = searchParams.get("status") || "all";
   const search = searchParams.get("search")?.trim() || "";
+  // Optional filters
+  const jobsiteId = searchParams.get("jobsiteId");
+  const costCode = searchParams.get("costCode");
+  const equipmentId = searchParams.get("equipmentId");
+  const userIdFilter = searchParams.get("userId");
 
   let timesheets, total, pageSize, page, skip, totalPages, pendingTimesheets;
   try {
+    // Build filter object for Prisma where
+    const filter: Record<string, unknown> = {};
+    if (jobsiteId) filter.Jobsite = { code: jobsiteId };
+    if (costCode) filter.CostCode = { code: costCode };
+    if (userIdFilter) filter.User = { id: userIdFilter };
+    // For equipmentId, filter timesheets that have at least one EmployeeEquipmentLog with that equipmentId
+    if (equipmentId) filter.EmployeeEquipmentLogs = { some: { equipmentId } };
+
     page = undefined;
     pageSize = undefined;
     skip = undefined;
@@ -44,6 +58,7 @@ export async function GET(req: Request) {
       timesheets = await prisma.timeSheet.findMany({
         where: {
           status: "PENDING",
+          ...filter,
         },
 
         select: {
@@ -138,10 +153,14 @@ export async function GET(req: Request) {
       pendingTimesheets = prisma.timeSheet.count({
         where: {
           status: "PENDING",
+          ...filter,
         },
       });
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
+        where: {
+          ...filter,
+        },
         select: {
           id: true,
           date: true,
@@ -228,18 +247,21 @@ export async function GET(req: Request) {
       page = parseInt(searchParams.get("page") || "1", 10);
       pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
       skip = (page - 1) * pageSize;
-      total = await prisma.timeSheet.count();
+      total = await prisma.timeSheet.count({ where: { ...filter } });
       totalPages = Math.ceil(total / pageSize);
       pendingTimesheets = prisma.timeSheet.count({
         where: {
           status: "PENDING",
+          ...filter,
         },
       });
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
         skip,
         take: pageSize,
-
+        where: {
+          ...filter,
+        },
         select: {
           id: true,
           date: true,
