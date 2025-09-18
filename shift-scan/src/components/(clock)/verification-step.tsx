@@ -89,11 +89,11 @@ export default function VerificationStep({
       );
       const data = await getRecentTimecardOffline();
       console.log("[TIMESHEET] Recent timesheet data:", data);
-      
+
       // Type guard to check if data has an id property that is a string
-      if (data && typeof data === 'object' && 'id' in data) {
+      if (data && typeof data === "object" && "id" in data) {
         const typedData = data as { id: unknown };
-        if (typeof typedData.id === 'string') {
+        if (typeof typedData.id === "string") {
           return typedData.id;
         }
       }
@@ -159,18 +159,21 @@ export default function VerificationStep({
       // If online and switching jobs, send notification
       if (response && type === "switchJobs") {
         try {
-          const notificationResponse = await fetch("/api/notifications/send-multicast", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const notificationResponse = await fetch(
+            "/api/notifications/send-multicast",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                topic: "timecard-submission",
+                title: "New Timesheet Submission",
+                message: `A new submission has been created and is pending approval.`,
+                link: `/admins/timesheets`,
+              }),
             },
-            body: JSON.stringify({
-              topic: "timecard-submission",
-              title: "New Timesheet Submission",
-              message: `A new submission has been created and is pending approval.`,
-              link: `/admins/timesheets`,
-            }),
-          });
+          );
           await notificationResponse.json();
         } catch (notificationError) {
           console.warn("Failed to send notification:", notificationError);
