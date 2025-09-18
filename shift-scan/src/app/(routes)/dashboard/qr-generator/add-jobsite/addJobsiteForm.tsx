@@ -318,6 +318,7 @@ export default function AddJobsiteForm() {
                   placeholder={t("CreationReasoning")}
                   rows={5}
                   className="text-sm"
+                  onChange={handleInputChange}
                   required
                 />
               </Holds>
