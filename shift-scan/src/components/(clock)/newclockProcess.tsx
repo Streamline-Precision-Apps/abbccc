@@ -41,6 +41,7 @@ type NewClockProcessProps = {
   costCode?: string | undefined;
   workRole?: string | undefined;
   switchLaborType?: string | undefined;
+  clockOutComment?: string | undefined;
 };
 type Option = {
   id: string;
@@ -58,6 +59,7 @@ export default function NewClockProcess({
   option,
   workRole,
   switchLaborType,
+  clockOutComment,
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
@@ -325,6 +327,7 @@ export default function NewClockProcess({
               type={type}
               numberOfRoles={numberOfRoles}
               handleReturnPath={handleReturnPath}
+              clockOutComment={clockOutComment}
             />
           )}
           {type === "jobsite" && (

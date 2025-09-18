@@ -53,11 +53,13 @@ export type TimeSheet = {
 interface ClockOutContentProps {
   userId: string;
   permission: string;
+  clockOutComment: string;
 }
 
 export default function TempClockOutContent({
   userId,
   permission,
+  clockOutComment,
 }: ClockOutContentProps) {
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0); // Using setStep instead of incrementStep
@@ -65,7 +67,7 @@ export default function TempClockOutContent({
   const [checked, setChecked] = useState(false);
   const [base64String, setBase64String] = useState<string>("");
   const { currentView } = useCurrentView();
-  const [commentsValue, setCommentsValue] = useState("");
+  const [commentsValue, setCommentsValue] = useState(clockOutComment || "");
   const [timesheets, setTimesheets] = useState<TimeSheet[]>([]);
   // Removed reviewYourTeam state, not needed for manager flow
   const [pendingTimeSheets, setPendingTimeSheets] = useState<TimeSheet>();
@@ -77,27 +79,6 @@ export default function TempClockOutContent({
   const [wasInjured, setWasInjured] = useState<boolean>(false);
   const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
 
-  useEffect(() => {
-    console.log("currentStep: ", step);
-  }, [step]);
-
-  useEffect(() => {
-    console.log("path: ", path);
-  }, [path]);
-
-  useEffect(() => {
-    console.log("editFilter: ", editFilter);
-  }, [editFilter]);
-  useEffect(() => {
-    console.log("editDate: ", editDate);
-  }, [editDate]);
-  useEffect(() => {
-    console.log("focusIds: ", focusIds);
-  }, [focusIds]);
-  useEffect(() => {
-    console.log("focus employeeId: ", employeeId);
-  }, [employeeId]);
-
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
   };
@@ -105,6 +86,10 @@ export default function TempClockOutContent({
   const prevStep = () => {
     setStep((prevStep) => prevStep - 1); // Increment function
   };
+
+  useEffect(() => {
+    setCommentsValue(clockOutComment || "");
+  }, [clockOutComment]);
 
   useEffect(() => {
     const getRecentTimeCard = async () => {
@@ -127,7 +112,6 @@ export default function TempClockOutContent({
         const response = await fetch("/api/clockoutDetails");
         const data = await response.json();
         setTimesheets(data.timesheets || []);
-        setCommentsValue(data.comment || "");
         setBase64String(data.signature || "");
         // Set the most recent active timesheet (endTime === null)
         const activeTimeSheet = (data.timesheets || [])

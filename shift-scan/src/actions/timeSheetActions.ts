@@ -982,3 +982,26 @@ export async function approvePendingTimesheets(
     return { success: false, error: "Failed to approve timesheets" };
   }
 }
+
+export async function ClockOutComment({ userId }: { userId: string }) {
+  const timesheet = await prisma.timeSheet.findFirst({
+    where: {
+      userId,
+      endTime: null, // Ensure timesheet is still active
+    },
+    orderBy: {
+      createdAt: "desc", // Sort by most recent submission date
+    },
+    select: {
+      id: true,
+      endTime: true,
+    },
+  });
+
+  const timesheetId = timesheet?.id;
+  const timeSheet = await prisma.timeSheet.findUnique({
+    where: { id: timesheetId },
+    select: { comment: true },
+  });
+  return timeSheet?.comment || "";
+}
