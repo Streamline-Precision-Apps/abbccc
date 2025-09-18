@@ -41,22 +41,30 @@ export const usePayPeriodData = (
           "payPeriodTimeSheets",
           () => fetch("/api/getPayPeriodTimeSheets").then(res => res.json())
         );
-        const validatedData = PayPeriodSheetsArraySchema.parse(data);
+        
+        // Handle case when data is null (offline with no cache)
+        if (data === null) {
+          console.warn("No cached pay period data available offline");
+          setPayPeriodSheets([]);
+          setPayPeriodTimeSheets([]);
+        } else {
+          const validatedData = PayPeriodSheetsArraySchema.parse(data);
 
-        const transformedData = validatedData.map((item) => ({
-          ...item,
-          startTime: new Date(item.startTime),
-          endTime: new Date(item.endTime),
-        }));
+          const transformedData = validatedData.map((item) => ({
+            ...item,
+            startTime: new Date(item.startTime),
+            endTime: new Date(item.endTime),
+          }));
 
-        setPayPeriodSheets(transformedData);
-        setPayPeriodTimeSheets(transformedData);
+          setPayPeriodSheets(transformedData);
+          setPayPeriodTimeSheets(transformedData);
+        }
 
-        // Fetch page view cookie value
-        const pageViewResponse = await fetch(
-          "/api/cookies?method=get&name=currentPageView",
+        // Fetch page view cookie value with offline cache support
+        const pageViewData = await fetchWithOfflineCache(
+          "currentPageView",
+          () => fetch("/api/cookies?method=get&name=currentPageView").then(res => res.json())
         );
-        const pageViewData = await pageViewResponse.json();
         setPageView(pageViewData || "");
       } catch (error) {
         console.error("Error fetching data:", error);

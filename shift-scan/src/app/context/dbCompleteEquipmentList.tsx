@@ -63,11 +63,18 @@ export const EquipmentListProvider = ({
             "getEquipmentList",
             () => fetch("/api/getEquipmentList").then((res) => res.json())
           );
-          const validatedEquipmentList = EquipmentSchema.parse(recentEquipmentList);
-          const isAvailableEquipment = validatedEquipmentList.filter(
-            (item) => item.state === "AVAILABLE"
-          );
-          setEquipmentListResults(isAvailableEquipment);
+          
+          // Handle case when data is null (offline with no cache)
+          if (recentEquipmentList === null) {
+            console.warn("No cached equipment list data available offline");
+            setEquipmentListResults([]);
+          } else {
+            const validatedEquipmentList = EquipmentSchema.parse(recentEquipmentList);
+            const isAvailableEquipment = validatedEquipmentList.filter(
+              (item) => item.state === "AVAILABLE"
+            );
+            setEquipmentListResults(isAvailableEquipment);
+          }
         }
       } catch (error) {
         if (error instanceof z.ZodError) {

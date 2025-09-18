@@ -3,11 +3,19 @@ import React, { useEffect, useState } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useJobSite } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
 
 type Option = {
   id: string;
   code: string;
   label: string;
+};
+
+// Minimal shape used from Jobsite summary API
+type JobsiteResult = {
+  id: string;
+  name: string;
+  qrId: string;
 };
 
 type EquipmentSelectorProps = {
@@ -26,9 +34,47 @@ export const JobsiteSelector = ({
   // The new hook only provides selectedJobSite, not a list
   const { selectedJobSite } = useJobSite();
   const t = useTranslations("Clock");
+  
+  // Fetch jobsites with offline support
   useEffect(() => {
-    // TODO: Implement proper jobsite data fetching
-    setJobsiteOptions([]);
+    let isMounted = true;
+    const loadJobsites = async () => {
+      try {
+        const data = await fetchWithOfflineCache(
+          "getJobsiteSummary",
+          () =>
+            fetch("/api/getJobsiteSummary").then((res) =>
+              res.json() as Promise<JobsiteResult[]>,
+            ),
+        );
+        
+        if (isMounted && data !== null) {
+          // Handle case when data is null (offline with no cache)
+          if (Array.isArray(data)) {
+            // Transform JobsiteResult to Option format
+            const transformedOptions: Option[] = data.map((jobsite) => ({
+              id: jobsite.id,
+              code: jobsite.qrId,
+              label: jobsite.name,
+            }));
+            setJobsiteOptions(transformedOptions);
+          } else {
+            console.warn("Received non-array jobsite data:", data);
+            setJobsiteOptions([]);
+          }
+        } else if (data === null) {
+          console.warn("No cached jobsite data available offline");
+          setJobsiteOptions([]);
+        }
+      } catch (err) {
+        console.error("Failed to load jobsite summary", err);
+        setJobsiteOptions([]);
+      }
+    };
+    loadJobsites();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Initialize with the passed initialValue
