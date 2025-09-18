@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { X, Check } from "lucide-react";
 
 interface TimesheetDataTableProps {
   data: Timesheet[];
@@ -89,6 +90,42 @@ export function TimesheetDataTable({
           return (
             <div className="sticky right-0 text-xs text-center">
               <div className="flex flex-row justify-center items-center">
+                {showPendingOnly && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size={"icon"}
+                        variant={"link"}
+                        className="border-none w-fit h-full justify-center mr-4"
+                        aria-label="Approve Timesheet"
+                        onClick={() =>
+                          onApprovalAction?.(timesheet.id, "APPROVED")
+                        }
+                      >
+                        <Check className="h-4 w-4 " color="green" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Approve</TooltipContent>
+                  </Tooltip>
+                )}
+                {showPendingOnly && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size={"icon"}
+                        variant={"link"}
+                        className="border-none w-fit h-full justify-center mr-4"
+                        aria-label="Deny Timesheet"
+                        onClick={() =>
+                          onApprovalAction?.(timesheet.id, "REJECTED")
+                        }
+                      >
+                        <X className="h-4 w-4 " color="red" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Deny</TooltipContent>
+                  </Tooltip>
+                )}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button

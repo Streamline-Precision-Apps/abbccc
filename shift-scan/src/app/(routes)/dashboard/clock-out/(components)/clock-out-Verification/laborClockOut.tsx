@@ -4,7 +4,6 @@ import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -59,7 +58,6 @@ export const LaborClockOut = ({
   async function handleSubmitTimeSheet() {
     try {
       setLoading(true);
-      console.log("🔶🔶🔶 PROCESS ONE STARTING 🔶🔶🔶");
       // Step 1: Get the recent timecard ID.
 
       const formData = new FormData();
@@ -68,15 +66,6 @@ export const LaborClockOut = ({
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
       formData.append("wasInjured", wasInjured.toString());
-
-      console.log("🔶 FormData prepared, calling updateTimeSheet");
-      console.log("🔶 Form values:", {
-        id: timeSheetId,
-        userId: session?.user.id,
-        endTime: new Date().toISOString(),
-        comments: commentsValue,
-        wasInjured: wasInjured,
-      });
 
       const result = await updateTimeSheet(formData);
       if (result) {
@@ -93,14 +82,15 @@ export const LaborClockOut = ({
           }),
         });
         const data = await response.json();
-        console.log("Time Card response", data);
       }
-      // clear the saved storage
-      await fetch("/api/cookies?method=deleteAll");
-      localStorage.clear();
 
       setLoading(false);
-      router.push("/dashboard");
+      router.push("/");
+      // clear the saved storage after navigation
+      setTimeout(() => {
+        fetch("/api/cookies?method=deleteAll");
+        localStorage.clear();
+      }, 500);
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
     }

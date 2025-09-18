@@ -33,7 +33,7 @@ export async function GET(req: Request) {
   const status = searchParams.get("status") || "all";
   const search = searchParams.get("search")?.trim() || "";
 
-  let timesheets, total, pageSize, page, skip, totalPages;
+  let timesheets, total, pageSize, page, skip, totalPages, pendingTimesheets;
   try {
     page = undefined;
     pageSize = undefined;
@@ -128,12 +128,18 @@ export async function GET(req: Request) {
         },
         orderBy: { createdAt: "desc" },
       });
+      pendingTimesheets = timesheets.length; // get total count of timesheets
       total = timesheets.length;
     } else if (search !== "") {
       page = undefined;
       pageSize = undefined;
       skip = undefined;
       totalPages = 1;
+      pendingTimesheets = prisma.timeSheet.count({
+        where: {
+          status: "PENDING",
+        },
+      });
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
         select: {
@@ -224,6 +230,11 @@ export async function GET(req: Request) {
       skip = (page - 1) * pageSize;
       total = await prisma.timeSheet.count();
       totalPages = Math.ceil(total / pageSize);
+      pendingTimesheets = prisma.timeSheet.count({
+        where: {
+          status: "PENDING",
+        },
+      });
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
         skip,
@@ -319,6 +330,7 @@ export async function GET(req: Request) {
       page,
       pageSize,
       totalPages,
+      pendingTimesheets,
     });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);
