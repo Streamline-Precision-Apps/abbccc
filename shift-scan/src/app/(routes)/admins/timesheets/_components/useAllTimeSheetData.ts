@@ -1,6 +1,9 @@
 "use client";
-import { ApprovalStatus, WorkType } from "@/lib/enums";
-import { useEffect, useState } from "react";
+import {
+  ApprovalStatus,
+  WorkType,
+} from "../../../../../../prisma/generated/prisma/client";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { adminUpdateTimesheetStatus } from "@/actions/records-timesheets";
 import { toast } from "sonner";
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
@@ -9,6 +12,7 @@ import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import { EXPORT_FIELDS } from "@/app/(routes)/admins/timesheets/_components/Export/ExportModal";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { useRouter } from "next/navigation";
 
 /**
  * Timesheet domain entity.
@@ -68,11 +72,22 @@ export type Timesheet = {
   };
 };
 
-export type timesheetPending = {
-  length: number;
-};
+export interface FilterOptions {
+  jobsiteId: string[];
+  costCode: string[];
+  dateRange: { from?: Date; to?: Date };
+  status: string[];
+  changes: string[];
+}
 
-export default function AdminTimesheets() {
+export default function useAllTimeSheetData({
+  jobsiteId,
+  costCode,
+}: {
+  jobsiteId: string | null;
+  costCode: string | null;
+}) {
+  const router = useRouter();
   const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -94,15 +109,30 @@ export default function AdminTimesheets() {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [approvalInbox, setApprovalInbox] = useState<timesheetPending | null>(
-    null,
-  );
+  const [approvalInbox, setApprovalInbox] = useState<number>(0);
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [exportModal, setExportModal] = useState(false);
   // Loading state for status change
   const [statusLoading, setStatusLoading] = useState<
     Record<string, "APPROVED" | "REJECTED" | undefined>
   >({});
+
+  // set Filters  feature
+  // Filter options state
+  const [refilterKey, setRefilterKey] = useState(0);
+  const [filters, setFilters] = useState<FilterOptions>({
+    jobsiteId: [],
+    costCode: [],
+    dateRange: {},
+    status: [],
+    changes: [],
+  });
+  const [costCodes, setCostCodes] = useState<{ code: string; name: string }[]>(
+    [],
+  );
+  const [jobsites, setJobsites] = useState<{ code: string; name: string }[]>(
+    [],
+  );
 
   // Debounce search input
   useEffect(() => {
@@ -112,30 +142,134 @@ export default function AdminTimesheets() {
     return () => clearTimeout(handler);
   }, [inputValue]);
 
-  const rerender = () => setRefreshKey((k) => k + 1);
+  const rerender = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+    refresh();
+  }, [refresh]);
+
+  const reFilterPage = useCallback(() => {
+    setRefilterKey((k) => k + 1);
+    refresh();
+  }, [refresh]);
+
+  /**
+   * Build filter query params from all filters (including multi-select and date range)
+   */
+  const buildFilterQuery = () => {
+    const params = new URLSearchParams();
+    // JobsiteId (array)
+    if (filters.jobsiteId && filters.jobsiteId.length > 0) {
+      filters.jobsiteId.forEach((id) => params.append("jobsiteId", id));
+    } else if (jobsiteId) {
+      params.append("jobsiteId", jobsiteId);
+    }
+    // CostCode (array)
+    if (filters.costCode && filters.costCode.length > 0) {
+      filters.costCode.forEach((code) => params.append("costCode", code));
+    } else if (costCode) {
+      params.append("costCode", costCode);
+    }
+    // Status (array)
+    if (filters.status && filters.status.length > 0) {
+      filters.status.forEach((status) => params.append("status", status));
+    }
+    // Changes (array)
+    if (filters.changes && filters.changes.length > 0) {
+      filters.changes.forEach((change) => params.append("changes", change));
+    }
+    // Date Range
+    if (filters.dateRange && filters.dateRange.from) {
+      params.append("dateFrom", filters.dateRange.from.toISOString());
+    }
+    if (filters.dateRange && filters.dateRange.to) {
+      params.append("dateTo", filters.dateRange.to.toISOString());
+    }
+    // UserId (single)
+    // if (userId) params.append("userId", userId);
+    return params.toString();
+  };
+
+  useEffect(() => {
+    const fetchCostCodes = async () => {
+      // Replace with your API call
+      const res = await fetch("/api/getCostCodeSummary");
+      const data = await res.json();
+      const filteredCostCodes = data
+        .filter(
+          (costCode: {
+            id: string;
+            code: string;
+            name: string;
+            isActive: boolean;
+          }) => costCode.isActive === true,
+        )
+        .map((costCode: { code: string; name: string }) => ({
+          code: costCode.code,
+          name: costCode.name,
+        }));
+      setCostCodes(filteredCostCodes || []);
+    };
+    fetchCostCodes();
+  }, []);
+
+  useEffect(() => {
+    const fetchJobsites = async () => {
+      // Replace with your API call
+      const res = await fetch("/api/getJobsiteSummary");
+      const data = await res.json();
+      const filteredJobsites = data
+        .filter(
+          (jobsite: {
+            id: string;
+            name: string;
+            code: string;
+            approvalStatus: ApprovalStatus;
+          }) => jobsite.approvalStatus !== ApprovalStatus.REJECTED,
+        )
+        .map((jobsite: { code: string; name: string }) => ({
+          code: jobsite.code,
+          name: jobsite.name,
+        }));
+      setJobsites(filteredJobsites || []);
+    };
+    fetchJobsites();
+  }, []);
+
+  // On mount, apply jobsiteId/costCode from props to filters before first fetch
+  useEffect(() => {
+    if (jobsiteId || costCode) {
+      setFilters((prev) => ({
+        ...prev,
+        jobsiteId: jobsiteId ? [jobsiteId] : prev.jobsiteId,
+        costCode: costCode ? [costCode] : prev.costCode,
+      }));
+      router.replace("/admins/timesheets");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
   const fetchTimesheets = async (pendingOnly = false) => {
     try {
       setLoading(true);
       let response;
+      const filterQuery = buildFilterQuery();
+      const encodedSearch = encodeURIComponent(searchTerm.trim());
       if (pendingOnly) {
-        const encodedSearch = encodeURIComponent(searchTerm.trim());
         response = await fetch(
-          `/api/getAllTimesheetInfo?status=pending&search=${encodedSearch}`,
+          `/api/getAllTimesheetInfo?status=pending&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
           {
             next: { tags: ["timesheets"] },
           },
         );
         const data = await response.json();
-        // If API returns array, set as allTimesheets
         setAllTimesheets(data.timesheets || []);
         setTotalPages(data.totalPages);
         setTotal(data.total || 0);
+        setApprovalInbox(data.pendingTimesheets || 0);
       } else {
-        const encodedSearch = encodeURIComponent(searchTerm.trim());
         response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
+          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
           {
             next: { tags: ["timesheets"] },
           },
@@ -144,7 +278,7 @@ export default function AdminTimesheets() {
         setAllTimesheets(data.timesheets);
         setTotalPages(data.totalPages);
         setTotal(data.total);
-        setApprovalInbox(data.pendingTimesheets);
+        setApprovalInbox(data.pendingTimesheets || 0);
       }
     } catch (error) {
       console.error("Error fetching timesheets:", error);
@@ -153,60 +287,64 @@ export default function AdminTimesheets() {
     }
   };
 
-  // Fetch timesheets when page/pageSize changes or when showPendingOnly toggles
+  // Fetch timesheets when page/pageSize, filters, or useFilters change
   useEffect(() => {
     fetchTimesheets(showPendingOnly);
-  }, [page, pageSize, showPendingOnly, searchTerm, refreshKey]);
+  }, [page, pageSize, showPendingOnly, searchTerm, refreshKey, refilterKey]);
 
   // Filter timesheets based on searchTerm and date range
-  const filteredTimesheets = allTimesheets.filter((ts) => {
-    const id = ts.id || "";
-    const firstName = ts?.User?.firstName || "";
-    const lastName = ts?.User?.lastName || "";
-    const jobsite = ts?.Jobsite?.name || "";
-    const costCode = ts?.CostCode?.name || "";
+  const filteredTimesheets = useMemo(() => {
+    return allTimesheets.filter((ts) => {
+      const id = ts.id || "";
+      const firstName = ts?.User?.firstName || "";
+      const lastName = ts?.User?.lastName || "";
+      const jobsite = ts?.Jobsite?.name || "";
+      const costCode = ts?.CostCode?.name || "";
 
-    // Split search term into words, ignore empty
-    const terms = searchTerm
-      .toLowerCase()
-      .split(" ")
-      .filter((t) => t.trim().length > 0);
+      // Split search term into words, ignore empty
+      const terms = searchTerm
+        .toLowerCase()
+        .split(" ")
+        .filter((t) => t.trim().length > 0);
 
-    // Date filter: support single date (entire day) or range
-    let inDateRange = true;
-    if (dateRange.from && !dateRange.to) {
-      const fromStart = new Date(dateRange.from);
-      fromStart.setHours(0, 0, 0, 0);
-      const fromEnd = new Date(dateRange.from);
-      fromEnd.setHours(23, 59, 59, 999);
-      const tsDate = new Date(ts.date);
-      inDateRange = tsDate >= fromStart && tsDate <= fromEnd;
-    } else {
-      if (dateRange.from) {
-        inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
+      // Date filter: support single date (entire day) or range
+      let inDateRange = true;
+      if (dateRange.from && !dateRange.to) {
+        const fromStart = new Date(dateRange.from);
+        fromStart.setHours(0, 0, 0, 0);
+        const fromEnd = new Date(dateRange.from);
+        fromEnd.setHours(23, 59, 59, 999);
+        const tsDate = new Date(ts.date);
+        inDateRange = tsDate >= fromStart && tsDate <= fromEnd;
+      } else {
+        if (dateRange.from) {
+          inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
+        }
+        if (dateRange.to) {
+          inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
+        }
       }
-      if (dateRange.to) {
-        inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
-      }
-    }
 
-    // Each term must match at least one field
-    const matches = terms.every(
-      (term) =>
-        id.toString().includes(term) ||
-        firstName.toLowerCase().includes(term) ||
-        lastName.toLowerCase().includes(term) ||
-        jobsite.toLowerCase().includes(term) ||
-        costCode.toLowerCase().includes(term),
-    );
+      // Each term must match at least one field
+      const matches = terms.every(
+        (term) =>
+          id.toString().includes(term) ||
+          firstName.toLowerCase().includes(term) ||
+          lastName.toLowerCase().includes(term) ||
+          jobsite.toLowerCase().includes(term) ||
+          costCode.toLowerCase().includes(term),
+      );
 
-    return inDateRange && (terms.length === 0 || matches);
-  });
+      return inDateRange && (terms.length === 0 || matches);
+    });
+  }, [allTimesheets, searchTerm, dateRange]);
 
   // Use filteredTimesheets, sorted by date descending
-  const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  });
+  const sortedTimesheets = useMemo(() => {
+    return [...filteredTimesheets].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }, [filteredTimesheets]);
 
   // Approve or deny a timesheet (no modal)
   const handleApprovalAction = async (
@@ -481,5 +619,11 @@ export default function AdminTimesheets() {
     handleDeleteConfirm,
     handlePageSizeChange,
     handleExport,
+    // Filters
+    filters,
+    setFilters,
+    reFilterPage,
+    costCodes,
+    jobsites,
   };
 }

@@ -9,10 +9,9 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Texts } from "../(reusable)/texts";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";
-import { Titles } from "../(reusable)/titles";
 import Spinner from "../(animations)/spinner";
 import EmptyView from "../(reusable)/emptyView";
-import { EquipmentTags } from "@/lib/enums";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
 
 type JobCode = {
   id: string;

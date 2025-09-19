@@ -1,4 +1,4 @@
-import { ApprovalStatus } from "@/lib/enums";
+import { ApprovalStatus } from "../../../../../../../prisma/generated/prisma/client";
 
 export interface EditTimesheetModalProps {
   timesheetId: number;

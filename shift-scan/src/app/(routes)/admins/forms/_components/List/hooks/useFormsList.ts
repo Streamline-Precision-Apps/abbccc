@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { FormTemplate } from "./types";
-import { FormTemplateCategory } from "@/lib/enums";
+import { FormTemplateCategory } from "../../../../../../../../prisma/generated/prisma/client";
 
 /**
  * Custom hook to manage fetching, filtering, and paginating forms for the List view.

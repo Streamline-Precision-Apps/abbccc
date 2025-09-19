@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 
@@ -44,7 +43,6 @@ export default function QR({
 
   // Custom hooks
   const { jobsiteResults } = useDBJobsite();
-  const { setScanResult } = useScanData();
   const { setscanEQResult } = useEQScanData();
 
   // Performance patch: Override getContext to add willReadFrequently for 2d contexts
@@ -104,7 +102,7 @@ export default function QR({
         throw new Error("Invalid QR code Scanned!");
       }
     },
-    [jobsiteResults, setScanResult, handleScanJobsite, clockInRole],
+    [jobsiteResults, handleScanJobsite, clockInRole],
   );
 
   // ----------------------- End of scan processes -------------------------------

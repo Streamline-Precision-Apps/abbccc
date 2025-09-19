@@ -67,6 +67,13 @@ export default function LeftSidebar() {
       link: "/admins/jobsites",
     },
     {
+      id: 6,
+      title: "Cost Codes",
+      img: "qrCode",
+      white: "qrCode-white",
+      link: "/admins/cost-codes",
+    },
+    {
       id: 8,
       title: "Forms",
       img: "form",

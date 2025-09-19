@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Permission } from "@/lib/enums";
+import { Permission } from "../../prisma/generated/prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 //------------------------------------------------------------------------------------------------------------------------

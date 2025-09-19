@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useFormsList } from "./_components/List/hooks/useFormsList";
-import { FormTemplateCategory } from "@/lib/enums";
+import { FormTemplateCategory } from "../../../../../prisma/generated/prisma/client";
 import {
   Select,
   SelectTrigger,

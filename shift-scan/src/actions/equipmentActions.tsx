@@ -2,7 +2,11 @@
 import prisma from "@/lib/prisma";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
-import { Priority, EquipmentTags, EquipmentState } from "@/lib/enums";
+import {
+  Priority,
+  EquipmentTags,
+  EquipmentState,
+} from "../../prisma/generated/prisma/client";
 import { auth } from "@/auth";
 import { OwnershipType } from "../../prisma/generated/prisma";
 

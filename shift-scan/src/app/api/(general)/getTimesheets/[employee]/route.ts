@@ -3,11 +3,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { ApprovalStatus } from "@/lib/enums";
+import { ApprovalStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ employee: string }> }
+  { params }: { params: Promise<{ employee: string }> },
 ) {
   let session;
 
@@ -18,7 +18,7 @@ export async function GET(
     console.error("Error during authentication:", error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -56,7 +56,7 @@ export async function GET(
     if (timeSheet.length === 0) {
       return NextResponse.json(
         { message: "No timesheets found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -77,7 +77,7 @@ export async function GET(
     console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(
       { error: "Failed to fetch timeSheet" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

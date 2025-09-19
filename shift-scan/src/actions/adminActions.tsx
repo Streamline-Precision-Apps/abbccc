@@ -1,8 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { FormStatus, Permission, WorkType } from "@/lib/enums";
+import { Permission, WorkType } from "../../prisma/generated/prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import { hash } from "bcrypt-ts";
 

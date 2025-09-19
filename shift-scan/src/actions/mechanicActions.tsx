@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Priority } from "@/lib/enums";
+import { Priority } from "../../prisma/generated/prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { ca } from "zod/v4/locales/index.cjs";
 

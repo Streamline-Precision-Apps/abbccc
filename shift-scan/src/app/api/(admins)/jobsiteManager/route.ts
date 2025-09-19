@@ -47,6 +47,11 @@ export async function GET(req: Request) {
               zipCode: true,
             },
           },
+          _count: {
+            select: {
+              TimeSheets: true,
+            },
+          },
         },
         orderBy: {
           name: "asc",
@@ -80,6 +85,11 @@ export async function GET(req: Request) {
               city: true,
               state: true,
               zipCode: true,
+            },
+          },
+          _count: {
+            select: {
+              TimeSheets: true,
             },
           },
         },

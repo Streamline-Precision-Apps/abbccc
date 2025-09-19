@@ -1,9 +1,10 @@
 "use client";
-import { ApprovalStatus } from "@/lib/enums";
+
 import { useState, useEffect } from "react";
 import { deleteJobsite } from "@/actions/AssetActions";
 import QRCode from "qrcode";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { ApprovalStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export type JobsiteSummary = {
   id: string;
@@ -20,6 +21,9 @@ export type JobsiteSummary = {
     city: string;
     state: string;
     zipCode: string;
+  };
+  _count: {
+    TimeSheets: number;
   };
 };
 

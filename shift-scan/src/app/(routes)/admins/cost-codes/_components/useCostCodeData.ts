@@ -1,5 +1,4 @@
 "use client";
-import { ApprovalStatus } from "@/lib/enums";
 import { useState, useEffect } from "react";
 import { deleteCostCode } from "@/actions/AssetActions";
 export type CostCodeSummary = {

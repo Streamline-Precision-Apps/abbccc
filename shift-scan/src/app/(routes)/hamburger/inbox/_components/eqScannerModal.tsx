@@ -4,7 +4,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import QrHandler from "./qrHandler";
 import { useEffect, useState } from "react";
-import CodeStep from "./codeStep";
 import { equipmentType } from "./companyDocuments";
 
 type EqScannerModalProps = {
@@ -63,13 +62,7 @@ export default function EqScannerModal({
   if (step === 1) {
     return (
       <Holds background={"white"} className="h-full w-full py-5">
-        <Contents width="section">
-          <CodeStep
-            handleNextStep={handleCloseModal}
-            handlePrevStep={handlePrevStep}
-            setScanned={setScanned}
-          />
-        </Contents>
+        <Contents width="section">{/* code step deleted */}</Contents>
       </Holds>
     );
   } else {

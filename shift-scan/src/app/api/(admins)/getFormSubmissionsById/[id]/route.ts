@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export async function GET(
   request: Request,

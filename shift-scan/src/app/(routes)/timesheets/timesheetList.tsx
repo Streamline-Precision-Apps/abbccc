@@ -6,7 +6,10 @@ import { Titles } from "@/components/(reusable)/titles";
 import { formatTimeHHMM } from "@/utils/formatDateAmPm";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
-import { FormStatus, WorkType } from "@/lib/enums";
+import {
+  FormStatus,
+  WorkType,
+} from "../../../../prisma/generated/prisma/client";
 
 export type TimeSheet = {
   id: number;

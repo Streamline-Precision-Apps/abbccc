@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { FormStatus } from "@/lib/enums";
+
 import { FormIndividualTemplate } from "./types";
 import {
   archiveFormTemplate,
@@ -18,6 +18,7 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Fields as FormField } from "./types";
 import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
+import { FormStatus } from "../../../../../../../../prisma/generated/prisma/client";
 export default function useSubmissionDataById(id: string) {
   const { refresh } = useDashboardData();
   const router = useRouter();

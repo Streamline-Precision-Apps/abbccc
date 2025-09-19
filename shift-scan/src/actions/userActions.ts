@@ -1,9 +1,8 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { Permission } from "@/lib/enums";
+import { Permission } from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { compare } from "bcrypt-ts";
-import { success } from "zod";
 
 export async function createUser(formData: FormData) {
   try {

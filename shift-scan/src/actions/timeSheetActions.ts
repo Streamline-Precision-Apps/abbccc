@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { FormStatus, WorkType } from "@/lib/enums";
+import { FormStatus, WorkType } from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { formatISO } from "date-fns";
 

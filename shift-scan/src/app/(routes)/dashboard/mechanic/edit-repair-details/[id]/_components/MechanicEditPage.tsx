@@ -10,7 +10,7 @@ import { Selects } from "@/components/(reusable)/selects";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Titles } from "@/components/(reusable)/titles";
 import { useEffect, useMemo, useState } from "react";
-import { Priority } from "@/lib/enums";
+
 import {
   deleteMaintenanceProject,
   RemoveDelayRepair,
@@ -23,6 +23,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import Spinner from "@/components/(animations)/spinner";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
+import { Priority } from "../../../../../../../../prisma/generated/prisma/client";
 
 type Equipment = {
   id: string;
@@ -87,7 +88,7 @@ export default function MechanicEditPage({
   const deleteProject = async () => {
     if (!repairDetails) return;
     const response = await deleteMaintenanceProject(
-      repairDetails.id.toString()
+      repairDetails.id.toString(),
     );
     if (response) {
       router.push("/dashboard/mechanic");
@@ -299,16 +300,16 @@ export default function MechanicEditPage({
                     repairDetails.delay
                       ? "/priorityDelay.svg"
                       : repairDetails.priority === "TODAY"
-                      ? "/todayPriority.svg"
-                      : repairDetails.priority === "HIGH"
-                      ? "/priorityHigh.svg"
-                      : repairDetails.priority === "MEDIUM"
-                      ? "/priorityMedium.svg"
-                      : repairDetails.priority === "LOW"
-                      ? "/priorityLow.svg"
-                      : repairDetails.priority === "PENDING"
-                      ? "/priorityPending.svg"
-                      : ""
+                        ? "/todayPriority.svg"
+                        : repairDetails.priority === "HIGH"
+                          ? "/priorityHigh.svg"
+                          : repairDetails.priority === "MEDIUM"
+                            ? "/priorityMedium.svg"
+                            : repairDetails.priority === "LOW"
+                              ? "/priorityLow.svg"
+                              : repairDetails.priority === "PENDING"
+                                ? "/priorityPending.svg"
+                                : ""
                   }
                   className="absolute left-2 top-1/4 transform -translate-y-1/4 w-6 h-6"
                   titleImgAlt={t("Status")}
