@@ -15,7 +15,7 @@ import { NewTab } from "@/components/(reusable)/newTabs";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { deleteEmployeeEquipmentLog } from "@/actions/equipmentActions";
 import { Texts } from "@/components/(reusable)/texts";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../prisma/generated/prisma/client";
 
 export type EmployeeEquipmentLogs = {
   id: string;

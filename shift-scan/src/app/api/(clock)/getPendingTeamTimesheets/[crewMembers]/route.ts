@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { TimeSheetStatus } from '@/lib/enums';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 /**
  * API endpoint to fetch all PENDING timesheets for a list of user IDs.
@@ -11,13 +10,16 @@ export async function POST(request: Request) {
   try {
     const { userIds } = await request.json();
     if (!Array.isArray(userIds) || userIds.length === 0) {
-      return NextResponse.json({ error: 'userIds array required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "userIds array required" },
+        { status: 400 },
+      );
     }
     // Fetch all DRAFT and PENDING timesheets for all users in one query
     const timesheets = await prisma.timeSheet.findMany({
       where: {
         userId: { in: userIds },
-        status: { in: ['DRAFT', 'PENDING'] },
+        status: { in: ["DRAFT", "PENDING"] },
       },
       include: {
         Jobsite: true,
@@ -40,7 +42,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(grouped);
   } catch (error) {
-    console.error('Error fetching pending team timesheets:', error);
-    return NextResponse.json({ error: 'Failed to fetch pending team timesheets' }, { status: 500 });
+    console.error("Error fetching pending team timesheets:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch pending team timesheets" },
+      { status: 500 },
+    );
   }
 }

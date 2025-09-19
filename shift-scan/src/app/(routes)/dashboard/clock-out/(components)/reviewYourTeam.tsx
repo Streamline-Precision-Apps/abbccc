@@ -15,7 +15,11 @@ import TinderSwipe, {
 } from "@/components/(animations)/tinderSwipe";
 import ReviewTabOptions from "./ReviewTabOptions";
 import { useAllEquipment } from "@/hooks/useAllEquipment";
-import { FormStatus, WorkType } from "@/lib/enums";
+import {
+  FormStatus,
+  WorkType,
+} from "../../../../../../prisma/generated/prisma/client";
+
 // import { useTimesheetData } from "@/hooks/(ManagerHooks)/useTimesheetData";
 
 type TimesheetHighlights = {

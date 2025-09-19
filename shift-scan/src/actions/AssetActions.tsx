@@ -6,7 +6,7 @@ import {
   ApprovalStatus,
   CreatedVia,
   EquipmentState,
-} from "@/lib/enums";
+} from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
   Prisma,

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
 import { ExportModal } from "../_components/List/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";

@@ -7,16 +7,16 @@ import { Texts } from "@/components/(reusable)/texts";
 import { format, parseISO } from "date-fns";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { useNotification } from "@/app/context/NotificationContext";
-import { EquipmentState } from "@/lib/enums";
 import { Dispatch, SetStateAction, useState } from "react";
 import { EquipmentLog, RefuelLogData } from "../types";
 import { Images } from "@/components/(reusable)/images";
+import { EquipmentState } from "../../../../../../../prisma/generated/prisma/client";
 
 interface UsageDataProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentState | RefuelLogData | null
+    value: string | number | boolean | EquipmentState | RefuelLogData | null,
   ) => void;
   formattedTime: string;
   handleChangeRefueled: () => void;
@@ -77,10 +77,7 @@ export default function UsageData({
     handleChangeRefueled(); // Mark as refueled
     setShowRefuelInput(false);
 
-    setNotification(
-      t("ClickFinishLogs"),
-      "success"
-    );
+    setNotification(t("ClickFinishLogs"), "success");
   };
 
   const handleUpdateRefuel = () => {
@@ -104,10 +101,7 @@ export default function UsageData({
     setRefuelLog(updatedRefuelLog);
     setShowRefuelInput(false);
 
-    setNotification(
-      t("ClickFinishLogs"),
-      "success"
-    );
+    setNotification(t("ClickFinishLogs"), "success");
   };
 
   const handleDeleteRefuelLog = () => {
@@ -116,10 +110,7 @@ export default function UsageData({
       handleChangeRefueled(); // Update parent state
       setShowRefuelInput(false);
       setNewRefuelGallons("");
-      setNotification(
-        t("RefuelLogRemoved"),
-        "success"
-      );
+      setNotification(t("RefuelLogRemoved"), "success");
     }
   };
 
@@ -290,7 +281,7 @@ export default function UsageData({
                 className="text-xs w-12 h-full"
                 onClick={() => {
                   setNewRefuelGallons(
-                    refuelLog?.gallonsRefueled?.toString() || ""
+                    refuelLog?.gallonsRefueled?.toString() || "",
                   );
                   setShowRefuelInput(true);
                 }}

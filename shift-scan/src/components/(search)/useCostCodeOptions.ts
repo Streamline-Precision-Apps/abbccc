@@ -5,13 +5,12 @@ import {
   useDBCostcode,
   useDBEquipment,
 } from "@/app/context/dbCodeContext";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
 // import {
 //   useRecentDBJobsite,
 //   useRecentDBCostcode,
 //   useRecentDBEquipment,
 // } from "@/app/context/dbRecentCodesContext";
-
-import { EquipmentTags } from "@/lib/enums";
 
 export type JobCodes = {
   id: string;

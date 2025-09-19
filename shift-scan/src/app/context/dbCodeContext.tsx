@@ -8,8 +8,9 @@ import React, {
   useEffect,
 } from "react";
 import { z } from "zod";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { EquipmentTags } from "@/lib/enums";
+import { usePathname } from "next/navigation";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
+
 type JobCodes = {
   id: string;
   qrId: string;

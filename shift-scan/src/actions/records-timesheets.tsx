@@ -1,8 +1,13 @@
 "use server";
-import { LoadType, WorkType, materialUnit } from "@/lib/enums";
+
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus } from "@/lib/enums";
+import {
+  ApprovalStatus,
+  LoadType,
+  WorkType,
+  materialUnit,
+} from "../../prisma/generated/prisma/client";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 import { Prisma } from "../../prisma/generated/prisma";
 import { auth } from "@/auth";

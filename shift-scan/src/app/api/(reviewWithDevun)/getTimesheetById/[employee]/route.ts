@@ -2,11 +2,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { ApprovalStatus } from "@/lib/enums";
+import { ApprovalStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ employee: string }> }
+  { params }: { params: Promise<{ employee: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -69,7 +69,7 @@ export async function GET(
     console.error("Error fetching Time Sheets:", error);
     return NextResponse.json(
       { error: "Failed to fetch timesheets" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -4,7 +4,7 @@ import {
   FieldType,
   FormTemplateCategory,
   FormTemplateStatus,
-} from "@/lib/enums";
+} from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { FormStatus } from "../../prisma/generated/prisma/client";
 

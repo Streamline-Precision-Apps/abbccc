@@ -7,7 +7,6 @@ import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { Grids } from "@/components/(reusable)/grids";
-import { EquipmentState } from "@/lib/enums";
 import { Selects } from "@/components/(reusable)/selects";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { deleteMaintenanceInEquipment } from "@/actions/equipmentActions";
@@ -16,12 +15,13 @@ import { useState } from "react";
 import { NModals } from "@/components/(reusable)/newmodals";
 import { useNotification } from "@/app/context/NotificationContext";
 import { EquipmentLog } from "../types";
+import { EquipmentState } from "../../../../../../../prisma/generated/prisma/client";
 
 interface MaintenanceLogEquipmentProps {
   formState: EquipmentLog;
   handleFieldChange: (
     field: string,
-    value: string | number | boolean | EquipmentState | null
+    value: string | number | boolean | EquipmentState | null,
   ) => void;
   t: (key: string) => string;
   hasChanged: boolean | undefined;
@@ -82,7 +82,7 @@ export default function MaintenanceLogEquipment({
                   onChange={(e) =>
                     handleFieldChange(
                       "equipment.status",
-                      e.target.value as EquipmentState
+                      e.target.value as EquipmentState,
                     )
                   }
                   className="w-full text-base text-center"
@@ -106,7 +106,7 @@ export default function MaintenanceLogEquipment({
                   onChange={(e) =>
                     handleFieldChange(
                       "maintenanceId.equipmentIssue",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   rows={4}
@@ -131,7 +131,7 @@ export default function MaintenanceLogEquipment({
                   onChange={(e) =>
                     handleFieldChange(
                       "maintenanceId.additionalInfo",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   rows={4}

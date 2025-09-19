@@ -1,5 +1,8 @@
 "use client";
-import { ApprovalStatus, WorkType } from "@/lib/enums";
+import {
+  ApprovalStatus,
+  WorkType,
+} from "../../../../../../prisma/generated/prisma/client";
 import { useEffect, useState } from "react";
 import { adminUpdateTimesheetStatus } from "@/actions/records-timesheets";
 import { toast } from "sonner";
