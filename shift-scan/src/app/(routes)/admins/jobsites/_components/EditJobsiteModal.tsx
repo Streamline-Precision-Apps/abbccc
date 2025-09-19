@@ -150,39 +150,6 @@ export default function EditJobsiteModal({
               </div>
             </div>
           </div>
-          {/* <div className="flex flex-col">
-            <Label htmlFor="client-id" className={`text-sm`}>
-              Client ID
-            </Label>
-            <Select
-              name="client-id"
-              value={formData.Client?.id || ""}
-              onValueChange={(selectedId) => {
-                const selectedClient = clients.find((c) => c.id === selectedId);
-                setFormData((prev) => {
-                  if (!prev) return prev;
-                  if (selectedClient) {
-                    return { ...prev, Client: selectedClient };
-                  } else {
-                    // Remove Client property if none selected
-                    const { Client, ...rest } = prev;
-                    return { ...rest } as Jobsite;
-                  }
-                });
-              }}
-            >
-              <SelectTrigger id="jobsite-cctags" className="text-xs">
-                <SelectValue placeholder="Select a cost code group" />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((client) => (
-                  <SelectItem key={client.id} value={client.id}>
-                    {client.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div> */}
 
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
@@ -198,39 +165,40 @@ export default function EditJobsiteModal({
                 />
               </div>
             )}
-
-            <div>
-              <Label htmlFor="jobsite-code" className={`text-sm `}>
-                Code Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="jobsite-code"
-                type="text"
-                name="code"
-                value={formData.code}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-                required
-              />
-              <p className="pl-1 text-xs italic text-gray-600">
-                Enter the code only
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="name" className="text-sm">
-                Full Name
-              </Label>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-                required
-              />
-              <p className="pl-1 text-xs italic text-gray-600">
-                Include jobsite code in full name
-              </p>
+            <div className="w-full flex flex-row gap-4">
+              <div className="w-1/4 flex flex-col">
+                <Label htmlFor="jobsite-code" className={`text-sm `}>
+                  Code
+                </Label>
+                <Input
+                  id="jobsite-code"
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleInputChange}
+                  className="w-full text-xs"
+                  required
+                />
+                <p className="pl-1 text-xs italic text-gray-600">
+                  Enter the code only
+                </p>
+              </div>
+              <div className="w-3/4 flex flex-col">
+                <Label htmlFor="name" className="text-sm">
+                  Name
+                </Label>
+                <Input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full text-xs"
+                  required
+                />
+                <p className="pl-1 text-xs italic text-gray-600">
+                  Enter the name only (without the code and dash)
+                </p>
+              </div>
             </div>
             <div>
               <Label htmlFor="description" className="text-sm font-medium">

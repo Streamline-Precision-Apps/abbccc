@@ -144,74 +144,45 @@ export default function CreateJobsiteModal({
           </div>
           <div>
             <div className="flex flex-col gap-4">
-              {/* <div className="flex flex-col">
-                <Label htmlFor="client-id" className={`text-sm `}>
-                  Client ID{" "}
-                </Label>
-                <Select
-                  name="client-id"
-                  value={formData.Client.id}
-                  onValueChange={(selected) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      Client: {
-                        ...prev.Client,
-                        id: selected,
-                      },
-                    }))
-                  }
-                >
-                  <SelectTrigger id="jobsite-cctags" className="text-xs">
-                    <SelectValue placeholder="Select a cost code group" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients
-                      ? clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.name}
-                          </SelectItem>
-                        ))
-                      : null}
-                  </SelectContent>
-                </Select>
-              </div> */}
-              <div>
-                <Label htmlFor="jobsite-code" className={`text-sm `}>
-                  Code Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="jobsite-code"
-                  type="text"
-                  name="code"
-                  value={formData.code}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, code: e.target.value }))
-                  }
-                  className="w-full text-xs"
-                  required
-                />
-                <p className="pl-1 text-xs italic text-gray-600">
-                  Enter the code only
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="jobsite-name" className={`text-sm `}>
-                  Full Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="jobsite-name"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
-                  className="w-full text-xs"
-                  required
-                />
-                <p className="pl-1 text-xs italic text-gray-600">
-                  Include jobsite code in full name
-                </p>
+              <div className="w-full flex flex-row gap-4">
+                <div className="w-1/4 flex flex-col">
+                  <Label htmlFor="jobsite-code" className={`text-sm `}>
+                    Code <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="jobsite-code"
+                    type="text"
+                    name="code"
+                    value={formData.code}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, code: e.target.value }))
+                    }
+                    className="w-full text-xs"
+                    required
+                  />
+                  <p className="pl-1 text-xs italic text-gray-600">
+                    Enter the code only
+                  </p>
+                </div>
+                <div className="w-3/4 flex flex-col">
+                  <Label htmlFor="jobsite-name" className={`text-sm `}>
+                    Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="jobsite-name"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
+                    className="w-full text-xs"
+                    required
+                  />
+                  <p className="pl-1 text-xs italic text-gray-600">
+                    Enter the name only (without the code and dash)
+                  </p>
+                </div>
               </div>
               <div>
                 <Label

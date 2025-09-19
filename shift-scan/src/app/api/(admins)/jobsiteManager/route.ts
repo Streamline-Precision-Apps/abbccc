@@ -62,6 +62,7 @@ export async function GET(req: Request) {
       page = parseInt(searchParams.get("page") || "1", 10);
       pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
       skip = (page - 1) * pageSize;
+
       total = await prisma.jobsite.count();
       totalPages = Math.ceil(total / pageSize);
       // Fetch only essential fields from jobsites, paginated

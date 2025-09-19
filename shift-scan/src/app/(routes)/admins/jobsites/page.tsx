@@ -65,13 +65,15 @@ export default function JobsitePage() {
         }}
       />
       <div className="h-10 w-full flex flex-row justify-between">
-        <SearchBarPopover
-          term={searchTerm}
-          handleSearchChange={(e) => setSearchTerm(e.target.value)}
-          placeholder={"Search by name or client..."}
-          textSize="xs"
-          imageSize="10"
-        />
+        <div className="flex flex-row gap-2">
+          <SearchBarPopover
+            term={searchTerm}
+            handleSearchChange={(e) => setSearchTerm(e.target.value)}
+            placeholder={"Search by name or client..."}
+            textSize="xs"
+            imageSize="10"
+          />
+        </div>
 
         <div className="flex flex-row justify-end w-full gap-2">
           <Tooltip>

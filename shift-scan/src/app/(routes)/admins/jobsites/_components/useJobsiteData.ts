@@ -27,6 +27,10 @@ export type JobsiteSummary = {
   };
 };
 
+export interface FilterOptions {
+  isActive: string[];
+}
+
 export const useJobsiteData = () => {
   const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
