@@ -1,8 +1,6 @@
 "use client";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleMechanicTimeSheet } from "@/actions/timeSheetActions";
 
 import { useCommentData } from "@/app/context/CommentContext";

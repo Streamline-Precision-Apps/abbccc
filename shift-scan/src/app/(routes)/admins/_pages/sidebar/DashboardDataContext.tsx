@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 
 export type DashboardData = {
   clockedInUsers: number;
@@ -37,6 +43,7 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
+      console.log("Refreshing dashboard data...");
       const response = await fetch("/api/getDashboard");
       const json = await response.json();
       setData(json);
@@ -44,10 +51,11 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error refreshing dashboard data:", error);
     } finally {
       setLoading(false);
+      console.log("Dashboard data refreshed.");
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     refresh();
   }, [refresh]);
 

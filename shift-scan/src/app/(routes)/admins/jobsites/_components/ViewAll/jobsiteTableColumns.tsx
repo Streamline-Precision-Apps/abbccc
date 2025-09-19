@@ -16,6 +16,7 @@ import {
 import { SquareCheck, SquareX } from "lucide-react";
 import { highlight } from "@/app/(routes)/admins/_pages/higlight";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Define the column configuration as a function that takes router
 export const getJobsiteTableColumns = (
@@ -35,41 +36,7 @@ export const getJobsiteTableColumns = (
       );
     },
   },
-  {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      return (
-        <div className="text-xs text-center">
-          {row.original.createdAt
-            ? format(new Date(row.original.createdAt), "MM/dd/yyyy")
-            : ""}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Active",
-    cell: ({ row }) => {
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex justify-center">
-              {row.original.isActive ? (
-                <SquareCheck className="h-4 w-4 text-green-500" />
-              ) : (
-                <SquareX className="h-4 w-4 text-red-500" />
-              )}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            {row.original.isActive ? "Active" : "Inactive"}
-          </TooltipContent>
-        </Tooltip>
-      );
-    },
-  },
+
   {
     accessorKey: "Address",
     header: "Site Address",
@@ -130,47 +97,54 @@ export const getJobsiteTableColumns = (
   },
   {
     accessorKey: "timecardCount",
-    header: "Timecards",
+    header: "Linked Timesheets",
     cell: ({ row }) => {
       return (
         <div className="text-xs text-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="cursor-default underline decoration-dotted">
-                {row.original._count?.TimeSheets || 0}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() =>
-                  router.push(
-                    "/admins/timesheets?jobsiteId=" + row.original.code,
-                  )
-                }
-              >
-                <p className="text-xs">View Timecards</p>
-              </Button>
-            </TooltipContent>
-          </Tooltip>
+          {row.original._count?.TimeSheets > 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/admins/timesheets?jobsiteId=${row.original.code}`}
+                  className="cursor-pointer underline decoration-dotted decoration-1 text-sm hover:text-blue-600"
+                >
+                  {row.original._count?.TimeSheets || 0}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">See All Entries</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            "-"
+          )}
         </div>
       );
     },
   },
   {
-    accessorKey: "updatedAt",
-    header: "Updated At",
+    accessorKey: "isActive",
+    header: "Active",
     cell: ({ row }) => {
       return (
-        <div className="text-xs text-center">
-          {row.original.updatedAt
-            ? format(new Date(row.original.updatedAt), "MM/dd/yyyy")
-            : ""}
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex justify-center">
+              {row.original.isActive ? (
+                <SquareCheck className="h-4 w-4 text-green-500" />
+              ) : (
+                <SquareX className="h-4 w-4 text-red-500" />
+              )}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            {row.original.isActive ? "Active" : "Inactive"}
+          </TooltipContent>
+        </Tooltip>
       );
     },
   },
+
   {
     id: "actions",
     header: "Actions",

@@ -107,22 +107,46 @@ export function JobsiteDataTable({
               </Tooltip>
 
               {/* Delete button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDeleteClick?.(item.id)}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
+              {row.original._count?.TimeSheets === 0 ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDeleteClick?.(item.id)}
+                    >
+                      <img
+                        src="/trash-red.svg"
+                        alt="Delete"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="opacity-50 "
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {}}
+                    >
+                      <img
+                        src="/trash-red.svg"
+                        alt="Delete"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white text-red-500 border border-red-300">
+                    <span className="">Cannot delete:</span>
+                    <br />
+                    <span className="">linked timesheets</span>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           );
         },

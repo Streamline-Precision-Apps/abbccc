@@ -1,9 +1,6 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
 import { Buttons } from "../(reusable)/buttons";
 import { Contents } from "../(reusable)/contents";

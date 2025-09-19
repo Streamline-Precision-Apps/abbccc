@@ -36,18 +36,53 @@ export async function GET(req: Request) {
   // Optional filters
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
-  const equipmentId = searchParams.get("equipmentId");
   const userIdFilter = searchParams.get("userId");
+  const dateFromParam = searchParams.get("dateFrom");
+  const dateToParam = searchParams.get("dateTo");
+  const changes = searchParams.get("changes");
 
-  let timesheets, total, pageSize, page, skip, totalPages, pendingTimesheets;
+  let timesheets, total, pageSize, page, skip, totalPages;
+
+  const pendingTimesheetsCount = await prisma.timeSheet.count({
+    where: { status: "PENDING" },
+  });
+
   try {
     // Build filter object for Prisma where
     const filter: Record<string, unknown> = {};
     if (jobsiteId) filter.Jobsite = { code: jobsiteId };
     if (costCode) filter.CostCode = { code: costCode };
     if (userIdFilter) filter.User = { id: userIdFilter };
-    // For equipmentId, filter timesheets that have at least one EmployeeEquipmentLog with that equipmentId
-    if (equipmentId) filter.EmployeeEquipmentLogs = { some: { equipmentId } };
+    // Date range filter
+    if (dateFromParam || dateToParam) {
+      const dateFilter: Record<string, Date> = {};
+      if (dateFromParam) dateFilter.gte = new Date(dateFromParam);
+      if (dateToParam) dateFilter.lte = new Date(dateToParam);
+      filter.date = dateFilter;
+    }
+    // Status filter
+    if (status === "APPROVED") {
+      filter.status = "APPROVED";
+    } else if (status === "REJECTED") {
+      filter.status = "REJECTED";
+    } else if (status === "PENDING") {
+      filter.status = "PENDING";
+    }
+
+    // Show changes filter: only timesheets with matching ChangeLogs
+    if (changes === "HAS_CHANGES") {
+      filter.ChangeLogs = {
+        some: {
+          OR: [
+            { numberOfChanges: { gt: 1 } },
+            {
+              numberOfChanges: 1,
+              wasStatusChange: false,
+            },
+          ],
+        },
+      };
+    }
 
     page = undefined;
     pageSize = undefined;
@@ -60,7 +95,6 @@ export async function GET(req: Request) {
           status: "PENDING",
           ...filter,
         },
-
         select: {
           id: true,
           date: true,
@@ -143,19 +177,13 @@ export async function GET(req: Request) {
         },
         orderBy: { createdAt: "desc" },
       });
-      pendingTimesheets = timesheets.length; // get total count of timesheets
+
       total = timesheets.length;
     } else if (search !== "") {
       page = undefined;
       pageSize = undefined;
       skip = undefined;
       totalPages = 1;
-      pendingTimesheets = prisma.timeSheet.count({
-        where: {
-          status: "PENDING",
-          ...filter,
-        },
-      });
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
         where: {
@@ -249,12 +277,7 @@ export async function GET(req: Request) {
       skip = (page - 1) * pageSize;
       total = await prisma.timeSheet.count({ where: { ...filter } });
       totalPages = Math.ceil(total / pageSize);
-      pendingTimesheets = prisma.timeSheet.count({
-        where: {
-          status: "PENDING",
-          ...filter,
-        },
-      });
+
       // Query the database for paginated timesheets
       timesheets = await prisma.timeSheet.findMany({
         skip,
@@ -352,7 +375,7 @@ export async function GET(req: Request) {
       page,
       pageSize,
       totalPages,
-      pendingTimesheets,
+      pendingTimesheets: pendingTimesheetsCount,
     });
   } catch (error) {
     console.error("Error fetching Time Sheets:", error);

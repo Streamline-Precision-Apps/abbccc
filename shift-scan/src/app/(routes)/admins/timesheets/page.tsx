@@ -1,17 +1,13 @@
 "use client";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+// Removed duplicate import of useEffect
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { TimesheetDataTable } from "./_components/ViewAll/TimesheetDataTable";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 import { ExportModal } from "./_components/Export/ExportModal";
@@ -29,18 +25,14 @@ import useAllTimeSheetData from "./_components/useAllTimeSheetData";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import Spinner from "@/components/(animations)/spinner";
-import { useRouter, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import TimesheetFilters from "./_components/ViewAll/TimesheetFilters";
 
 export default function AdminTimesheets() {
   const searchParams = useSearchParams();
+
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
-  const equipmentId = searchParams.get("equipmentId");
-  const userId = searchParams.get("userId");
-  const router = useRouter();
-  const hasParams = Array.from(searchParams.entries()).length > 0;
-
   const {
     inputValue,
     setInputValue,
@@ -77,26 +69,15 @@ export default function AdminTimesheets() {
     handleDeleteConfirm,
     handlePageSizeChange,
     handleExport,
+    setFilters,
+    reFilterPage,
+    costCodes,
+    jobsites,
+    filters,
   } = useAllTimeSheetData({
     jobsiteId,
     costCode,
-    equipmentId,
-    userId,
   });
-
-  const handleClearFilters = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    // Remove specific params
-    params.delete("jobsiteId");
-    params.delete("costCode");
-    params.delete("equipmentId");
-    params.delete("userId");
-    // Push new URL without those params
-    router.push(
-      `/admins/timesheets${params.toString() ? "?" + params.toString() : ""}`,
-    );
-    rerender();
-  };
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
@@ -119,7 +100,7 @@ export default function AdminTimesheets() {
           />
 
           <div className="w-full min-w-[40px] max-h-10 flex flex-row">
-            <Popover>
+            {/* <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
@@ -183,29 +164,15 @@ export default function AdminTimesheets() {
                   </div>
                 </div>
               </PopoverContent>
-            </Popover>
-            {hasParams && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="bg-white h-full w-full max-w-[40px] ml-2 justify-center items-center"
-                    onClick={handleClearFilters}
-                  >
-                    <X className="h-6 w-6" />
-                  </Button>
-                </TooltipTrigger>
+            </Popover> */}
 
-                <TooltipContent
-                  side="top"
-                  align="center"
-                  className="w-[120px] justify-center"
-                >
-                  Remove Filters
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <TimesheetFilters
+              filters={filters}
+              onFilterChange={setFilters}
+              onUseFiltersChange={reFilterPage}
+              jobsites={jobsites}
+              costCodes={costCodes}
+            />
           </div>
         </div>
         <div className="w-full h-full flex flex-row justify-end items-center gap-2">
@@ -264,9 +231,9 @@ export default function AdminTimesheets() {
                     className="h-4 w-4"
                   />
                   {/* <p className="text-white text-sm font-extrabold">Approval</p> */}
-                  {approvalInbox && approvalInbox.length > 0 && (
+                  {Number(approvalInbox) > 0 && (
                     <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                      {approvalInbox.length}
+                      {approvalInbox}
                     </Badge>
                   )}
                 </div>
