@@ -33,6 +33,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FormIndividualTemplate, Submission } from "./hooks/types";
 import { format } from "date-fns";
 import { highlight } from "../../../_pages/higlight";
+import { Check, X } from "lucide-react";
 
 interface FormsDataTableProps {
   formTemplate?: FormIndividualTemplate;
@@ -47,6 +48,8 @@ interface FormsDataTableProps {
   setSelectedSubmissionId: Dispatch<SetStateAction<number | null>>;
   openHandleDeleteSubmission: (id: number) => void;
   searchTerm?: string;
+  showPendingOnly: boolean;
+  onApprovalAction: (id: number, action: "APPROVED" | "REJECTED") => void;
 }
 
 export function FormSubmissionDataTable({
@@ -62,6 +65,8 @@ export function FormSubmissionDataTable({
   setSelectedSubmissionId,
   openHandleDeleteSubmission,
   searchTerm = "",
+  showPendingOnly,
+  onApprovalAction,
 }: FormsDataTableProps) {
   // Flatten all fields from all groupings, ordered
   const fields = useMemo(() => {
@@ -87,10 +92,24 @@ export function FormSubmissionDataTable({
           );
         },
       },
+      {
+        accessorKey: "submittedAt",
+        header: "Date Submitted",
+        cell: ({ row }) => {
+          const submission = row.original;
+          return (
+            <div className="text-xs text-center">
+              {submission.submittedAt
+                ? format(new Date(submission.submittedAt), "M/d/yyyy")
+                : "-"}
+            </div>
+          );
+        },
+      },
       // Submitted By column
       {
         accessorKey: "submittedBy",
-        header: "Submitted By",
+        header: "Created By",
         cell: ({ row }) => {
           const submission = row.original;
           return (
@@ -231,21 +250,43 @@ export function FormSubmissionDataTable({
         header: "Status",
         cell: ({ row }) => {
           return (
-            <div className="text-xs text-center">{row.original.status}</div>
-          );
-        },
-      },
-      // Submitted At column
-      {
-        accessorKey: "submittedAt",
-        header: "Submitted At",
-        cell: ({ row }) => {
-          const submission = row.original;
-          return (
-            <div className="text-xs text-center">
-              {submission.submittedAt
-                ? format(new Date(submission.submittedAt), "PPp")
-                : "-"}
+            <div className=" text-xs text-center min-w-[50px]">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {row.original.status === "PENDING" ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
+                      P
+                    </span>
+                  ) : row.original.status === "DRAFT" ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
+                      P
+                    </span>
+                  ) : row.original.status === "APPROVED" ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
+                      A
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
+                      R
+                    </span>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  align="center"
+                  className="w-[120px] justify-center"
+                >
+                  <div className="text-xs text-center">
+                    {row.original.status === "PENDING"
+                      ? "Pending"
+                      : row.original.status === "DRAFT"
+                        ? "In Progress"
+                        : row.original.status === "APPROVED"
+                          ? "Approved"
+                          : "Rejected"}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
             </div>
           );
         },
@@ -286,6 +327,40 @@ export function FormSubmissionDataTable({
           const submission = row.original;
           return (
             <div className="flex flex-row justify-center">
+              {showPendingOnly && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size={"icon"}
+                      variant={"link"}
+                      aria-label="Approve Timesheet"
+                      onClick={() =>
+                        onApprovalAction?.(submission.id, "APPROVED")
+                      }
+                    >
+                      <Check className="h-4 w-4 " color="green" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Approve</TooltipContent>
+                </Tooltip>
+              )}
+              {showPendingOnly && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size={"icon"}
+                      variant={"link"}
+                      aria-label="Deny Timesheet"
+                      onClick={() =>
+                        onApprovalAction?.(submission.id, "REJECTED")
+                      }
+                    >
+                      <X className="h-4 w-4 " color="red" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">Deny</TooltipContent>
+                </Tooltip>
+              )}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button

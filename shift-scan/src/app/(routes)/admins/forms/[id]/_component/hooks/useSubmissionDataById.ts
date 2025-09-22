@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-
+import { useCallback } from "react";
 import { FormIndividualTemplate } from "./types";
 import {
+  ApproveFormSubmission,
   archiveFormTemplate,
   deleteFormSubmission,
   deleteFormTemplate,
@@ -18,23 +19,34 @@ import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { Fields as FormField } from "./types";
 import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
-import { FormStatus } from "../../../../../../../../prisma/generated/prisma/client";
+import { useSession } from "next-auth/react";
+
 export default function useSubmissionDataById(id: string) {
   const { refresh } = useDashboardData();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  // Status filter state
-  const [statusFilter, setStatusFilter] = useState<
-    "ALL" | keyof typeof FormStatus
-  >("ALL");
-  // Date filter state
-  const [dateRange, setDateRange] = useState<{
-    start: Date | undefined;
-    end: Date | undefined;
-  }>({ start: undefined, end: undefined });
+  const [pageSize, setPageSize] = useState(25);
+  const { data: session } = useSession();
+  const ApproverId = session?.user.id;
+
+  // Filter state: always include dateRange and status
+  const [filter, setFilter] = useState<{
+    dateRange: { from?: Date; to?: Date };
+    status: string;
+  }>({ dateRange: {}, status: "ALL" });
+
+  // Handler for filter UI
+  const handleFilterChange = useCallback(
+    (newFilter: { dateRange: { from?: Date; to?: Date }; status: string }) => {
+      setFilter({
+        dateRange: newFilter.dateRange || {},
+        status: newFilter.status || "ALL",
+      });
+    },
+    [],
+  );
 
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportDateRange, setExportDateRange] = useState<{
@@ -64,6 +76,10 @@ export default function useSubmissionDataById(id: string) {
   >(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  //pending only state for inbox
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [approvalInbox, setApprovalInbox] = useState(0);
+
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -77,23 +93,29 @@ export default function useSubmissionDataById(id: string) {
     const fetchFormTemplate = async () => {
       try {
         setLoading(true);
-        let dateParams = "";
-        if (dateRange.start)
-          dateParams += `&startDate=${encodeURIComponent(
-            format(dateRange.start, "yyyy-MM-dd"),
-          )}`;
-        if (dateRange.end)
-          dateParams += `&endDate=${encodeURIComponent(
-            format(dateRange.end, "yyyy-MM-dd"),
-          )}`;
+        const params = [];
+        if (filter.dateRange.from)
+          params.push(
+            `startDate=${encodeURIComponent(format(filter.dateRange.from, "yyyy-MM-dd"))}`,
+          );
+        if (filter.dateRange.to)
+          params.push(
+            `endDate=${encodeURIComponent(format(filter.dateRange.to, "yyyy-MM-dd"))}`,
+          );
+        if (filter.status) params.push(`statusFilter=${filter.status}`);
+        params.push(`pendingOnly=${showPendingOnly}`);
+        params.push(`page=${page}`);
+        params.push(`pageSize=${pageSize}`);
+        const query = params.length ? `?${params.join("&")}` : "";
         const response = await fetch(
-          `/api/getFormSubmissionsById/${id}?page=${page}&pageSize=${pageSize}&statusFilter=${statusFilter}${dateParams}`,
+          `/api/getFormSubmissionsById/${id}${query}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch form template");
         }
         const data = await response.json();
         setFormTemplate(data);
+        setApprovalInbox(data.pendingForms || 0);
         return data;
       } catch (error) {
         console.error("Error fetching form template:", error);
@@ -103,7 +125,7 @@ export default function useSubmissionDataById(id: string) {
       }
     };
     fetchFormTemplate();
-  }, [id, page, pageSize, statusFilter, dateRange, refreshKey, searchTerm]);
+  }, [id, page, pageSize, filter, refreshKey, searchTerm, showPendingOnly]);
 
   //helper functions
 
@@ -197,7 +219,10 @@ export default function useSubmissionDataById(id: string) {
     setPendingSubmissionDeleteId(null);
   };
 
-  const triggerRerender = () => setRefreshKey((k) => k + 1);
+  const triggerRerender = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+    refresh();
+  }, [refresh]);
 
   const handleStatusChange = async (
     status: "ACTIVE" | "ARCHIVED" | "DRAFT",
@@ -397,6 +422,30 @@ export default function useSubmissionDataById(id: string) {
     }
   };
 
+  const onApprovalAction = async (
+    id: number,
+    action: "APPROVED" | "REJECTED",
+  ) => {
+    const formData = new FormData();
+    if (!ApproverId) {
+      toast.error("User not authenticated", { duration: 3000 });
+      return;
+    }
+    formData.append("comment", "Approved on Dashboard");
+    formData.append("adminUserId", ApproverId || ""); // Append the ApproverId from session
+
+    const { success } = await ApproveFormSubmission(id, action, formData);
+
+    if (success) {
+      toast.success("Form submission approved successfully", {
+        duration: 3000,
+      });
+      triggerRerender();
+    } else {
+      toast.error("Failed to approve form submission", { duration: 3000 });
+    }
+  };
+
   return {
     inputValue,
     setInputValue,
@@ -404,10 +453,9 @@ export default function useSubmissionDataById(id: string) {
     setPage,
     pageSize,
     setPageSize,
-    dateRange,
-    setDateRange,
-    statusFilter,
-    setStatusFilter,
+    filter,
+    setFilter,
+    handleFilterChange,
     showExportModal,
     setShowExportModal,
     exportDateRange,
@@ -442,5 +490,9 @@ export default function useSubmissionDataById(id: string) {
     triggerRerender,
     handleStatusChange,
     handleExport,
+    setShowPendingOnly,
+    showPendingOnly,
+    approvalInbox,
+    onApprovalAction,
   };
 }
