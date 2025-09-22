@@ -11,14 +11,19 @@ export async function GET(
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
-  const skip = (page - 1) * pageSize;
-  const take = pageSize;
+
+  // pendingOnly and statusFilter are needed before skip/take
+  const pendingOnly = searchParams.get("pendingOnly") === "true";
+  const statusFilter = searchParams.get("statusFilter") || "ALL";
+
+  // If pendingOnly, do not paginate (return all pending submissions)
+  const skip = pendingOnly ? undefined : (page - 1) * pageSize;
+  const take = pendingOnly ? undefined : pageSize;
 
   const dateRangeStart = searchParams.get("startDate");
   const dateRangeEnd = searchParams.get("endDate");
 
-  const pendingOnly = searchParams.get("pendingOnly") === "true";
-  const statusFilter = searchParams.get("statusFilter") || "ALL";
+  // (moved up)
 
   // Determine the status condition for queries
   let statusCondition: FormStatus | undefined;
@@ -93,8 +98,8 @@ export async function GET(
             }
           : {}),
       },
-      skip,
-      take,
+      ...(skip !== undefined ? { skip } : {}),
+      ...(take !== undefined ? { take } : {}),
       orderBy: { submittedAt: "desc" },
       include: {
         User: {
@@ -111,9 +116,9 @@ export async function GET(
       ...formTemplate,
       Submissions: submissions,
       total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      page: pendingOnly ? 1 : page,
+      pageSize: pendingOnly ? submissions.length : pageSize,
+      totalPages: pendingOnly ? 1 : Math.ceil(total / pageSize),
       pendingForms,
     });
   } catch (error) {

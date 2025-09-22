@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { FormTemplateCategory } from "../../../../../../../../prisma/generated/prisma/client";
 
 export function FormBuilderPanelLeft({
   formFields,
@@ -23,7 +24,7 @@ export function FormBuilderPanelLeft({
   formSettings: FormSettings;
   updateFormSettings: (
     key: keyof FormSettings,
-    value: string | boolean
+    value: string | boolean,
   ) => void;
 }) {
   return (
@@ -90,13 +91,11 @@ export function FormBuilderPanelLeft({
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="SAFETY">Safety</SelectItem>
-                <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                <SelectItem value="INSPECTION">Inspection</SelectItem>
-                <SelectItem value="INCIDENT">Incident Report</SelectItem>
-                <SelectItem value="GENERAL">General</SelectItem>
-                <SelectItem value="FINANCE">Finance</SelectItem>
-                <SelectItem value="OTHER">Other</SelectItem>
+                {Object.values(FormTemplateCategory).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category.charAt(0) + category.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {!formSettings.formType && (
@@ -178,7 +177,7 @@ export function FormBuilderPanelLeft({
                     variant="default"
                     className={`w-8 h-auto p-1 justify-start ${(() => {
                       const typeDef = fieldTypes.find(
-                        (t) => t.name === field.type
+                        (t) => t.name === field.type,
                       );
                       return typeDef
                         ? `${typeDef.color} hover:${typeDef.color

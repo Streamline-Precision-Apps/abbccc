@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { FormField, FormSettings } from "./FormEditor";
 import { fieldTypes } from "../../../create/_component/FormBuilder/FormBuilder";
+import { FormTemplateCategory } from "../../../../../../../../prisma/generated/prisma/client";
 
 export function FormEditorPanelLeft({
   formFields,
@@ -24,7 +25,7 @@ export function FormEditorPanelLeft({
   formSettings: FormSettings;
   updateFormSettings: (
     key: keyof FormSettings,
-    value: string | boolean
+    value: string | boolean,
   ) => void;
 }) {
   return (
@@ -88,13 +89,11 @@ export function FormEditorPanelLeft({
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="SAFETY">Safety</SelectItem>
-                <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                <SelectItem value="INSPECTION">Inspection</SelectItem>
-                <SelectItem value="INCIDENT">Incident Report</SelectItem>
-                <SelectItem value="GENERAL">General</SelectItem>
-                <SelectItem value="FINANCE">Finance</SelectItem>
-                <SelectItem value="OTHER">Other</SelectItem>
+                {Object.values(FormTemplateCategory).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category.charAt(0) + category.slice(1).toLowerCase()}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -170,7 +169,7 @@ export function FormEditorPanelLeft({
                     variant="default"
                     className={`w-8 h-6 ${(() => {
                       const typeDef = fieldTypes.find(
-                        (t) => t.name === field.type
+                        (t) => t.name === field.type,
                       );
                       return typeDef
                         ? `${typeDef.color} hover:${typeDef.color

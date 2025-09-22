@@ -393,11 +393,16 @@ export type AssetType = (typeof AssetType)[keyof typeof AssetType]
 
 export const FormTemplateCategory: {
   GENERAL: 'GENERAL',
-  MAINTENANCE: 'MAINTENANCE',
+  HR: 'HR',
+  FINANCE: 'FINANCE',
+  OPERATIONS: 'OPERATIONS',
+  COMPLIANCE: 'COMPLIANCE',
+  CLIENTS: 'CLIENTS',
+  IT: 'IT',
   SAFETY: 'SAFETY',
+  MAINTENANCE: 'MAINTENANCE',
   INSPECTION: 'INSPECTION',
   INCIDENT: 'INCIDENT',
-  FINANCE: 'FINANCE',
   OTHER: 'OTHER'
 };
 
