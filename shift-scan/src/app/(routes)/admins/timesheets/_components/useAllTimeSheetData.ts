@@ -3,7 +3,7 @@ import {
   ApprovalStatus,
   WorkType,
 } from "../../../../../../prisma/generated/prisma/client";
-import { use, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { adminUpdateTimesheetStatus } from "@/actions/records-timesheets";
 import { toast } from "sonner";
 import { adminDeleteTimesheet } from "@/actions/records-timesheets";
@@ -249,37 +249,24 @@ export default function useAllTimeSheetData({
   }, []);
 
   // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
-  const fetchTimesheets = async (pendingOnly = false) => {
+  const fetchTimesheets = async () => {
     try {
       setLoading(true);
-      let response;
+
       const filterQuery = buildFilterQuery();
       const encodedSearch = encodeURIComponent(searchTerm.trim());
-      if (pendingOnly) {
-        response = await fetch(
-          `/api/getAllTimesheetInfo?status=pending&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
-          {
-            next: { tags: ["timesheets"] },
-          },
-        );
-        const data = await response.json();
-        setAllTimesheets(data.timesheets || []);
-        setTotalPages(data.totalPages);
-        setTotal(data.total || 0);
-        setApprovalInbox(data.pendingTimesheets || 0);
-      } else {
-        response = await fetch(
-          `/api/getAllTimesheetInfo?page=${page}&pageSize=${pageSize}&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
-          {
-            next: { tags: ["timesheets"] },
-          },
-        );
-        const data = await response.json();
-        setAllTimesheets(data.timesheets);
-        setTotalPages(data.totalPages);
-        setTotal(data.total);
-        setApprovalInbox(data.pendingTimesheets || 0);
-      }
+
+      const response = await fetch(
+        `/api/getAllTimesheetInfo?status=${showPendingOnly ? "pending" : "all"}&page=${page}&pageSize=${pageSize}&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
+        {
+          next: { tags: ["timesheets"] },
+        },
+      );
+      const data = await response.json();
+      setAllTimesheets(data.timesheets);
+      setTotalPages(data.totalPages);
+      setTotal(data.total);
+      setApprovalInbox(data.pendingTimesheets || 0);
     } catch (error) {
       console.error("Error fetching timesheets:", error);
     } finally {
@@ -289,7 +276,7 @@ export default function useAllTimeSheetData({
 
   // Fetch timesheets when page/pageSize, filters, or useFilters change
   useEffect(() => {
-    fetchTimesheets(showPendingOnly);
+    fetchTimesheets();
   }, [page, pageSize, showPendingOnly, searchTerm, refreshKey, refilterKey]);
 
   // Filter timesheets based on searchTerm and date range
@@ -355,7 +342,11 @@ export default function useAllTimeSheetData({
     try {
       // add who approved/denied it
       const changes: Record<string, { old: unknown; new: unknown }> = {};
-      changes.status = { old: "PENDING", new: action };
+
+      changes["status"] = {
+        old: "PENDING",
+        new: action,
+      };
 
       const res = await adminUpdateTimesheetStatus(id, action, changes);
       if (!res || res.success !== true)
@@ -368,8 +359,7 @@ export default function useAllTimeSheetData({
         { duration: 3000 },
       );
       // Only update approval inbox count after approval/denial
-      await fetchTimesheets(); // Refresh to get updated pending count
-      await refresh(); // Also refresh dashboard data
+      rerender();
     } catch (e) {
       toast.error(
         `Failed to ${action === "APPROVED" ? "approve" : "deny"} timesheet.`,

@@ -126,6 +126,8 @@ export async function createFormSubmission(formData: FormData) {
     });
 
     if (submission) {
+      revalidatePath("/hamburger/inbox");
+      return submission;
     }
 
     return null;

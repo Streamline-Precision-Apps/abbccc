@@ -173,24 +173,19 @@ export default function ManagerFormApproval({
   };
 
   return (
-    <>
-      <Holds
-        background={"white"}
-        className="row-start-1 row-end-2 w-full h-full"
+    <div className="h-full w-full bg-white flex flex-col rounded-lg ">
+      <TitleBoxes
+        onClick={() => router.back()}
+        className="h-16 border-b-2 pb-2 rounded-lg border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white"
       >
-        <TitleBoxes onClick={() => router.back()}>
-          <div className="flex flex-col items-center">
-            <Titles size={"h3"} className="text-center">
-              {formData.name}
-            </Titles>
-          </div>
-        </TitleBoxes>
-      </Holds>
+        <div className="flex flex-col items-center">
+          <Titles size={"md"} className="text-center">
+            {formData.name}
+          </Titles>
+        </div>
+      </TitleBoxes>
 
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-2 row-end-8"
-      >
+      <div className="flex-grow flex flex-col overflow-y-auto no-scrollbar">
         <Contents width={"section"}>
           <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
             {/* Form Details Card */}
@@ -302,36 +297,34 @@ export default function ManagerFormApproval({
               )}
 
               {/* Action Buttons */}
-              <div className="flex gap-4">
-                <Buttons
-                  background={
-                    isSignatureShowing && comment.length > 0
-                      ? "red"
-                      : "darkGray"
-                  }
-                  disabled={!isSignatureShowing || comment.length === 0}
-                  className="w-full h-10 rounded-md shadow-sm"
-                  onClick={() => handleApproveOrDeny(FormStatus.DENIED)}
-                >
-                  <Titles size={"sm"}>{t("Deny")}</Titles>
-                </Buttons>
-                <Buttons
-                  background={
-                    isSignatureShowing && comment.length > 0
-                      ? "green"
-                      : "darkGray"
-                  }
-                  disabled={!isSignatureShowing || comment.length === 0}
-                  onClick={() => handleApproveOrDeny(FormStatus.APPROVED)}
-                  className="w-full h-10 rounded-md shadow-sm"
-                >
-                  <Titles size={"sm"}>{t("Approve")}</Titles>
-                </Buttons>
-              </div>
             </div>
           </div>
         </Contents>
-      </Holds>
-    </>
+      </div>
+      <div className="w-full h-20 flex px-2 gap-x-4 flex-shrink-0 sticky bottom-0 z-10 bg-white border-t rounded-lg">
+        <div className="flex gap-4 w-full items-center justify-center p-2">
+          <Buttons
+            background={
+              isSignatureShowing && comment.length > 0 ? "red" : "darkGray"
+            }
+            disabled={!isSignatureShowing || comment.length === 0}
+            className="w-full h-10 rounded-md shadow-sm"
+            onClick={() => handleApproveOrDeny(FormStatus.DENIED)}
+          >
+            <Titles size={"sm"}>{t("Deny")}</Titles>
+          </Buttons>
+          <Buttons
+            background={
+              isSignatureShowing && comment.length > 0 ? "green" : "darkGray"
+            }
+            disabled={!isSignatureShowing || comment.length === 0}
+            onClick={() => handleApproveOrDeny(FormStatus.APPROVED)}
+            className="w-full h-10 rounded-md shadow-sm"
+          >
+            <Titles size={"sm"}>{t("Approve")}</Titles>
+          </Buttons>
+        </div>
+      </div>
+    </div>
   );
 }
