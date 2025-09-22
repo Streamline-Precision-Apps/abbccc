@@ -117,131 +117,117 @@ export default function FormSelection({
     fetchForms();
   }, []);
 
+  const [createLoading, setCreateLoading] = useState(false);
   const setFormPage = async () => {
-    // create a form that isn't submitted
-    const formData = new FormData();
-    formData.append("formTemplateId", selectedForm);
-    if (userId) {
-      formData.append("userId", userId);
-    }
+    if (createLoading) return;
+    setCreateLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("formTemplateId", selectedForm);
+      if (userId) {
+        formData.append("userId", userId);
+      }
 
-    const submissionId = await createFormSubmission(formData);
+      const submission = await createFormSubmission(formData);
 
-    if (!submissionId) {
-      console.log("no data returned");
-      return;
+      if (!submission || !submission.id) {
+        console.log("no data returned");
+        setCreateLoading(false);
+        return;
+      }
+      router.push(
+        `/hamburger/inbox/formSubmission/${selectedForm}?submissionId=${submission.id}&status=DRAFT`,
+      );
+    } catch (error) {
+      setCreateLoading(false);
     }
-    router.push(
-      `/hamburger/inbox/formSubmission/${selectedForm}?submissionId=${submissionId}&status=DRAFT
-        `,
-    );
   };
 
   return (
-    <Grids rows={"7"} gap={"5"} className="h-full">
+    <>
       <Holds
-        background={"white"}
-        className={`w-full h-full row-start-1 row-end-2 rounded-t-none  ${
-          loading && "animate-pulse"
-        } `}
+        position={"row"}
+        className="h-16 border-b-2  border-neutral-100  gap-2 px-2"
       >
-        <Contents width={"section"} className="">
-          {/* <Holds position={"left"} className=" pt-3 pb-1  w-full">
-            <Texts
-              text={"gray"}
-              position={"left"}
-              size={"p6"}
-              className="italic"
+        <Holds>
+          {loading ? (
+            <Selects
+              value={""}
+              disabled
+              className="text-center text-sm disabled:bg-white h-full p-2"
             >
-              {t("NewForm")}
-            </Texts>
-          </Holds> */}
-          <Holds
-            position={"row"}
-            className="w-full h-full justify-center items-center gap-x-2 "
+              <option value={""}>{t("Loading")}</option>
+            </Selects>
+          ) : (
+            <Selects
+              value={selectedForm}
+              onChange={(e) => setSelectedForm(e.target.value)}
+              className="text-center text-sm h-full p-2 "
+            >
+              <option value={""}>{t("SelectAForm")}</option>
+              {forms.map((form) => (
+                <option key={form.id} value={form.id}>
+                  {form.name}
+                </option>
+              ))}
+            </Selects>
+          )}
+        </Holds>
+        <Holds className="w-fit ">
+          <Buttons
+            shadow={"none"}
+            onClick={setFormPage}
+            background={
+              selectedForm === "" || createLoading ? "darkGray" : "green"
+            }
+            disabled={selectedForm === "" || createLoading}
+            className="w-12 h-full p-2 flex items-center justify-center"
           >
-            <Holds>
-              {loading ? (
-                <Selects
-                  value={""}
-                  disabled
-                  className="text-center text-sm disabled:bg-white h-full p-2"
-                >
-                  <option value={""}>{t("Loading")}</option>
-                </Selects>
-              ) : (
-                <Selects
-                  value={selectedForm}
-                  onChange={(e) => setSelectedForm(e.target.value)}
-                  className="text-center text-sm h-full p-2 "
-                >
-                  <option value={""}>{t("SelectAForm")}</option>
-                  {forms.map((form) => (
-                    <option key={form.id} value={form.id}>
-                      {form.name}
-                    </option>
-                  ))}
-                </Selects>
-              )}
-            </Holds>
-            <Holds className="w-fit ">
-              <Buttons
-                shadow={"none"}
-                onClick={() => {
-                  setFormPage();
-                }}
-                background={selectedForm === "" ? "darkGray" : "green"}
-                disabled={selectedForm === ""}
-                className="w-12 h-full p-2"
-              >
-                <Images
-                  titleImgAlt="plus"
-                  titleImg="/plus.svg"
-                  className="max-w-6  h-auto object-contain m-auto"
-                />
-              </Buttons>
-            </Holds>
-          </Holds>
-        </Contents>
+            {createLoading ? (
+              <Spinner size={24} />
+            ) : (
+              <Images
+                titleImgAlt="plus"
+                titleImg="/plus.svg"
+                className="max-w-6  h-auto object-contain m-auto"
+              />
+            )}
+          </Buttons>
+        </Holds>
       </Holds>
 
-      <Holds
-        background={"white"}
-        className={`row-start-2 row-end-8 h-full  ${
-          loading && "animate-pulse"
-        } `}
-      >
-        <Grids rows={"6"} className="h-full w-full ">
-          <Holds className="row-start-1 row-end-2 h-fit w-full ">
+      <Holds className="h-fit w-full pb-2 ">
+        <Contents width={"section"}>
+          <Holds className="pb-1">
+            <Titles position={"left"} size={"md"}>
+              {t("DraftsSubmissions")}
+            </Titles>
+          </Holds>
+          <Selects
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+            className="text-center text-sm justify-center "
+          >
+            <option value="all">{t("SelectAFilter")}</option>
+            <option value="draft">{t("Drafts")}</option>
+            <option value="pending">{t("Pending")}</option>
+            <option value="approved">{t("Approved")}</option>
+            <option value="denied">{t("Denied")}</option>
+          </Selects>
+        </Contents>
+      </Holds>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {isInitialLoading ? (
+          <Holds className="row-start-2 row-end-7 h-full w-full  border-t-black border-opacity-5 border-t-2">
             <Contents width={"section"}>
-              <Holds className="pb-1">
-                <Titles position={"left"} size={"md"}>
-                  {t("DraftsSubmissions")}
-                </Titles>
+              <Holds className="h-full justify-center items-center">
+                <Spinner />
               </Holds>
-              <Selects
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="text-center text-sm justify-center "
-              >
-                <option value="all">{t("SelectAFilter")}</option>
-                <option value="draft">{t("Drafts")}</option>
-                <option value="pending">{t("Pending")}</option>
-                <option value="approved">{t("Approved")}</option>
-                <option value="denied">{t("Denied")}</option>
-              </Selects>
             </Contents>
           </Holds>
-          {isInitialLoading ? (
-            <Holds className="row-start-2 row-end-7 h-full w-full  border-t-black border-opacity-5 border-t-2">
-              <Contents width={"section"}>
-                <Holds className="h-full justify-center items-center">
-                  <Spinner />
-                </Holds>
-              </Contents>
-            </Holds>
-          ) : (
-            <Holds className="row-start-2 row-end-7 h-full w-full overflow-y-scroll no-scrollbar border-t-black border-opacity-5 border-t-2">
+        ) : (
+          <div className="h-full max-h-full overflow-y-auto no-scrollbar">
+            <Holds className="row-start-2 row-end-7 h-full w-full border-t-black border-opacity-5 border-t-2">
               <Contents width={"section"}>
                 {!sentContent ||
                   (sentContent.length === 0 && (
@@ -260,8 +246,7 @@ export default function FormSelection({
                       </Texts>
                     </Holds>
                   ))}
-
-                <div className="pt-3 pb-5 h-full w-full overflow-y-auto no-scrollbar ">
+                <div className="pt-3 pb-5 h-full w-full">
                   {Array.isArray(sentContent) &&
                     sentContent.map((form, index) => {
                       if (typeof form === "string") return null; // Defensive: skip invalid entries
@@ -300,8 +285,8 @@ export default function FormSelection({
                             <Holds className="w-full h-full  relative">
                               <Titles size={"md"}>{title}</Titles>
                               {/* <Titles size={"sm"}>
-                                {form.FormTemplate?.formType}
-                              </Titles> */}
+                                    {form.FormTemplate?.formType}
+                                  </Titles> */}
 
                               <Images
                                 titleImgAlt={"form Status"}
@@ -329,60 +314,9 @@ export default function FormSelection({
                 </div>
               </Contents>
             </Holds>
-          )}
-        </Grids>
-        {/* <Contents width={"section"} className=" pt-3 pb-5">
-           <Holds className="h-full overflow-y-scroll no-scrollbar ">
-            {formDrafts &&
-              formDrafts.map((form) => {
-                const title = form.title || form.FormTemplate.name;
-                return (
-                  <Holds key={form.id} className="pt-2">
-                    <SlidingDiv
-                      onSwipeLeft={async () => {
-                        try {
-                          await deleteFormSubmission(form.id);
-                          // Remove the deleted form from the list
-                          setFormDrafts((prevDrafts) =>
-                            prevDrafts.filter((draft) => draft.id !== form.id)
-                          );
-                        } catch (error) {
-                          console.error("Error deleting form draft:", error);
-                        }
-                      }}
-                    >
-                      <Buttons
-                        shadow={"none"}
-                        className="py-1"
-                        onClick={() => {
-                          router.push(
-                            `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`
-                          );
-                        }}
-                      >
-                        <Holds>
-                          <Titles size={"h4"}>{title}</Titles>
-                          <Holds
-                            position={"row"}
-                            className="space-x-1 justify-center"
-                          >
-                            <Texts size={"p7"}>{t("Created")}</Texts>
-                            <Texts size={"p7"}>
-                              {format(
-                                new Date(form.createdAt).toISOString(),
-                                "Pp"
-                              )}
-                            </Texts>
-                          </Holds>
-                        </Holds>
-                      </Buttons>
-                    </SlidingDiv>
-                  </Holds>
-                );
-              })}
-          </Holds> 
-        </Contents> */}
-      </Holds>
-    </Grids>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

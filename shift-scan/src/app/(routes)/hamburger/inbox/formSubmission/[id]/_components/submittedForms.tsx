@@ -71,6 +71,9 @@ export default function SubmittedForms({
   const router = useRouter();
   const [deleteRequestModal, setDeleteRequestModal] = useState(false);
 
+  // Track if deleted to prevent auto-save after delete
+  const [isDeleted, setIsDeleted] = useState(false);
+
   type FormValues = Record<string, string>;
 
   // Helper function to validate date string
@@ -102,10 +105,12 @@ export default function SubmittedForms({
     title: string;
   }>((data) => saveDraftData(data.values, data.title), 500);
 
-  // Trigger auto-save when formValues or formTitle changes
+  // Trigger auto-save when formValues or formTitle changes, unless deleted
   useEffect(() => {
-    autoSave({ values: formValues, title: formTitle });
-  }, [formValues, formTitle, autoSave]);
+    if (!isDeleted) {
+      autoSave({ values: formValues, title: formTitle });
+    }
+  }, [formValues, formTitle, autoSave, isDeleted]);
 
   const handleDelete = async () => {
     try {
@@ -113,176 +118,158 @@ export default function SubmittedForms({
         console.error("No submission ID found");
         return;
       }
-      const isDeleted = await deleteFormSubmission(submissionId);
-      if (isDeleted) {
+      const deleted = await deleteFormSubmission(submissionId);
+      if (deleted) {
+        setIsDeleted(true); // Prevent auto-save after delete
         return router.back();
       }
     } catch (error) {
       console.error("Error deleting form submission:", error);
     }
   };
+
   return (
-    <>
-      <Holds background={"white"} className="row-start-1 row-end-2 h-full">
-        <TitleBoxes
-          onClick={() => {
-            router.back();
-          }}
-        >
-          <Holds className="px-8 h-full justify-center items-center">
-            <div className="flex flex-col items-center">
-              <Titles size={"h3"} className="text-center">
-                {formTitle
-                  ? formTitle.charAt(0).toUpperCase() +
-                    formTitle.slice(1).slice(0, 24)
-                  : formData.name.charAt(0).toUpperCase() +
-                    formData.name.slice(1).slice(0, 24)}
-              </Titles>
-              {formTitle !== "" && (
-                <Titles size={"h6"} className="text-gray-500">
-                  {formData.name}
-                </Titles>
-              )}
-            </div>
-          </Holds>
-        </TitleBoxes>
-      </Holds>
-
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-2 row-end-8"
+    <div className="flex flex-col h-full bg-white rounded-lg">
+      {/* Header */}
+      <TitleBoxes
+        className="h-20 border-b-2 pb-2 border-neutral-100 flex-shrink-0 rounded-lg sticky top-0 z-10 bg-white"
+        onClick={() => {
+          router.back();
+        }}
       >
-        <form
-          onSubmit={() => {
-            handleDelete();
-          }}
-          className="h-full"
-        >
-          <Grids rows={"8"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-8 h-full w-full overflow-y-auto no-scrollbar">
-              <Contents width={"section"}>
-                <div className="h-full py-4 px-1">
-                  {/* Submission Details Card */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-blue-600 font-semibold text-sm">
-                        Submission Details
-                      </h3>
-                      <p className="text-xs italic text-gray-500">
-                        {`${t("OriginallySubmitted")} ${
-                          submittedForm && isValidDate(submittedForm)
-                            ? format(new Date(submittedForm), "M/dd/yy")
-                            : ""
-                        }`}
-                      </p>
-                    </div>
+        <div className="flex  flex-col items-center justify-center h-full">
+          <Titles size={"lg"} className="text-center truncate max-w-[70vw]">
+            {formTitle
+              ? formTitle.charAt(0).toUpperCase() +
+                formTitle.slice(1).slice(0, 24)
+              : formData.name.charAt(0).toUpperCase() +
+                formData.name.slice(1).slice(0, 24)}
+          </Titles>
+          {formTitle !== "" && (
+            <Titles size={"xs"} className="text-gray-500 truncate max-w-[90vw]">
+              {formData.name}
+            </Titles>
+          )}
+        </div>
+      </TitleBoxes>
 
-                    {/* Status indicator */}
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          Status:
-                        </span>
-                        <div className="py-1 px-3 rounded-md bg-orange-100 border border-app-orange">
-                          <p className="text-sm font-medium text-app-orange">
-                            Pending
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Form Fields */}
-                    <div className="bg-white rounded-lg">
-                      <FormFieldRenderer
-                        formData={formData}
-                        formValues={formValues}
-                        setFormValues={updateFormValues}
-                        readOnly={true}
-                        disabled={true}
-                      />
-                    </div>
+      {/* Scrollable Middle Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-3">
+        <Contents width={"section"}>
+          <div className="h-full py-4 px-1">
+            {/* Submission Details Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+              {/* Status indicator */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-col">
+                    <h3 className="text-blue-600 font-semibold text-sm">
+                      Details
+                    </h3>
+                    <p className="text-xs italic text-gray-500">
+                      {`${t("OriginallySubmitted")} ${
+                        submittedForm && isValidDate(submittedForm)
+                          ? format(new Date(submittedForm), "M/dd/yy")
+                          : ""
+                      }`}
+                    </p>
                   </div>
-
-                  {/* Signature Section */}
-                  {submissionStatus === "PENDING" && (
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-                      <div className="mb-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          {t("Signature")}
-                        </span>
-                      </div>
-                      <div className="bg-gray-50 border border-gray-200 rounded-md p-2 flex justify-center items-center">
-                        {signature ? (
-                          <Images
-                            titleImgAlt={"Signature"}
-                            titleImg={signature}
-                            className="w-full h-12 object-contain"
-                          />
-                        ) : (
-                          <p className="text-sm text-gray-400 italic py-2">
-                            {t("NoSignature")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </Contents>
-            </Holds>
-
-            {/* Delete Button Section */}
-            {submissionStatus === "PENDING" && (
-              <Holds className="row-start-8 row-end-9 justify-center h-full w-full p-4 border-t border-gray-200">
-                <Contents width={"section"}>
-                  <Buttons
-                    background={"red"}
-                    type="button"
-                    onClick={() => setDeleteRequestModal(true)}
-                    className="w-full h-10 rounded-md shadow-sm"
-                    shadow={"none"}
-                  >
-                    <Titles size={"sm"}>{t("DeleteRequest")}</Titles>
-                  </Buttons>
-                </Contents>
-              </Holds>
-            )}
-            {/* Confirmation Modal */}
-            <NModals
-              background={"noOpacity"}
-              isOpen={deleteRequestModal}
-              handleClose={() => setDeleteRequestModal(false)}
-              size={"medWW"}
-            >
-              <div className="w-full h-full p-5 flex flex-col">
-                <div className="flex-grow flex justify-center items-center">
-                  <p className="text-lg font-medium text-gray-700 text-center">
-                    {t("AreYouSureYouWantToDeleteThisRequest")}
-                  </p>
-                </div>
-                <div className="flex gap-4 mt-4">
-                  <Buttons
-                    background={"green"}
-                    type="button"
-                    onClick={() => handleDelete()}
-                    className="w-full h-10 rounded-md"
-                  >
-                    <Titles size={"md"}>{t("Yes")}</Titles>
-                  </Buttons>
-
-                  <Buttons
-                    background={"neutral"}
-                    type="button"
-                    onClick={() => setDeleteRequestModal(false)}
-                    className="w-full h-10 rounded-md"
-                  >
-                    <Titles size={"md"}>{t("Cancel")}</Titles>
-                  </Buttons>
+                  <div className="py-1 px-3 rounded-md bg-orange-100 border border-app-orange">
+                    <p className="text-sm font-medium text-app-orange">
+                      Pending
+                    </p>
+                  </div>
                 </div>
               </div>
-            </NModals>
-          </Grids>
-        </form>
-      </Holds>
-    </>
+
+              {/* Form Fields */}
+              <div className="bg-white rounded-lg">
+                <FormFieldRenderer
+                  formData={formData}
+                  formValues={formValues}
+                  setFormValues={updateFormValues}
+                  readOnly={true}
+                  disabled={true}
+                />
+              </div>
+            </div>
+
+            {/* Signature Section */}
+            {submissionStatus === "PENDING" && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("Signature")}
+                  </span>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-md p-2 flex justify-center items-center">
+                  {signature ? (
+                    <Images
+                      titleImgAlt={"Signature"}
+                      titleImg={signature}
+                      className="w-full h-12 object-contain"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-400 italic py-2">
+                      {t("NoSignature")}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </Contents>
+      </div>
+
+      {/* Footer */}
+      {submissionStatus === "PENDING" && (
+        <div className="w-full h-16 flex gap-x-4 flex-shrink-0 rounded-lg sticky bottom-0 z-10 bg-white border-t p-4">
+          <Buttons
+            background={"red"}
+            type="button"
+            onClick={() => setDeleteRequestModal(true)}
+            className="w-full h-10 rounded-md shadow-sm"
+            shadow={"none"}
+          >
+            <Titles size={"sm"}>{t("DeleteRequest")}</Titles>
+          </Buttons>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      <NModals
+        background={"noOpacity"}
+        isOpen={deleteRequestModal}
+        handleClose={() => setDeleteRequestModal(false)}
+        size={"medWW"}
+      >
+        <div className="w-full h-full p-5 flex flex-col">
+          <div className="flex-grow flex justify-center items-center">
+            <p className="text-lg font-medium text-gray-700 text-center">
+              {t("AreYouSureYouWantToDeleteThisRequest")}
+            </p>
+          </div>
+          <div className="flex gap-4 mt-4">
+            <Buttons
+              background={"green"}
+              type="button"
+              onClick={() => handleDelete()}
+              className="w-full h-10 rounded-md"
+            >
+              <Titles size={"md"}>{t("Yes")}</Titles>
+            </Buttons>
+
+            <Buttons
+              background={"neutral"}
+              type="button"
+              onClick={() => setDeleteRequestModal(false)}
+              className="w-full h-10 rounded-md"
+            >
+              <Titles size={"md"}>{t("Cancel")}</Titles>
+            </Buttons>
+          </div>
+        </div>
+      </NModals>
+    </div>
   );
 }

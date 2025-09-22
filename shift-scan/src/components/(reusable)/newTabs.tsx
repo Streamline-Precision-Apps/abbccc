@@ -17,6 +17,7 @@ const tabStyles = cva(
       },
 
       color: {
+        neutral: "bg-neutral-200",
         lightBlue: "bg-app-blue",
         darkBlue: "bg-app-dark-blue",
         green: "bg-app-green",
@@ -73,6 +74,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
     | "lightGray"
     | "darkGray"
     | "none"
+    | "neutral"
     | null
     | undefined;
   inActiveColor?:
@@ -80,6 +82,7 @@ interface TabProps extends VariantProps<typeof tabStyles> {
     | "darkBlue"
     | "green"
     | "red"
+    | "neutral"
     | "orange"
     | "white"
     | "lightGray"
@@ -125,11 +128,11 @@ export const NewTab: FC<TabProps> = ({
         .join(" ")}
     >
       <div
-        className={`w-full flex ${isActive ? "flex-row px-2 items-center gap-2 justify-between" : ""}`}
+        className={`w-full h-full flex ${isActive ? "flex-row px-2 items-center gap-2 justify-between" : ""}`}
       >
         {isActive ? (
           <>
-            <div className="w-full flex items-end gap-2 justify-between">
+            <div className="w-full flex items-end gap-x-2 justify-between p-1">
               {children}
               <img
                 src={titleImage}

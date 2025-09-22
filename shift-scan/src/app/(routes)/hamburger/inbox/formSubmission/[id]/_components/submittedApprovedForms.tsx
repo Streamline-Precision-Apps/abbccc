@@ -3,15 +3,11 @@ import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/Fo
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-import { Label } from "@/components/ui/label";
 
 interface FormField {
   id: string;
@@ -128,41 +124,35 @@ export default function SubmittedFormsApproval({
   }
 
   const status = managerFormApproval?.status;
-
   const comment = managerFormApproval?.Approvals[0]?.comment || "";
-  return (
-    <>
-      <Holds
-        background={"white"}
-        className="row-span-1 h-full w-full justify-center"
-      >
-        <TitleBoxes onClick={() => router.back()}>
-          <Holds className="px-8 h-full justify-center items-center relative">
-            {/* Form title */}
-            <div className="flex flex-col items-center">
-              <Titles size={"h3"} className="text-center">
-                {formTitle
-                  ? formTitle.charAt(0).toUpperCase() +
-                    formTitle.slice(1).slice(0, 24)
-                  : formData.name.charAt(0).toUpperCase() +
-                    formData.name.slice(1).slice(0, 24)}
-              </Titles>
-              {formTitle !== "" && (
-                <Titles size={"h6"} className="text-gray-500">
-                  {formData.name}
-                </Titles>
-              )}
-            </div>
-          </Holds>
-        </TitleBoxes>
-      </Holds>
 
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-2 row-end-8"
+  return (
+    <div className="flex flex-col h-full bg-white rounded-lg">
+      {/* Header */}
+      <TitleBoxes
+        className="h-20 border-b-2 pb-2 border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white rounded-lg"
+        onClick={() => router.back()}
       >
+        <div className="flex flex-col items-ends pb-2 ">
+          <Titles size={"md"} className="text-center">
+            {formTitle
+              ? formTitle.charAt(0).toUpperCase() +
+                formTitle.slice(1).slice(0, 24)
+              : formData.name.charAt(0).toUpperCase() +
+                formData.name.slice(1).slice(0, 24)}
+          </Titles>
+          {formTitle !== "" && (
+            <Titles size={"xs"} className="text-gray-500">
+              {formData.name}
+            </Titles>
+          )}
+        </div>
+      </TitleBoxes>
+
+      {/* Scrollable Middle Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
         <Contents width={"section"}>
-          <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
+          <div className="h-full py-4 px-1">
             {/* Summary Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
               {/* Approval Details Section */}
@@ -248,8 +238,8 @@ export default function SubmittedFormsApproval({
             </div>
 
             {/* Submission Details Section */}
-            <div>
-              <div className="flex justify-between items-center mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="flex justify-between items-center ">
                 <h3 className="text-blue-600 font-semibold text-sm">
                   Submission Details
                 </h3>
@@ -280,7 +270,7 @@ export default function SubmittedFormsApproval({
             </div>
           </div>
         </Contents>
-      </Holds>
-    </>
+      </div>
+    </div>
   );
 }
