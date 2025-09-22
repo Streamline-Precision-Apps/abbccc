@@ -85,7 +85,7 @@ export const formsTableColumns: ColumnDef<FormItem>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Date Created",
+    header: "Created",
     cell: ({ row }) => {
       return (
         <div className="text-xs text-center">
@@ -98,7 +98,7 @@ export const formsTableColumns: ColumnDef<FormItem>[] = [
   },
   {
     accessorKey: "updatedAt",
-    header: "Date Updated",
+    header: "Last Updated",
     cell: ({ row }) => {
       return (
         <div className="text-xs text-center">
