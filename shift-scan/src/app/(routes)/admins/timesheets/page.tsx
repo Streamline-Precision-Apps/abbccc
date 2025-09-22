@@ -44,8 +44,6 @@ export default function AdminTimesheets() {
     pageSize,
     pageSizeOptions,
     setPageSize,
-    dateRange,
-    setDateRange,
     showCreateModal,
     setShowCreateModal,
     deletingId,

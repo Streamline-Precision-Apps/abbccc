@@ -296,7 +296,7 @@ export async function adminUpdateTimesheetStatus(
         ChangeLogs: {
           create: {
             changeReason: `Timesheet ${status === "APPROVED" ? "approved" : "denied"} on dashboard.`,
-            changes: JSON.stringify(changes), // Convert the changes object to a JSON string,
+            changes: changes as Prisma.InputJsonValue, // Convert the changes object to a JSON string,
             changedBy,
             changedAt: new Date(),
             numberOfChanges: 1,
@@ -325,6 +325,8 @@ export async function adminUpdateTimesheetStatus(
  * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
  */
 export async function adminUpdateTimesheet(formData: FormData) {
+  console.log("FormData entries:", Array.from(formData.entries()));
+
   const id = Number(formData.get("id"));
   const dataJson = formData.get("data") as string;
   const editorId = formData.get("editorId") as string;
