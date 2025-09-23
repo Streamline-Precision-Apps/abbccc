@@ -532,3 +532,99 @@ export async function adminUpdateTimesheet(formData: FormData) {
     editorLog: editorFullName,
   };
 }
+
+//  POST /admins/timesheets 500 in 396ms
+// Error setting notification 4 to read: Error [PrismaClientValidationError]:
+// Invalid `prisma.notification.update()` invocation:
+
+// {
+//   where: {
+//     id: 4
+//   },
+//   data: {
+//     Responses: {
+//     ~~~~~~~~~
+//       create: {
+//         user: {
+//           connect: {
+//             id: "7"
+//           }
+//         },
+//         response: "READ"
+//       }
+//     },
+//     Reads: {
+//       create: {
+//         user: {
+//           connect: {
+//             id: "7"
+//           }
+//         }
+//       }
+//     },
+// ?   topic?: String | NullableStringFieldUpdateOperationsInput | Null,
+// ?   title?: String | StringFieldUpdateOperationsInput,
+// ?   body?: String | NullableStringFieldUpdateOperationsInput | Null,
+// ?   url?: String | NullableStringFieldUpdateOperationsInput | Null,
+// ?   metadata?: NullableJsonNullValueInput | Json,
+// ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+// ?   pushedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+// ?   pushAttempts?: Int | IntFieldUpdateOperationsInput,
+// ?   readAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
+// ?   Response?: NotificationResponseUpdateOneWithoutNotificationNestedInput
+//   }
+// }
+
+// what is the error here?
+
+export async function adminSetNotificationToRead(
+  notificationId: number,
+  userId: string,
+  response: string = "READ",
+) {
+  try {
+    if (!notificationId || !userId || !response) {
+      throw new Error("Notification ID, User ID, and Response are required.");
+    }
+
+    await prisma.notificationRead.upsert({
+      where: {
+        notificationId_userId: {
+          notificationId,
+          userId,
+        },
+      },
+      update: {
+        readAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        readAt: new Date(),
+      },
+    });
+
+    await prisma.notificationResponse.upsert({
+      where: { notificationId },
+      update: {
+        response,
+        respondedAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        response,
+        respondedAt: new Date(),
+      },
+    });
+
+    revalidateTag("notifications");
+    return { success: true };
+  } catch (error) {
+    console.error(
+      `Error setting notification ${notificationId} to read:`,
+      error,
+    );
+    return { success: false };
+  }
+}

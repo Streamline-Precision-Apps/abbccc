@@ -135,7 +135,7 @@ export default function AddEquipmentForm({}) {
               title: "New Equipment Submission",
               message:
                 "An equipment item has been created and is pending approval.",
-              link: "/admins/equipment",
+              link: "/admins/equipment?isPendingApproval=true",
             }),
           },
         );

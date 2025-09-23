@@ -370,7 +370,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
-    await prisma.$transaction(async (prisma) => {
+    const createdTimeSheet = await prisma.$transaction(async (prisma) => {
       // Step 1: Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
@@ -408,7 +408,9 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           updatedPrev,
         );
       }
+      return newTimeSheet;
     });
+    newTimeSheet = createdTimeSheet;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -452,7 +454,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
-    await prisma.$transaction(async (prisma) => {
+    const createdTimeCard = await prisma.$transaction(async (prisma) => {
       // Step 1: Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
@@ -490,17 +492,9 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           updatedPrev,
         );
       }
+      return newTimeSheet;
     });
-    // Fetch and log after transaction
-    if (newTimeSheet) {
-      const created = await prisma.timeSheet.findUnique({
-        where: { id: newTimeSheet },
-      });
-      console.log(
-        "[handleMechanicTimeSheet] Confirmed new timesheet:",
-        created,
-      );
-    }
+    newTimeSheet = createdTimeCard;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -552,7 +546,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
       endTime = formData.get("endTime") as string;
     }
     // Only DB operations in transaction
-    await prisma.$transaction(async (prisma) => {
+    const createdTimeCard = await prisma.$transaction(async (prisma) => {
       // Step 1: Create a new TimeSheet
       const createdTimeSheet = await prisma.timeSheet.create({
         data: {
@@ -596,7 +590,9 @@ export async function handleTascoTimeSheet(formData: FormData) {
           },
         });
       }
+      return newTimeSheet;
     });
+    newTimeSheet = createdTimeCard;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -649,7 +645,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
     if (type === "switchJobs") {
       previousTimeSheetId = Number(formData.get("id"));
       // Only use transaction if updating two timesheets
-      await prisma.$transaction(async (prisma) => {
+      const createdTimecard = await prisma.$transaction(async (prisma) => {
         // Step 1: Create a new TimeSheet
         const createdTimeSheet = await prisma.timeSheet.create({
           data: {
@@ -690,7 +686,9 @@ export async function handleTruckTimeSheet(formData: FormData) {
             },
           });
         }
+        return createdTimeSheet.id;
       });
+      newTimeSheet = createdTimecard;
     } else {
       // Just create, no transaction needed
       const createdTimeSheet = await prisma.timeSheet.create({

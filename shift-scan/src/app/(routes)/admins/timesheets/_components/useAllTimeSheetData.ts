@@ -78,14 +78,19 @@ export interface FilterOptions {
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
+  id: string[];
 }
 
 export default function useAllTimeSheetData({
   jobsiteId,
   costCode,
+  id,
+  notificationId,
 }: {
   jobsiteId: string | null;
   costCode: string | null;
+  id: string | null;
+  notificationId: string | null;
 }) {
   const router = useRouter();
   const { refresh } = useDashboardData();
@@ -117,6 +122,8 @@ export default function useAllTimeSheetData({
     Record<string, "APPROVED" | "REJECTED" | undefined>
   >({});
 
+  const [notificationIds, setNotificationIds] = useState<string | null>(null);
+
   // set Filters  feature
   // Filter options state
   const [refilterKey, setRefilterKey] = useState(0);
@@ -126,6 +133,7 @@ export default function useAllTimeSheetData({
     dateRange: {},
     status: [],
     changes: [],
+    id: [],
   });
   const [costCodes, setCostCodes] = useState<{ code: string; name: string }[]>(
     [],
@@ -184,6 +192,12 @@ export default function useAllTimeSheetData({
     if (filters.dateRange && filters.dateRange.to) {
       params.append("dateTo", filters.dateRange.to.toISOString());
     }
+    // Id (array)
+    if (filters.id && filters.id.length > 0) {
+      filters.id.forEach((idVal) => params.append("id", idVal));
+    } else if (id) {
+      params.append("id", id);
+    }
     // UserId (single)
     // if (userId) params.append("userId", userId);
     return params.toString();
@@ -237,11 +251,13 @@ export default function useAllTimeSheetData({
 
   // On mount, apply jobsiteId/costCode from props to filters before first fetch
   useEffect(() => {
-    if (jobsiteId || costCode) {
+    if (jobsiteId || costCode || id || notificationId) {
+      setNotificationIds(notificationId || null);
       setFilters((prev) => ({
         ...prev,
         jobsiteId: jobsiteId ? [jobsiteId] : prev.jobsiteId,
         costCode: costCode ? [costCode] : prev.costCode,
+        id: id ? [id] : prev.id,
       }));
       router.replace("/admins/timesheets");
     }
@@ -615,5 +631,7 @@ export default function useAllTimeSheetData({
     reFilterPage,
     costCodes,
     jobsites,
+    notificationIds,
+    setNotificationIds,
   };
 }

@@ -107,7 +107,7 @@ export default function AddJobsiteForm() {
             topic: "items",
             title: "New Jobsite Submission",
             message: `A new jobsite has been created and is pending approval.`,
-            link: `/admins/jobsites`,
+            link: `/admins/jobsites?isPendingApproval=true`,
           }),
         });
         await response.json();

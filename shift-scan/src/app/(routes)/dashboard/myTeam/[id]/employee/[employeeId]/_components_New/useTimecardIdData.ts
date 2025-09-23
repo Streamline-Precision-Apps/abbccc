@@ -247,7 +247,7 @@ export function useTimecardIdData(id: string) {
             topic: "timecards-changes",
             title: "A Timecard was Modified",
             message: `Timecard was modified by ${result.editorLog?.User?.firstName} ${result.editorLog?.User?.lastName}`,
-            link: `/admins/timesheets`,
+            link: `/admins/timesheets?id=${id}`,
           }),
         });
         await response.json();

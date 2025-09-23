@@ -33,6 +33,8 @@ export default function AdminTimesheets() {
 
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
+  const id = searchParams.get("id");
+  const notificationId = searchParams.get("notificationId");
   const {
     inputValue,
     setInputValue,
@@ -72,9 +74,13 @@ export default function AdminTimesheets() {
     costCodes,
     jobsites,
     filters,
+    notificationIds,
+    setNotificationIds,
   } = useAllTimeSheetData({
     jobsiteId,
     costCode,
+    id,
+    notificationId,
   });
 
   return (
@@ -309,6 +315,8 @@ export default function AdminTimesheets() {
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
           onUpdated={rerender}
+          notificationIds={notificationIds}
+          setNotificationIds={setNotificationIds}
         />
       )}
       <Dialog open={isDeleting} onOpenChange={setIsDeleting}>

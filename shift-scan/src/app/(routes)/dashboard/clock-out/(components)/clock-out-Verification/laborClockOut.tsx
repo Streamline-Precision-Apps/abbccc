@@ -78,7 +78,7 @@ export const LaborClockOut = ({
             topic: "timecard-submission",
             title: "New Timesheet Submission",
             message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
+            link: `/admins/timesheets?id=${timeSheetId}`,
           }),
         });
         const data = await response.json();

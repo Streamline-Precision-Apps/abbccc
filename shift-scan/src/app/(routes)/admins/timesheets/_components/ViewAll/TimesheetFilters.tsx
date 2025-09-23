@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
-import { useRouter } from "next/navigation";
 
 export interface FilterOptions {
   jobsiteId: string[];
@@ -24,6 +23,7 @@ export interface FilterOptions {
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
+  id: string[];
 }
 
 interface FilterPopoverProps {
@@ -49,6 +49,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       dateRange: {},
       status: [],
       changes: [],
+      id: [],
     },
   );
 
@@ -91,6 +92,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       filters.dateRange.from ||
       filters.dateRange.to ||
       filters.status.length > 0 ||
+      filters.id.length > 0 ||
       filters.changes.length > 0;
 
     onFilterChange({ ...filters });
@@ -107,6 +109,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       dateRange: {},
       status: [],
       changes: [],
+      id: [],
     };
 
     setFilters(emptyFilters);

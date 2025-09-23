@@ -5,7 +5,10 @@ import { EditMaintenanceLogs } from "./EditMaintenanceLogs";
 import { EditTruckingLogs } from "./EditTruckingLogs";
 import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
-import { adminUpdateTimesheet } from "@/actions/records-timesheets";
+import {
+  adminSetNotificationToRead,
+  adminUpdateTimesheet,
+} from "@/actions/records-timesheets";
 import EditGeneralSection from "./EditGeneralSection";
 import { SquareCheck, SquareXIcon, X, ClockIcon } from "lucide-react";
 import { isMaintenanceLogComplete } from "./utils/validation";
@@ -20,6 +23,8 @@ import { TimeSheetHistory } from "./TimeSheetHistory";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
 import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
+import { parse } from "path";
+import { set } from "lodash";
 
 // Define types for change logs
 interface ChangeLogEntry {
@@ -39,6 +44,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   isOpen,
   onClose,
   onUpdated,
+  notificationIds,
+  setNotificationIds,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -231,7 +238,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             topic: "timecards-changes",
             title: "A Timecard was Modified",
             message: `Timecard was modified by ${result.editorLog.firstName} ${result.editorLog.lastName}`,
-            link: `/admins/timesheets`,
+            link: `/admins/timesheets?id=${timesheetId}`,
           }),
         });
         await response.json();
@@ -341,6 +348,23 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     id: Number(m.id),
   }));
 
+  const setNotificationToRead = async (notificationId: number) => {
+    try {
+      if (!editor) return;
+
+      const result = await adminSetNotificationToRead(
+        notificationId,
+        editor,
+        "Verified",
+      );
+      if (result.success) {
+        setNotificationIds(null);
+      }
+    } catch (error) {
+      console.error("Error setting notification to read:", error);
+    }
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -386,7 +410,12 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setShowHistory(!showHistory)}
+                        onClick={() => {
+                          setShowHistory(!showHistory);
+                          if (notificationIds) {
+                            setNotificationToRead(parseInt(notificationIds));
+                          }
+                        }}
                         className="flex items-center gap-1 px-6 py-1 rounded-md hover:bg-gray-50"
                       >
                         <ClockIcon size={16} />

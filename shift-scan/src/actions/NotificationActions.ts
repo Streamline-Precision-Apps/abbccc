@@ -95,3 +95,50 @@ export async function getUserTopicPreferences(): Promise<{ topic: string }[]> {
     return [];
   }
 }
+
+export async function updateNotificationReadStatus({
+  notificationId,
+}: {
+  notificationId: number;
+}) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Check if the read record already exists
+    const existingRead = await prisma.notificationRead.findFirst({
+      where: {
+        notificationId: notificationId,
+        userId: userId,
+      },
+    });
+
+    if (!existingRead) {
+      // Create a new read record
+      await prisma.notificationRead.create({
+        data: {
+          notificationId: notificationId,
+          userId: userId,
+        },
+      });
+    } else {
+      // Update the existing read record
+      await prisma.notificationRead.update({
+        where: {
+          id: existingRead.id,
+        },
+        data: {
+          readAt: new Date(),
+        },
+      });
+      // Optionally: trigger a UI refresh or update local state
+    }
+  } catch (error) {
+    console.error("Error updating notification read status:", error);
+    throw new Error("Failed to update read status");
+  }
+}
