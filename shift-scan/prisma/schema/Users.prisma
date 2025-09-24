@@ -12,7 +12,7 @@ model User {
   laborView            Boolean
   mechanicView         Boolean
   permission           Permission             @default(USER)
-  image                String? //change this to url of image 
+  image                String?
   startDate            DateTime?              @default(now())
   terminationDate      DateTime?
   accountSetup         Boolean                @default(false)
@@ -22,24 +22,24 @@ model User {
   workTypeId           String?
   middleName           String?
   secondLastName       String?
-  lastSeen             DateTime? // user Activity for notifications
+  lastSeen             DateTime?
   accountSetupToken    AccountSetupToken?
   Contact              Contacts?
   Equipment            Equipment[]
+  FCMToken             FCMToken[]
   FormApprovals        FormApproval[]
   FormSubmissions      FormSubmission[]
   Jobsite              Jobsite[]
   MaintenanceLogs      MaintenanceLog[]
+  NotificationRead     NotificationRead[]
+  NotificationResponse NotificationResponse[]
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
   TimeSheetChanges     TimeSheetChangeLog[]   @relation("ChangedByUser")
+  topicSubscriptions   TopicSubscription[]
   Company              Company                @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]                 @relation("CrewToUser")
-  topicSubscriptions   TopicSubscription[]
-  FCMToken             FCMToken[]
-  NotificationRead     NotificationRead[]
-  NotificationResponse NotificationResponse[]
 
   @@unique([firstName, lastName, username])
   @@index([email])
