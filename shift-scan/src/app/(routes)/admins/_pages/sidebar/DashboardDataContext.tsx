@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 
 export type DashboardData = {
   clockedInUsers: number;
@@ -33,8 +34,14 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [data, setData] = useState<DashboardData | undefined>();
   const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
 
   const refresh = useCallback(async () => {
+    // Only make API calls if user is authenticated
+    if (status !== "authenticated") {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch("/api/getDashboard");
@@ -45,11 +52,14 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [status]);
 
   React.useEffect(() => {
-    refresh();
-  }, [refresh]);
+    // Only refresh when authenticated
+    if (status === "authenticated") {
+      refresh();
+    }
+  }, [refresh, status]);
 
   return (
     <DashboardDataContext.Provider value={{ data, refresh, loading }}>

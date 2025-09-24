@@ -64,8 +64,9 @@ export default function NewClockProcess({
   clockOutComment,
 }: NewClockProcessProps) {
   // State management
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [step, setStep] = useState<number>(0);
+  const [sessionTimeout, setSessionTimeout] = useState(false);
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
     switchLaborType,
@@ -121,21 +122,109 @@ export default function NewClockProcess({
   }, []);
 
   useEffect(() => {
-    console.log("step:", step);
+    // Only log in development mode
+    if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === "development") {
+        console.log("step:", step);
+      }
+    }
   }, [step]);
 
+  // Add timeout for session loading to prevent infinite wait
   useEffect(() => {
-    if (!session) {
-      console.log("Session not available yet");
+    if (status === "loading") {
+      const timeoutId = setTimeout(() => {
+        console.warn("Session loading timeout, proceeding with offline mode");
+        setSessionTimeout(true);
+      }, 2000); // Reduced to 2 second timeout for faster offline response
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSessionTimeout(false);
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (status === "loading" && !sessionTimeout) {
+      // Only log in development mode
+      if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "development") {
+          console.log("Session loading...");
+        }
+      }
       return;
     }
+
+    if (!session && !sessionTimeout && status !== "unauthenticated") {
+      // Only log in development mode
+      if (process.env.NODE_ENV === "development") {
+        console.log("Session not available, status:", status);
+      }
+      return;
+    }
+
+    if (sessionTimeout || status === "unauthenticated") {
+      // Keep this log for debugging offline issues
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "Session timeout or unauthenticated - proceeding with limited offline functionality",
+        );
+      }
+
+      // Set offline user ID for offline mode
+      if (!localStorage.getItem("offline_userId")) {
+        const offlineUserId = "offline-user-" + Date.now();
+        localStorage.setItem("offline_userId", offlineUserId);
+        console.log("⏰ Set offline user ID:", offlineUserId);
+      }
+    } else {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Session available, processing roles...");
+      }
+    }
+
     // Build a list of available roles based on the view flags.
     const availableRoles: string[] = [];
-    if (mechanicView) availableRoles.push("mechanic");
-    if (laborView) availableRoles.push("general");
-    if (truckView) availableRoles.push("truck");
-    if (tascoView) availableRoles.push("tasco");
-    // console.log("Available roles:", availableRoles); // Debugging line to check available roles
+
+    // If we're offline/unauthenticated and no roles are available from props,
+    // provide default role options for basic offline functionality
+    if (
+      (sessionTimeout || status === "unauthenticated") &&
+      !mechanicView &&
+      !laborView &&
+      !truckView &&
+      !tascoView
+    ) {
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "Offline/unauthenticated mode: providing default role options",
+        );
+      }
+      availableRoles.push("general"); // Default to general labor role
+      // Optionally add other roles for offline use:
+      // availableRoles.push("mechanic", "truck", "tasco");
+    } else {
+      // Normal online mode: use the view flags from user permissions
+      if (mechanicView) availableRoles.push("mechanic");
+      if (laborView) availableRoles.push("general");
+      if (truckView) availableRoles.push("truck");
+      if (tascoView) availableRoles.push("tasco");
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        "Available roles:",
+        availableRoles,
+        "mechanicView:",
+        mechanicView,
+        "laborView:",
+        laborView,
+        "truckView:",
+        truckView,
+        "tascoView:",
+        tascoView,
+      );
+    }
     setNumberOfRoles(availableRoles.length);
 
     // Auto-select if exactly one role is available.
@@ -156,7 +245,17 @@ export default function NewClockProcess({
     } else {
       setStep(1);
     }
-  }, [session, mechanicView, laborView, truckView, tascoView, type, option]);
+  }, [
+    session,
+    status,
+    sessionTimeout,
+    mechanicView,
+    laborView,
+    truckView,
+    tascoView,
+    type,
+    option,
+  ]);
 
   //------------------------------------------------------------------
   // Helper functions
@@ -190,7 +289,9 @@ export default function NewClockProcess({
         returnToPrevWork,
         formData,
       );
-      console.log("response:", response);
+      if (process.env.NODE_ENV === "development") {
+        console.log("response:", response);
+      }
 
       if (response) {
         // Set basic information from previous timesheet
@@ -337,6 +438,10 @@ export default function NewClockProcess({
               numberOfRoles={numberOfRoles}
               handleReturnPath={handleReturnPath}
               clockOutComment={clockOutComment}
+              mechanicView={mechanicView}
+              laborView={laborView}
+              truckView={truckView}
+              tascoView={tascoView}
             />
           )}
           {type === "jobsite" && (
@@ -351,6 +456,10 @@ export default function NewClockProcess({
               handleReturn={handleReturn}
               type={type}
               handleReturnPath={handleReturnPath}
+              mechanicView={mechanicView}
+              laborView={laborView}
+              truckView={truckView}
+              tascoView={tascoView}
             />
           )}
         </>

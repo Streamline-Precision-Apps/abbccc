@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shift-scan-cache-v7'; // Fixed asset handling to prevent offline redirect
+const CACHE_NAME = 'shift-scan-cache-v18'; // Fixed port mismatch issue for offline development
 const STATIC_ASSETS = [
   '/manifest.json',
   '/offline.html',
@@ -27,40 +27,142 @@ const OFFLINE_SERVER_ACTIONS = [
   'returnToPrevWork'
 ];
 
-// Critical assets that should be pre-cached
+// Critical assets that should be pre-cached - ALL SVG and image files
 const CRITICAL_ASSETS = [
-  // SVG icons (add all your SVGs)
-  '/logo.svg',
+  // All SVG icons from public directory
+  '/admin-white.svg',
+  '/admin.svg',
   '/arrowBack.svg',
   '/arrowDown.svg',
+  '/arrowDownThin.svg',
   '/arrowLeft.svg',
+  '/arrowLeftSymbol.svg',
+  '/arrowLeftThin.svg',
   '/arrowRight.svg',
-  '/home.svg',
-  '/clock.svg',
-  '/equipment.svg',
-  '/form.svg',
-  '/inbox.svg',
-  '/jobsite.svg',
-  '/plus.svg',
+  '/arrowRightSymbol.svg',
+  '/arrowRightThin.svg',
+  '/arrowUp.svg',
+  '/arrowUpThin.svg',
+  '/biometrics.svg',
+  '/broken.svg',
   '/calendar.svg',
   '/camera.svg',
+  '/cameraFilled.svg',
+  '/checkbox.svg',
+  '/clock.svg',
+  '/clockBreak.svg',
+  '/clockIn.svg',
+  '/clockOut.svg',
   '/comment.svg',
+  '/comments.svg',
+  '/condense-white.svg',
+  '/condense.svg',
+  '/drag.svg',
+  '/dragDots.svg',
+  '/dragFormBuilder.svg',
+  '/endDay.svg',
+  '/equipment-white.svg',
+  '/equipment.svg',
+  '/eraser.svg',
+  '/export-white.svg',
   '/export.svg',
+  '/eye-blue.svg',
   '/eye.svg',
+  '/eyeSlash.svg',
   '/fileClosed.svg',
   '/fileOpen.svg',
   '/filterDials.svg',
   '/filterFunnel.svg',
+  '/form-white.svg',
+  '/form.svg',
+  '/formApproval.svg',
+  '/formDuplicate.svg',
+  '/formEdit.svg',
+  '/formInspect-white.svg',
+  '/formInspect.svg',
+  '/formList-white.svg',
+  '/formList.svg',
+  '/formSave.svg',
+  '/formSent.svg',
+  '/formUndo.svg',
+  '/hauling.svg',
+  '/haulingFilled.svg',
   '/header.svg',
+  '/home-white.svg',
+  '/home.svg',
+  '/inbox-white.svg',
+  '/inbox.svg',
+  '/inboxFilled.svg',
   '/information.svg',
+  '/injury.svg',
+  '/jobsite-white.svg',
+  '/jobsite.svg',
+  '/key.svg',
   '/language.svg',
   '/layout.svg',
+  '/logo.svg',
+  '/mechanic.svg',
   '/message.svg',
   '/mileage.svg',
   '/minus.svg',
   '/moreOptions.svg',
+  '/moreOptionsCircle.svg',
+  '/number.svg',
+  '/plus-stroke-white.svg',
+  '/plus-white.svg',
+  '/plus.svg',
   '/policies.svg',
-  // Add more SVGs as needed
+  '/priorityDelay.svg',
+  '/priorityHigh.svg',
+  '/priorityLow.svg',
+  '/priorityMedium.svg',
+  '/priorityPending.svg',
+  '/priorityToday.svg',
+  '/profileEmpty.svg',
+  '/profileFilled.svg',
+  '/qrCode-white.svg',
+  '/qrCode.svg',
+  '/radio.svg',
+  '/refuel.svg',
+  '/refuelFilled.svg',
+  '/searchLeft.svg',
+  '/searchRight.svg',
+  '/Settings.svg',
+  '/settingsFilled.svg',
+  '/shiftScanLogo.svg',
+  '/shiftscanlogoHorizontal.svg',
+  '/spinner.svg',
+  '/star.svg',
+  '/starFilled.svg',
+  '/state.svg',
+  '/stateFilled.svg',
+  '/statusApproved.svg',
+  '/statusApprovedFilled.svg',
+  '/statusDenied.svg',
+  '/statusDeniedFilled.svg',
+  '/statusOffline.svg',
+  '/statusOngoing-white.svg',
+  '/statusOngoing.svg',
+  '/statusOngoingFilled.svg',
+  '/statusOnline.svg',
+  '/statusUnfinished.svg',
+  '/tasco.svg',
+  '/team-white.svg',
+  '/team.svg',
+  '/timecards.svg',
+  '/tinyCheckMark-white.svg',
+  '/title.svg',
+  '/trash-red.svg',
+  '/trash.svg',
+  '/trucking.svg',
+  '/user-white.svg',
+  '/user.svg',
+  // PNG and JPG images
+  '/icon-192x192.png',
+  '/icon-384x384.png',
+  '/icon-512x512.png',
+  '/ios/144.png',
+  '/logo_JPG.jpg',
 ];
 
 // URLs patterns that should be cached with network-first strategy
@@ -83,6 +185,9 @@ const API_CACHE_PATTERNS = [
   /\/api\/getJobsites$/,
   /\/api\/getCostCodes$/,
   /\/api\/getEquipment$/,
+  /\/api\/getEquipmentList$/,
+  /\/api\/getJobsiteSummary$/,
+  /\/api\/auth\/session$/,
 ];
 
 // Debug logging function with throttling to prevent spam
@@ -421,11 +526,15 @@ const discoverAndCacheAppResources = async (cache) => {
     // 3. Pre-cache important pages by visiting them
     const importantPages = ['/dashboard', '/clock', '/break'];
     log(`Pre-caching ${importantPages.length} important pages...`);
+    let pagesCached = 0;
     for (const page of importantPages) {
       try {
+        log(`Attempting to cache page: ${page}`);
         const pageResponse = await fetch(page);
         if (pageResponse.ok) {
           await cache.put(page, pageResponse.clone());
+          pagesCached++;
+          log(`✅ Successfully cached page: ${page}`);
           
           // Extract resources from this page too (but don't log each one)
           const pageHtml = await pageResponse.text();
@@ -449,10 +558,10 @@ const discoverAndCacheAppResources = async (cache) => {
           }
         }
       } catch (err) {
-        log('Failed to pre-cache page:', page, err.message);
+        log('❌ Failed to pre-cache page:', page, err.message);
       }
     }
-    log('Page pre-caching completed');
+    log(`📄 Page pre-caching completed: ${pagesCached}/${importantPages.length} pages cached`);
     
   } catch (err) {
     log('App resource discovery failed:', err.message);
@@ -544,6 +653,22 @@ const networkFirstWithOfflineFallback = async (request) => {
     if (networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, networkResponse.clone());
+      
+      // Special handling for session API - cache session data in localStorage
+      const url = new URL(request.url);
+      if (url.pathname.includes('/api/auth/session')) {
+        try {
+          const sessionData = await networkResponse.clone().json();
+          if (sessionData) {
+            // Cache session data in localStorage for offline use
+            localStorage.setItem('offline_session_cache', JSON.stringify(sessionData));
+            log('🟢 Session cached for offline use');
+          }
+        } catch (error) {
+          log('Failed to cache session data:', error);
+        }
+      }
+      
       return networkResponse;
     }
     throw new Error(`Network response not ok: ${networkResponse.status}`);
@@ -573,6 +698,32 @@ const networkFirstWithOfflineFallback = async (request) => {
           'X-Offline': 'true'
         }
       });
+    }
+
+    // Handle session API fallback
+    if (url.pathname.includes('/api/auth/session')) {
+      // Try to get cached session data
+      const cachedSession = getOfflineData('offline_session_cache');
+      if (cachedSession) {
+        log('🔵 Providing cached session for offline use');
+        return new Response(JSON.stringify(cachedSession), {
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Offline': 'true'
+          }
+        });
+      } else {
+        // No cached session available - return null (unauthenticated)
+        log('⚠️ No cached session available, returning null');
+        return new Response(JSON.stringify(null), {
+          status: 200,
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Offline': 'true'
+          }
+        });
+      }
     }
 
     return new Response(JSON.stringify({ 
@@ -690,7 +841,10 @@ self.addEventListener('install', event => {
             await cache.add(asset);
             log(`Successfully cached: ${asset}`);
           } catch (err) {
-            log(`Failed to cache ${asset}:`, err.message);
+            // Only log failures for critical assets, not all assets
+            if (asset === '/manifest.json' || asset === '/offline.html') {
+              log(`Failed to cache critical asset ${asset}:`, err.message);
+            }
             // Continue with other assets even if one fails
           }
         }
@@ -752,20 +906,28 @@ self.addEventListener('fetch', event => {
 
   // Special handling for navigation requests (HTML pages)
   if (request.mode === 'navigate') {
+    log(`[NAVIGATION] Handling navigation request for: ${pathname}`);
     event.respondWith(
       fetch(request)
         .then(response => {
           if (response && response.status === 200) {
             const cloned = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, cloned).catch(err => 
+              // Cache both the original request and a clean URL version
+              cache.put(request, cloned.clone()).catch(err => 
                 log('Failed to cache navigation request:', err)
+              );
+              // Also cache with clean URL (no query params)
+              const cleanUrl = `${url.origin}${pathname}`;
+              cache.put(cleanUrl, cloned.clone()).catch(err => 
+                log('Failed to cache clean URL:', err)
               );
             });
           }
           return response;
         })
         .catch(async () => {
+          log(`🔍 OFFLINE FALLBACK: Navigation failed for ${pathname}, checking cache...`);
           log('Navigation request failed, trying cache for:', pathname);
           
           // Try to serve from cache first - try exact match
@@ -787,6 +949,19 @@ self.addEventListener('fetch', event => {
           if (pathname === '/clock') {
             log('Special handling for clock page');
             
+            // Debug: List all cached keys for clock debugging
+            const cache = await caches.open(CACHE_NAME);
+            const allKeys = await cache.keys();
+            log('Total cached keys:', allKeys.length);
+            log('Looking for clock page in cache...');
+            
+            // List some relevant keys for debugging
+            const relevantKeys = allKeys.filter(key => {
+              const keyUrl = key.url || key;
+              return keyUrl.includes('clock') || keyUrl.endsWith('/') || keyUrl.includes('dashboard');
+            }).map(key => key.url || key);
+            log('Relevant cached keys:', relevantKeys);
+            
             // Try multiple variations for clock page
             const clockVariations = [
               '/clock',
@@ -805,13 +980,35 @@ self.addEventListener('fetch', event => {
               }
             }
             
+            // Try searching through all keys manually
+            for (const key of allKeys) {
+              const keyUrl = new URL(key.url);
+              if (keyUrl.pathname === '/clock' || keyUrl.pathname === '/clock/') {
+                const clockCache = await cache.match(key);
+                if (clockCache) {
+                  log('Found clock page in manual search:', key.url);
+                  return clockCache;
+                }
+              }
+            }
+            
             // If no clock page cached, serve root page instead of offline page
             // This allows the app to load and then handle navigation client-side
+            log('🔄 No cached clock page found, trying root page as fallback');
             const rootCache = await caches.match('/');
             if (rootCache) {
-              log('Serving root page as fallback for clock page (client-side routing can handle)');
+              log('✅ Serving root page as fallback for clock page (client-side routing can handle)');
               return rootCache;
             }
+            
+            // Last attempt: serve dashboard as fallback
+            const dashboardCache = await caches.match('/dashboard');
+            if (dashboardCache) {
+              log('✅ Serving dashboard as fallback for clock page');
+              return dashboardCache;
+            }
+            
+            log('❌ No suitable fallback found for clock page');
           }
           
           // For dashboard pages
@@ -902,31 +1099,51 @@ self.addEventListener('fetch', event => {
     if (isCss && url.search) {
       event.respondWith(
         caches.open(CACHE_NAME).then(async cache => {
+          // First try exact match
           const cached = await cache.match(cacheKey);
           if (cached) {
-            // Silently serve from cache to reduce log spam
             return cached;
           }
-          // If not cached, try to fetch and cache the base file
-          try {
-            const response = await fetch(cacheKey);
-            if (response && response.status === 200 && response.type !== 'opaque') {
-              await cache.put(cacheKey, response.clone());
-              log('Successfully fetched and caching (base CSS):', cacheKey);
-              return response;
-            }
-          } catch (err) {
-            // Ignore fetch errors
-          }
-          // Fallback: try to find any cached CSS
+          
+          // Try to find any cached version of this CSS file
           const fallback = await findCachedCSS(event.request);
-          if (fallback) return fallback;
-          // Fallback: serve fallback.css if critical
+          if (fallback) {
+            log('Serving cached CSS variant for:', pathname);
+            return fallback;
+          }
+          
+          // If not cached, try to fetch and cache the base file (only when online)
+          if (navigator.onLine) {
+            try {
+              const response = await fetch(cacheKey);
+              if (response && response.status === 200 && response.type !== 'opaque') {
+                await cache.put(cacheKey, response.clone());
+                log('Successfully fetched and cached CSS:', cacheKey);
+                return response;
+              }
+            } catch (err) {
+              // Fetch failed - continue to fallbacks
+            }
+          }
+          
+          // Fallback: serve fallback.css for critical CSS files
           if (pathname.includes('app/layout.css') || pathname.includes('app/page.css')) {
             const fallbackCSS = await cache.match('/fallback.css');
-            if (fallbackCSS) return fallbackCSS;
+            if (fallbackCSS) {
+              log('Serving fallback.css for critical CSS:', pathname);
+              return fallbackCSS;
+            }
           }
-          return fetch(event.request); // As last resort
+          
+          // Final fallback: return minimal CSS response to prevent errors
+          log('Creating minimal CSS response for:', pathname);
+          return new Response('/* Offline CSS placeholder - styling handled by Tailwind fallback */', {
+            status: 200,
+            headers: { 
+              'Content-Type': 'text/css',
+              'Cache-Control': 'no-cache'
+            }
+          });
         })
       );
       return;
@@ -981,7 +1198,24 @@ self.addEventListener('fetch', event => {
             }
             return cached;
           }
-          throw err; // Re-throw if no cached version
+          
+          // For images, return a transparent pixel instead of throwing error
+          if (isImage) {
+            log('Creating fallback response for missing image:', pathname);
+            // Return a 1x1 transparent PNG as fallback
+            const transparentPixel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+            return fetch(transparentPixel);
+          }
+          
+          // For other assets, return appropriate error response instead of throwing
+          log('No cached version available for:', event.request.url);
+          return new Response('', { 
+            status: 404, 
+            statusText: 'Not Found',
+            headers: { 
+              'Content-Type': isImage ? 'image/png' : 'text/plain'
+            }
+          });
         }
       })
     );

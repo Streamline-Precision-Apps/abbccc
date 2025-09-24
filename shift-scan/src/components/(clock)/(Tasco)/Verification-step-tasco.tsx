@@ -6,6 +6,7 @@ import { handleTascoTimeSheet } from "@/actions/timeSheetActions"; // Updated im
 import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { useSession } from "next-auth/react";
 import { useCommentData } from "@/app/context/CommentContext";
+import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 import {
   setCurrentPageView,
   setLaborType,
@@ -69,6 +70,7 @@ export default function TascoVerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
+  const { isOnline } = useEnhancedOfflineStatus();
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
@@ -130,41 +132,58 @@ export default function TascoVerificationStep({
         formData.append("type", "switchJobs"); // added to switch jobs
       }
 
-<<<<<<< HEAD
-      // Use the new offline-first function that doesn't hit DB when offline
+      // Use the offline-first function
       const response = await executeOfflineFirstAction(
         "handleTascoTimeSheet",
         handleTascoTimeSheet,
         formData,
       );
-=======
-      // Use the new transaction-based function
-      const response = await handleTascoTimeSheet(formData);
+
+      // If online and switching jobs, send notification
       if (response && type === "switchJobs") {
-        const response = await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
-          }),
-        });
-        await response.json();
+        try {
+          const notificationResponse = await fetch(
+            "/api/notifications/send-multicast",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                topic: "timecard-submission",
+                title: "New Timesheet Submission",
+                message: `A new submission has been created and is pending approval.`,
+                link: `/admins/timesheets`,
+              }),
+            },
+          );
+          await notificationResponse.json();
+        } catch (notificationError) {
+          console.warn("Failed to send notification:", notificationError);
+          // Don't fail the entire operation if notification fails
+        }
       }
->>>>>>> 9e066d0a8d3a429ca06bb49351a7d8fddbe32871
 
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 
-      await Promise.all([
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
-      ]).then(() => router.push("/dashboard"));
+      // Update cookies and navigate
+      if (isOnline) {
+        // When online, execute server actions normally
+        await Promise.all([
+          setCurrentPageView("dashboard"),
+          setWorkRole(role),
+          setLaborType(clockInRoleTypes || ""),
+        ]).then(() => router.push("/dashboard"));
+      } else {
+        // When offline, store values locally
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('offline_currentPageView', 'dashboard');
+          localStorage.setItem('offline_workRole', role);
+          localStorage.setItem('offline_laborType', clockInRoleTypes || '');
+        }
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {

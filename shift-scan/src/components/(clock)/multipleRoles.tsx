@@ -24,6 +24,10 @@ type Props = {
   numberOfRoles: number;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
+  mechanicView: boolean;
+  laborView: boolean;
+  truckView: boolean;
+  tascoView: boolean;
 };
 export default function MultipleRoles({
   handleNextStep,
@@ -36,14 +40,14 @@ export default function MultipleRoles({
   numberOfRoles,
   clockInRoleTypes,
   setClockInRoleTypes,
+  mechanicView,
+  laborView,
+  truckView,
+  tascoView,
 }: Props) {
   const [page, setPage] = useState("");
   const t = useTranslations("Clock");
   const { data: session } = useSession();
-  const tascoView = session?.user.tascoView;
-  const truckView = session?.user.truckView;
-  const mechanicView = session?.user.mechanicView;
-  const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState("");
 

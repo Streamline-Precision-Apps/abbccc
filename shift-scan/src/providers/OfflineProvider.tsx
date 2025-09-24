@@ -4,6 +4,8 @@ import React, {
   createContext,
   useContext,
   ReactNode,
+  useState,
+  useEffect,
 } from "react";
 import { useOfflineSync, type OfflineSyncState } from "@/hooks/useOfflineSync";
 
@@ -22,9 +24,7 @@ export const OfflineProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <OfflineContext.Provider value={value}>
-      {children}
-    </OfflineContext.Provider>
+    <OfflineContext.Provider value={value}>{children}</OfflineContext.Provider>
   );
 };
 
@@ -38,8 +38,19 @@ export const useOffline = () => {
 
 // Component to show offline status and sync information
 export const OfflineIndicator = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const { isOnline, isLoading, queuedActionsCount, syncQueued, lastSync } =
     useOffline();
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Don't render anything until mounted (prevents hydration mismatch)
+  if (!isMounted) {
+    return null;
+  }
 
   if (isOnline && queuedActionsCount === 0) {
     return null; // Don't show anything when online and no queued actions

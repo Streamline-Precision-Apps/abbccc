@@ -50,6 +50,11 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [session, status]);
 
   const refresh = useCallback(async () => {
+    // Only make API calls if user is authenticated
+    if (status !== "authenticated") {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch("/api/getUserImage");
@@ -59,12 +64,15 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Error fetching profile picture:", error);
     } finally {
-      if (status !== "loading") setLoading(false);
+      setLoading(false);
     }
   }, [status]);
 
   React.useEffect(() => {
-    if (status !== "loading") refresh();
+    // Only refresh when authenticated
+    if (status === "authenticated") {
+      refresh();
+    }
   }, [refresh, status]);
 
   return (

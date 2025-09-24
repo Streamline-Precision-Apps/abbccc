@@ -66,11 +66,40 @@ export default function VerificationStep({
   const t = useTranslations("Clock");
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [sessionTimeout, setSessionTimeout] = useState(false);
   const { savedCommentData, setCommentData } = useCommentData();
   const { setTimeSheetData } = useTimeSheetData();
   const router = useRouter();
   const { isOnline, summary } = useEnhancedOfflineStatus();
+
+  // Add timeout for session loading to prevent infinite wait when offline
+  useEffect(() => {
+    console.log("⏰ Verification Step - Session state:", {
+      status,
+      hasSession: !!session,
+      sessionTimeout,
+      userId: session?.user?.id || "none",
+      offlineUserId: localStorage.getItem("offline_userId"),
+    });
+
+    if (status === "loading") {
+      console.log("⏰ Verification Step - Starting session timeout timer");
+      const timeoutId = setTimeout(() => {
+        console.warn(
+          "[OFFLINE] Session loading timeout in verification-step, proceeding anyway",
+        );
+        setSessionTimeout(true);
+      }, 3000); // 3 second timeout for verification step
+
+      return () => {
+        console.log("⏰ Verification Step - Clearing session timeout timer");
+        clearTimeout(timeoutId);
+      };
+    } else {
+      setSessionTimeout(false);
+    }
+  }, [status, session, sessionTimeout]);
 
   // Check offline status and pending actions
   useEffect(() => {
@@ -78,8 +107,36 @@ export default function VerificationStep({
     console.log(`Connection status: ${isOnline ? "Online" : "Offline"}`);
   }, [isOnline]);
 
-  if (!session) return null; // Conditional rendering for session
-  const { id } = session.user;
+  // Show loading state while session is loading (but not forever when offline)
+  if (status === "loading" && !sessionTimeout) {
+    return (
+      <Holds className="h-full w-full flex justify-center items-center">
+        <Spinner size={40} />
+      </Holds>
+    );
+  }
+
+  // Only return null if we're clearly unauthenticated AND online (where we'd expect authentication)
+  // Allow rendering in offline scenarios even if unauthenticated
+  if (status === "unauthenticated" && isOnline) {
+    console.log(
+      "⏰ Verification Step - Unauthenticated while online, blocking render",
+    );
+    return null;
+  }
+
+  // For offline/timeout case, try to get user ID from other sources
+  const userId =
+    session?.user?.id ||
+    localStorage.getItem("offline_userId") ||
+    "offline-user";
+
+  // Store userId in localStorage when we have a session (for offline use)
+  useEffect(() => {
+    if (session?.user?.id) {
+      localStorage.setItem("offline_userId", session.user.id);
+    }
+  }, [session]);
 
   const fetchRecentTimeSheetId = async (): Promise<string | null> => {
     try {
@@ -105,7 +162,7 @@ export default function VerificationStep({
   };
 
   const handleSubmit = async () => {
-    if (!id) {
+    if (!userId) {
       console.error("User ID does not exist");
       return;
     }
@@ -114,7 +171,7 @@ export default function VerificationStep({
     try {
       const formData = new FormData();
       formData.append("submitDate", new Date().toISOString());
-      formData.append("userId", id?.toString() || "");
+      formData.append("userId", userId?.toString() || "");
       formData.append("date", new Date().toISOString());
       formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
@@ -182,7 +239,7 @@ export default function VerificationStep({
       }
 
       // Update state and redirect
-      const timesheetId = response || "";
+      const timesheetId = response ? String(response) : "";
       const timesheetIdNumber = timesheetId ? parseInt(timesheetId, 10) : 0;
       setTimeSheetData({ id: timesheetIdNumber });
       setCommentData(null);
@@ -192,7 +249,7 @@ export default function VerificationStep({
       if (isOfflineTimesheet(timesheetId)) {
         const offlineTimesheetData = {
           id: timesheetId,
-          userId: id,
+          userId: userId,
           date: new Date().toISOString(),
           startTime: new Date().toISOString(),
           endTime: null,
@@ -242,11 +299,21 @@ export default function VerificationStep({
       }
 
       // Update cookies and navigate
-      await Promise.all([
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
-      ]);
+      if (isOnline) {
+        // When online, execute server actions normally
+        await Promise.all([
+          setCurrentPageView("dashboard"),
+          setWorkRole(role),
+          setLaborType(clockInRoleTypes || ""),
+        ]);
+      } else {
+        // When offline, store values locally
+        if (typeof window !== "undefined") {
+          localStorage.setItem("offline_currentPageView", "dashboard");
+          localStorage.setItem("offline_workRole", role);
+          localStorage.setItem("offline_laborType", clockInRoleTypes || "");
+        }
+      }
 
       // Check if this was an offline operation
       if (isOfflineTimesheet(timesheetId)) {
@@ -283,16 +350,6 @@ export default function VerificationStep({
         className={loading ? `h-full w-full opacity-[0.50]` : `h-full w-full `}
       >
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
-          {/* Add offline status indicator */}
-          {!isOnline && (
-            <Holds className="absolute top-2 right-2 z-10">
-              <div className="flex items-center gap-2 bg-amber-100 border border-amber-400 text-amber-800 px-3 py-1 rounded-md text-sm">
-                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                <span>Offline Mode</span>
-              </div>
-            </Holds>
-          )}
-
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes position={"row"} onClick={handlePreviousStep}>
               <Titles position={"right"} size={"h4"}>

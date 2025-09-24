@@ -16,6 +16,7 @@ type JobsiteResult = {
   id: string;
   name: string;
   qrId: string;
+  approvalStatus: string;
 };
 
 type EquipmentSelectorProps = {
@@ -55,6 +56,7 @@ export const JobsiteSelector = ({
               code: jobsite.qrId,
               label: jobsite.name,
             }));
+            console.log("Jobsite options loaded:", transformedOptions);
             setJobsiteOptions(transformedOptions);
           } else {
             console.warn("Received non-array jobsite data:", data);
@@ -89,6 +91,7 @@ export const JobsiteSelector = ({
 
   // Handle selection changes and notify parent
   const handleSelect = (option: Option | null) => {
+    console.log("Jobsite selected:", option);
     setSelectedJobsite(option);
     onJobsiteSelect(option); // Pass just the code to parent
   };

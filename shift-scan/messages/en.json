@@ -167,7 +167,8 @@
     "ActiveTime": "Active Time",
     "CurrentSite": "Current Site",
     "CurrentlyOperating": "Currently Operating",
-    "CurrentShift": "Current Shift"
+    "CurrentShift": "Current Shift",
+    "WelcomeToDashboard": "Welcome to your Dashboard"
   },
 
   "Home": {
@@ -757,6 +758,7 @@
   },
 
   "ClockOut": {
+    "ReviewYourDay": "Review Your Day",
     "IFilledOutAnInjuryReport": "I filled out an injury report",
     "incidentDescription": "Incident Description",
     "ReviewYourDayDirections": "Review your day below. If you have any questions, please contact your supervisor.",

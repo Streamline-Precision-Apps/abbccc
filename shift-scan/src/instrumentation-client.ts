@@ -25,6 +25,23 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+
+  // Skip sending events when offline to reduce network errors
+  beforeSend(event, hint) {
+    if (!navigator.onLine) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Sentry] Skipping event while offline:', event.message || event.exception);
+      }
+      return null;
+    }
+    return event;
+  },
+
+  // Handle transport errors gracefully (like when offline)
+  transport: undefined, // Use default transport but with custom error handling
+
+  // Reduce network noise in development
+  maxBreadcrumbs: process.env.NODE_ENV === 'development' ? 10 : 100,
 });
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

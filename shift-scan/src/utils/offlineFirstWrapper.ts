@@ -178,6 +178,10 @@ export async function syncOfflineActions(): Promise<{ success: number; failed: n
           const { breakOutTimeSheet } = await import("@/actions/timeSheetActions");
           serverAction = breakOutTimeSheet;
           break;
+        case "updateTimeSheet":
+          const { updateTimeSheet } = await import("@/actions/timeSheetActions");
+          serverAction = updateTimeSheet;
+          break;
         default:
           console.warn(`Unknown action: ${action.actionName}`);
           action.status = "failed";

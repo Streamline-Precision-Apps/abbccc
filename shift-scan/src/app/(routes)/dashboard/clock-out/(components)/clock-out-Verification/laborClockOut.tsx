@@ -1,5 +1,7 @@
 "use client";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
+import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
+import { useOffline } from "@/providers/OfflineProvider";
 import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -54,11 +56,11 @@ export const LaborClockOut = ({
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { data: session } = useSession();
+  const { isOnline } = useOffline();
 
   async function handleSubmitTimeSheet() {
     try {
       setLoading(true);
-      // Step 1: Get the recent timecard ID.
 
       const formData = new FormData();
       formData.append("id", timeSheetId?.toString() || "");
@@ -67,32 +69,116 @@ export const LaborClockOut = ({
       formData.append("timeSheetComments", commentsValue);
       formData.append("wasInjured", wasInjured.toString());
 
-      const result = await updateTimeSheet(formData);
+      // Use offline-first approach for updateTimeSheet
+      const result = await executeOfflineFirstAction(
+        "updateTimeSheet",
+        updateTimeSheet,
+        formData,
+      );
+
       if (result) {
-        const response = await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
-          }),
-        });
-        const data = await response.json();
+        // Only try to send notifications when online
+        if (isOnline) {
+          try {
+            const response = await fetch("/api/notifications/send-multicast", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                topic: "timecard-submission",
+                title: "New Timesheet Submission",
+                message: `A new submission has been created and is pending approval.`,
+                link: `/admins/timesheets`,
+              }),
+            });
+
+            // Only try to parse JSON if the response is ok and has content
+            if (
+              response.ok &&
+              response.headers.get("content-type")?.includes("application/json")
+            ) {
+              const data = await response.json();
+              console.log("Notification sent successfully:", data);
+            } else if (!response.ok) {
+              console.warn(
+                "Notification API returned non-ok status:",
+                response.status,
+                response.statusText,
+              );
+            }
+          } catch (notificationError) {
+            // Don't let notification failures block the clock-out process
+            console.warn(
+              "Failed to send notification, but timesheet was saved:",
+              notificationError,
+            );
+          }
+        } else {
+          console.log("[OFFLINE] Timesheet clock-out saved locally for sync");
+        }
       }
 
       setLoading(false);
+
+      // Navigate to home page immediately regardless of online/offline status
       router.push("/");
-      // clear the saved storage after navigation
+
+      // Clear saved storage after navigation, but preserve offline action queue
       setTimeout(() => {
-        fetch("/api/cookies?method=deleteAll");
-        localStorage.clear();
+        if (isOnline) {
+          fetch("/api/cookies?method=deleteAll");
+          // Only clear localStorage when online since actions have been synced
+          localStorage.clear();
+        } else {
+          // When offline, preserve the offline action queue and only clear non-essential data
+          const offlineQueue = localStorage.getItem("offline_action_queue");
+          const offlineDashboardData = localStorage.getItem(
+            "offline_dashboard_data",
+          );
+          const currentOfflineTimesheet = localStorage.getItem(
+            "current_offline_timesheet",
+          );
+
+          // Clear most localStorage but keep offline data
+          localStorage.clear();
+
+          // Restore essential offline data
+          if (offlineQueue) {
+            localStorage.setItem("offline_action_queue", offlineQueue);
+          }
+          if (offlineDashboardData) {
+            localStorage.setItem(
+              "offline_dashboard_data",
+              offlineDashboardData,
+            );
+          }
+          if (currentOfflineTimesheet) {
+            localStorage.setItem(
+              "current_offline_timesheet",
+              currentOfflineTimesheet,
+            );
+          }
+
+          console.log(
+            "[OFFLINE] Preserved offline action queue for later sync",
+          );
+        }
       }, 500);
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
+      setLoading(false);
+
+      // Still navigate to home page - the action will be retried when online
+      if (!isOnline) {
+        console.log(
+          "[OFFLINE] Clock-out saved locally and will sync when online",
+        );
+        router.push("/");
+      } else {
+        // If online but error occurred, still try to navigate
+        router.push("/");
+      }
     }
   }
 

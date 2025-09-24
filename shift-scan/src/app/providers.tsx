@@ -22,24 +22,24 @@ import { EquipmentIdProvider } from "./context/operatorContext";
 import { PermissionsProvider } from "./context/PermissionsContext";
 import { DashboardDataProvider } from "./(routes)/admins/_pages/sidebar/DashboardDataContext";
 import { UserProfileProvider } from "./(routes)/admins/_pages/sidebar/UserImageContext";
-import { OfflineProvider, OfflineIndicator } from "@/providers/OfflineProvider";
+import { OfflineProvider } from "@/providers/OfflineProvider";
 import { TimeSheetDataProvider } from "./context/TimeSheetIdContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <OfflineProvider>
-        <PermissionsProvider>
-          <TimeSheetCommentsProvider>
-            <StartingMileageProvider>
-              <CurrentViewProvider>
-                <TruckScanDataProvider>
-                  <PayPeriodHoursProvider>
-                    <SavedCostCodeProvider>
-                      <ScanDataProvider>
-                        <ScanDataEQProvider>
-                          <TimeSheetDataProvider>
-                            <SessionProvider>
+      <SessionProvider>
+        <OfflineProvider>
+          <PermissionsProvider>
+            <TimeSheetCommentsProvider>
+              <StartingMileageProvider>
+                <CurrentViewProvider>
+                  <TruckScanDataProvider>
+                    <PayPeriodHoursProvider>
+                      <SavedCostCodeProvider>
+                        <ScanDataProvider>
+                          <ScanDataEQProvider>
+                            <TimeSheetDataProvider>
                               <EquipmentProvider>
                                 <EquipmentListProvider>
                                   <JobSiteProvider>
@@ -48,12 +48,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                         <NotificationProvider>
                                           <CommentDataProvider>
                                             <EquipmentIdProvider>
-                                          <DashboardDataProvider>
-                                            <UserProfileProvider>
+                                              <DashboardDataProvider>
+                                                <UserProfileProvider>
                                                   {children}
-                                            </UserProfileProvider>
-                                          </DashboardDataProvider>
-                                              <OfflineIndicator />
+                                                </UserProfileProvider>
+                                              </DashboardDataProvider>
                                             </EquipmentIdProvider>
                                           </CommentDataProvider>
                                         </NotificationProvider>
@@ -62,18 +61,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                   </JobSiteProvider>
                                 </EquipmentListProvider>
                               </EquipmentProvider>
-                            </SessionProvider>
-                          </TimeSheetDataProvider>
-                        </ScanDataEQProvider>
-                      </ScanDataProvider>
-                    </SavedCostCodeProvider>
-                  </PayPeriodHoursProvider>
-                </TruckScanDataProvider>
-              </CurrentViewProvider>
-            </StartingMileageProvider>
-          </TimeSheetCommentsProvider>
-        </PermissionsProvider>
-      </OfflineProvider>
+                            </TimeSheetDataProvider>
+                          </ScanDataEQProvider>
+                        </ScanDataProvider>
+                      </SavedCostCodeProvider>
+                    </PayPeriodHoursProvider>
+                  </TruckScanDataProvider>
+                </CurrentViewProvider>
+              </StartingMileageProvider>
+            </TimeSheetCommentsProvider>
+          </PermissionsProvider>
+        </OfflineProvider>
+      </SessionProvider>
     </>
   );
 }

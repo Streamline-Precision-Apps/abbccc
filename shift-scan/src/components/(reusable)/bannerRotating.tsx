@@ -106,11 +106,14 @@ export default function BannerRotating() {
         // Step 1: Fetch the most recent timeSheetId
         const timeSheetData = await fetchWithOfflineCache(
           "recentTimecard",
-          () => fetch("/api/getRecentTimecard").then((res) => res.json())
+          () => fetch("/api/getRecentTimecard").then((res) => res.json()),
+          { forceRefresh: true } // Force fresh data for timesheet check
         );
 
+        // If no timesheet exists (new user or no recent timesheet), skip banner data fetch
         if (!timeSheetData?.id) {
-          throw new Error("No valid timesheet ID found.");
+          setBannerData(null);
+          return;
         }
 
         // Step 2: Fetch banner data using the obtained timeSheetId
@@ -151,7 +154,7 @@ export default function BannerRotating() {
   if (!bannerData || !bannerData.jobsite) {
     return (
       <Holds className="w-[80%] ">
-        <Titles text={"white"}>{t("ErrorFetchingClockInDetails")}</Titles>
+        <Titles text={"white"}>{t("WelcomeToDashboard")}</Titles>
       </Holds>
     );
   }

@@ -11,7 +11,7 @@ const pwaConfig = {
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
-  disable: false,
+  disable: true, // Temporarily disable to use custom service worker
   workboxOptions: {
     disableDevLogs: true,
     runtimeCaching: [

@@ -15,6 +15,7 @@ import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
 import WidgetContainer from "./widgetContainer";
 import DisplayBanner from "./displayBanner";
 import DisplayBreakBanner from "./displayBreakBanner";
+import { fetchWithOfflineCache } from "@/utils/offlineApi";
 
 type Props = {
   session: Session;
@@ -48,6 +49,43 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
 
   // Handlers
   const handleToggle = () => setToggle(!toggle);
+
+  // Preload essential data for offline use
+  useEffect(() => {
+    const preloadOfflineData = async () => {
+      if (navigator.onLine && session?.user?.id) {
+        try {
+          // Preload jobsite data for offline use
+          await fetchWithOfflineCache("getJobsiteSummary", () =>
+            fetch("/api/getJobsiteSummary").then((res) => res.json()),
+          );
+
+          // Preload cost codes for offline use
+          await fetchWithOfflineCache("getCostCodes", () =>
+            fetch("/api/getCostCodes").then((res) => res.json()),
+          );
+
+          // Preload equipment list for offline use
+          await fetchWithOfflineCache("getEquipmentList", () =>
+            fetch("/api/getEquipmentList").then((res) => res.json()),
+          );
+
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              "[WidgetSection] Essential data preloaded for offline use",
+            );
+          }
+        } catch (error) {
+          console.warn(
+            "[WidgetSection] Failed to preload some offline data:",
+            error,
+          );
+        }
+      }
+    };
+
+    preloadOfflineData();
+  }, [session?.user?.id]);
 
   // Handle page redirects in a separate useEffect
   useEffect(() => {

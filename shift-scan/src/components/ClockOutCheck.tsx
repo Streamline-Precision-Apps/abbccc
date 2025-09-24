@@ -1,17 +1,28 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useOffline } from "@/providers/OfflineProvider";
 
 type ClockOutCheckProps = {
   userId: string;
   timesheetId: string | null;
 };
 
-export default function ClockOutCheck({ userId, timesheetId }: ClockOutCheckProps) {
+export default function ClockOutCheck({
+  userId,
+  timesheetId,
+}: ClockOutCheckProps) {
   const router = useRouter();
+  const { isOnline } = useOffline();
 
   useEffect(() => {
     const checkClockOutStatus = async () => {
+      // Skip check if offline to prevent fetch errors
+      if (!isOnline) {
+        console.log("Skipping clock-out status check while offline");
+        return;
+      }
+
       // Only check if we have a timesheet ID
       if (!timesheetId) {
         return;
@@ -38,8 +49,10 @@ export default function ClockOutCheck({ userId, timesheetId }: ClockOutCheckProp
 
         // If the timesheet has been clocked out (has endTime), clear cookies and redirect
         if (data.isClockedOut) {
-          console.log("User has been clocked out on another device, clearing cookies and redirecting...");
-          
+          console.log(
+            "User has been clocked out on another device, clearing cookies and redirecting...",
+          );
+
           // Clear timesheet cookies
           await fetch("/api/clear-timesheet-cookies", {
             method: "POST",
@@ -62,7 +75,7 @@ export default function ClockOutCheck({ userId, timesheetId }: ClockOutCheckProp
 
     // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [userId, timesheetId, router]);
+  }, [userId, timesheetId, router, isOnline]);
 
   // This component doesn't render anything visible
   return null;

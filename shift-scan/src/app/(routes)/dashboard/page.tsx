@@ -1,17 +1,8 @@
 "use server";
 import { auth } from "@/auth";
-import { Bases } from "@/components/(reusable)/bases";
-import { Contents } from "@/components/(reusable)/contents";
-import { Holds } from "@/components/(reusable)/holds";
 import { redirect } from "next/navigation";
-import DbWidgetSection from "./dbWidgetSection";
-import { Grids } from "@/components/(reusable)/grids";
-import BannerRotating from "@/components/(reusable)/bannerRotating";
 import { cookies } from "next/headers";
-import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
-import OfflineIndicator from "@/components/(offline)/offline-indicator";
-import OfflineDebugger from "@/components/(offline)/offline-debugger";
-import ClockOutCheck from "@/components/ClockOutCheck";
+import OfflineAwareDashboard from "@/components/(offline)/OfflineAwareDashboard";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -22,47 +13,23 @@ export default async function Dashboard() {
     redirect("/signin");
   }
 
-  // kicks user out if they are not clocked in
+  // Get server-side cookie values (might be undefined when offline)
   const currentPageView = (await cookies()).get("currentPageView")?.value;
-  if (currentPageView !== "dashboard") {
-    redirect("/");
-  }
-
   const mechanicProjectID =
     (await cookies()).get("mechanicProjectID")?.value || "";
-
-  // Get the current timesheet ID for clock-out checking
   const prevTimeSheetId = (await cookies()).get("prevTimeSheet")?.value || null;
-
-  // const user = session.user;
-  const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set
+  const view = (await cookies()).get("workRole")?.value || "general";
   const laborType = (await cookies()).get("laborType")?.value || "";
 
+  // Pass all values to client component for offline-aware handling
   return (
-    <Bases>
-      <OfflineIndicator position="top-right" />
-      <OfflineDebugger />
-      <Contents>
-        <Grids rows={"8"} gap={"5"}>
-          <HamburgerMenuNew />
-          {/* Clock-out check component - invisible but runs in background */}
-          <ClockOutCheck
-            userId={session.user.id}
-            timesheetId={prevTimeSheetId}
-          />
-          <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
-            <BannerRotating />
-          </Holds>
-          <Holds background={"white"} className="row-start-4 row-end-9 h-full">
-            <DbWidgetSection
-              session={session}
-              view={view}
-              mechanicProjectID={mechanicProjectID}
-              laborType={laborType}
-            />
-          </Holds>
-        </Grids>
-      </Contents>
-    </Bases>
+    <OfflineAwareDashboard
+      session={session}
+      serverCurrentPageView={currentPageView}
+      serverView={view}
+      serverMechanicProjectID={mechanicProjectID}
+      serverLaborType={laborType}
+      serverPrevTimeSheetId={prevTimeSheetId}
+    />
   );
 }

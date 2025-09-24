@@ -7,8 +7,10 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
+import { useOffline } from "@/providers/OfflineProvider";
 
 // Define the shape of your scan result
 type ScanResult = {
@@ -39,10 +41,25 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const { execute: executeServerAction } = useServerAction();
   const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const { isOnline } = useOffline();
 
-  // Initialize only once
+  // Initialize only once - but only when user is authenticated
   useEffect(() => {
-    if (isInitialized) return;
+    if (isInitialized || status === "loading") return;
+
+    // Only make API calls if user is authenticated
+    if (status === "unauthenticated") {
+      setIsInitialized(true);
+      return;
+    }
+
+    // Skip initialization if offline to prevent fetch errors
+    if (!isOnline) {
+      console.log("Skipping job site initialization while offline");
+      setIsInitialized(true);
+      return;
+    }
 
     const initializeJobSite = async () => {
       try {
@@ -60,21 +77,54 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         }
         let jobSiteName = "";
         try {
-          const jobSiteRes = await fetch(`/api/jobsites/${cookieData}`);
-          if (!jobSiteRes.ok) {
+          // Extract the code if cookieData is an object, otherwise use it directly
+          let jobSiteId = cookieData;
+
+          // Handle cases where cookieData might be a stringified JSON
+          if (typeof cookieData === "string") {
+            try {
+              const parsed = JSON.parse(cookieData);
+              jobSiteId = parsed.code || parsed;
+            } catch {
+              // If parsing fails, use the string as-is
+              jobSiteId = cookieData;
+            }
+          } else if (typeof cookieData === "object" && cookieData?.code) {
+            jobSiteId = cookieData.code;
+          }
+
+          // Use fetchWithOfflineCache for offline compatibility
+          const jobSiteDetails = await fetchWithOfflineCache(
+            `jobsite-${jobSiteId}`,
+            async () => {
+              const response = await fetch(
+                `/api/jobsites/${encodeURIComponent(jobSiteId)}`,
+              );
+              if (!response.ok) {
+                throw new Error(`Failed to fetch job site: ${response.status}`);
+              }
+              return response.json();
+            },
+          );
+
+          if (!jobSiteDetails) {
             setError("Failed to fetch job site details.");
             setScanResult(null);
             return;
           }
-          const jobSiteDetails = await jobSiteRes.json();
           jobSiteName = jobSiteDetails?.name || "";
         } catch (err) {
           setError("Error fetching job site details.");
           setScanResult(null);
           return;
         }
+        // Use the actual ID for qrCode, not the whole object
+        const jobSiteId =
+          typeof cookieData === "object" && cookieData?.code
+            ? cookieData.code
+            : cookieData;
         setScanResult({
-          qrCode: cookieData,
+          qrCode: jobSiteId,
           name: jobSiteName,
         });
         setError(null);
@@ -86,8 +136,15 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         setIsInitialized(true);
       }
     };
-    initializeJobSite();
-  }, [isInitialized]);
+
+    // Wrap the async call to prevent unhandled rejections
+    initializeJobSite().catch((error) => {
+      console.error("Unhandled error in initializeJobSite:", error);
+      setError("Error initializing job site.");
+      setScanResult(null);
+      setIsInitialized(true);
+    });
+  }, [isInitialized, status]); // Remove isOnline dependency to prevent re-running when network changes
 
   // Save changes only after initialization
   useEffect(() => {
@@ -107,7 +164,12 @@ export const ScanDataProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error saving job site:", error);
       }
     };
-    saveJobSite();
+
+    // Properly handle the async function call
+    saveJobSite().catch((error) => {
+      console.error("Unhandled error in saveJobSite:", error);
+      setError("Error saving job site.");
+    });
   }, [scanResult, executeServerAction, isInitialized]);
 
   // Removed redundant sync call - useOfflineSync hook handles auto-sync

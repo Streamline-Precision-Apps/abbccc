@@ -7,6 +7,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
 
@@ -27,10 +28,17 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
   );
   const [isInitialized, setIsInitialized] = useState(false);
   const { execute: executeServerAction } = useServerAction();
+  const { data: session, status } = useSession();
 
   // Initialize only once
   useEffect(() => {
-    if (isInitialized) return;
+    if (isInitialized || status === "loading") return;
+
+    // Only make API calls if user is authenticated
+    if (status === "unauthenticated") {
+      setIsInitialized(true);
+      return;
+    }
 
     const initializeMileage = async () => {
       try {
@@ -50,8 +58,9 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
         setIsInitialized(true);
       }
     };
+
     initializeMileage();
-  }, [isInitialized]);
+  }, [isInitialized, status]);
 
   // Save changes only after initialization
   useEffect(() => {
@@ -71,7 +80,11 @@ export const StartingMileageProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error saving starting mileage cookie:", error);
       }
     };
-    setStartingMileageStateAsync();
+
+    // Properly handle the async function call
+    setStartingMileageStateAsync().catch((error) => {
+      console.error("Unhandled error in setStartingMileageStateAsync:", error);
+    });
   }, [startingMileage, executeServerAction, isInitialized]);
 
   // Removed redundant sync call - useOfflineSync hook handles auto-sync

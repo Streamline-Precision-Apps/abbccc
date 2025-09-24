@@ -5,7 +5,6 @@ import ClockOutBtn from "../_buttons/clockOutBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
-import OfflineStatusWidget from "@/components/(offline)/offline-status-widget";
 import { Dispatch, SetStateAction } from "react";
 import MechanicBtn from "../_buttons/MechanicBtns";
 import { LogItem } from "@/lib/types";
@@ -35,7 +34,6 @@ export default function MechanicDashboardView({
   return (
     <>
       <Contents width={"section"} className="py-5">
-        <OfflineStatusWidget className="mb-4" />
         <Grids cols={"2"} rows={"3"} gap={"5"}>
           <>
             <MechanicBtn permission={permission} view={"mechanic"} />

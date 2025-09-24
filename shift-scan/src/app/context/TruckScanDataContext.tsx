@@ -7,6 +7,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
@@ -22,10 +23,20 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [truckScanData, setTruckScanDataState] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const online = useOnlineStatus();
   const { execute: executeServerAction, syncQueued } = useServerAction();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (isInitialized || status === "loading") return;
+
+    // Only make API calls if user is authenticated
+    if (status === "unauthenticated") {
+      setIsInitialized(true);
+      return;
+    }
+
     const initializeTruck = async () => {
       try {
         // Use offline cache for API data
@@ -39,10 +50,12 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
         }
       } catch (error) {
         console.error("Error fetching job site cookie:", error);
+      } finally {
+        setIsInitialized(true);
       }
     };
     initializeTruck();
-  }, []);
+  }, [isInitialized, status]);
 
   useEffect(() => {
     const setTruckScanData = async () => {
@@ -54,7 +67,11 @@ export const TruckScanDataProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error saving job site cookie:", error);
       }
     };
-    setTruckScanData();
+    
+    // Properly handle the async function call
+    setTruckScanData().catch((error) => {
+      console.error("Unhandled error in setTruckScanData:", error);
+    });
   }, [truckScanData, executeServerAction]);
 
   // Removed redundant sync call - useOfflineSync hook handles auto-sync

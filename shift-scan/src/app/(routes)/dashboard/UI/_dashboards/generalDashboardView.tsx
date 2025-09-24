@@ -7,7 +7,6 @@ import EquipmentBtn from "../_buttons/equipmentBtn";
 import GeneratorBtn from "../_buttons/generatorBtn";
 import MyTeamWidget from "../_buttons/myTeamBtn";
 import SwitchJobsBtn from "../_buttons/switchJobsBtn";
-import OfflineStatusWidget from "@/components/(offline)/offline-status-widget";
 import { Dispatch, SetStateAction } from "react";
 import { LogItem } from "@/lib/types";
 import useModalState from "@/hooks/(dashboard)/useModalState";
@@ -34,9 +33,6 @@ export default function GeneralDashboardView({
   return (
     <>
       <Contents width={"section"} className="py-5">
-        {/* Add offline status widget */}
-        <OfflineStatusWidget className="mb-4" />
-
         <Grids cols={"2"} rows={"3"} gap={"5"}>
           <>
             <EquipmentBtn permission={permission} />

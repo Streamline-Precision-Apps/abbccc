@@ -57,7 +57,9 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
       return;
     }
 
-    console.log("TimeSheetIdContext1");
+    if (process.env.NODE_ENV === "development") {
+      console.log("TimeSheetIdContext1");
+    }
 
     const savedTimeSheet = async () => {
       try {

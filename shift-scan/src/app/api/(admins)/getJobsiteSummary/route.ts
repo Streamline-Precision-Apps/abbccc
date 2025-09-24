@@ -24,6 +24,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        qrId: true,
         approvalStatus: true,
       },
       orderBy: {

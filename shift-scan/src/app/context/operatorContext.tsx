@@ -3,6 +3,7 @@
 import { setEquipment } from "@/actions/cookieActions";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
+import { useSession } from "next-auth/react";
 import React, {
   createContext,
   useState,
@@ -24,10 +25,17 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
   const [equipmentId, setEquipmentId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const { execute: executeServerAction } = useServerAction();
+  const { data: session, status } = useSession();
 
   // Load initial state from localStorage if available - ONLY ONCE
   useEffect(() => {
-    if (isInitialized) return; // Prevent multiple initializations
+    if (isInitialized || status === "loading") return; // Prevent multiple initializations
+    
+    // Only make API calls if user is authenticated
+    if (status === "unauthenticated") {
+      setIsInitialized(true);
+      return;
+    }
 
     const initializeEquipment = async () => {
       try {
@@ -51,7 +59,7 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     initializeEquipment();
-  }, [isInitialized]); // Only depend on initialization state
+  }, [isInitialized, status]); // Only depend on initialization state
 
   // Save equipment ID changes - but only after initialization and when value actually changes
   useEffect(() => {
@@ -71,7 +79,11 @@ export const EquipmentIdProvider: React.FC<{ children: ReactNode }> = ({
         console.error("Error saving equipment cookie:", error);
       }
     };
-    saveEquipmentId();
+    
+    // Properly handle the async function call
+    saveEquipmentId().catch((error) => {
+      console.error("Unhandled error in saveEquipmentId:", error);
+    });
   }, [equipmentId, executeServerAction, isInitialized]); // Include isInitialized to prevent premature saves
 
   return (

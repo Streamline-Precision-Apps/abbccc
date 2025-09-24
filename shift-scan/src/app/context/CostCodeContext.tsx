@@ -8,6 +8,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 import { useServerAction } from "@/utils/serverActionWrapper";
 import { setCostCode as setCostCodeCookie } from "@/actions/cookieActions";
@@ -29,10 +30,17 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
   const [costcode, setCostCode] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const { execute: executeServerAction } = useServerAction();
+  const { data: session, status } = useSession();
 
-  // Initialize only once
+  // Initialize only once - but only when user is authenticated
   useEffect(() => {
-    if (isInitialized) return;
+    if (isInitialized || status === "loading") return;
+
+    // Only make API calls if user is authenticated
+    if (status === "unauthenticated") {
+      setIsInitialized(true);
+      return;
+    }
 
     const initializeCostCode = async () => {
       try {
@@ -51,27 +59,28 @@ export const SavedCostCodeProvider: React.FC<{ children: ReactNode }> = ({
       }
     };
     initializeCostCode();
-  }, [isInitialized]);
+  }, [isInitialized, status]);
 
   // Save changes only after initialization
   useEffect(() => {
-    if (!isInitialized || costcode === null) return;
+    if (!isInitialized || costcode === null || costcode === "") return;
 
-    console.log("CostCodeContext2");
     const savedCostCodeAsync = async () => {
       try {
-        if (costcode !== "") {
-          await executeServerAction(
-            "setCostCodeCookie",
-            setCostCodeCookie,
-            costcode || "",
-          );
-        }
+        await executeServerAction(
+          "setCostCodeCookie",
+          setCostCodeCookie,
+          costcode,
+        );
       } catch (error) {
-        console.error(error);
+        console.error("Failed to save cost code:", error);
       }
     };
-    savedCostCodeAsync();
+    
+    // Properly handle the async function call
+    savedCostCodeAsync().catch((error) => {
+      console.error("Unhandled error in savedCostCodeAsync:", error);
+    });
   }, [costcode, executeServerAction, isInitialized]);
 
   // Removed redundant sync call - useOfflineSync hook handles auto-sync

@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 import { time } from "console";
 import { now } from "lodash";
 import { useTranslations } from "next-intl";
@@ -51,6 +52,30 @@ export default function ReviewYourDay({
 }) {
   const t = useTranslations("ClockOut");
   const t2 = useTranslations("MyTeam");
+  const { isOnline } = useEnhancedOfflineStatus();
+
+  // Debug logging
+  console.log("🔍 ReviewYourDay - isOnline:", isOnline);
+  console.log("🔍 ReviewYourDay - timesheets count:", timesheets.length);
+  console.log("🔍 ReviewYourDay - currentTimesheetId:", currentTimesheetId);
+  console.log("🔍 ReviewYourDay - timesheets:", timesheets);
+
+  // When offline, only show the current active timesheet
+  // When online, show all timesheets as normal
+  const displayTimesheets = !isOnline
+    ? timesheets.filter((timesheet) => {
+        // Show current timesheet or if no currentTimesheetId, show active timesheet (endTime === null)
+        return currentTimesheetId !== undefined
+          ? String(timesheet.id) === String(currentTimesheetId)
+          : timesheet.endTime === null;
+      })
+    : timesheets;
+
+  console.log(
+    "🔍 ReviewYourDay - displayTimesheets count:",
+    displayTimesheets.length,
+  );
+  console.log("🔍 ReviewYourDay - displayTimesheets:", displayTimesheets);
 
   return (
     <Bases>
@@ -90,7 +115,7 @@ export default function ReviewYourDay({
                   </Holds>
                 ) : (
                   <Accordion type="single" collapsible>
-                    {timesheets
+                    {displayTimesheets
                       .slice()
                       .sort((a, b) => {
                         const startTimeA = new Date(a.startTime).getTime();

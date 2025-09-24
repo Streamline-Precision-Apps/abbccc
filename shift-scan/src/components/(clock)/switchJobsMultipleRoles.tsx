@@ -25,6 +25,10 @@ type Props = {
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
   clockOutComment: string | undefined;
+  mechanicView: boolean;
+  laborView: boolean;
+  truckView: boolean;
+  tascoView: boolean;
 };
 
 export default function SwitchJobsMultiRoles({
@@ -36,13 +40,13 @@ export default function SwitchJobsMultiRoles({
   clockInRoleTypes,
   setClockInRoleTypes,
   clockOutComment,
+  mechanicView,
+  laborView,
+  truckView,
+  tascoView,
 }: Props) {
   const t = useTranslations("Clock");
   const { data: session } = useSession();
-  const tascoView = session?.user.tascoView;
-  const truckView = session?.user.truckView;
-  const mechanicView = session?.user.mechanicView;
-  const laborView = session?.user.laborView;
   const { setCommentData } = useCommentData();
   const [commentsValue, setCommentsValue] = useState<string>("");
   const [submittable, setSubmittable] = useState<boolean>(false);

@@ -163,7 +163,8 @@
     "ActiveTime": "Tiempo activo",
     "CurrentSite": "Sitio actual",
     "CurrentlyOperating": "Actualmente operando",
-    "CurrentShift": "Cambio actual"
+    "CurrentShift": "Cambio actual",
+    "WelcomeToDashboard": "Bienvenido a tu Panel de Control"
   },
   "Home": {
     "EnjoyYourBreak": "¡Disfruta tu descanso!",

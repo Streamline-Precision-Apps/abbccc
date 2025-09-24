@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 
 interface OfflineIndicatorProps {
@@ -11,7 +11,18 @@ export default function OfflineIndicator({
   position = "top-right",
   className = "",
 }: OfflineIndicatorProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const { isOnline, summary } = useEnhancedOfflineStatus();
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Don't render anything until mounted (prevents hydration mismatch)
+  if (!isMounted) {
+    return null;
+  }
 
   if (isOnline && !summary.hasPending) {
     return null; // Don't show anything when online with no pending actions

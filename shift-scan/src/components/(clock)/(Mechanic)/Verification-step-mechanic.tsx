@@ -5,6 +5,7 @@ import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleMechanicTimeSheet } from "@/actions/timeSheetActions";
 import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
+import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
 
 import { useCommentData } from "@/app/context/CommentContext";
 import { useRouter } from "next/navigation";
@@ -66,6 +67,7 @@ export default function MechanicVerificationStep({
   const { savedCommentData, setCommentData } = useCommentData();
   const { setCostCode } = useSavedCostCode();
   const costCode = "#00.50 Mechanics";
+  const { isOnline } = useEnhancedOfflineStatus();
 
   useEffect(() => {
     setCostCode(costCode);
@@ -151,11 +153,23 @@ export default function MechanicVerificationStep({
       setCommentData(null);
       localStorage.removeItem("savedCommentData");
 
-      await Promise.all([
-        setCurrentPageView("dashboard"),
-        setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
-      ]).then(() => router.push("/dashboard"));
+      // Update cookies and navigate
+      if (isOnline) {
+        // When online, execute server actions normally
+        await Promise.all([
+          setCurrentPageView("dashboard"),
+          setWorkRole(role),
+          setLaborType(clockInRoleTypes || ""),
+        ]).then(() => router.push("/dashboard"));
+      } else {
+        // When offline, store values locally
+        if (typeof window !== "undefined") {
+          localStorage.setItem("offline_currentPageView", "dashboard");
+          localStorage.setItem("offline_workRole", role);
+          localStorage.setItem("offline_laborType", clockInRoleTypes || "");
+        }
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
     } finally {

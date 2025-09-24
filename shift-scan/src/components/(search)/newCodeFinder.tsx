@@ -136,7 +136,7 @@ const OptionsList = ({
   const t = useTranslations("Clock");
   if (filteredOptions.length > 0) {
     return filteredOptions.map((option) => (
-      <Holds key={option.code} className="p-2">
+      <Holds key={option.id} className="p-2">
         <Buttons
           shadow={"none"}
           className={`p-2 cursor-pointer ${

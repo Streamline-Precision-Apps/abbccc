@@ -19,6 +19,14 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        code: true,
+        isActive: true,
+      },
+      where: {
+        isActive: true, // Only return active cost codes
+      },
+      orderBy: {
+        name: "asc",
       },
     });
 
