@@ -4,7 +4,7 @@
  *
  * @module hooks/useTimesheetData
  */
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ApprovalStatus } from "../../../../../../../../prisma/generated/prisma/client";
 
 export interface EditTimesheetModalProps {
@@ -12,6 +12,8 @@ export interface EditTimesheetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdated?: () => void; // Optional callback for parent to refetch
+  notificationIds: string | null;
+  setNotificationIds: Dispatch<SetStateAction<string | null>>;
 }
 
 // Types for nested logs

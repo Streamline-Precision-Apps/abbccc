@@ -130,8 +130,8 @@ export default function TascoVerificationStep({
       }
 
       // Use the new transaction-based function
-      const response = await handleTascoTimeSheet(formData);
-      if (response && type === "switchJobs") {
+      const responseAction = await handleTascoTimeSheet(formData);
+      if (responseAction.success && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -139,9 +139,9 @@ export default function TascoVerificationStep({
           },
           body: JSON.stringify({
             topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
+            title: "Timecard Approval Needed",
+            message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
+            link: `/admins/timesheets?id=${responseAction}`,
           }),
         });
         await response.json();

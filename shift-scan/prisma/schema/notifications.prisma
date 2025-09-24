@@ -25,7 +25,7 @@ model TopicSubscription {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   topic     String?
   title     String
   body      String?
@@ -38,7 +38,30 @@ model Notification {
   // if push failed attempts you can bump this
   pushAttempts Int       @default(0)
 
-  readAt DateTime?
+  readAt   DateTime?
+  Reads    NotificationRead[]
+  Response NotificationResponse?
 
   @@index([topic, createdAt])
+}
+
+model NotificationResponse {
+  id             Int          @id @default(autoincrement())
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int          @unique // Enforces one-to-one
+  user           User         @relation(fields: [userId], references: [id])
+  userId         String
+  response       String?
+  respondedAt    DateTime     @default(now())
+}
+
+model NotificationRead {
+  id             Int          @id @default(autoincrement())
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int
+  user           User         @relation(fields: [userId], references: [id])
+  userId         String
+  readAt         DateTime     @default(now())
+
+  @@unique([notificationId, userId])
 }

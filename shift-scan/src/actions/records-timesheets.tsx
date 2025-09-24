@@ -343,14 +343,29 @@ export async function adminUpdateTimesheet(formData: FormData) {
     throw new Error("Editor ID is required for tracking changes.");
   }
 
-  const editorFullName = await prisma.user.findUnique({
+  const fetchedEditor = await prisma.user.findUnique({
     where: { id: editorId },
     select: { firstName: true, lastName: true },
   });
 
-  if (!editorFullName) {
+  if (!fetchedEditor) {
     throw new Error("You are not permitted to edit");
   }
+
+  const editorFullName = `${fetchedEditor.firstName} ${fetchedEditor.lastName}`;
+
+  const timesheet = await prisma.timeSheet.findUnique({
+    where: { id },
+    select: {
+      User: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  if (!timesheet) {
+    throw new Error("Timesheet not found");
+  }
+
+  const userFullname = `${timesheet.User.firstName} ${timesheet.User.lastName}`;
 
   // Parse the changes and data
   const changes = changesJson ? JSON.parse(changesJson) : {};
@@ -525,10 +540,64 @@ export async function adminUpdateTimesheet(formData: FormData) {
       });
     }
   });
+
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
   return {
     success: true,
-    editorLog: editorFullName,
+    editorFullName,
+    userFullname,
   };
+}
+
+export async function adminSetNotificationToRead(
+  notificationId: number,
+  userId: string,
+  response: string = "READ",
+) {
+  try {
+    if (!notificationId || !userId || !response) {
+      throw new Error("Notification ID, User ID, and Response are required.");
+    }
+
+    await prisma.notificationRead.upsert({
+      where: {
+        notificationId_userId: {
+          notificationId,
+          userId,
+        },
+      },
+      update: {
+        readAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        readAt: new Date(),
+      },
+    });
+
+    await prisma.notificationResponse.upsert({
+      where: { notificationId },
+      update: {
+        response,
+        respondedAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        response,
+        respondedAt: new Date(),
+      },
+    });
+
+    revalidateTag("notifications");
+    return { success: true };
+  } catch (error) {
+    console.error(
+      `Error setting notification ${notificationId} to read:`,
+      error,
+    );
+    return { success: false };
+  }
 }

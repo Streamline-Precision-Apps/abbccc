@@ -20,7 +20,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -120,8 +119,8 @@ export default function TruckVerificationStep({
       }
 
       // Use the new transaction-based function
-      const response = await handleTruckTimeSheet(formData);
-      if (response && type === "switchJobs") {
+      const responseAction = await handleTruckTimeSheet(formData);
+      if (responseAction.success && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -129,9 +128,9 @@ export default function TruckVerificationStep({
           },
           body: JSON.stringify({
             topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
+            title: "Timecard Approval Needed",
+            message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
+            link: `/admins/timesheets?id=${responseAction}`,
           }),
         });
         await response.json();

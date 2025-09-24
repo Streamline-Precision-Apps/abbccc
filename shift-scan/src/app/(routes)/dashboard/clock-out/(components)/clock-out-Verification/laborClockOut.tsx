@@ -68,7 +68,7 @@ export const LaborClockOut = ({
       formData.append("wasInjured", wasInjured.toString());
 
       const result = await updateTimeSheet(formData);
-      if (result) {
+      if (result.success) {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -76,9 +76,9 @@ export const LaborClockOut = ({
           },
           body: JSON.stringify({
             topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets`,
+            title: "Timecard Approval Needed",
+            message: `#${result.timesheetId} has been submitted by ${result.userFullName} for approval.`,
+            link: `/admins/timesheets?id=${result.timesheetId}`,
           }),
         });
         const data = await response.json();

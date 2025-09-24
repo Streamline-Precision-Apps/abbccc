@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { id } from "date-fns/locale";
 
 export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
 
@@ -34,6 +35,7 @@ export async function GET(req: Request) {
   const status = searchParams.get("status") || "all";
   const search = searchParams.get("search")?.trim() || "";
   // Optional filters
+  const idParams = searchParams.getAll("id");
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
   const userIdFilter = searchParams.get("userId");
@@ -50,6 +52,17 @@ export async function GET(req: Request) {
   try {
     // Build filter object for Prisma where
     const filter: Record<string, unknown> = {};
+    if (idParams.length === 1) {
+      // Single id
+      const idNum = Number(idParams[0]);
+      if (!isNaN(idNum)) filter.id = idNum;
+    } else if (idParams.length > 1) {
+      // Multiple ids
+      const idNums = idParams
+        .map((idStr) => Number(idStr))
+        .filter((n) => !isNaN(n));
+      if (idNums.length > 0) filter.id = { in: idNums };
+    }
     if (jobsiteId) filter.Jobsite = { code: jobsiteId };
     if (costCode) filter.CostCode = { code: costCode };
     if (userIdFilter) filter.User = { id: userIdFilter };

@@ -229,15 +229,6 @@ export async function saveDraftToPending(
   title?: string,
 ) {
   try {
-    console.log("saveDraftToPending called with:", {
-      formData,
-      formTemplateId,
-      userId,
-      formType,
-      submissionId,
-      title,
-    });
-
     if (submissionId) {
       // Fetch the existing submission to compare with the new data
       const existingSubmission = await prisma.formSubmission.findUnique({
@@ -278,6 +269,14 @@ export async function saveDraftToPending(
           submittedAt: new Date().toISOString(),
           status: "PENDING", // Change status to PENDING
         },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
 
       console.log("Submission updated successfully:", updatedSubmission.id);
@@ -294,6 +293,14 @@ export async function saveDraftToPending(
           data: formData,
           status: "PENDING",
           submittedAt: new Date().toISOString(),
+        },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       });
 
