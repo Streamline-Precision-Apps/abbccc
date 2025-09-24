@@ -69,12 +69,7 @@ export const LaborClockOut = ({
       formData.append("timeSheetComments", commentsValue);
       formData.append("wasInjured", wasInjured.toString());
 
-      // Use offline-first approach for updateTimeSheet
-      const result = await executeOfflineFirstAction(
-        "updateTimeSheet",
-        updateTimeSheet,
-        formData,
-      );
+      const result = await updateTimeSheet(formData);
 
       if (result.success) {
         // Only try to send notifications when online

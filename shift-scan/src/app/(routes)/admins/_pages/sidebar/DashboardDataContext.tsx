@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
+import { useSession } from "next-auth/react";
 
 export type DashboardData = {
   clockedInUsers: number;
