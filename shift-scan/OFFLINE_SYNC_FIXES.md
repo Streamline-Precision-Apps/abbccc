@@ -42,14 +42,14 @@ formData.append("isOfflineSync", "true");
 // Added before database operations
 const userExists = await prisma.user.findUnique({
   where: { id: userId },
-  select: { id: true, firstName: true, lastName: true, clockedIn: true }
+  select: { id: true, firstName: true, lastName: true, clockedIn: true },
 });
 
 if (!userExists) {
   console.error(`[TIMESHEET] User ${userId} not found in database during sync`);
   return {
     message: `User account not found (ID: ${userId}). Please log in again.`,
-    error: "USER_NOT_FOUND"
+    error: "USER_NOT_FOUND",
   };
 }
 ```
@@ -70,11 +70,15 @@ if (!session && !isOfflineSync) {
 
 ```typescript
 // Don't retry user validation errors
-if (action.lastError.includes("USER_NOT_FOUND") || 
-    action.lastError.includes("User account not found") ||
-    action.lastError.includes("Unauthorized user")) {
+if (
+  action.lastError.includes("USER_NOT_FOUND") ||
+  action.lastError.includes("User account not found") ||
+  action.lastError.includes("Unauthorized user")
+) {
   action.status = "failed";
-  console.warn(`[SYNC] User validation failed for action ${action.actionName} - marking as failed, no retries`);
+  console.warn(
+    `[SYNC] User validation failed for action ${action.actionName} - marking as failed, no retries`,
+  );
   failedCount++;
 } else if (action.retryCount >= 3) {
   // Regular retry logic for other errors

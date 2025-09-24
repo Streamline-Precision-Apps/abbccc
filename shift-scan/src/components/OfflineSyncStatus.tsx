@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getOfflineActionsStatus, type OfflineTimesheet } from "@/utils/offlineFirstWrapper";
+import {
+  getOfflineActionsStatus,
+  type OfflineTimesheet,
+} from "@/utils/offlineFirstWrapper";
 
 export default function OfflineSyncStatus() {
   const [status, setStatus] = useState({
     pending: [] as OfflineTimesheet[],
     syncing: [] as OfflineTimesheet[],
     failed: [] as OfflineTimesheet[],
-    total: 0
+    total: 0,
   });
   const [isVisible, setIsVisible] = useState(false);
 
@@ -43,7 +46,7 @@ export default function OfflineSyncStatus() {
           ×
         </button>
       </div>
-      
+
       <div className="space-y-2">
         {syncing.length > 0 && (
           <div className="flex items-center text-blue-600">
@@ -51,29 +54,38 @@ export default function OfflineSyncStatus() {
             <span className="text-sm">Syncing {syncing.length} item(s)...</span>
           </div>
         )}
-        
+
         {pending.length > 0 && (
           <div className="flex items-center text-yellow-600">
             <div className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></div>
-            <span className="text-sm">{pending.length} item(s) waiting to sync</span>
+            <span className="text-sm">
+              {pending.length} item(s) waiting to sync
+            </span>
           </div>
         )}
-        
+
         {failed.length > 0 && (
           <div className="flex items-center text-red-600">
             <div className="w-2 h-2 bg-red-600 rounded-full mr-2"></div>
-            <span className="text-sm">{failed.length} item(s) failed to sync</span>
+            <span className="text-sm">
+              {failed.length} item(s) failed to sync
+            </span>
           </div>
         )}
       </div>
-      
+
       {failed.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-200">
           <details>
-            <summary className="text-xs text-gray-600 cursor-pointer">View failed items</summary>
+            <summary className="text-xs text-gray-600 cursor-pointer">
+              View failed items
+            </summary>
             <div className="mt-2 space-y-1">
-              {failed.map(action => (
-                <div key={action.id} className="text-xs text-red-600 bg-red-50 p-2 rounded">
+              {failed.map((action) => (
+                <div
+                  key={action.id}
+                  className="text-xs text-red-600 bg-red-50 p-2 rounded"
+                >
                   <div className="font-medium">{action.actionName}</div>
                   {action.lastError && (
                     <div className="text-red-500 mt-1">{action.lastError}</div>
