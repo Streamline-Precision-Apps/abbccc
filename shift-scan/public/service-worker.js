@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shift-scan-cache-v18'; // Fixed port mismatch issue for offline development
+const CACHE_NAME = 'shift-scan-cache-v19'; // Fixed cache name synchronization and critical issues
 const STATIC_ASSETS = [
   '/manifest.json',
   '/offline.html',

@@ -145,15 +145,21 @@ export async function syncOfflineActions(): Promise<{ success: number; failed: n
       action.status = "syncing";
       updateOfflineAction(action);
 
-      // Reconstruct FormData from stored object
+      // Reconstruct FormData from stored object with better handling
       const formData = new FormData();
       Object.entries(action.formData).forEach(([key, value]) => {
         if (value instanceof Blob) {
           formData.append(key, value);
-        } else {
+        } else if (value !== null && value !== undefined) {
           formData.append(key, String(value));
         }
       });
+      
+      // Add flag to indicate this is an offline sync
+      formData.append("isOfflineSync", "true");
+
+      // Debug: Log the reconstructed FormData
+      console.log(`[SYNC] Reconstructed FormData for ${action.actionName}:`, Object.fromEntries(formData.entries()));
 
       // Import and execute the appropriate server action
       let serverAction;
@@ -219,9 +225,17 @@ export async function syncOfflineActions(): Promise<{ success: number; failed: n
       action.retryCount = (action.retryCount || 0) + 1;
       action.lastError = error instanceof Error ? error.message : 'Unknown error';
       
-      if (action.retryCount >= 3) {
+      // Check if it's a user validation error - don't retry these
+      if (action.lastError.includes("USER_NOT_FOUND") || 
+          action.lastError.includes("User account not found") ||
+          action.lastError.includes("Unauthorized user")) {
+        action.status = "failed";
+        console.warn(`[SYNC] User validation failed for action ${action.actionName} - marking as failed, no retries`);
+        failedCount++;
+      } else if (action.retryCount >= 3) {
         action.status = "failed";
         console.error(`[SYNC] Max retries reached for ${action.actionName}, marking as failed`);
+        failedCount++;
       } else {
         action.status = "pending";
       }

@@ -10,6 +10,7 @@ import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import OfflineCSSFallback from "../components/OfflineCSSFallback";
 import CSSDebugger from "../components/CSSDebugger";
 import OfflineStatusManager from "../components/OfflineStatusManager";
+import OfflineSyncStatus from "../components/OfflineSyncStatus";
 import GlobalErrorHandler from "../components/GlobalErrorHandler";
 import "@/app/globals.css";
 import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManager";
@@ -76,6 +77,8 @@ export default async function RootLayout({
               <CSSDebugger />
               {/* Offline status and caching manager */}
               <OfflineStatusManager />
+              {/* Offline sync status indicator */}
+              <OfflineSyncStatus />
             </Providers>
           </NextIntlClientProvider>
         </main>

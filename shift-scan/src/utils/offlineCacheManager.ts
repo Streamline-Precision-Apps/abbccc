@@ -45,7 +45,7 @@ export const checkOfflineReadiness = async (): Promise<{
   }
 
   try {
-    const cache = await caches.open('shift-scan-cache-v5');
+    const cache = await caches.open('shift-scan-cache-v19');
     const cachedRequests = await cache.keys();
     
     const cachedRoutes = cachedRequests

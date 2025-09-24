@@ -349,10 +349,18 @@ export async function forcePendingIfEnded(id: number) {
 //---------- Transaction to create a new time sheet for General
 export async function handleGeneralTimeSheet(formData: FormData) {
   try {
+    // Check session, but allow sync operations to proceed even without session
     const session = await auth();
-    if (!session) {
+    const isOfflineSync = formData.get("isOfflineSync") === "true";
+    
+    if (!session && !isOfflineSync) {
       throw new Error("Unauthorized user");
     }
+    
+    if (isOfflineSync) {
+      console.log("[handleGeneralTimeSheet] Processing offline sync for user:", formData.get("userId"));
+    }
+    
     console.log("[handleGeneralTimeSheet] formData:", formData);
     let newTimeSheet: number | null = null;
     let previousTimeSheetId: number | null = null;
@@ -369,6 +377,23 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
     }
+    
+    // Validate user exists before creating timesheet (especially for offline sync)
+    const userExists = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, firstName: true, lastName: true, clockedIn: true }
+    });
+
+    if (!userExists) {
+      console.error(`[TIMESHEET] User ${userId} not found in database during sync`);
+      return {
+        message: `User account not found (ID: ${userId}). Please log in again.`,
+        error: "USER_NOT_FOUND"
+      };
+    }
+
+    console.log(`[TIMESHEET] User validation passed for ${userExists.firstName} ${userExists.lastName} (${userId})`);
+    
     // Only DB operations in transaction
     await prisma.$transaction(async (prisma) => {
       // Step 1: Create a new TimeSheet
