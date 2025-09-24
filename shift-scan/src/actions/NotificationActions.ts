@@ -142,3 +142,45 @@ export async function updateNotificationReadStatus({
     throw new Error("Failed to update read status");
   }
 }
+
+export async function markAllNotificationsAsRead() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Fetch all unread notifications for the user
+    const unreadNotifications = await prisma.notification.findMany({
+      where: {
+        Reads: {
+          none: {
+            userId: userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    // Create read records for all unread notifications
+    const readRecords = unreadNotifications.map((notification) => ({
+      notificationId: notification.id,
+      userId: userId,
+      readAt: new Date(),
+    }));
+
+    if (readRecords.length > 0) {
+      await prisma.notificationRead.createMany({
+        data: readRecords,
+        skipDuplicates: true, // Avoid duplicates if any
+      });
+    }
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    throw new Error("Failed to mark all as read");
+  }
+}

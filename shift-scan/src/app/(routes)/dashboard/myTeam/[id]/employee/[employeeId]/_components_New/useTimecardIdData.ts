@@ -245,8 +245,8 @@ export function useTimecardIdData(id: string) {
           },
           body: JSON.stringify({
             topic: "timecards-changes",
-            title: "A Timecard was Modified",
-            message: `Timecard was modified by ${result.editorLog?.User?.firstName} ${result.editorLog?.User?.lastName}`,
+            title: "Timecard Modified ",
+            message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${id}.`,
             link: `/admins/timesheets?id=${id}`,
           }),
         });

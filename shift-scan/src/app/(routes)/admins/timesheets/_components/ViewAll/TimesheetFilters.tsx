@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { Combobox } from "@/components/ui/combobox";
 import {
   Popover,
@@ -24,6 +24,7 @@ export interface FilterOptions {
   status: string[];
   changes: string[];
   id: string[];
+  notificationId: string[];
 }
 
 interface FilterPopoverProps {
@@ -31,7 +32,9 @@ interface FilterPopoverProps {
   onUseFiltersChange?: (useFilters: boolean) => void;
   jobsites?: { code: string; name: string }[];
   costCodes?: { code: string; name: string }[];
-  filters?: FilterOptions; // Add filters prop for controlled state
+  filters: FilterOptions; // Add filters prop for controlled state
+  handleClearFilters: () => Promise<void>;
+  setFilters: Dispatch<SetStateAction<FilterOptions>>;
 }
 
 const TimesheetFilters: React.FC<FilterPopoverProps> = ({
@@ -39,26 +42,11 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
   onUseFiltersChange,
   jobsites = [],
   costCodes = [],
-  filters: parentFilters,
+  filters,
+  setFilters,
+  handleClearFilters,
 }) => {
   const [open, setOpen] = useState(false);
-  const [filters, setFilters] = useState<FilterOptions>(
-    parentFilters || {
-      jobsiteId: [],
-      costCode: [],
-      dateRange: {},
-      status: [],
-      changes: [],
-      id: [],
-    },
-  );
-
-  // Sync local filters state with parentFilters prop
-  useEffect(() => {
-    if (parentFilters) {
-      setFilters(parentFilters);
-    }
-  }, [parentFilters]);
 
   const [costCodeOptions, setCostCodeOptions] = useState<
     { value: string; label: string }[]
@@ -102,30 +90,14 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
     setOpen(false);
   };
 
-  const handleClearFilters = async () => {
-    const emptyFilters: FilterOptions = {
-      jobsiteId: [],
-      costCode: [],
-      dateRange: {},
-      status: [],
-      changes: [],
-      id: [],
-    };
-
-    setFilters(emptyFilters);
-    onFilterChange(emptyFilters);
-
-    if (onUseFiltersChange) {
-      onUseFiltersChange(false);
-    }
-  };
-
   const getActiveFilterCount = () => {
     return (
       filters.jobsiteId.length +
       filters.costCode.length +
       (filters.dateRange.from || filters.dateRange.to ? 1 : 0) +
       filters.status.length +
+      filters.id.length +
+      filters.notificationId.length +
       filters.changes.length
     );
   };
@@ -286,7 +258,11 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                 onClick={handleClearFilters}
                 className="text-xs"
               >
-                Clear
+                {getActiveFilterCount() > 1
+                  ? "Remove Filters"
+                  : getActiveFilterCount() === 1
+                    ? "Remove Filter"
+                    : "Clear"}
               </Button>
               <Button
                 variant="default"

@@ -236,8 +236,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
           },
           body: JSON.stringify({
             topic: "timecards-changes",
-            title: "A Timecard was Modified",
-            message: `Timecard was modified by ${result.editorLog.firstName} ${result.editorLog.lastName}`,
+            title: "Timecard Modified ",
+            message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${timesheetId}.`,
             link: `/admins/timesheets?id=${timesheetId}`,
           }),
         });

@@ -78,6 +78,7 @@ export interface FilterOptions {
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
+  notificationId: string[];
   id: string[];
 }
 
@@ -134,6 +135,7 @@ export default function useAllTimeSheetData({
     status: [],
     changes: [],
     id: [],
+    notificationId: [],
   });
   const [costCodes, setCostCodes] = useState<{ code: string; name: string }[]>(
     [],
@@ -258,11 +260,11 @@ export default function useAllTimeSheetData({
         jobsiteId: jobsiteId ? [jobsiteId] : prev.jobsiteId,
         costCode: costCode ? [costCode] : prev.costCode,
         id: id ? [id] : prev.id,
+        notificationId: notificationId ? [notificationId] : prev.notificationId,
       }));
-      router.replace("/admins/timesheets");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [jobsiteId, costCode, id, notificationId]);
 
   // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
   const fetchTimesheets = async () => {
@@ -580,6 +582,24 @@ export default function useAllTimeSheetData({
     }
   };
 
+  const handleClearFilters = async () => {
+    const emptyFilters: FilterOptions = {
+      jobsiteId: [],
+      costCode: [],
+      dateRange: {},
+      status: [],
+      changes: [],
+      id: [],
+      notificationId: [],
+    };
+    router.replace("/admins/timesheets");
+    setFilters(emptyFilters);
+    //avoids race condition with router.replace
+    setTimeout(() => {
+      reFilterPage();
+    }, 500);
+  };
+
   return {
     inputValue,
     setInputValue,
@@ -633,5 +653,6 @@ export default function useAllTimeSheetData({
     jobsites,
     notificationIds,
     setNotificationIds,
+    handleClearFilters,
   };
 }

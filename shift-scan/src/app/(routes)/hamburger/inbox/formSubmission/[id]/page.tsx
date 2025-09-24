@@ -517,7 +517,7 @@ export default function DynamicForm({
           body: JSON.stringify({
             topic: "form-submissions",
             title: "New Form Submission",
-            message: `A form submission has been made and is awaiting approval`,
+            message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${result.formTemplateId}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
           }),
         });

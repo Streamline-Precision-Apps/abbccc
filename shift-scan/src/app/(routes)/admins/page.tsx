@@ -7,6 +7,7 @@ import NotificationActions from "./_components/NotificationAction";
 import { JsonValue } from "../../../../prisma/generated/prisma/runtime/library";
 import { Notification } from "../../../../prisma/generated/prisma/client";
 import { useSession } from "next-auth/react";
+import NotificationActionsList from "./_components/NotificationAction";
 
 export type ResolvedNotification = {
   id: number;
@@ -75,26 +76,26 @@ export default function Admins() {
   }, [fetchData]);
 
   return (
-    <div className="flex flex-col h-full w-full p-4 gap-4">
+    <div className="flex flex-col h-screen w-full p-4 ">
       {/* Main content goes here */}
-      <div className="flex flex-col h-12 w-full">
+      <div className="flex flex-col h-[5vh] w-full">
         <PageHeaderContainer
           loading={isRefreshing}
           headerText="Admin Dashboard"
-          descriptionText="Quick Actions - review pending tasks & keep track of new entries."
+          descriptionText="Track important updates and manage pending actions in one place."
           refetch={() => {
             fetchData();
           }}
         />
       </div>
 
-      <div className="flex flex-row h-[calc(100vh-8rem)] w-full gap-4">
+      <div className="flex flex-row h-[95vh] w-full overflow-y-hidden gap-x-4 pt-4 ">
         <NotificationTable
           data={data || []}
           totalCount={totalCount}
           loading={isLoading || isRefreshing}
         />
-        <NotificationActions
+        <NotificationActionsList
           resolved={resolved}
           currentUserId={currentUserId}
         />

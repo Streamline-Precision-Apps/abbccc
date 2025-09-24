@@ -53,6 +53,14 @@ export async function createEquipment(formData: FormData) {
           createdById,
           ownershipType,
         },
+        include: {
+          createdBy: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
 
       if (destination) {

@@ -343,14 +343,29 @@ export async function adminUpdateTimesheet(formData: FormData) {
     throw new Error("Editor ID is required for tracking changes.");
   }
 
-  const editorFullName = await prisma.user.findUnique({
+  const fetchedEditor = await prisma.user.findUnique({
     where: { id: editorId },
     select: { firstName: true, lastName: true },
   });
 
-  if (!editorFullName) {
+  if (!fetchedEditor) {
     throw new Error("You are not permitted to edit");
   }
+
+  const editorFullName = `${fetchedEditor.firstName} ${fetchedEditor.lastName}`;
+
+  const timesheet = await prisma.timeSheet.findUnique({
+    where: { id },
+    select: {
+      User: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  if (!timesheet) {
+    throw new Error("Timesheet not found");
+  }
+
+  const userFullname = `${timesheet.User.firstName} ${timesheet.User.lastName}`;
 
   // Parse the changes and data
   const changes = changesJson ? JSON.parse(changesJson) : {};
@@ -525,57 +540,15 @@ export async function adminUpdateTimesheet(formData: FormData) {
       });
     }
   });
+
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
   return {
     success: true,
-    editorLog: editorFullName,
+    editorFullName,
+    userFullname,
   };
 }
-
-//  POST /admins/timesheets 500 in 396ms
-// Error setting notification 4 to read: Error [PrismaClientValidationError]:
-// Invalid `prisma.notification.update()` invocation:
-
-// {
-//   where: {
-//     id: 4
-//   },
-//   data: {
-//     Responses: {
-//     ~~~~~~~~~
-//       create: {
-//         user: {
-//           connect: {
-//             id: "7"
-//           }
-//         },
-//         response: "READ"
-//       }
-//     },
-//     Reads: {
-//       create: {
-//         user: {
-//           connect: {
-//             id: "7"
-//           }
-//         }
-//       }
-//     },
-// ?   topic?: String | NullableStringFieldUpdateOperationsInput | Null,
-// ?   title?: String | StringFieldUpdateOperationsInput,
-// ?   body?: String | NullableStringFieldUpdateOperationsInput | Null,
-// ?   url?: String | NullableStringFieldUpdateOperationsInput | Null,
-// ?   metadata?: NullableJsonNullValueInput | Json,
-// ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
-// ?   pushedAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
-// ?   pushAttempts?: Int | IntFieldUpdateOperationsInput,
-// ?   readAt?: DateTime | NullableDateTimeFieldUpdateOperationsInput | Null,
-// ?   Response?: NotificationResponseUpdateOneWithoutNotificationNestedInput
-//   }
-// }
-
-// what is the error here?
 
 export async function adminSetNotificationToRead(
   notificationId: number,

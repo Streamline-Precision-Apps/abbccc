@@ -132,9 +132,8 @@ export default function AddEquipmentForm({}) {
             },
             body: JSON.stringify({
               topic: "items",
-              title: "New Equipment Submission",
-              message:
-                "An equipment item has been created and is pending approval.",
+              title: "Equipment Created",
+              message: `${response.data?.name || "An equipment"} has been submitted by ${response.data?.createdBy?.firstName || ""} ${response.data?.createdBy?.lastName || "a user"} and is pending approval.`,
               link: "/admins/equipment?isPendingApproval=true",
             }),
           },

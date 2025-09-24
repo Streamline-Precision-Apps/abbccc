@@ -35,10 +35,10 @@ export function NotificationTable({
   });
 
   return (
-    <div className="flex-1 bg-white rounded-lg shadow-md">
-      <div className="p-2 px-4 flex flex-col border-b border-gray-200">
-        <div className="flex flex-row justify-between items-center">
-          <h2 className="text-lg">Needs Attention</h2>
+    <div className="h-full w-full bg-white rounded-lg shadow-md">
+      <div className="p-3  flex flex-col border-b border-gray-200">
+        <div className="flex justify-center items-center">
+          <h2 className="text-md">Needs Attention</h2>
         </div>
       </div>
       <div className="rounded-lg w-full h-full flex flex-col flex-1">

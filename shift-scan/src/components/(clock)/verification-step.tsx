@@ -107,7 +107,7 @@ export default function VerificationStep({
 
       // Use the new transaction-based function
       const responseAction = await handleGeneralTimeSheet(formData);
-      if (responseAction && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -115,9 +115,9 @@ export default function VerificationStep({
           },
           body: JSON.stringify({
             topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
-            link: `/admins/timesheets?id=${responseAction}`,
+            title: "Timecard Approval Needed",
+            message: `#${responseAction.createdTimeSheet.id} has been submitted by ${responseAction.createdTimeSheet.User.firstName} ${responseAction.createdTimeSheet.User.lastName} for approval.`,
+            link: `/admins/timesheets?id=${responseAction.createdTimeSheet.id}`,
           }),
         });
         await response.json();

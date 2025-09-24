@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { FormStatus, WorkType } from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { formatISO } from "date-fns";
+import { success } from "zod";
 
 // Get all TimeSheets
 type TimesheetUpdate = {
@@ -354,7 +355,6 @@ export async function handleGeneralTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleGeneralTimeSheet] formData:", formData);
-    let newTimeSheet: number | null = null;
     let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
@@ -382,8 +382,16 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           workType: "LABOR",
           status: "DRAFT",
         },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
-      newTimeSheet = createdTimeSheet.id;
+
       // Update user status if timesheet created successfully
       if (createdTimeSheet) {
         await prisma.user.update({
@@ -408,9 +416,8 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           updatedPrev,
         );
       }
-      return newTimeSheet;
+      return createdTimeSheet;
     });
-    newTimeSheet = createdTimeSheet;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -420,7 +427,7 @@ export async function handleGeneralTimeSheet(formData: FormData) {
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
     revalidatePath("/dashboard");
-    return newTimeSheet;
+    return { success: true, createdTimeSheet };
   } catch (error) {
     console.error("[handleGeneralTimeSheet] Error in transaction:", error);
     throw error;
@@ -438,7 +445,6 @@ export async function handleMechanicTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleMechanicTimeSheet] formData:", formData);
-    let newTimeSheet: number | null = null;
     let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let endTime: string | null = null;
@@ -466,8 +472,15 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           workType: "MECHANIC",
           status: "DRAFT",
         },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
-      newTimeSheet = createdTimeSheet.id;
 
       if (createdTimeSheet) {
         await prisma.user.update({
@@ -492,9 +505,8 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           updatedPrev,
         );
       }
-      return newTimeSheet;
+      return createdTimeSheet;
     });
-    newTimeSheet = createdTimeCard;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -504,7 +516,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
     revalidatePath("/dashboard");
-    return newTimeSheet;
+    return { success: true, createdTimeCard };
   } catch (error) {
     console.error("[handleMechanicTimeSheet] Error in transaction:", error);
     throw error;
@@ -521,7 +533,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
       throw new Error("Unauthorized user");
     }
     console.log("[handleTascoTimeSheet] formData:", formData);
-    let newTimeSheet: number | null = null;
     let previousTimeSheetId: number | null = null;
     let previousTimeSheetComments: string | null = null;
     let endTime: string | null = null;
@@ -570,8 +581,16 @@ export async function handleTascoTimeSheet(formData: FormData) {
             },
           },
         },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
-      newTimeSheet = createdTimeSheet.id;
+
       if (createdTimeSheet) {
         await prisma.user.update({
           where: { id: userId },
@@ -590,9 +609,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
           },
         });
       }
-      return newTimeSheet;
+      return createdTimeSheet;
     });
-    newTimeSheet = createdTimeCard;
 
     // Revalidate paths after transaction
     revalidatePath("/");
@@ -602,7 +620,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
     revalidatePath("/dashboard");
-    return newTimeSheet;
+    return { success: true, createdTimeCard };
   } catch (error) {
     console.error("[handleTascoTimeSheet] Error in transaction:", error);
     throw error;
@@ -615,7 +633,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
 // --- Transaction to handle Truck Driver TimeSheet
 export async function handleTruckTimeSheet(formData: FormData) {
   try {
-    let newTimeSheet: number | null = null;
+    let newTimeSheet = null;
     let previousTimeSheetId: number | null = null;
     let previoustimeSheetComments: string | null = null;
     let type: string | null = null;
@@ -645,7 +663,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
     if (type === "switchJobs") {
       previousTimeSheetId = Number(formData.get("id"));
       // Only use transaction if updating two timesheets
-      const createdTimecard = await prisma.$transaction(async (prisma) => {
+      newTimeSheet = await prisma.$transaction(async (prisma) => {
         // Step 1: Create a new TimeSheet
         const createdTimeSheet = await prisma.timeSheet.create({
           data: {
@@ -666,8 +684,16 @@ export async function handleTruckTimeSheet(formData: FormData) {
               },
             },
           },
+          include: {
+            User: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
         });
-        newTimeSheet = createdTimeSheet.id;
+
         if (createdTimeSheet) {
           await prisma.user.update({
             where: { id: userId },
@@ -686,12 +712,11 @@ export async function handleTruckTimeSheet(formData: FormData) {
             },
           });
         }
-        return createdTimeSheet.id;
+        return createdTimeSheet;
       });
-      newTimeSheet = createdTimecard;
     } else {
       // Just create, no transaction needed
-      const createdTimeSheet = await prisma.timeSheet.create({
+      newTimeSheet = await prisma.timeSheet.create({
         data: {
           date: formatISO(formData.get("date") as string),
           Jobsite: { connect: { id: jobsiteId } },
@@ -710,9 +735,17 @@ export async function handleTruckTimeSheet(formData: FormData) {
             },
           },
         },
+        include: {
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
-      newTimeSheet = createdTimeSheet.id;
-      if (createdTimeSheet) {
+
+      if (newTimeSheet) {
         await prisma.user.update({
           where: { id: userId },
           data: {
@@ -730,7 +763,7 @@ export async function handleTruckTimeSheet(formData: FormData) {
     revalidatePath("/admins/personnel");
     revalidatePath("/admins");
     revalidatePath("/dashboard");
-    return newTimeSheet;
+    return { success: true, createdTimeCard: newTimeSheet };
   } catch (error) {
     console.error("Error in transaction:", error);
     throw error; // Re-throw the error to handle it in the calling function
@@ -810,7 +843,6 @@ export async function updateTimeSheet(formData: FormData) {
     }
 
     const endTime = formatISO(endTimeString);
-    console.log("endTime:", endTime);
 
     // Update the timesheet with new data
     const updatedTimeSheet = await prisma.timeSheet.update({
@@ -820,6 +852,11 @@ export async function updateTimeSheet(formData: FormData) {
         comment: (formData.get("timeSheetComments") as string) || null,
         status: "PENDING", // Set status to PENDING
         wasInjured: formData.get("wasInjured") === "true",
+      },
+      include: {
+        User: {
+          select: { firstName: true, lastName: true },
+        },
       },
     });
 
@@ -832,16 +869,20 @@ export async function updateTimeSheet(formData: FormData) {
         },
       });
     }
-
+    const userFullName = `${updatedTimeSheet.User.firstName} ${updatedTimeSheet.User.lastName}`;
     console.log("Timesheet updated successfully.");
     console.log(updatedTimeSheet);
 
     // Optionally, you can handle revalidation of paths here or elsewhere
     revalidatePath(`/`);
-    return true;
+    return {
+      success: true,
+      timesheetId: updatedTimeSheet.id,
+      userFullName,
+    };
   } catch (error) {
     console.error("Error updating timesheet:", error);
-    return false;
+    return { success: false };
   }
 }
 //---------

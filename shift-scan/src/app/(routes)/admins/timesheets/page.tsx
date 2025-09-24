@@ -1,7 +1,5 @@
 "use client";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-// Removed duplicate import of useEffect
 import {
   Tooltip,
   TooltipTrigger,
@@ -76,6 +74,7 @@ export default function AdminTimesheets() {
     filters,
     notificationIds,
     setNotificationIds,
+    handleClearFilters,
   } = useAllTimeSheetData({
     jobsiteId,
     costCode,
@@ -104,78 +103,14 @@ export default function AdminTimesheets() {
           />
 
           <div className="w-full min-w-[40px] max-h-10 flex flex-row">
-            {/* <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="bg-white h-full w-full max-w-[40px] justify-center items-center"
-                >
-                  <img
-                    src="/calendar.svg"
-                    alt="Filter"
-                    className="h-8 w-8 object-contain p-2 "
-                  />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                side="right"
-                className="min-w-[320px] p-4 "
-              >
-                <div className="">
-                  <div className="flex items-center justify-center gap-2 overflow-visible">
-                    <Calendar
-                      mode="range"
-                      selected={dateRange}
-                      onSelect={(value) => {
-                        if (value?.from && !value?.to) {
-                          // Set from to start of day, to to end of day
-                          const from = new Date(value.from);
-                          from.setHours(0, 0, 0, 0);
-                          const to = new Date(value.from);
-                          to.setHours(23, 59, 59, 999);
-                          setDateRange({ from, to });
-                        } else if (value?.from && value?.to) {
-                          // Set from to start of from day, to to end of to day
-                          const from = new Date(value.from);
-                          from.setHours(0, 0, 0, 0);
-                          const to = new Date(value.to);
-                          to.setHours(23, 59, 59, 999);
-                          setDateRange({ from, to });
-                        } else {
-                          setDateRange({
-                            from: undefined,
-                            to: undefined,
-                          });
-                        }
-                      }}
-                      autoFocus
-                    />
-                  </div>
-                  <div className="flex items-center justify-center ">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="p-2 flex-shrink-0"
-                      onClick={() =>
-                        setDateRange({ from: undefined, to: undefined })
-                      }
-                      aria-label="Clear date range"
-                    >
-                      clear
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover> */}
-
             <TimesheetFilters
               filters={filters}
               onFilterChange={setFilters}
+              setFilters={setFilters}
               onUseFiltersChange={reFilterPage}
               jobsites={jobsites}
               costCodes={costCodes}
+              handleClearFilters={handleClearFilters}
             />
           </div>
         </div>

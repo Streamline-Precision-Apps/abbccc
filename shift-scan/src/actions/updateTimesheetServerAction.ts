@@ -29,6 +29,9 @@ export async function updateTimesheetServerAction(formData: FormData) {
 
     const transactionResult = await prisma.$transaction(async (tx) => {
       let editorLog = null;
+      let userFullname = null;
+      let editorFullName = null;
+
       if (Object.keys(changes).length > 0) {
         editorLog = await tx.timeSheetChangeLog.create({
           data: {
@@ -48,6 +51,9 @@ export async function updateTimesheetServerAction(formData: FormData) {
           },
         });
       }
+      editorFullName = editorLog
+        ? `${editorLog.User.firstName} ${editorLog.User.lastName}`
+        : "Unknown Editor";
 
       const updated = await tx.timeSheet.update({
         where: { id },
@@ -62,10 +68,19 @@ export async function updateTimesheetServerAction(formData: FormData) {
           Jobsite: true,
           CostCode: true,
           ChangeLogs: true,
+          User: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
       });
+      userFullname = updated
+        ? `${updated.User.firstName} ${updated.User.lastName}`
+        : "Unknown User";
 
-      return { updated, editorLog };
+      return { updated, editorLog, userFullname, editorFullName };
     });
 
     revalidateTag("timesheet");
@@ -73,6 +88,8 @@ export async function updateTimesheetServerAction(formData: FormData) {
       success: true,
       timesheet: transactionResult.updated,
       editorLog: transactionResult.editorLog,
+      userFullname: transactionResult.userFullname,
+      editorFullName: transactionResult.editorFullName,
     };
   } catch (error) {
     let message = "Failed to update timesheet.";

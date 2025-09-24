@@ -114,7 +114,7 @@ export default function MechanicVerificationStep({
 
       // Use the new transaction-based function
       const responseAction = await handleMechanicTimeSheet(formData);
-      if (responseAction && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -122,8 +122,8 @@ export default function MechanicVerificationStep({
           },
           body: JSON.stringify({
             topic: "timecard-submission",
-            title: "New Timesheet Submission",
-            message: `A new submission has been created and is pending approval.`,
+            title: "Timecard Approval Needed",
+            message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
             link: `/admins/timesheets?id=${responseAction}`,
           }),
         });
