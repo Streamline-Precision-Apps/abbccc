@@ -1,11 +1,5 @@
 import { Session } from "next-auth";
-import {
-  Permission,
-  WorkType,
-  FormStatus,
-  EquipmentState,
-  EquipmentTags,
-} from "../lib/enums";
+import { FormStatus, WorkType } from "../../prisma/generated/prisma/client";
 
 export type LogItem = {
   id: string;

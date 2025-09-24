@@ -8,8 +8,8 @@ import { createTag } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { Combobox } from "@/components/ui/combobox";
-import { ApprovalStatus } from "@/lib/enums";
 import { Textarea } from "@/components/ui/textarea";
+import { ApprovalStatus } from "../../../../../../prisma/generated/prisma/client";
 
 type JobsiteSummary = {
   id: string;

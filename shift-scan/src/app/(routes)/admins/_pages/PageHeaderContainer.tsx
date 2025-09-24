@@ -25,7 +25,7 @@ export const PageHeaderContainer = ({
 }: PageHeaderContainerProps) => {
   const { setOpen, open } = useSidebar();
   return (
-    <div className="h-full row-span-1 max-h-12 w-full flex flex-row justify-between gap-4 ">
+    <div className="h-full  max-h-12 w-full flex flex-row justify-between gap-4 ">
       <div className="w-full flex flex-row gap-5 ">
         <div className="flex items-center justify-center">
           <Button

@@ -517,7 +517,7 @@ export default function DynamicForm({
           body: JSON.stringify({
             topic: "form-submissions",
             title: "New Form Submission",
-            message: `A form submission has been made and is awaiting approval`,
+            message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${result.formTemplateId}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
           }),
         });
@@ -613,34 +613,29 @@ export default function DynamicForm({
     return (
       <Bases>
         <Contents>
-          <Grids rows={"7"} gap={"5"} className="h-full no-scrollbar">
-            <Holds
-              background={"white"}
-              className="row-span-1 h-full justify-center animate-pulse"
+          <Holds
+            background={"white"}
+            className="w-full h-full justify-center items-center animate-pulse"
+          >
+            <TitleBoxes
+              className="h-20 border-b-2 border-neutral-100"
+              onClick={() => {
+                router.back();
+              }}
             >
-              <TitleBoxes
-                onClick={() => {
-                  router.back();
-                }}
-              >
-                <Titles size={"md"}>{t("Loading")}</Titles>
-              </TitleBoxes>
-            </Holds>
-            <Holds
-              background={"white"}
-              className="w-full h-full row-span-7 animate-pulse"
-            >
-              <Contents width={"section"} className="h-full">
-                <form className="h-full">
-                  <Grids rows={"6"} gap={"3"} className="h-full w-full">
-                    <Holds className="row-start-1 row-end-7 h-full w-full justify-center ">
-                      <Spinner />
-                    </Holds>
-                  </Grids>
-                </form>
-              </Contents>
-            </Holds>
-          </Grids>
+              <div className="w-full h-full flex items-end pb-2 justify-center">
+                <Titles size={"md"} className="truncate max-w-[200px]">
+                  {t("Loading")}
+                </Titles>
+              </div>
+            </TitleBoxes>
+
+            <form className="h-full w-full overflow-y-auto no-scrollbar">
+              <Holds className="row-start-1 row-end-7 h-full w-full justify-center ">
+                <Spinner />
+              </Holds>
+            </form>
+          </Holds>
         </Contents>
       </Bases>
     );
@@ -649,11 +644,7 @@ export default function DynamicForm({
   // Render the form based on submission status
   return (
     <Bases>
-      <Contents>
-        <Grids rows={"7"} gap={"5"} className="w-full h-full">
-          {getFormComponent}
-        </Grids>
-      </Contents>
+      <Contents>{getFormComponent}</Contents>
     </Bases>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-import { ScanDataProvider } from "./context/JobSiteScanDataContext";
 import { SavedCostCodeProvider } from "./context/CostCodeContext";
 import { SessionProvider } from "next-auth/react";
 import { PayPeriodHoursProvider } from "./context/PayPeriodHoursContext";
@@ -37,34 +36,32 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   <TruckScanDataProvider>
                     <PayPeriodHoursProvider>
                       <SavedCostCodeProvider>
-                        <ScanDataProvider>
-                          <ScanDataEQProvider>
-                            <TimeSheetDataProvider>
-                              <EquipmentProvider>
-                                <EquipmentListProvider>
-                                  <JobSiteProvider>
-                                    <CostCodeProvider>
-                                      <PayPeriodTimeSheetProvider>
-                                        <NotificationProvider>
-                                          <CommentDataProvider>
-                                            <EquipmentIdProvider>
-                                              <DashboardDataProvider>
-                                                <UserProfileProvider>
-                                                  {children}
-                                                </UserProfileProvider>
-                                              </DashboardDataProvider>
-                                            </EquipmentIdProvider>
-                                          </CommentDataProvider>
-                                        </NotificationProvider>
-                                      </PayPeriodTimeSheetProvider>
-                                    </CostCodeProvider>
-                                  </JobSiteProvider>
-                                </EquipmentListProvider>
-                              </EquipmentProvider>
-                            </TimeSheetDataProvider>
-                          </ScanDataEQProvider>
-                        </ScanDataProvider>
-                      </SavedCostCodeProvider>
+                            <ScanDataEQProvider>
+                          <TimeSheetDataProvider>
+                            <EquipmentProvider>
+                              <EquipmentListProvider>
+                                <JobSiteProvider>
+                                  <CostCodeProvider>
+                                    <PayPeriodTimeSheetProvider>
+                                      <NotificationProvider>
+                                        <CommentDataProvider>
+                                          <EquipmentIdProvider>
+                                            <DashboardDataProvider>
+                                              <UserProfileProvider>
+                                                {children}
+                                              </UserProfileProvider>
+                                            </DashboardDataProvider>
+                                          </EquipmentIdProvider>
+                                        </CommentDataProvider>
+                                      </NotificationProvider>
+                                    </PayPeriodTimeSheetProvider>
+                                  </CostCodeProvider>
+                                </JobSiteProvider>
+                              </EquipmentListProvider>
+                            </EquipmentProvider>
+                          </TimeSheetDataProvider>
+                        </ScanDataEQProvider>
+                          </SavedCostCodeProvider>
                     </PayPeriodHoursProvider>
                   </TruckScanDataProvider>
                 </CurrentViewProvider>

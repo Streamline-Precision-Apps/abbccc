@@ -1,8 +1,13 @@
 "use server";
-import { LoadType, WorkType, materialUnit } from "@/lib/enums";
+
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ApprovalStatus } from "@/lib/enums";
+import {
+  ApprovalStatus,
+  LoadType,
+  WorkType,
+  materialUnit,
+} from "../../prisma/generated/prisma/client";
 import { TimesheetData } from "@/app/(routes)/admins/timesheets/_components/Edit/types";
 import { Prisma } from "../../prisma/generated/prisma";
 import { auth } from "@/auth";
@@ -291,7 +296,7 @@ export async function adminUpdateTimesheetStatus(
         ChangeLogs: {
           create: {
             changeReason: `Timesheet ${status === "APPROVED" ? "approved" : "denied"} on dashboard.`,
-            changes: JSON.stringify(changes), // Convert the changes object to a JSON string,
+            changes: changes as Prisma.InputJsonValue, // Convert the changes object to a JSON string,
             changedBy,
             changedAt: new Date(),
             numberOfChanges: 1,
@@ -320,6 +325,8 @@ export async function adminUpdateTimesheetStatus(
  * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
  */
 export async function adminUpdateTimesheet(formData: FormData) {
+  console.log("FormData entries:", Array.from(formData.entries()));
+
   const id = Number(formData.get("id"));
   const dataJson = formData.get("data") as string;
   const editorId = formData.get("editorId") as string;
@@ -336,14 +343,29 @@ export async function adminUpdateTimesheet(formData: FormData) {
     throw new Error("Editor ID is required for tracking changes.");
   }
 
-  const editorFullName = await prisma.user.findUnique({
+  const fetchedEditor = await prisma.user.findUnique({
     where: { id: editorId },
     select: { firstName: true, lastName: true },
   });
 
-  if (!editorFullName) {
+  if (!fetchedEditor) {
     throw new Error("You are not permitted to edit");
   }
+
+  const editorFullName = `${fetchedEditor.firstName} ${fetchedEditor.lastName}`;
+
+  const timesheet = await prisma.timeSheet.findUnique({
+    where: { id },
+    select: {
+      User: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  if (!timesheet) {
+    throw new Error("Timesheet not found");
+  }
+
+  const userFullname = `${timesheet.User.firstName} ${timesheet.User.lastName}`;
 
   // Parse the changes and data
   const changes = changesJson ? JSON.parse(changesJson) : {};
@@ -518,10 +540,64 @@ export async function adminUpdateTimesheet(formData: FormData) {
       });
     }
   });
+
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
   return {
     success: true,
-    editorLog: editorFullName,
+    editorFullName,
+    userFullname,
   };
+}
+
+export async function adminSetNotificationToRead(
+  notificationId: number,
+  userId: string,
+  response: string = "READ",
+) {
+  try {
+    if (!notificationId || !userId || !response) {
+      throw new Error("Notification ID, User ID, and Response are required.");
+    }
+
+    await prisma.notificationRead.upsert({
+      where: {
+        notificationId_userId: {
+          notificationId,
+          userId,
+        },
+      },
+      update: {
+        readAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        readAt: new Date(),
+      },
+    });
+
+    await prisma.notificationResponse.upsert({
+      where: { notificationId },
+      update: {
+        response,
+        respondedAt: new Date(),
+      },
+      create: {
+        notificationId,
+        userId,
+        response,
+        respondedAt: new Date(),
+      },
+    });
+
+    revalidateTag("notifications");
+    return { success: true };
+  } catch (error) {
+    console.error(
+      `Error setting notification ${notificationId} to read:`,
+      error,
+    );
+    return { success: false };
+  }
 }

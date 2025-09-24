@@ -95,3 +95,92 @@ export async function getUserTopicPreferences(): Promise<{ topic: string }[]> {
     return [];
   }
 }
+
+export async function updateNotificationReadStatus({
+  notificationId,
+}: {
+  notificationId: number;
+}) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Check if the read record already exists
+    const existingRead = await prisma.notificationRead.findFirst({
+      where: {
+        notificationId: notificationId,
+        userId: userId,
+      },
+    });
+
+    if (!existingRead) {
+      // Create a new read record
+      await prisma.notificationRead.create({
+        data: {
+          notificationId: notificationId,
+          userId: userId,
+        },
+      });
+    } else {
+      // Update the existing read record
+      await prisma.notificationRead.update({
+        where: {
+          id: existingRead.id,
+        },
+        data: {
+          readAt: new Date(),
+        },
+      });
+      // Optionally: trigger a UI refresh or update local state
+    }
+  } catch (error) {
+    console.error("Error updating notification read status:", error);
+    throw new Error("Failed to update read status");
+  }
+}
+
+export async function markAllNotificationsAsRead() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    // Fetch all unread notifications for the user
+    const unreadNotifications = await prisma.notification.findMany({
+      where: {
+        Reads: {
+          none: {
+            userId: userId,
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    // Create read records for all unread notifications
+    const readRecords = unreadNotifications.map((notification) => ({
+      notificationId: notification.id,
+      userId: userId,
+      readAt: new Date(),
+    }));
+
+    if (readRecords.length > 0) {
+      await prisma.notificationRead.createMany({
+        data: readRecords,
+        skipDuplicates: true, // Avoid duplicates if any
+      });
+    }
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    throw new Error("Failed to mark all as read");
+  }
+}

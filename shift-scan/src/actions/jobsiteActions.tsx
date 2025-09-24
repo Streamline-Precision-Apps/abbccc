@@ -46,7 +46,7 @@ export async function createJobsite(formData: FormData) {
   const zipCode = formData.get("zipCode") as string;
 
   try {
-    await prisma.$transaction(async (prisma) => {
+    const data = await prisma.$transaction(async (prisma) => {
       // Check for duplicate jobsite name
       const existingJobsites = await prisma.jobsite.findMany({
         where: { name },
@@ -98,14 +98,23 @@ export async function createJobsite(formData: FormData) {
       }
 
       // Create the jobsite and get the created record
-      await prisma.jobsite.create({
+      const jobsite = await prisma.jobsite.create({
         data,
+        include: {
+          createdBy: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
       });
 
       revalidatePath("/dashboard/qr-generator");
+      return jobsite;
     });
     console.log("Jobsite created successfully.");
-    return { success: true };
+    return { success: true, data };
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;

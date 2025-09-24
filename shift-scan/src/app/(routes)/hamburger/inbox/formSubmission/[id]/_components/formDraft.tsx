@@ -193,161 +193,140 @@ export default function FormDraft({
   };
 
   return (
-    <>
-      <Holds
-        background={"white"}
-        className="row-start-1 row-end-2 h-full justify-center"
+    <form
+      onSubmit={async (e) => {
+        setIsSubmitting(true);
+        try {
+          // Make sure signature value is up to date before submitting
+          if (formData.isSignatureRequired) {
+            console.log(
+              "Form submission with signature:",
+              showSignature,
+              formValues.signature,
+            );
+          }
+
+          await handleSubmit(e);
+        } finally {
+          setIsSubmitting(false);
+        }
+      }}
+      className="h-full w-full bg-white flex flex-col rounded-lg "
+    >
+      <TitleBoxes
+        className="h-16 border-b-2 pb-2 rounded-lg border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white"
+        onClick={async () => {
+          // Save draft before navigating back
+          await saveFormData();
+          router.push("/hamburger/inbox");
+        }}
       >
-        <TitleBoxes
-          onClick={async () => {
-            // Save draft before navigating back
-            await saveFormData();
-            router.push("/hamburger/inbox");
-          }}
-        >
-          <div className="flex flex-col items-center">
-            <Titles size={"md"} className="text-center">
-              {formData.name}
-            </Titles>
+        <div className="w-full h-full flex items-end  justify-center">
+          <Titles size={"md"} className="truncate max-w-[200px]">
+            {formData.name}
+          </Titles>
+        </div>
+      </TitleBoxes>
+
+      <div className="flex-1 overflow-y-auto py-3 no-scrollbar">
+        <Contents width={"section"}>
+          {/* Title input section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+            <div className="mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                {t("TitleOptional")}
+              </span>
+            </div>
+            <Inputs
+              type="text"
+              placeholder={t("EnterATitleHere")}
+              name="title"
+              value={formTitle}
+              className="text-center text-base border border-gray-200 rounded-md p-2 w-full"
+              onChange={(e) => setFormTitle(e.target.value)}
+            />
           </div>
-        </TitleBoxes>
-      </Holds>
 
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-2 row-end-8"
-      >
-        <form
-          onSubmit={async (e) => {
-            setIsSubmitting(true);
-            try {
-              // Make sure signature value is up to date before submitting
-              if (formData.isSignatureRequired) {
-                console.log(
-                  "Form submission with signature:",
-                  showSignature,
-                  formValues.signature,
-                );
-              }
+          {/* Form fields section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+            <div className="mb-3">
+              <h3 className="text-blue-600 font-semibold text-sm">
+                Form Details
+              </h3>
+            </div>
+            <FormFieldRenderer
+              formData={formData}
+              formValues={formValues}
+              setFormValues={updateFormValues}
+              readOnly={false}
+            />
+          </div>
 
-              await handleSubmit(e);
-            } finally {
-              setIsSubmitting(false);
-            }
-          }}
-          className="h-full"
-        >
-          <Grids rows={"8"} gap={"5"} className="h-full w-full">
-            {/* Form content area */}
-            <Holds className="row-start-1 row-end-8 h-full w-full border-b border-gray-200">
-              <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
-                <Contents width={"section"}>
-                  {/* Title input section */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-                    <div className="mb-2">
-                      <span className="text-sm font-medium text-gray-700">
-                        {t("TitleOptional")}
-                      </span>
-                    </div>
-                    <Inputs
-                      type="text"
-                      placeholder={t("EnterATitleHere")}
-                      name="title"
-                      value={formTitle}
-                      className="text-center text-base border border-gray-200 rounded-md p-2 w-full"
-                      onChange={(e) => setFormTitle(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Form fields section */}
-                  <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-                    <div className="mb-3">
-                      <h3 className="text-blue-600 font-semibold text-sm">
-                        Form Details
-                      </h3>
-                    </div>
-                    <FormFieldRenderer
-                      formData={formData}
-                      formValues={formValues}
-                      setFormValues={updateFormValues}
-                      readOnly={false}
-                    />
-                  </div>
-
-                  {/* Signature section - only shown if required */}
-                  {formData.isSignatureRequired && (
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-                      <div className="mb-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          {t("Signature")}
-                        </span>
-                      </div>
-                      {showSignature ? (
-                        <div
-                          onClick={() => setSignatureData(false)}
-                          className="w-full border-2 rounded-md border-gray-300 cursor-pointer p-2 flex justify-center"
-                        >
-                          {signature && (
-                            <img
-                              src={signature}
-                              alt="signature"
-                              className="h-20 w-full object-contain"
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <Buttons
-                          onClick={() => setSignatureData(true)}
-                          type="button"
-                          className="w-full h-16 rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 border border-gray-300 transition-colors"
-                        >
-                          <span className="text-gray-700 font-medium">
-                            {t("TapToSign")}
-                          </span>
-                        </Buttons>
-                      )}
-                    </div>
-                  )}
-                </Contents>
+          {/* Signature section - only shown if required */}
+          {formData.isSignatureRequired && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-700">
+                  {t("Signature")}
+                </span>
               </div>
-            </Holds>
-
-            {/* Action buttons */}
-            <Holds className="row-start-8 row-end-9 h-full w-full p-4 border-t border-gray-200">
-              <Contents width={"section"}>
-                <div className="w-full flex gap-x-4">
-                  <Buttons
-                    type="submit"
-                    background={
-                      !validateForm(formValues, formData) ? "darkGray" : "green"
-                    }
-                    disabled={
-                      !validateForm(formValues, formData) || isSubmitting
-                    }
-                    className="w-full h-10 rounded-md shadow-sm"
-                  >
-                    <Titles size={"md"}>
-                      {isSubmitting ? t("Submitting") : t("SubmitRequest")}
-                    </Titles>
-                  </Buttons>
-                  <Buttons
-                    type="button"
-                    background={"red"}
-                    onClick={async () => {
-                      // Save any last changes before deleting
-                      await saveFormData();
-                      await handleDeleteForm(submissionId);
-                    }}
-                    className="w-full h-10 rounded-md shadow-sm"
-                  >
-                    <Titles size={"md"}>{t("DeleteDraft")}</Titles>
-                  </Buttons>
+              {showSignature ? (
+                <div
+                  onClick={() => setSignatureData(false)}
+                  className="w-full border-2 rounded-md border-gray-300 cursor-pointer p-2 flex justify-center"
+                >
+                  {signature && (
+                    <img
+                      src={signature}
+                      alt="signature"
+                      className="h-20 w-full object-contain"
+                    />
+                  )}
                 </div>
-              </Contents>
-            </Holds>
-          </Grids>
-        </form>
-      </Holds>
-    </>
+              ) : (
+                <Buttons
+                  onClick={() => setSignatureData(true)}
+                  type="button"
+                  className="w-full h-16 rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 border border-gray-300 transition-colors"
+                >
+                  <span className="text-gray-700 font-medium">
+                    {t("TapToSign")}
+                  </span>
+                </Buttons>
+              )}
+            </div>
+          )}
+        </Contents>
+      </div>
+
+      {/* Action buttons */}
+
+      <div className="w-full h-20 flex px-2 gap-x-4 flex-shrink-0 sticky bottom-0 z-10 bg-white border-t rounded-lg">
+        <Buttons
+          type="button"
+          background={"red"}
+          onClick={async () => {
+            // Save any last changes before deleting
+            await saveFormData();
+            await handleDeleteForm(submissionId);
+          }}
+          className="w-full h-12 rounded-md shadow-sm"
+        >
+          <Titles size={"sm"}>{t("DeleteDraft")}</Titles>
+        </Buttons>
+        <Buttons
+          type="submit"
+          background={
+            !validateForm(formValues, formData) ? "darkGray" : "green"
+          }
+          disabled={!validateForm(formValues, formData) || isSubmitting}
+          className="w-full h-12 rounded-md shadow-sm"
+        >
+          <Titles size={"sm"}>
+            {isSubmitting ? t("Submitting") : t("SubmitRequest")}
+          </Titles>
+        </Buttons>
+      </div>
+    </form>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
-import { ApprovalStatus } from "@/lib/enums";
-import { useState, useEffect, useCallback } from "react";
+
+import { useState, useEffect } from "react";
+import { ApprovalStatus } from "../../../../../../prisma/generated/prisma";
 
 export type Jobsite = {
   id: string;
@@ -52,7 +53,16 @@ export const useJobsiteDataById = (id: string) => {
           fetch("/api/getTagSummary"),
         ]).then((res) => Promise.all(res.map((r) => r.json())));
 
-        setJobSiteDetails(jobsiteDetails);
+        // If there's a dash, remove code from the start of the name; otherwise, leave as is
+        if (jobsiteDetails.name.includes("-")) {
+          setJobSiteDetails({
+            ...jobsiteDetails,
+            name: jobsiteDetails.name.replace(/^[A-Z0-9]+\s*-\s*/, ""),
+          });
+        } else {
+          setJobSiteDetails(jobsiteDetails);
+        }
+
         const filteredTags = tag.tags.map(
           (tag: { id: string; name: string }) => ({
             id: tag.id,

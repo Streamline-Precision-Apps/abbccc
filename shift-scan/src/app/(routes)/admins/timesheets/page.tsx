@@ -6,12 +6,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { TimesheetDataTable } from "./_components/ViewAll/TimesheetDataTable";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { CreateTimesheetModal } from "./_components/Create/CreateTimesheetModal";
 import { EditTimesheetModal } from "./_components/Edit/EditTimesheetModal";
 import { ExportModal } from "./_components/Export/ExportModal";
@@ -29,8 +23,16 @@ import useAllTimeSheetData from "./_components/useAllTimeSheetData";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import Spinner from "@/components/(animations)/spinner";
+import { useSearchParams } from "next/navigation";
+import TimesheetFilters from "./_components/ViewAll/TimesheetFilters";
 
 export default function AdminTimesheets() {
+  const searchParams = useSearchParams();
+
+  const jobsiteId = searchParams.get("jobsiteId");
+  const costCode = searchParams.get("costCode");
+  const id = searchParams.get("id");
+  const notificationId = searchParams.get("notificationId");
   const {
     inputValue,
     setInputValue,
@@ -42,8 +44,6 @@ export default function AdminTimesheets() {
     pageSize,
     pageSizeOptions,
     setPageSize,
-    dateRange,
-    setDateRange,
     showCreateModal,
     setShowCreateModal,
     deletingId,
@@ -67,7 +67,20 @@ export default function AdminTimesheets() {
     handleDeleteConfirm,
     handlePageSizeChange,
     handleExport,
-  } = useAllTimeSheetData();
+    setFilters,
+    reFilterPage,
+    costCodes,
+    jobsites,
+    filters,
+    notificationIds,
+    setNotificationIds,
+    handleClearFilters,
+  } = useAllTimeSheetData({
+    jobsiteId,
+    costCode,
+    id,
+    notificationId,
+  });
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
@@ -90,71 +103,15 @@ export default function AdminTimesheets() {
           />
 
           <div className="w-full min-w-[40px] max-h-10 flex flex-row">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="bg-white h-full w-full max-w-[40px] justify-center items-center"
-                >
-                  <img
-                    src="/calendar.svg"
-                    alt="Filter"
-                    className="h-8 w-8 object-contain p-2 "
-                  />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                side="right"
-                className="min-w-[320px] p-4 "
-              >
-                <div className="">
-                  <div className="flex items-center justify-center gap-2 overflow-visible">
-                    <Calendar
-                      mode="range"
-                      selected={dateRange}
-                      onSelect={(value) => {
-                        if (value?.from && !value?.to) {
-                          // Set from to start of day, to to end of day
-                          const from = new Date(value.from);
-                          from.setHours(0, 0, 0, 0);
-                          const to = new Date(value.from);
-                          to.setHours(23, 59, 59, 999);
-                          setDateRange({ from, to });
-                        } else if (value?.from && value?.to) {
-                          // Set from to start of from day, to to end of to day
-                          const from = new Date(value.from);
-                          from.setHours(0, 0, 0, 0);
-                          const to = new Date(value.to);
-                          to.setHours(23, 59, 59, 999);
-                          setDateRange({ from, to });
-                        } else {
-                          setDateRange({
-                            from: undefined,
-                            to: undefined,
-                          });
-                        }
-                      }}
-                      autoFocus
-                    />
-                  </div>
-                  <div className="flex items-center justify-center ">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="p-2 flex-shrink-0"
-                      onClick={() =>
-                        setDateRange({ from: undefined, to: undefined })
-                      }
-                      aria-label="Clear date range"
-                    >
-                      clear
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+            <TimesheetFilters
+              filters={filters}
+              onFilterChange={setFilters}
+              setFilters={setFilters}
+              onUseFiltersChange={reFilterPage}
+              jobsites={jobsites}
+              costCodes={costCodes}
+              handleClearFilters={handleClearFilters}
+            />
           </div>
         </div>
         <div className="w-full h-full flex flex-row justify-end items-center gap-2">
@@ -213,9 +170,9 @@ export default function AdminTimesheets() {
                     className="h-4 w-4"
                   />
                   {/* <p className="text-white text-sm font-extrabold">Approval</p> */}
-                  {approvalInbox && approvalInbox.length > 0 && (
+                  {Number(approvalInbox) > 0 && (
                     <Badge className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-0.5 text-xs rounded-full">
-                      {approvalInbox.length}
+                      {approvalInbox}
                     </Badge>
                   )}
                 </div>
@@ -293,6 +250,8 @@ export default function AdminTimesheets() {
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
           onUpdated={rerender}
+          notificationIds={notificationIds}
+          setNotificationIds={setNotificationIds}
         />
       )}
       <Dialog open={isDeleting} onOpenChange={setIsDeleting}>

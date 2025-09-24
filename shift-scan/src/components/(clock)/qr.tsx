@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
 
@@ -51,7 +50,6 @@ export default function QR({
 
   // Locally fetched jobsite results (replaces deprecated useDBJobsite)
   const [jobsiteResults, setJobsiteResults] = useState<JobsiteResult[]>([]);
-  const { setScanResult } = useScanData();
   const { setscanEQResult } = useEQScanData();
 
   // Fetch jobsites once (offline-aware)
@@ -136,7 +134,7 @@ export default function QR({
         throw new Error("Invalid QR code Scanned!");
       }
     },
-    [jobsiteResults, setScanResult, handleScanJobsite, clockInRole],
+    [jobsiteResults, handleScanJobsite, clockInRole],
   );
 
   // ----------------------- End of scan processes -------------------------------

@@ -71,6 +71,7 @@ export async function executeOfflineFirstAction<T extends unknown[], R>(
     return mockTimesheetId as R;
   } else {
     try {
+
       // When online, execute the action normally
       const result = await serverAction(...args);
       

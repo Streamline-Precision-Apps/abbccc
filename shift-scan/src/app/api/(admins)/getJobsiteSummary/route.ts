@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -23,6 +23,7 @@ export async function GET() {
     const jobsiteSummary = await prisma.jobsite.findMany({
       select: {
         id: true,
+        code: true,
         name: true,
         qrId: true,
         approvalStatus: true,
@@ -35,7 +36,7 @@ export async function GET() {
     if (!jobsiteSummary || jobsiteSummary.length === 0) {
       return NextResponse.json(
         { message: "No jobsites found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

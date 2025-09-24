@@ -76,7 +76,7 @@ export const LaborClockOut = ({
         formData,
       );
 
-      if (result) {
+      if (result.success) {
         // Only try to send notifications when online
         if (isOnline) {
           try {
@@ -87,9 +87,9 @@ export const LaborClockOut = ({
               },
               body: JSON.stringify({
                 topic: "timecard-submission",
-                title: "New Timesheet Submission",
-                message: `A new submission has been created and is pending approval.`,
-                link: `/admins/timesheets`,
+                title: "Timecard Approval Needed",
+                message: `#${result.timesheetId} has been submitted by ${result.userFullName} for approval.`,
+                link: `/admins/timesheets?id=${result.timesheetId}`,
               }),
             });
 

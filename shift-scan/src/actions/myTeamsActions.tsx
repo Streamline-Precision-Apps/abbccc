@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { materialUnit } from "@/lib/enums";
+import { materialUnit } from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 type TimesheetUpdate = {
   id: number;

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { fetchWithOfflineCache } from "@/utils/offlineApi";
-import { EquipmentTags } from "@/lib/enums";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
 
 export type JobCodes = {
   id: string;

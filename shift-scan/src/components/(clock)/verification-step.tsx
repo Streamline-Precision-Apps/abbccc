@@ -1,9 +1,6 @@
 "use client";
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useSavedCostCode } from "@/app/context/CostCodeContext";
-import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleGeneralTimeSheet } from "@/actions/timeSheetActions";
 import {
   executeOfflineFirstAction,
@@ -207,14 +204,14 @@ export default function VerificationStep({
       }
 
       // Use the offline-first function
-      const response = await executeOfflineFirstAction(
+      const responseAction = await executeOfflineFirstAction(
         "handleGeneralTimeSheet",
         handleGeneralTimeSheet,
         formData,
       );
 
       // If online and switching jobs, send notification
-      if (response && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         try {
           const notificationResponse = await fetch(
             "/api/notifications/send-multicast",
@@ -225,9 +222,9 @@ export default function VerificationStep({
               },
               body: JSON.stringify({
                 topic: "timecard-submission",
-                title: "New Timesheet Submission",
-                message: `A new submission has been created and is pending approval.`,
-                link: `/admins/timesheets`,
+                title: "Timecard Approval Needed",
+                message: `#${responseAction.createdTimeSheet.id} has been submitted by ${responseAction.createdTimeSheet.User.firstName} ${responseAction.createdTimeSheet.User.lastName} for approval.`,
+                link: `/admins/timesheets?id=${responseAction.createdTimeSheet.id}`,
               }),
             },
           );

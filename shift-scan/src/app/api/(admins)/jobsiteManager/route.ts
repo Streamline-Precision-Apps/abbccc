@@ -47,6 +47,11 @@ export async function GET(req: Request) {
               zipCode: true,
             },
           },
+          _count: {
+            select: {
+              TimeSheets: true,
+            },
+          },
         },
         orderBy: {
           name: "asc",
@@ -57,6 +62,7 @@ export async function GET(req: Request) {
       page = parseInt(searchParams.get("page") || "1", 10);
       pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
       skip = (page - 1) * pageSize;
+
       total = await prisma.jobsite.count();
       totalPages = Math.ceil(total / pageSize);
       // Fetch only essential fields from jobsites, paginated
@@ -80,6 +86,11 @@ export async function GET(req: Request) {
               city: true,
               state: true,
               zipCode: true,
+            },
+          },
+          _count: {
+            select: {
+              TimeSheets: true,
             },
           },
         },

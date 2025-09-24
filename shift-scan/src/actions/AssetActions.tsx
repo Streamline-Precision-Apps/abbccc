@@ -6,7 +6,7 @@ import {
   ApprovalStatus,
   CreatedVia,
   EquipmentState,
-} from "@/lib/enums";
+} from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
   Prisma,
@@ -406,7 +406,9 @@ export async function updateJobsiteAdmin(formData: FormData) {
       updateData.code = (formData.get("code") as string)?.trim();
     }
     if (formData.has("name")) {
-      updateData.name = (formData.get("name") as string)?.trim();
+      const code = (formData.get("code") as string)?.trim();
+      const name = (formData.get("name") as string)?.trim();
+      updateData.name = `${code} - ${name}`;
     }
     if (formData.has("description")) {
       updateData.description =
@@ -508,7 +510,7 @@ export async function createJobsiteAdmin({
         await prisma.jobsite.create({
           data: {
             code: payload.code.trim(),
-            name: payload.name.trim(),
+            name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
             isActive: payload.isActive,
@@ -530,7 +532,7 @@ export async function createJobsiteAdmin({
         await prisma.jobsite.create({
           data: {
             code: payload.code.trim(),
-            name: payload.name.trim(),
+            name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
             isActive: payload.isActive,

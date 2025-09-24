@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
 import { ExportModal } from "../_components/List/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";
@@ -34,10 +34,6 @@ const FormPage = ({ params }: PageProps) => {
     setPage,
     pageSize,
     setPageSize,
-    dateRange,
-    setDateRange,
-    statusFilter,
-    setStatusFilter,
     showExportModal,
     setShowExportModal,
     exportDateRange,
@@ -69,10 +65,12 @@ const FormPage = ({ params }: PageProps) => {
     triggerRerender,
     handleStatusChange,
     handleExport,
-    setPendingSubmissionDeleteId,
+    setShowPendingOnly,
+    showPendingOnly,
+    approvalInbox,
+    handleFilterChange,
+    onApprovalAction,
   } = useSubmissionDataById(id);
-  const router = useRouter();
-
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <RenderTitleDescriptionStatus
@@ -91,14 +89,13 @@ const FormPage = ({ params }: PageProps) => {
         openHandleDelete={openHandleDelete}
         formTemplate={formTemplate}
         setShowCreateModal={setShowCreateModal}
-        router={router}
         inputValue={inputValue}
         setInputValue={setInputValue}
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        FormStatus={FormStatus}
+        setShowPendingOnly={setShowPendingOnly}
+        showPendingOnly={showPendingOnly}
+        approvalInbox={approvalInbox}
+        loading={loading}
+        handleFilterChange={handleFilterChange}
       />
 
       <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
@@ -116,6 +113,8 @@ const FormPage = ({ params }: PageProps) => {
             openHandleDeleteSubmission={openHandleDeleteSubmission}
             isSignatureRequired={formTemplate?.isSignatureRequired}
             searchTerm={inputValue}
+            showPendingOnly={showPendingOnly}
+            onApprovalAction={onApprovalAction}
           />
           {loading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">

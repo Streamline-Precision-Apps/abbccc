@@ -1,8 +1,6 @@
 "use client";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { useScanData } from "@/app/context/JobSiteScanDataContext";
-import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { handleMechanicTimeSheet } from "@/actions/timeSheetActions";
 import { executeOfflineFirstAction } from "@/utils/offlineFirstWrapper";
 import { useEnhancedOfflineStatus } from "@/hooks/useEnhancedOfflineStatus";
@@ -118,14 +116,14 @@ export default function MechanicVerificationStep({
       }
 
       // Use the new offline-first function that doesn't hit DB when offline
-      const response = await executeOfflineFirstAction(
+      const responseAction = await executeOfflineFirstAction(
         "handleMechanicTimeSheet",
         handleMechanicTimeSheet,
         formData,
       );
 
       // If online and switching jobs, send notification
-      if (response && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         try {
           const notificationResponse = await fetch(
             "/api/notifications/send-multicast",
@@ -136,9 +134,9 @@ export default function MechanicVerificationStep({
               },
               body: JSON.stringify({
                 topic: "timecard-submission",
-                title: "New Timesheet Submission",
-                message: `A new submission has been created and is pending approval.`,
-                link: `/admins/timesheets`,
+                title: "Timecard Approval Needed",
+                message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
+                link: `/admins/timesheets?id=${responseAction}`,
               }),
             },
           );

@@ -582,6 +582,21 @@ exports.Prisma.NotificationScalarFieldEnum = {
   readAt: 'readAt'
 };
 
+exports.Prisma.NotificationResponseScalarFieldEnum = {
+  id: 'id',
+  notificationId: 'notificationId',
+  userId: 'userId',
+  response: 'response',
+  respondedAt: 'respondedAt'
+};
+
+exports.Prisma.NotificationReadScalarFieldEnum = {
+  id: 'id',
+  notificationId: 'notificationId',
+  userId: 'userId',
+  readAt: 'readAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -664,11 +679,16 @@ exports.FormTemplateStatus = exports.$Enums.FormTemplateStatus = {
 
 exports.FormTemplateCategory = exports.$Enums.FormTemplateCategory = {
   GENERAL: 'GENERAL',
-  MAINTENANCE: 'MAINTENANCE',
+  HR: 'HR',
+  FINANCE: 'FINANCE',
+  OPERATIONS: 'OPERATIONS',
+  COMPLIANCE: 'COMPLIANCE',
+  CLIENTS: 'CLIENTS',
+  IT: 'IT',
   SAFETY: 'SAFETY',
+  MAINTENANCE: 'MAINTENANCE',
   INSPECTION: 'INSPECTION',
   INCIDENT: 'INCIDENT',
-  FINANCE: 'FINANCE',
   OTHER: 'OTHER'
 };
 
@@ -774,7 +794,9 @@ exports.Prisma.ModelName = {
   Address: 'Address',
   FCMToken: 'FCMToken',
   TopicSubscription: 'TopicSubscription',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  NotificationResponse: 'NotificationResponse',
+  NotificationRead: 'NotificationRead'
 };
 
 /**

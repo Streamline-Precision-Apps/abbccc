@@ -1,7 +1,6 @@
 "use client";
 
 import { CreateMechanicProject } from "@/actions/mechanicActions";
-import CodeStep from "@/components/(clock)/code-step";
 import SimpleQr from "@/components/(clock)/simple-qr";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -20,7 +19,6 @@ import { useRouter } from "next/navigation";
 import Spinner from "@/components/(animations)/spinner";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import CodeFinder from "@/components/(search)/codeFinder";
 import StepButtons from "@/components/(clock)/step-buttons";
 
 type Equipment = {
@@ -102,7 +100,7 @@ export default function CreateMechanicProjectProcess() {
       formData.append("priority", status);
       formData.append(
         "createdBy",
-        `${session?.user?.firstName} ${session?.user?.lastName}`
+        `${session?.user?.firstName} ${session?.user?.lastName}`,
       );
       const response = await CreateMechanicProject(formData);
       if (response) {
@@ -231,11 +229,7 @@ export default function CreateMechanicProjectProcess() {
                 >
                   <Grids rows="7" gap="5" className="w-full h-full">
                     <Holds className="h-full row-start-1 row-end-7">
-                      <CodeFinder
-                        setScannedId={setScannedId}
-                        datatype="equipment"
-                        setSelectedOpt={setSelectedOpt}
-                      />
+                      {/* Add code finder here */}
                     </Holds>
                     <Holds className="row-start-7 row-end-8 h-full ">
                       <StepButtons
@@ -332,7 +326,7 @@ export default function CreateMechanicProjectProcess() {
                                       | "TODAY"
                                       | "HIGH"
                                       | "MEDIUM"
-                                      | "LOW"
+                                      | "LOW",
                                   )
                                 }
                                 className="pl-8"
@@ -355,12 +349,12 @@ export default function CreateMechanicProjectProcess() {
                                   status === "TODAY"
                                     ? "/todayPriority.svg"
                                     : status === "HIGH"
-                                    ? "/priorityHigh.svg"
-                                    : status === "MEDIUM"
-                                    ? "/priorityMedium.svg"
-                                    : status === "LOW"
-                                    ? "/priorityLow.svg"
-                                    : "/priorityPending.svg"
+                                      ? "/priorityHigh.svg"
+                                      : status === "MEDIUM"
+                                        ? "/priorityMedium.svg"
+                                        : status === "LOW"
+                                          ? "/priorityLow.svg"
+                                          : "/priorityPending.svg"
                                 }
                                 className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2"
                                 titleImgAlt="status"
@@ -375,7 +369,7 @@ export default function CreateMechanicProjectProcess() {
                                       | "TODAY"
                                       | "HIGH"
                                       | "MEDIUM"
-                                      | "LOW"
+                                      | "LOW",
                                   )
                                 }
                                 className="pl-8"

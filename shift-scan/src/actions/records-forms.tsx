@@ -4,7 +4,7 @@ import {
   FieldType,
   FormTemplateCategory,
   FormTemplateStatus,
-} from "@/lib/enums";
+} from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { FormStatus } from "../../prisma/generated/prisma/client";
 
@@ -691,5 +691,40 @@ export async function deleteFormSubmission(submissionId: number) {
   } catch (error) {
     console.error("Error deleting form submission:", error);
     return { success: false, error: "Failed to delete form submission" };
+  }
+}
+
+export async function ApproveFormSubmission(
+  submissionId: number,
+  action: "APPROVED" | "REJECTED",
+  formData: FormData,
+) {
+  try {
+    const comment = formData.get("comment") as string;
+    const adminUserId = formData.get("adminUserId") as string;
+
+    const updated = await prisma.formSubmission.update({
+      where: { id: submissionId },
+      data: {
+        status: action as FormStatus,
+        updatedAt: new Date(),
+        Approvals: {
+          create: {
+            signedBy: adminUserId || null,
+            comment: comment || null,
+            submittedAt: new Date(),
+            updatedAt: new Date(),
+          },
+        },
+      },
+    });
+    revalidatePath(`/admins/forms/${updated.formTemplateId}`);
+    return { success: true, submission: updated };
+  } catch (error) {
+    console.error("Error approving/rejecting form submission:", error);
+    return {
+      success: false,
+      error: "Failed to approve/reject form submission",
+    };
   }
 }

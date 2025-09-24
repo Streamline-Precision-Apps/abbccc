@@ -4,7 +4,13 @@
  *
  * @module utils/validation
  */
-import { FormStatus, Permission, Priority, WorkType } from "@/lib/enums";
+
+import {
+  FormStatus,
+  Permission,
+  Priority,
+  WorkType,
+} from "../../prisma/generated/prisma/client";
 
 type StateMileage = {
   id: string;

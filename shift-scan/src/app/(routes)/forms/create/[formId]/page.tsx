@@ -240,8 +240,8 @@ export default function FormCreationPage({ params }: FormCreationPageProps) {
           },
           body: JSON.stringify({
             topic: "form-submissions",
-            title: "New Form Submission",
-            message: `A form submission has been made and is awaiting approval`,
+            title: "Form Submission",
+            message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${formTemplate.name}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
           }),
         });

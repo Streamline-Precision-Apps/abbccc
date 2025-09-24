@@ -1,7 +1,69 @@
-"use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+// This context is used to get the data from the database and stores it in a state.
 
-// JobSite Context
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import { z } from "zod";
+import { usePathname } from "next/navigation";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
+
+type JobCodes = {
+  id: string;
+  qrId: string;
+  name: string;
+};
+
+type CostCodes = {
+  id: string;
+  name: string;
+};
+
+type EquipmentCode = {
+  id: string;
+  qrId: string;
+  name: string;
+  equipmentTag: EquipmentTags;
+};
+
+const JobsitesSchema = z.array(
+  z.object({
+    id: z.string(),
+    qrId: z.string(),
+    isActive: z.boolean().optional(),
+    status: z.string().optional(),
+    name: z.string(),
+    streetNumber: z.string().nullable().optional(),
+    streetName: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().nullable().optional(),
+    country: z.string().optional(),
+    description: z.string().nullable().optional(),
+    comment: z.string().nullable().optional(),
+  }),
+);
+
+const CostCodesSchema = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
+);
+
+const EquipmentSchema = z
+  .array(
+    z.object({
+      id: z.string(),
+      qrId: z.string(),
+      name: z.string(),
+      equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
+    }),
+  )
+  .nullable();
+
 type JobSiteContextType = {
   selectedJobSite: string | null;
   setSelectedJobSite: (jobSite: string | null) => void;

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export async function GET(
   request: Request,
@@ -10,30 +10,42 @@ export async function GET(
   const { searchParams } = new URL(request.url);
 
   const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-  const skip = (page - 1) * pageSize;
-  const take = pageSize;
+  const pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
+
+  // pendingOnly and statusFilter are needed before skip/take
+  const pendingOnly = searchParams.get("pendingOnly") === "true";
+  const statusFilter = searchParams.get("statusFilter") || "ALL";
+
+  // If pendingOnly, do not paginate (return all pending submissions)
+  const skip = pendingOnly ? undefined : (page - 1) * pageSize;
+  const take = pendingOnly ? undefined : pageSize;
 
   const dateRangeStart = searchParams.get("startDate");
   const dateRangeEnd = searchParams.get("endDate");
 
-  const statusFilterRaw = searchParams.get("statusFilter") || "ALL";
-  const validStatuses: FormStatus[] = Object.values(FormStatus);
+  // (moved up)
 
-  const shouldFilter =
-    statusFilterRaw !== "ALL" &&
-    validStatuses.includes(statusFilterRaw as FormStatus);
-  const statusFilter = shouldFilter
-    ? (statusFilterRaw as FormStatus)
-    : undefined;
+  // Determine the status condition for queries
+  let statusCondition: FormStatus | undefined;
+  if (pendingOnly) {
+    statusCondition = "PENDING";
+  } else if (statusFilter && statusFilter !== "ALL") {
+    statusCondition = statusFilter as FormStatus;
+  }
 
   try {
     const total = await prisma.formSubmission.count({
       where: {
         formTemplateId: id,
-        ...(statusFilter && { status: statusFilter }),
-        ...(!statusFilter && { status: { not: "DRAFT" } }),
-        ...(statusFilter === "DRAFT" && { status: "DRAFT" }),
+        ...(statusCondition && { status: statusCondition }),
+      },
+    });
+
+    // Count of pending submissions for inbox
+    const pendingForms = await prisma.formSubmission.count({
+      where: {
+        formTemplateId: id,
+        status: "PENDING",
       },
     });
 
@@ -76,9 +88,7 @@ export async function GET(
     const submissions = await prisma.formSubmission.findMany({
       where: {
         formTemplateId: id,
-        ...(statusFilter && { status: statusFilter }),
-        ...(!statusFilter && { status: { not: "DRAFT" } }),
-        ...(statusFilter === "DRAFT" && { status: "DRAFT" }),
+        ...(statusCondition && { status: statusCondition }),
         ...(dateRangeStart || dateRangeEnd
           ? {
               submittedAt: {
@@ -88,8 +98,8 @@ export async function GET(
             }
           : {}),
       },
-      skip,
-      take,
+      ...(skip !== undefined ? { skip } : {}),
+      ...(take !== undefined ? { take } : {}),
       orderBy: { submittedAt: "desc" },
       include: {
         User: {
@@ -106,9 +116,10 @@ export async function GET(
       ...formTemplate,
       Submissions: submissions,
       total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      page: pendingOnly ? 1 : page,
+      pageSize: pendingOnly ? submissions.length : pageSize,
+      totalPages: pendingOnly ? 1 : Math.ceil(total / pageSize),
+      pendingForms,
     });
   } catch (error) {
     console.error("Error fetching form template:", error);

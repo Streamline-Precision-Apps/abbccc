@@ -157,24 +157,19 @@ export default function ManagerFormEditApproval({
   }, [comment, approvalStatus, debouncedAutoSave]);
 
   return (
-    <>
-      <Holds
-        background={"white"}
-        className="row-start-1 row-end-2 h-full justify-center"
+    <div className="h-full w-full bg-white flex flex-col rounded-lg ">
+      <TitleBoxes
+        onClick={() => router.back()}
+        className="h-16 border-b-2 pb-2 rounded-lg border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white"
       >
-        <TitleBoxes onClick={() => router.back()}>
-          <div className="flex flex-col items-center">
-            <Titles size={"h3"} className="text-center">
-              {formData.name}
-            </Titles>
-          </div>
-        </TitleBoxes>
-      </Holds>
+        <div className="flex flex-col items-center">
+          <Titles size={"h3"} className="text-center">
+            {formData.name}
+          </Titles>
+        </div>
+      </TitleBoxes>
 
-      <Holds
-        background={"white"}
-        className="w-full h-full row-start-2 row-end-8"
-      >
+      <div className="flex-grow flex flex-col overflow-y-auto no-scrollbar">
         <Contents width={"section"}>
           <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
             {/* Form Details Card */}
@@ -283,7 +278,7 @@ export default function ManagerFormEditApproval({
             </div>
           </div>
         </Contents>
-      </Holds>
-    </>
+      </div>
+    </div>
   );
 }

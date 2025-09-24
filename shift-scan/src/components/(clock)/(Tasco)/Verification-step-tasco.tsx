@@ -133,14 +133,14 @@ export default function TascoVerificationStep({
       }
 
       // Use the offline-first function
-      const response = await executeOfflineFirstAction(
+      const responseAction = await executeOfflineFirstAction(
         "handleTascoTimeSheet",
         handleTascoTimeSheet,
         formData,
       );
 
       // If online and switching jobs, send notification
-      if (response && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         try {
           const notificationResponse = await fetch(
             "/api/notifications/send-multicast",
@@ -151,9 +151,9 @@ export default function TascoVerificationStep({
               },
               body: JSON.stringify({
                 topic: "timecard-submission",
-                title: "New Timesheet Submission",
-                message: `A new submission has been created and is pending approval.`,
-                link: `/admins/timesheets`,
+                title: "Timecard Approval Needed",
+                message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
+                link: `/admins/timesheets?id=${responseAction}`,
               }),
             },
           );

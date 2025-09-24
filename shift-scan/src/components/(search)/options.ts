@@ -1,5 +1,11 @@
 "use client";
-import { EquipmentTags } from "@/lib/enums";
+import {
+  useDBJobsite,
+  useDBCostcode,
+  useDBEquipment,
+} from "@/app/context/dbCodeContext";
+import { EquipmentTags } from "../../../prisma/generated/prisma/client";
+
 // import {
 //   useRecentDBJobsite,
 //   useRecentDBCostcode,

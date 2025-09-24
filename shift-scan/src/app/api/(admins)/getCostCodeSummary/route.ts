@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
@@ -23,6 +23,7 @@ export async function GET() {
     const costCodeSummary = await prisma.costCode.findMany({
       select: {
         id: true,
+        code: true,
         name: true,
         isActive: true,
       },
@@ -34,18 +35,18 @@ export async function GET() {
     if (!costCodeSummary || costCodeSummary.length === 0) {
       return NextResponse.json(
         { message: "No cost codes found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json(costCodeSummary);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching cost code summary:', error);
+    console.error("Error fetching cost code summary:", error);
     const errorMessage =
       error instanceof Error
         ? error.message
-        : 'Failed to fetch cost code summary';
+        : "Failed to fetch cost code summary";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

@@ -30,11 +30,11 @@ import {
   Refueled,
   EquipmentState,
 } from "./types";
-import { FormStatus } from "@/lib/enums";
+import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
 
 // Helper function to transform API response to form state
 function transformApiToFormState(
-  apiData: EmployeeEquipmentLogData
+  apiData: EmployeeEquipmentLogData,
 ): EquipmentLog {
   return {
     id: apiData.id,
@@ -100,9 +100,8 @@ export default function CombinedForm({
   const id = use(params).id;
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
-  const [state, setState] = useState<UnifiedEquipmentState>(
-    createInitialState()
-  );
+  const [state, setState] =
+    useState<UnifiedEquipmentState>(createInitialState());
 
   // Fetch equipment log data
   useEffect(() => {
@@ -113,7 +112,7 @@ export default function CombinedForm({
         const response = await fetch(`/api/getEqUserLogs/${id}`);
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch equipment log: ${response.statusText}`
+            `Failed to fetch equipment log: ${response.statusText}`,
           );
         }
 
@@ -156,7 +155,7 @@ export default function CombinedForm({
       | FormStatus
       | EquipmentState
       | Refueled
-      | null
+      | null,
   ) => {
     setState((prev) => {
       if (field.startsWith("equipment.")) {
@@ -244,7 +243,7 @@ export default function CombinedForm({
   useEffect(() => {
     console.log(
       "fullyOperational state changed:",
-      state.formState.fullyOperational
+      state.formState.fullyOperational,
     );
   }, [state.formState.fullyOperational]);
 
@@ -330,11 +329,11 @@ export default function CombinedForm({
           }
           formData.append(
             "equipmentIssue",
-            state.formState.maintenanceId.equipmentIssue || ""
+            state.formState.maintenanceId.equipmentIssue || "",
           );
           formData.append(
             "additionalInfo",
-            state.formState.maintenanceId.additionalInfo || ""
+            state.formState.maintenanceId.additionalInfo || "",
           );
         }
       }
@@ -350,11 +349,11 @@ export default function CombinedForm({
           "refuelLogId",
           state.formState.refuelLogs.id.startsWith("temp-")
             ? "__NULL__" // This indicates we need to create a new log
-            : state.formState.refuelLogs.id
+            : state.formState.refuelLogs.id,
         );
         formData.append(
           "gallonsRefueled",
-          state.formState.refuelLogs.gallonsRefueled?.toString() || "__NULL__"
+          state.formState.refuelLogs.gallonsRefueled?.toString() || "__NULL__",
         );
       }
 
@@ -421,7 +420,7 @@ export default function CombinedForm({
     updater:
       | ((prev: RefuelLogData | null) => RefuelLogData | null)
       | RefuelLogData
-      | null
+      | null,
   ) => {
     setState((prev) => {
       const newRefuelLog =
@@ -570,7 +569,7 @@ export default function CombinedForm({
                               if (!isFormValid()) {
                                 setNotification(
                                   "Please complete maintenance requirements",
-                                  "error"
+                                  "error",
                                 );
                                 return;
                               }

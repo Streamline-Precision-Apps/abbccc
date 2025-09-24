@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
   const admin = getFirebaseAdmin();
   const { topic, title, message, link } = await request.json();
   if (!topic) {
-    console.error("[send-multicast] ❌ No topic provided for notification");
     return NextResponse.json(
       {
         error: "Topic is required for sending notifications",
@@ -18,7 +17,6 @@ export async function POST(request: NextRequest) {
     );
   }
   if (!title || !message) {
-    console.error("[send-multicast] ❌ Missing title or message body");
     return NextResponse.json(
       {
         error: "Title and message body are required",
@@ -27,24 +25,8 @@ export async function POST(request: NextRequest) {
     );
   }
   try {
-    // Prepare message payload for topic messaging
-    const payload: Message = {
-      notification: { title, body: message },
-      topic,
-      webpush: link ? { fcmOptions: { link } } : undefined,
-    };
-
-    console.log("[send-multicast] 📦 Topic message payload:", payload);
-
-    // Send the message to Firebase
-    const response = await admin.messaging().send(payload);
-    console.log(
-      `[send-multicast] ✅ Topic message sent successfully, messageId: ${response}`,
-    );
-
-    // Save the notification to the database
-    console.log("[send-multicast] 💾 Saving notification to database");
-    await prisma.notification.create({
+    // Store the notification in the database
+    const notification = await prisma.notification.create({
       data: {
         topic,
         title,
@@ -54,7 +36,24 @@ export async function POST(request: NextRequest) {
         pushAttempts: 1,
       },
     });
-    console.log("[send-multicast] 💾 Notification saved to database");
+    const urlWithId = `${notification.url ? notification.url : "/admins"}${notification.url?.includes("?") ? "&" : "?"}notificationId=${notification.id}`;
+    // Update the notification with the URL containing the ID
+    const notificationLink = await prisma.notification.update({
+      where: { id: notification.id },
+      data: { url: urlWithId },
+    });
+
+    // Create the FCM message payload
+    const payload: Message = {
+      notification: { title, body: message },
+      topic,
+      webpush: notificationLink.url
+        ? { fcmOptions: { link: notificationLink.url } }
+        : undefined,
+    };
+
+    // Send the message to Firebase
+    const response = await admin.messaging().send(payload);
 
     return NextResponse.json(
       {
@@ -66,27 +65,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("[send-multicast] ❌ Error sending notification:", error);
-
-    // Try to save the failed notification attempt if possible
-    try {
-      await prisma.notification.create({
-        data: {
-          topic,
-          title,
-          body: message,
-          url: link ?? null,
-          pushedAt: new Date(),
-          pushAttempts: 1,
-        },
-      });
-      console.log("[send-multicast] 🚨 Failed notification recorded");
-    } catch (dbError) {
-      console.error(
-        "[send-multicast] 💔 Failed to record error in database:",
-        dbError,
-      );
-    }
-
     return NextResponse.json(
       {
         error: "Failed to send notification",

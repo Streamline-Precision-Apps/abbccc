@@ -14,6 +14,7 @@ import {
   Box,
   AlertTriangle,
   Loader2,
+  ClockAlert,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -52,6 +53,12 @@ const AVAILABLE_TOPICS = [
     title: "A Timecard was Modified",
     desc: "Be alerted when timecards are modified and require your attention.",
     icon: <Clock className="w-4 h-4" />,
+  },
+  {
+    id: "equipment-break",
+    title: "Broken Equipment Reported ",
+    desc: "Be alerted when equipment is reported broken and requires your attention.",
+    icon: <AlertTriangle className="w-4 h-4" />,
   },
 ];
 

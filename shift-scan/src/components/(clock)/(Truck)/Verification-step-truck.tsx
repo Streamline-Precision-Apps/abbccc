@@ -22,7 +22,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
@@ -123,14 +122,14 @@ export default function TruckVerificationStep({
       }
 
       // Use the offline-first function
-      const response = await executeOfflineFirstAction(
+      const responseAction = await executeOfflineFirstAction(
         "handleTruckTimeSheet",
         handleTruckTimeSheet,
         formData,
       );
 
       // If online and switching jobs, send notification
-      if (response && type === "switchJobs") {
+      if (responseAction.success && type === "switchJobs") {
         try {
           const notificationResponse = await fetch(
             "/api/notifications/send-multicast",
@@ -141,9 +140,9 @@ export default function TruckVerificationStep({
               },
               body: JSON.stringify({
                 topic: "timecard-submission",
-                title: "New Timesheet Submission",
-                message: `A new submission has been created and is pending approval.`,
-                link: `/admins/timesheets`,
+                title: "Timecard Approval Needed",
+                message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
+                link: `/admins/timesheets?id=${responseAction.createdTimeCard.id}`,
               }),
             },
           );

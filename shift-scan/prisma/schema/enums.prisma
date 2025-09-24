@@ -112,12 +112,17 @@ enum AssetType {
 }
 
 enum FormTemplateCategory {
-  GENERAL
-  MAINTENANCE
+  GENERAL // remove
+  HR
+  FINANCE
+  OPERATIONS
+  COMPLIANCE
+  CLIENTS
+  IT
   SAFETY
+  MAINTENANCE
   INSPECTION
   INCIDENT
-  FINANCE
   OTHER
   //  HR – hiring, onboarding, leave, evaluations
   // Finance – payroll, reimbursements, invoices, taxes
