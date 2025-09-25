@@ -8,6 +8,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import WidgetSection from "./(content)/widgetSection";
 import prisma from "@/lib/prisma";
+import { Suspense } from "react";
 
 export default async function Home() {
   //------------------------------------------------------------------------
