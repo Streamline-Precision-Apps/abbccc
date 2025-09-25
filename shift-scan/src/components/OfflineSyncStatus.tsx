@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   getOfflineActionsStatus,
+  clearOfflineData,
   type OfflineTimesheet,
 } from "@/utils/offlineFirstWrapper";
 
@@ -31,76 +32,50 @@ export default function OfflineSyncStatus() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleClearFailed = () => {
+    try {
+      clearOfflineData();
+      // Force refresh the status
+      const offlineStatus = getOfflineActionsStatus();
+      setStatus(offlineStatus);
+      setIsVisible(offlineStatus.total > 0);
+    } catch (error) {
+      console.error('Failed to clear offline data:', error);
+    }
+  };
+
   if (!isVisible) return null;
 
   const { pending, syncing, failed } = status;
 
   return (
-    <div className="fixed top-16 right-4 z-50 bg-white border border-gray-300 rounded-lg shadow-lg p-4 max-w-sm">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-gray-900">Offline Sync Status</h3>
-        <button
-          onClick={() => setIsVisible(false)}
-          className="text-gray-400 hover:text-gray-600"
-        >
-          ×
-        </button>
-      </div>
-
-      <div className="space-y-2">
+    <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 bg-transparent">
+      <div className="text-center">
         {syncing.length > 0 && (
-          <div className="flex items-center text-blue-600">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse mr-2"></div>
-            <span className="text-sm">Syncing {syncing.length} item(s)...</span>
+          <div className="text-xs text-red-600 mb-1">
+            Syncing {syncing.length} item(s)...
           </div>
         )}
 
         {pending.length > 0 && (
-          <div className="flex items-center text-yellow-600">
-            <div className="w-2 h-2 bg-yellow-600 rounded-full mr-2"></div>
-            <span className="text-sm">
-              {pending.length} item(s) waiting to sync
-            </span>
+          <div className="text-xs text-red-600 mb-1">
+            {pending.length} item(s) waiting to sync
           </div>
         )}
 
         {failed.length > 0 && (
-          <div className="flex items-center text-red-600">
-            <div className="w-2 h-2 bg-red-600 rounded-full mr-2"></div>
-            <span className="text-sm">
-              {failed.length} item(s) failed to sync
-            </span>
+          <div className="text-xs text-red-600">
+            {failed.length} item(s) failed to sync
+            <button
+              onClick={handleClearFailed}
+              className="ml-2 text-xs text-red-800 underline hover:text-red-900"
+              title="Clear all offline sync data"
+            >
+              clear
+            </button>
           </div>
         )}
       </div>
-
-      {failed.length > 0 && (
-        <div className="mt-3 pt-2 border-t border-gray-200">
-          <details>
-            <summary className="text-xs text-gray-600 cursor-pointer">
-              View failed items
-            </summary>
-            <div className="mt-2 space-y-1">
-              {failed.map((action) => (
-                <div
-                  key={action.id}
-                  className="text-xs text-red-600 bg-red-50 p-2 rounded"
-                >
-                  <div className="font-medium">{action.actionName}</div>
-                  {action.lastError && (
-                    <div className="text-red-500 mt-1">{action.lastError}</div>
-                  )}
-                  {action.lastError?.includes("USER_NOT_FOUND") && (
-                    <div className="text-red-700 mt-1">
-                      Please log in again to sync this item.
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
-        </div>
-      )}
     </div>
   );
 }
