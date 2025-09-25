@@ -5,7 +5,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { Grids } from "@/components/(reusable)/grids";
 import { redirect } from "next/navigation";
-import ScanEquipment from "./scanEquipmentSteps";
+import ScanEquipment from "./_components/scanEquipmentSteps";
 
 export default async function LogNewEquipment() {
   const session = await auth();

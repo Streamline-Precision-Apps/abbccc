@@ -8,7 +8,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState, RefObject } from "react";
 type Option = {
   label: string;
   code: string;
@@ -21,6 +21,7 @@ export default function EquipmentScanner({
   setError,
   equipmentQr,
   jobSite,
+  submitRef,
 }: {
   setStep: Dispatch<SetStateAction<number>>;
   setMethod: Dispatch<SetStateAction<"" | "Scan" | "Select">>;
@@ -28,6 +29,7 @@ export default function EquipmentScanner({
   setEquipmentQr: Dispatch<SetStateAction<string | null>>;
   equipmentQr: string | null;
   jobSite: Option;
+  submitRef: RefObject<boolean>;
 }) {
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,8 @@ export default function EquipmentScanner({
 
   // Handle the QR scan completion
   const handleScanComplete = async (scannedId: string) => {
+    if (submitRef.current) return;
+    submitRef.current = true;
     setEquipmentQr(scannedId);
     setScanned(true);
     setLoading(true);
@@ -59,6 +63,7 @@ export default function EquipmentScanner({
       // Handle error state if needed
     } finally {
       setLoading(false);
+      submitRef.current = false;
     }
   };
 

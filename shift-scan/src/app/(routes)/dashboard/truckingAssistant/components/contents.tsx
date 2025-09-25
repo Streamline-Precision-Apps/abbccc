@@ -7,6 +7,8 @@ import { Titles } from "@/components/(reusable)/titles";
 import TruckDriver from "../TruckingDriver";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import TruckDriverSkeleton from "./TruckDriverSkeleton";
 
 export default function TruckingContexts({
   laborType,
@@ -42,7 +44,9 @@ export default function TruckingContexts({
         </TitleBoxes>
       </Holds>
       <Holds className="row-start-2 row-end-8 h-full">
-        <TruckDriver />
+        <Suspense fallback={<TruckDriverSkeleton />}>
+          <TruckDriver />
+        </Suspense>
       </Holds>
     </>
   );

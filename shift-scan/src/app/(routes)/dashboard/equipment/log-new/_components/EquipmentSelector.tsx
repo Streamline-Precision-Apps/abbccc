@@ -10,7 +10,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, RefObject } from "react";
 
 type Option = {
   id: string;
@@ -23,12 +23,14 @@ export default function EquipmentSelectorView({
   setEquipment,
   equipment,
   jobSite,
+  submitRef,
 }: {
   setStep: Dispatch<SetStateAction<number>>;
   setMethod: Dispatch<SetStateAction<"" | "Scan" | "Select">>;
   setEquipment: Dispatch<SetStateAction<Option>>;
   equipment: Option;
   jobSite: Option;
+  submitRef: RefObject<boolean>;
 }) {
   const router = useRouter();
   const t = useTranslations("Equipment");
@@ -41,6 +43,8 @@ export default function EquipmentSelectorView({
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitRef.current) return;
+    submitRef.current = true;
     const formData = new FormData();
     formData.append("equipmentId", equipment?.id || "");
     formData.append("jobsiteId", jobSite?.id || "");
@@ -50,6 +54,7 @@ export default function EquipmentSelectorView({
     if (result) {
       router.push("/dashboard/equipment");
     }
+    submitRef.current = false;
   };
 
   return (
@@ -88,6 +93,8 @@ export default function EquipmentSelectorView({
                   onClick={(e) => onSubmit(e)}
                   background="orange"
                   className="py-3"
+                  type="submit"
+                  disabled={submitRef.current}
                 >
                   <Titles size={"h4"}>{t("SubmitSelection")}</Titles>
                 </Buttons>

@@ -12,13 +12,15 @@ import { TitleBoxes } from "../(reusable)/titleBoxes";
 export default function ClockLoadingPage({
   handleReturnPath,
 }: {
-  handleReturnPath: () => void;
+  handleReturnPath?: () => void;
 }) {
   return (
     <Holds background={"white"} className="h-full w-full animate-pulse">
       <Grids rows={"7"} gap={"5"}>
         <Holds className="row-start-1 row-end-2 h-full w-full">
-          <TitleBoxes onClick={handleReturnPath} />
+          <TitleBoxes
+            onClick={handleReturnPath ? handleReturnPath : undefined}
+          />
         </Holds>
         <Holds className="row-start-2 row-end-8 h-full w-full">
           <Contents width={"section"}>

@@ -1162,6 +1162,9 @@
     "ConfirmPassword": "confirmar Contraseña"
   },
   "Hamburger-Inbox": {
+    "PullToRefresh": "Tirar para actualizar",
+    "ReleaseToRefresh": "Suelte para actualizar",
+    "Refreshing": "Actualizando...",
     "FormsDocuments": "Formularios y documentos",
     "Forms": "Mis formas",
     "MySubmissions": "Mis presentaciones",

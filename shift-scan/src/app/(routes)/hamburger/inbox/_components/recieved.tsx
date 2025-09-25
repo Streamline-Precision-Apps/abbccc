@@ -130,8 +130,8 @@ export default function RTab({ isManager }: { isManager: boolean }) {
       {isInitialLoading ? (
         <div className="flex-1 overflow-y-auto no-scrollbar border-t-black border-opacity-5 border-t-2">
           <Contents width={"section"}>
-            <Holds className="h-full justify-center items-center">
-              <Spinner />
+            <Holds className="h-full justify-center items-center pt-10">
+              <Spinner size={20} />
             </Holds>
           </Contents>
         </div>

@@ -11,14 +11,12 @@ import { LogItem } from "@/lib/types";
 import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function MechanicDashboardView({
-  additionalButtonsType,
   verifyLogsCompletion,
   permission,
   logs,
   mechanicProjectID,
   laborType,
 }: {
-  additionalButtonsType: string | null;
   isModalOpen: boolean;
   isModal2Open: boolean;
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
@@ -45,15 +43,10 @@ export default function MechanicDashboardView({
               laborType={laborType}
               view={"mechanic"}
             />
-            {permission !== "USER" && !additionalButtonsType && (
-              <GeneratorBtn />
-            )}
-            {permission !== "USER" && !additionalButtonsType && (
-              <MyTeamWidget />
-            )}
+            {permission !== "USER" && <GeneratorBtn />}
+            {permission !== "USER" && <MyTeamWidget />}
 
             <ClockOutBtn
-              handleShowAdditionalButtons={verifyLogsCompletion}
               permission={permission}
               mechanicProjectID={mechanicProjectID}
               logs={logs}

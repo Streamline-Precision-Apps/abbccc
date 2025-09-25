@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { Buttons } from "../(reusable)/buttons";
 import { Holds } from "../(reusable)/holds";
 
-export default function HamburgerMenuNew() {
+export default function HamburgerMenuNew({
+  isHome = true,
+}: {
+  isHome?: boolean;
+}) {
   const [image, setImage] = useState("");
 
   useEffect(() => {
@@ -36,7 +40,9 @@ export default function HamburgerMenuNew() {
     >
       <Holds className="w-24 h-full flex flex-col items-center justify-center relative">
         <Buttons
-          href="/hamburger/profile?returnUrl=/"
+          href={
+            isHome ? "/hamburger/profile?returnUrl=/" : "/hamburger/profile"
+          }
           background={"none"}
           shadow={"none"}
           className="absolute inset-0 w-full h-full z-10"
@@ -62,7 +68,7 @@ export default function HamburgerMenuNew() {
 
       <Holds className="w-24 h-full justify-center">
         <Buttons
-          href="/hamburger/inbox?returnUrl=/"
+          href={isHome ? "/hamburger/inbox?returnUrl=/" : "/hamburger/inbox"}
           background={"none"}
           shadow={"none"}
           className=" w-16 h-auto justify-center"

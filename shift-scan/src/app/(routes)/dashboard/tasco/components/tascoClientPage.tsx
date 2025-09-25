@@ -1,14 +1,16 @@
 "use client";
 
 import { Holds } from "@/components/(reusable)/holds";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Counter from "./counter";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import RefuelLayout from "./RefuelLayout";
+import RefuelLayoutSkeleton from "./RefuelLayoutSkeleton";
 import TascoComments from "./tascoComments";
+import TascoCommentsSkeleton from "./TascoCommentsSkeleton";
 import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
@@ -145,19 +147,23 @@ export default function TascoEQClientPage() {
             <Contents width={"section"} className="py-5">
               {activeTab === 1 && (
                 <Holds className="h-full w-full relative pt-2">
-                  <TascoComments
-                    tascoLog={tascoLogId}
-                    comments={comment}
-                    setComments={setComment}
-                  />
+                  <Suspense fallback={<TascoCommentsSkeleton />}>
+                    <TascoComments
+                      tascoLog={tascoLogId}
+                      comments={comment}
+                      setComments={setComment}
+                    />
+                  </Suspense>
                 </Holds>
               )}
               {activeTab === 2 && (
-                <RefuelLayout
-                  tascoLog={tascoLogId}
-                  refuelLogs={refuelLogs}
-                  setRefuelLogs={setRefuelLogs}
-                />
+                <Suspense fallback={<RefuelLayoutSkeleton />}>
+                  <RefuelLayout
+                    tascoLog={tascoLogId}
+                    refuelLogs={refuelLogs}
+                    setRefuelLogs={setRefuelLogs}
+                  />
+                </Suspense>
               )}
             </Contents>
           </Holds>
