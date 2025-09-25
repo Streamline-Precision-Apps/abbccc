@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -21,99 +22,103 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "No ID provided" }, { status: 400 });
     }
 
-    // Fetch the active timesheet for the user
-    const jobCode = await prisma.timeSheet.findFirst({
-      where: { userId, id },
-      select: {
-        id: true,
-        startTime: true,
-        Jobsite: {
-          select: { id: true, qrId: true, name: true },
-        },
-        CostCode: {
-          select: { id: true, name: true },
-        },
+    // Create a cached function for fetching banner data
+    const getCachedBannerData = unstable_cache(
+      async (timesheetId: number, userId: string) => {
+        // Fetch the active timesheet for the user
+        const jobCode = await prisma.timeSheet.findFirst({
+          where: { userId, id: timesheetId },
+          select: {
+            id: true,
+            startTime: true,
+            Jobsite: {
+              select: { id: true, qrId: true, name: true },
+            },
+            CostCode: {
+              select: { id: true, name: true },
+            },
+          },
+        });
+
+        if (!jobCode) {
+          throw new Error("No active timesheet found.");
+        }
+
+        // Parallelize queries for performance
+        const [tascoLogs, truckingLogs, eqLogs] = await Promise.all([
+          prisma.tascoLog.findMany({
+            where: { timeSheetId: timesheetId },
+            select: {
+              laborType: true,
+              Equipment: { select: { qrId: true, name: true } },
+            },
+          }),
+          prisma.truckingLog.findMany({
+            where: { timeSheetId: timesheetId },
+            select: {
+              laborType: true,
+              Equipment: { select: { qrId: true, name: true } },
+            },
+          }),
+          prisma.employeeEquipmentLog.findMany({
+            where: { timeSheetId: timesheetId, endTime: null },
+            select: {
+              id: true,
+              startTime: true,
+              endTime: true,
+              Equipment: { select: { id: true, name: true } },
+            },
+          }),
+        ]);
+
+        // Format Logs
+        const formattedTascoLogs = tascoLogs.map((log) => ({
+          laborType: log.laborType,
+          equipment: log.Equipment || { qrId: null, name: "Unknown" },
+        }));
+
+        const formattedTruckingLogs = truckingLogs.map((log) => ({
+          laborType: log.laborType,
+          equipment: log.Equipment || { qrId: null, name: "Unknown" },
+        }));
+
+        const formattedEmployeeEquipmentLogs = eqLogs.map((log) => ({
+          id: log.id,
+          startTime: log.startTime,
+          endTime: log.endTime,
+          equipment: log.Equipment || { id: null, name: "Unknown" },
+        }));
+
+        // Structure the response
+        return {
+          id: jobCode.id,
+          startTime: jobCode.startTime,
+          jobsite: jobCode.Jobsite
+            ? {
+                id: jobCode.Jobsite.id,
+                qrId: jobCode.Jobsite.qrId,
+                name: jobCode.Jobsite.name,
+              }
+            : null,
+          costCode: jobCode.CostCode
+            ? {
+                id: jobCode.CostCode.id,
+                name: jobCode.CostCode.name,
+              }
+            : null,
+          tascoLogs: formattedTascoLogs,
+          truckingLogs: formattedTruckingLogs,
+          employeeEquipmentLogs: formattedEmployeeEquipmentLogs,
+        };
       },
-    });
+      [`banner-data-${id}-${userId}`],
+      {
+        tags: [`banner-data-${userId}`, "timesheets", "equipment-logs"],
+        revalidate: 300, // Cache for 5 minutes (banner data changes frequently)
+      }
+    );
 
-    if (!jobCode) {
-      return NextResponse.json(
-        { error: "No active timesheet found." },
-        { status: 404 },
-      );
-    }
-
-    // ------------------------- Fetch Logs -------------------------
-
-    // Parallelize queries for performance
-    const [tascoLogs, truckingLogs, eqLogs] = await Promise.all([
-      prisma.tascoLog.findMany({
-        where: { timeSheetId: id },
-        select: {
-          laborType: true,
-          Equipment: { select: { qrId: true, name: true } },
-        },
-      }),
-      prisma.truckingLog.findMany({
-        where: { timeSheetId: id },
-        select: {
-          laborType: true,
-          Equipment: { select: { qrId: true, name: true } },
-        },
-      }),
-      prisma.employeeEquipmentLog.findMany({
-        where: { timeSheetId: id, endTime: null },
-        select: {
-          id: true,
-          startTime: true,
-          endTime: true,
-          Equipment: { select: { id: true, name: true } },
-        },
-      }),
-    ]);
-
-    // ------------------------- Format Logs -------------------------
-
-    const formattedTascoLogs = tascoLogs.map((log) => ({
-      laborType: log.laborType,
-      equipment: log.Equipment || { qrId: null, name: "Unknown" },
-    }));
-
-    const formattedTruckingLogs = truckingLogs.map((log) => ({
-      laborType: log.laborType,
-      equipment: log.Equipment || { qrId: null, name: "Unknown" },
-    }));
-
-    const formattedEmployeeEquipmentLogs = eqLogs.map((log) => ({
-      id: log.id,
-      startTime: log.startTime,
-      endTime: log.endTime,
-      equipment: log.Equipment || { id: null, name: "Unknown" },
-    }));
-
-    // ------------------------- Structure the response -------------------------
-
-    const responseData = {
-      id: jobCode.id,
-      startTime: jobCode.startTime,
-      jobsite: jobCode.Jobsite
-        ? {
-            id: jobCode.Jobsite.id,
-            qrId: jobCode.Jobsite.qrId,
-            name: jobCode.Jobsite.name,
-          }
-        : null,
-      costCode: jobCode.CostCode
-        ? {
-            id: jobCode.CostCode.id,
-            name: jobCode.CostCode.name,
-          }
-        : null,
-      tascoLogs: formattedTascoLogs,
-      truckingLogs: formattedTruckingLogs,
-      employeeEquipmentLogs: formattedEmployeeEquipmentLogs,
-    };
-
+    const responseData = await getCachedBannerData(id, userId);
     return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error in GET /api/getTimeSheetLogs:", error);
