@@ -40,7 +40,7 @@ export default function OfflineSyncStatus() {
       setStatus(offlineStatus);
       setIsVisible(offlineStatus.total > 0);
     } catch (error) {
-      console.error('Failed to clear offline data:', error);
+      console.error("Failed to clear offline data:", error);
     }
   };
 
