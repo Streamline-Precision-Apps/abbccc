@@ -1,9 +1,12 @@
 "use client";
 import { Holds } from "@/components/(reusable)/holds";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Suspense } from "react";
 import SelectEquipment from "./SelectEquipment";
 import EquipmentScanner from "./EquipmentScanner";
 import EquipmentSelectorView from "./EquipmentSelector";
+import LoadingScannerFallback from "./LoadingScannerFallback";
+import LoadingSelectorFallback from "./LoadingSelectorFallback";
 type Option = {
   id: string;
   label: string;
@@ -24,6 +27,9 @@ export default function ScanEquipment() {
     label: "",
     code: "",
   });
+
+  // Ref to prevent multiple submissions
+  const submitRef = useRef(false);
 
   useEffect(() => {
     const getJobsite = async () => {
@@ -51,22 +57,28 @@ export default function ScanEquipment() {
         ) : step === 2 ? (
           <>
             {method === "Scan" ? (
-              <EquipmentScanner
-                setError={setError}
-                setStep={setStep}
-                setMethod={setMethod}
-                setEquipmentQr={setEquipmentQr}
-                equipmentQr={equipmentQr}
-                jobSite={jobSite}
-              />
+              <Suspense fallback={<LoadingScannerFallback />}>
+                <EquipmentScanner
+                  setError={setError}
+                  setStep={setStep}
+                  setMethod={setMethod}
+                  setEquipmentQr={setEquipmentQr}
+                  equipmentQr={equipmentQr}
+                  jobSite={jobSite}
+                  submitRef={submitRef}
+                />
+              </Suspense>
             ) : method === "Select" ? (
-              <EquipmentSelectorView
-                setStep={setStep}
-                setMethod={setMethod}
-                setEquipment={setEquipment}
-                equipment={equipment}
-                jobSite={jobSite}
-              />
+              <Suspense fallback={<LoadingSelectorFallback />}>
+                <EquipmentSelectorView
+                  setStep={setStep}
+                  setMethod={setMethod}
+                  setEquipment={setEquipment}
+                  equipment={equipment}
+                  jobSite={jobSite}
+                  submitRef={submitRef}
+                />
+              </Suspense>
             ) : null}
           </>
         ) : null}

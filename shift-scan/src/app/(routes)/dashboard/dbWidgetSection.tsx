@@ -9,7 +9,6 @@ import TascoDashboardView from "./UI/_dashboards/tascoDashboardView";
 import TruckDriverDashboardView from "./UI/_dashboards/truckDriverDashboardView";
 import MechanicDashboardView from "./UI/_dashboards/mechanicDashboardView";
 import GeneralDashboardView from "./UI/_dashboards/generalDashboardView";
-import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 import { LogItem } from "@/lib/types";
 import { useModalState } from "@/hooks/(dashboard)/useModalState";
 
@@ -22,26 +21,22 @@ type props = {
 
 // Verifies if there are any unSubmitted logs
 const useFetchLogs = (
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setLogs: React.Dispatch<React.SetStateAction<LogItem[]>>
+  setLogs: React.Dispatch<React.SetStateAction<LogItem[]>>,
 ) => {
   const e = useTranslations("Err-Msg");
 
   useEffect(() => {
     const fetchLogs = async () => {
-      setLoading(true);
       try {
         const response = await fetch("/api/getLogs");
         const logsData = await response.json();
         setLogs(logsData);
       } catch (error) {
         console.error(e("Logs-Fetch"));
-      } finally {
-        setLoading(false);
       }
     };
     fetchLogs();
-  }, [e, setLoading, setLogs]);
+  }, [e, setLogs]);
 };
 
 export default function DbWidgetSection({
@@ -52,15 +47,13 @@ export default function DbWidgetSection({
 }: props) {
   const permission = session.user.permission;
   const [logs, setLogs] = useState<LogItem[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [comment, setComment] = useState("");
-  const [additionalButtonsType, setAdditionalButtonsType] = useState<
-    string | null
-  >(null);
+
   const router = useRouter();
   const { currentView } = useCurrentView();
 
-  useFetchLogs(setLoading, setLogs);
+  useFetchLogs(setLogs);
   const modalState = useModalState();
 
   const verifyLogsCompletion = useCallback(() => {
@@ -71,10 +64,6 @@ export default function DbWidgetSection({
     }
   }, [logs, router, modalState]);
 
-  if (loading) {
-    return <DashboardLoadingView loading={loading} />;
-  }
-
   // Use switch for better readability in rendering views
   switch (view) {
     case "tasco":
@@ -84,7 +73,6 @@ export default function DbWidgetSection({
           comment={comment}
           setComment={setComment}
           verifyLogsCompletion={verifyLogsCompletion}
-          additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
           currentView={currentView}
@@ -99,7 +87,6 @@ export default function DbWidgetSection({
           comment={comment}
           setComment={setComment}
           verifyLogsCompletion={verifyLogsCompletion}
-          additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
           mechanicProjectID={mechanicProjectID}
@@ -113,7 +100,6 @@ export default function DbWidgetSection({
           comment={comment}
           setComment={setComment}
           verifyLogsCompletion={verifyLogsCompletion}
-          additionalButtonsType={additionalButtonsType}
           logs={logs}
           permission={permission}
           mechanicProjectID={mechanicProjectID}
@@ -127,7 +113,6 @@ export default function DbWidgetSection({
           comment={comment}
           setComment={setComment}
           verifyLogsCompletion={verifyLogsCompletion}
-          additionalButtonsType={additionalButtonsType}
           logs={logs}
           mechanicProjectID={mechanicProjectID}
           permission={permission}

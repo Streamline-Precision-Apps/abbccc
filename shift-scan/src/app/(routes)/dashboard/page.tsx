@@ -7,10 +7,14 @@ import { redirect } from "next/navigation";
 import DbWidgetSection from "./dbWidgetSection";
 import { Grids } from "@/components/(reusable)/grids";
 import BannerRotating from "@/components/(reusable)/bannerRotating";
+import BannerRotatingSkeleton from "@/components/(reusable)/BannerRotatingSkeleton";
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import ClockOutCheck from "@/components/ClockOutCheck";
 import ActiveTimesheetCheck from "@/components/ActiveTimesheetCheck";
+import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
+import LoadingHamburgerMenuNew from "@/components/(animations)/loadingHamburgerMenuNew";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -44,21 +48,30 @@ export default async function Dashboard() {
           <HamburgerMenuNew />
           {/* Active timesheet check component - runs on dashboard load */}
           <ActiveTimesheetCheck userId={session.user.id} />
+          <Suspense fallback={<LoadingHamburgerMenuNew />}>
+            <HamburgerMenuNew isHome={false} />
+          </Suspense>
           {/* Clock-out check component - invisible but runs in background */}
-          <ClockOutCheck
-            userId={session.user.id}
-            timesheetId={prevTimeSheetId}
-          />
+          {/* <Suspense fallback={null}>
+            <ClockOutCheck
+              userId={session.user.id}
+              timesheetId={prevTimeSheetId}
+            />
+          </Suspense> */}
           <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
-            <BannerRotating />
+            <Suspense fallback={<BannerRotatingSkeleton />}>
+              <BannerRotating />
+            </Suspense>
           </Holds>
           <Holds background={"white"} className="row-start-4 row-end-9 h-full">
-            <DbWidgetSection
-              session={session}
-              view={view}
-              mechanicProjectID={mechanicProjectID}
-              laborType={laborType}
-            />
+            <Suspense fallback={<DashboardLoadingView />}>
+              <DbWidgetSection
+                session={session}
+                view={view}
+                mechanicProjectID={mechanicProjectID}
+                laborType={laborType}
+              />
+            </Suspense>
           </Holds>
         </Grids>
       </Contents>

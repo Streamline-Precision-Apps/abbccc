@@ -1,17 +1,12 @@
 "use client";
-import React from "react";
-import { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { Holds } from "@/components/(reusable)/holds";
-import { Grids } from "@/components/(reusable)/grids";
 import { Titles } from "@/components/(reusable)/titles";
-import FormSelection from "./formSelection";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
-// import CompanyDocuments from "./companyDocuments";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Images } from "@/components/(reusable)/images";
-import RTab from "./recieved";
 import { NewTab } from "@/components/(reusable)/newTabs";
+import DynamicInboxContent from "./dynamicInboxContent";
 
 export default function InboxContent({ isManager }: { isManager: boolean }) {
   const [activeTab, setActiveTab] = useState(1);
@@ -19,10 +14,10 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
   const searchParams = useSearchParams();
   const url = searchParams.get("returnUrl") || "/dashboard";
   const t = useTranslations("Hamburger-Inbox");
-  const [loading, setLoading] = useState<boolean>(false);
 
   return (
     <div className="h-full w-full rounded-lg bg-white">
+      {/* Static content - header */}
       <TitleBoxes
         className="h-16 flex-shrink-0 rounded-lg sticky top-0 z-10 bg-white"
         position={"row"}
@@ -36,96 +31,54 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
         </Holds>
       </TitleBoxes>
 
-      {activeTab === 1 && (
-        <>
-          <div className="h-[50px] items-center flex flex-row gap-2 border-2  border-neutral-100 bg-neutral-100">
-            <NewTab
-              onClick={() => setActiveTab(1)}
-              isActive={activeTab === 1}
-              isComplete={true}
-              titleImage={"/formInspect.svg"}
-              titleImageAlt={""}
-              animatePulse={loading}
-              className="border-gray-200 border-2"
-            >
-              <Titles size={"sm"}>{t("Forms")}</Titles>
-            </NewTab>
+      {/* Static content - tabs */}
+      <div className="h-[50px] items-center flex flex-row gap-2 border-2 border-neutral-100 bg-neutral-100">
+        <NewTab
+          onClick={() => setActiveTab(1)}
+          isActive={activeTab === 1}
+          isComplete={true}
+          titleImage={"/formInspect.svg"}
+          titleImageAlt={""}
+          animatePulse={false}
+          className="border-gray-200 border-2"
+        >
+          <Titles size={"sm"}>{t("Forms")}</Titles>
+        </NewTab>
 
-            {isManager && (
-              <NewTab
-                onClick={() => setActiveTab(3)}
-                isActive={false}
-                isComplete={true}
-                titleImage={"/formApproval.svg"}
-                titleImageAlt={""}
-                animatePulse={loading}
-              >
-                <Titles size={"sm"}>{t("TeamSubmissions")}</Titles>
-              </NewTab>
-            )}
+        {isManager && (
+          <NewTab
+            onClick={() => setActiveTab(3)}
+            isActive={activeTab === 3}
+            isComplete={true}
+            titleImage={"/formApproval.svg"}
+            titleImageAlt={""}
+            animatePulse={false}
+          >
+            <Titles size={"sm"}>{t("TeamSubmissions")}</Titles>
+          </NewTab>
+        )}
+      </div>
+
+      {/* Dynamic content - wrapped in Suspense */}
+      <Suspense
+        fallback={
+          <div className="p-4 space-y-4">
+            {Array(3)
+              .fill(0)
+              .map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-12 bg-gray-200 rounded-md w-full"></div>
+                </div>
+              ))}
           </div>
-
-          {/* <NewTab
-                  onClick={() => setActiveTab(4)}
-                  isActive={false}
-                  isComplete={true}
-                  titleImage={"/policies.svg"}
-                  titleImageAlt={""}
-                  animatePulse={loading}
-                >
-                  <Titles size={"h5"}>{t("Documents")}</Titles>
-                </NewTab> */}
-
-          <FormSelection
-            setActiveTab={setActiveTab}
-            activeTab={activeTab}
-            loading={loading}
-            setLoading={setLoading}
-            isManager={isManager}
-          />
-        </>
-      )}
-      {activeTab !== 1 && (
-        <>
-          <div className="h-[50px] items-center flex flex-row gap-2 border-2  border-neutral-100 bg-neutral-100">
-            <NewTab
-              onClick={() => setActiveTab(1)}
-              isActive={activeTab === 1}
-              isComplete={true}
-              titleImage={"/formInspect.svg"}
-              titleImageAlt={""}
-            >
-              <Titles size={"sm"}>{t("Forms")}</Titles>
-            </NewTab>
-
-            {isManager && (
-              <NewTab
-                onClick={() => setActiveTab(3)}
-                isActive={activeTab === 3}
-                isComplete={true}
-                titleImage={"/formApproval.svg"}
-                titleImageAlt={""}
-              >
-                <Titles size={"sm"}>{t("TeamSubmissions")}</Titles>
-              </NewTab>
-            )}
-
-            {/* <NewTab
-                  onClick={() => setActiveTab(4)}
-                  isActive={activeTab === 4}
-                  isComplete={true}
-                  titleImage={"/policies.svg"}
-                  titleImageAlt={""}
-                >
-                  <Titles size={"h5"}>{t("Documents")}</Titles>
-                </NewTab> */}
-          </div>
-
-          {activeTab === 3 && <RTab isManager={isManager} />}
-
-          {/* {activeTab === 4 && <CompanyDocuments />} */}
-        </>
-      )}
+        }
+      >
+        <DynamicInboxContent
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isManager={isManager}
+        />
+      </Suspense>
     </div>
   );
 }

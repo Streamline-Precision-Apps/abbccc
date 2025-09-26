@@ -18,13 +18,15 @@ This guide explains how to implement React Suspense boundaries in a Next.js app 
    import { Suspense } from "react";
    ```
 2. **Wrap the async component:**
+
    ```tsx
-   <Suspense fallback={<div>Loading...</div>}>
+   // If your page/component already has a custom loading UI, use it as the Suspense fallback:
+   <Suspense fallback={<YourLoadingComponentOrJSX />}>
      <YourAsyncComponent />
    </Suspense>
    ```
 
-   - The `fallback` prop is the UI shown while the component inside is loading.
+   - The `fallback` prop is the UI shown while the component inside is loading. Prefer to use the same loading UI as your page/component, not just a generic `<div>Loading...</div>`.
 
 ---
 

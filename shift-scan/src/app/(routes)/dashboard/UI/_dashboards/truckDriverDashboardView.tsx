@@ -12,14 +12,11 @@ import { LogItem } from "@/lib/types";
 import useModalState from "@/hooks/(dashboard)/useModalState";
 
 export default function TruckDriverDashboardView({
-  additionalButtonsType,
-  verifyLogsCompletion,
   permission,
   logs,
   laborType,
   mechanicProjectID,
 }: {
-  additionalButtonsType: string | null;
   isModalOpen: boolean;
   isModal2Open: boolean;
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
@@ -54,19 +51,14 @@ export default function TruckDriverDashboardView({
               laborType={laborType}
               view={"truck"}
             />
-            {permission !== "USER" && !additionalButtonsType && (
-              <GeneratorBtn />
-            )}
+            {permission !== "USER" && <GeneratorBtn />}
 
-            {permission !== "USER" && !additionalButtonsType && (
-              <MyTeamWidget />
-            )}
+            {permission !== "USER" && <MyTeamWidget />}
             {permission !== "USER" && laborType === "truckLabor" && (
               <EquipmentBtn permission={permission} />
             )}
 
             <ClockOutBtn
-              handleShowAdditionalButtons={verifyLogsCompletion}
               permission={permission}
               mechanicProjectID={mechanicProjectID}
               logs={logs}

@@ -9,7 +9,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { usePayPeriodTimeSheet } from "../context/PayPeriodTimeSheetsContext";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
-import Spinner from "@/components/(animations)/spinner";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
 import { usePayPeriodData } from "@/hooks/(home)/usePayPeriod";
 import WidgetContainer from "./widgetContainer";
@@ -59,10 +58,6 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
     }
   }, [pageView, router, accountSetup, setPageView]);
 
-  // Loading state
-  if (loading) {
-    return <LoadingState />;
-  }
   // Main render
   return (
     <>
@@ -80,20 +75,6 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
   );
 }
 
-// Sub-components for better organization
-function LoadingState() {
-  return (
-    <>
-      <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] rounded-[10px] animate-pulse"></Holds>
-      <Holds
-        background={"white"}
-        className="row-span-5 h-full justify-center items-center animate-pulse"
-      >
-        <Spinner />
-      </Holds>
-    </>
-  );
-}
 function BannerSection({
   pageView,
   user,

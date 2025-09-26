@@ -43,7 +43,7 @@ export default function SelectEquipment({
         <Holds className="row-start-2 row-end-3 h-full">
           {error && (
             <Holds className="h-full pt-2 justify-center">
-              <Texts className="text-app-red " size={"p6"}>
+              <Texts className="text-app-red " size={"sm"}>
                 {error}
               </Texts>
             </Holds>
@@ -67,7 +67,7 @@ export default function SelectEquipment({
                   setMethod("Scan");
                 }}
               >
-                <Titles size={"h4"}>{t("ScanQR")}</Titles>
+                <Titles size={"lg"}>{t("ScanQR")}</Titles>
               </Buttons>
             </Holds>
             <Holds>
@@ -78,7 +78,7 @@ export default function SelectEquipment({
                   setMethod("Select");
                 }}
               >
-                <Titles size={"h4"}>{t("SelectManually")}</Titles>
+                <Titles size={"lg"}>{t("SelectManually")}</Titles>
               </Buttons>
             </Holds>
           </Contents>

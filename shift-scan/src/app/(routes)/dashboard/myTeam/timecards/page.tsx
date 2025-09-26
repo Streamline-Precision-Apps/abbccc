@@ -5,10 +5,11 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTranslations } from "next-intl";
 import TimeCardApprover from "./_Components/TimeCardApprover";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function TimeCards() {
   const t = useTranslations("TimeCardSwiper");
@@ -35,9 +36,17 @@ export default function TimeCards() {
               </Holds>
             </TitleBoxes>
           </Holds>
-          <Holds className="row-start-2 row-end-8 h-full w-full">
-            <TimeCardApprover loading={loading} setLoading={setLoading} />
-          </Holds>
+          <Suspense
+            fallback={
+              <Holds className="row-start-2 row-end-8 h-full w-full">
+                <Spinner />
+              </Holds>
+            }
+          >
+            <Holds className="row-start-2 row-end-8 h-full w-full">
+              <TimeCardApprover loading={loading} setLoading={setLoading} />
+            </Holds>
+          </Suspense>
         </Grids>
       </Contents>
     </Bases>
