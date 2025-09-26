@@ -24,12 +24,20 @@ export const notificationTableColumns: ColumnDef<Notification>[] = [
   },
   {
     accessorKey: "topic",
-    header: "Type",
+    header: "Request Type",
     cell: ({ row }) => (
       <div className="text-xs text-center bg-blue-100 text-blue-700 py-1 px-2 rounded-full inline-block min-w-[60px]">
         {row.original.topic === "timecards-changes"
           ? "Modification"
-          : row.original.topic || "-"}
+          : row.original.topic === "timecard-submission"
+            ? "Approval"
+            : row.original.topic === "form-submissions"
+              ? "Approval"
+              : row.original.topic === "items"
+                ? "New Item"
+                : row.original.topic === "equipment-break"
+                  ? "Repair"
+                  : row.original.topic || "-"}
       </div>
     ),
   },

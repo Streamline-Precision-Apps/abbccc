@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageHeaderContainer } from "./_pages/PageHeaderContainer";
 import { NotificationTable } from "./_components/NotificationTable";
-import NotificationActions from "./_components/NotificationAction";
 import { JsonValue } from "../../../../prisma/generated/prisma/runtime/library";
 import { Notification } from "../../../../prisma/generated/prisma/client";
 import { useSession } from "next-auth/react";
@@ -89,7 +87,7 @@ export default function Admins() {
         />
       </div>
 
-      <div className="flex flex-row h-[95vh] w-full overflow-y-hidden gap-x-4 pt-4 ">
+      <div className="flex flex-row h-[90vh] w-full gap-x-4 pt-4 ">
         <NotificationTable
           data={data || []}
           totalCount={totalCount}

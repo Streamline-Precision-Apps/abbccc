@@ -7,7 +7,7 @@ export const runtime = "nodejs"; // Ensure this runs in a Node.js environment
 
 export async function POST(request: NextRequest) {
   const admin = getFirebaseAdmin();
-  const { topic, title, message, link } = await request.json();
+  const { topic, title, message, link, referenceId } = await request.json();
   if (!topic) {
     return NextResponse.json(
       {
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
         url: link ?? null,
         pushedAt: new Date(),
         pushAttempts: 1,
+        referenceId: referenceId ?? null,
       },
     });
     const urlWithId = `${notification.url ? notification.url : "/admins"}${notification.url?.includes("?") ? "&" : "?"}notificationId=${notification.id}`;

@@ -124,7 +124,8 @@ export default function MechanicVerificationStep({
             topic: "timecard-submission",
             title: "Timecard Approval Needed",
             message: `#${responseAction.createdTimeCard.id} has been submitted by ${responseAction.createdTimeCard.User.firstName} ${responseAction.createdTimeCard.User.lastName} for approval.`,
-            link: `/admins/timesheets?id=${responseAction}`,
+            link: `/admins/timesheets?id=${responseAction.createdTimeCard.id}`,
+            referenceId: responseAction.createdTimeCard.id,
           }),
         });
         await response.json();

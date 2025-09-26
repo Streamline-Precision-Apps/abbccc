@@ -135,6 +135,7 @@ export default function AddEquipmentForm({}) {
               title: "Equipment Created",
               message: `${response.data?.name || "An equipment"} has been submitted by ${response.data?.createdBy?.firstName || ""} ${response.data?.createdBy?.lastName || "a user"} and is pending approval.`,
               link: "/admins/equipment?isPendingApproval=true",
+              referenceId: response.data?.id,
             }),
           },
         );

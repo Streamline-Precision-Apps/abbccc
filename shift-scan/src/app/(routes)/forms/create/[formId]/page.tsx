@@ -243,6 +243,7 @@ export default function FormCreationPage({ params }: FormCreationPageProps) {
             title: "Form Submission",
             message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${formTemplate.name}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
+            formSubmissionId: result.id,
           }),
         });
         await response.json();

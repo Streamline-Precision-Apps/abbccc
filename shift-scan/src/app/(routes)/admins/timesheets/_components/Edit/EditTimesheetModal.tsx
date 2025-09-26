@@ -229,7 +229,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
 
       const result = await adminUpdateTimesheet(formData);
       if (result.success) {
-        const response = await fetch("/api/notifications/send-multicast", {
+        await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -239,9 +239,10 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             title: "Timecard Modified ",
             message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${timesheetId}.`,
             link: `/admins/timesheets?id=${timesheetId}`,
+            referenceId: timesheetId,
           }),
         });
-        await response.json();
+
         await refresh();
       }
 
@@ -348,18 +349,11 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
     id: Number(m.id),
   }));
 
-  const setNotificationToRead = async (notificationId: number) => {
+  const setNotificationToRead = async () => {
     try {
       if (!editor) return;
 
-      const result = await adminSetNotificationToRead(
-        notificationId,
-        editor,
-        "Verified",
-      );
-      if (result.success) {
-        setNotificationIds(null);
-      }
+      await adminSetNotificationToRead(editor, timesheetId, "Verified");
     } catch (error) {
       console.error("Error setting notification to read:", error);
     }
@@ -412,9 +406,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                         size="sm"
                         onClick={() => {
                           setShowHistory(!showHistory);
-                          if (notificationIds) {
-                            setNotificationToRead(parseInt(notificationIds));
-                          }
+                          setNotificationToRead();
                         }}
                         className="flex items-center gap-1 px-6 py-1 rounded-md hover:bg-gray-50"
                       >
