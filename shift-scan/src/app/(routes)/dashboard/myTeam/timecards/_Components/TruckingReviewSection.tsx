@@ -1,4 +1,15 @@
 "use client";
+import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
+import React, { useState } from "react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
 type TimeSheet = {
   id: string;
   date: string;
@@ -81,15 +92,6 @@ type TimeSheet = {
   }[];
 };
 
-import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { NewTab } from "@/components/(reusable)/newTabs";
-import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-
 export default function TruckingReviewSection({
   currentTimeSheets,
 }: {
@@ -99,31 +101,10 @@ export default function TruckingReviewSection({
   const [tabs, setTabs] = useState(1);
   // Combine all trucking logs from all timesheets
   const allTruckingLogs = currentTimeSheets.flatMap(
-    (timesheet) => timesheet.TruckingLogs || []
+    (timesheet) => timesheet.TruckingLogs || [],
   );
 
-  // Check if we have any trucking data at all
-  const hasAnyTruckingData = allTruckingLogs.length > 0;
-
-  // Check for specific data sections
-  const hasMileageData = allTruckingLogs.some(
-    (log) => log.startingMileage || log.endingMileage
-  );
-
-  const hasRefuelData = allTruckingLogs.some((log) => log.RefuelLogs?.length);
-
-  const hasStateMileage = allTruckingLogs.some(
-    (log) => log.StateMileages?.length
-  );
-
-  const hasMaterials = allTruckingLogs.some(
-    (log) => log.Materials?.length // Changed from Materials to Material
-  );
-  const hasEquipmentHauled = allTruckingLogs.some(
-    (log) => log.EquipmentHauled?.length
-  );
-
-  if (!hasAnyTruckingData) {
+  if (allTruckingLogs.length === 0) {
     return (
       <Holds className="h-full w-full flex items-center justify-center">
         <Texts size="p6">{t("NoTruckingDataAvailable")}</Texts>
@@ -131,349 +112,89 @@ export default function TruckingReviewSection({
     );
   }
 
+  // Helper to format mileage range
+  const formatMileage = (log: any) => {
+    const start = log.startingMileage ?? "-";
+    const end = log.endingMileage ?? "-";
+    return `${start} → ${end}`;
+  };
+
+  // Helper to format refuel info
+  const formatRefuel = (log: any) => {
+    if (!log.RefuelLogs?.length) return "-";
+    return log.RefuelLogs.map((r: any) => `${r.gallonsRefueled} gal`).join(
+      ", ",
+    );
+  };
+
+  // Helper to format state mileage
+  const formatStateMileage = (log: any) => {
+    if (!log.StateMileages?.length) return "-";
+    return log.StateMileages.map(
+      (s: any) => `${s.state}: ${s.stateLineMileage} mi`,
+    ).join(", ");
+  };
+
+  // Helper to format materials
+  const formatMaterials = (log: any) => {
+    if (!log.Materials?.length) return "-";
+    return log.Materials.map(
+      (m: any) => `${m.name} (${m.materialWeight ?? "-"} lbs)`,
+    ).join(", ");
+  };
+
+  // Helper to format equipment hauled
+  const formatEquipmentHauled = (log: any) => {
+    if (!log.EquipmentHauled?.length) return "-";
+    return log.EquipmentHauled.map(
+      (e: any) => `${e.Equipment?.name ?? "-"} → ${e.JobSite?.name ?? "-"}`,
+    ).join(", ");
+  };
+
   return (
-    <Holds
-      className="h-full w-full overflow-y-auto no-scrollbar"
-      style={{ touchAction: "pan-y" }}
-    >
-      <Grids rows={"9"} className="w-full h-full">
-        <Holds
-          position={"row"}
-          className="row-start-1 row-end-2 w-full h-full gap-x-[2px] relative"
+    <Accordion type="single" collapsible>
+      {allTruckingLogs.map((log: any) => (
+        <AccordionItem
+          value={log.id}
+          key={log.id}
+          className="bg-white rounded-lg mb-2"
         >
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
-          {hasMileageData && (
-            <NewTab
-              isActive={tabs === 1}
-              onClick={() => setTabs(1)}
-              titleImage={"/mileage.svg"}
-              titleImageAlt={"mileage"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 1
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            />
-          )}
-          {hasMaterials && (
-            <NewTab
-              isActive={tabs === 2}
-              onClick={() => setTabs(2)}
-              titleImage={"/haulingFilled.svg"}
-              titleImageAlt={"haulingFilled"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 2
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            />
-          )}
-
-          {hasRefuelData && (
-            <NewTab
-              isActive={tabs === 3}
-              onClick={() => setTabs(3)}
-              titleImage={"/refuelFilled.svg"}
-              titleImageAlt={"refuelFilled"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 3
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            />
-          )}
-          {hasStateMileage && (
-            <NewTab
-              isActive={tabs === 4}
-              onClick={() => setTabs(4)}
-              titleImage={"/stateFilled.svg"}
-              titleImageAlt={"stateFilled"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 4
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            />
-          )}
-          {hasEquipmentHauled && (
-            <NewTab
-              isActive={tabs === 5}
-              onClick={() => setTabs(5)}
-              titleImage={"/trucking.svg"}
-              titleImageAlt={"trucking"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 5
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            />
-          )}
-        </Holds>
-        <Holds
-          background={"white"}
-          className="row-start-2 row-end-10 h-full rounded-t-none border-x-[3px] border-b-[3px] border-black"
-        >
-          {/* Main Trucking Logs */}
-          {tabs === 1 && (
-            <Holds className="w-full h-full ">
-              <Holds>
-                <Grids
-                  cols={"2"}
-                  gap={"2"}
-                  className="p-2 border-b-[3px] border-black "
-                >
-                  <Titles position={"left"} size={"h7"}>
-                    {t("TruckId")}
-                  </Titles>
-                  <Titles position={"left"} size={"h7"}>
-                    {t("StartEndMileage")}
-                  </Titles>
-                </Grids>
-              </Holds>
-              <Holds className="overflow-y-auto no-scrollbar">
-                {allTruckingLogs.map((log) => (
-                  <Grids
-                    cols={"2"}
-                    gap={"2"}
-                    key={log.id}
-                    className={`p-2 border-b-[3px] border-black  ${
-                      log.endingMileage &&
-                      log.startingMileage > log.endingMileage &&
-                      "bg-red-500"
-                    }`}
-                  >
-                    <Texts position={"left"} size={"p7"}>
-                      {`${log.Equipment?.name.slice(0, 15)}${
-                        (log.Equipment?.name?.length ?? 0) > 15 ? "..." : ""
-                      }` || "-"}
-                    </Texts>
-
-                    <Holds
-                      position={"row"}
-                      className={`max-w-[50%] gap-2 justify-start items-center`}
-                    >
-                      <Texts size={"p7"}>{log.startingMileage || "-"}</Texts>
-                      <Images
-                        titleImg={"/arrowRightThin.svg"}
-                        titleImgAlt="Arrow"
-                        className="max-w-4 h-auto object-contain"
-                      />
-                      <Texts size={"p7"}>{log.endingMileage || "-"}</Texts>
-                    </Holds>
-                  </Grids>
-                ))}
-              </Holds>
+          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-col items-start gap-1">
+            <p className="text-xs font-semibold">
+              Truck: {log.Equipment?.name ?? "-"}
+            </p>
+            <p className="text-xs">Mileage: {formatMileage(log)}</p>
+            <p className="text-xs">Refuel: {formatRefuel(log)}</p>
+            <p className="text-xs">State Mileage: {formatStateMileage(log)}</p>
+            <p className="text-xs">Materials: {formatMaterials(log)}</p>
+            <p className="text-xs">
+              Equipment Hauled: {formatEquipmentHauled(log)}
+            </p>
+          </AccordionTrigger>
+          <AccordionContent>
+            <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
+              <Texts size="sm" className="text-xs">
+                <strong>Truck:</strong> {log.Equipment?.name ?? "-"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Mileage:</strong> {formatMileage(log)}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Refuel:</strong> {formatRefuel(log)}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>State Mileage:</strong> {formatStateMileage(log)}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Materials:</strong> {formatMaterials(log)}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Equipment Hauled:</strong> {formatEquipmentHauled(log)}
+              </Texts>
             </Holds>
-          )}
-
-          {tabs === 2 && (
-            <Holds className="h-full w-full ">
-              <Holds background="white" className="">
-                <Grids
-                  cols={"3"}
-                  gap={"2"}
-                  className="p-1 py-2 border-b-[3px] border-black"
-                >
-                  <Titles position={"left"} size={"h7"}>
-                    {t("Material")}
-                  </Titles>
-
-                  <Titles size={"h7"}>{t("Weight")}</Titles>
-                  <Titles position={"right"} size={"h7"}>
-                    {t("Screened")}
-                  </Titles>
-                </Grids>
-                {allTruckingLogs.flatMap(
-                  (log) =>
-                    log.Materials?.map((material) => (
-                      <Grids
-                        key={material.id}
-                        cols={"3"}
-                        gap={"2"}
-                        className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
-                      >
-                        <Holds>
-                          <Texts position={"left"} size={"p7"}>
-                            {material.name || "-"}
-                          </Texts>
-                        </Holds>
-
-                        <Holds className="w-full ">
-                          <Holds
-                            position={"row"}
-                            className="w-full justify-center gap-1"
-                          >
-                            <Texts size={"p7"}>{t("Light")}</Texts>
-                            <Texts size={"p7"}>
-                              {material.lightWeight || "-"}
-                            </Texts>
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className="w-full justify-center gap-1"
-                          >
-                            <Texts size={"p7"}>{t("Gross")}</Texts>
-                            <Texts size={"p7"}>
-                              {material.grossWeight || "-"}
-                            </Texts>
-                          </Holds>
-                          <Holds
-                            position={"row"}
-                            className="w-full justify-center gap-1"
-                          >
-                            <Texts size={"p7"}>{t("MaterialWeight")}</Texts>
-                            <Texts size={"p7"}>
-                              {material.materialWeight || "-"}
-                            </Texts>
-                          </Holds>
-                        </Holds>
-                        <Texts position={"right"} size={"p6"}>
-                          {material.loadType === "SCREENED"
-                            ? t("Yes")
-                            : t("No")}
-                        </Texts>
-                      </Grids>
-                    )) || []
-                )}
-              </Holds>
-            </Holds>
-          )}
-
-          {/* Refueling Section */}
-          {tabs === 3 && (
-            <Holds background="white" className="w-full h-full">
-              <Holds>
-                <Grids
-                  cols={"3"}
-                  gap={"2"}
-                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
-                >
-                  <Titles size={"h7"}>{t("EquipmentId")}</Titles>
-                  <Titles size={"h7"}>{t("Gallons")}</Titles>
-                  <Titles size={"h7"}>{t("Mileage")}</Titles>
-                </Grids>
-              </Holds>
-              <Holds>
-                {allTruckingLogs.flatMap(
-                  (log) =>
-                    log.RefuelLogs?.map((refuel) => (
-                      <Grids
-                        key={refuel.id}
-                        cols={"3"}
-                        gap={"2"}
-                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
-                      >
-                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
-                        <Texts
-                          size={"p7"}
-                        >{`${refuel.gallonsRefueled} Gal`}</Texts>
-                        <Texts
-                          size={"p7"}
-                        >{`${refuel.milesAtFueling} mi`}</Texts>
-                      </Grids>
-                    )) || []
-                )}
-              </Holds>
-            </Holds>
-          )}
-
-          {/* State Mileage Section */}
-          {tabs === 4 && (
-            <Holds className="h-full w-full">
-              <Holds>
-                <Grids
-                  cols={"3"}
-                  gap={"2"}
-                  className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
-                >
-                  <Titles size={"h7"}>{t("EquipmentId")}</Titles>
-                  <Titles size={"h7"}>{t("State")}</Titles>
-                  <Titles size={"h7"}>{t("Mileage")}</Titles>
-                </Grids>
-              </Holds>
-              <Holds>
-                {allTruckingLogs.flatMap(
-                  (log) =>
-                    log.StateMileages?.map((state) => (
-                      <Grids
-                        key={state.id}
-                        cols={"3"}
-                        gap={"2"}
-                        className="h-full w-full gap-2 py-2 border-b-[3px] border-black"
-                      >
-                        <Texts size={"p7"}>{log.Equipment.name || "-"}</Texts>
-                        <Texts size={"p7"}>{state.state || "-"}</Texts>
-                        <Texts size={"p7"}>
-                          {`${state.stateLineMileage} mi` || "-"}
-                        </Texts>
-                      </Grids>
-                    )) || []
-                )}
-              </Holds>
-            </Holds>
-          )}
-
-          {/* Materials Section */}
-
-          {/* Equipment Hauled Section */}
-          {tabs === 5 && (
-            <Holds>
-              <Grids
-                cols={"2"}
-                className="h-full w-full gap-2 p-2 border-b-[3px] border-black"
-              >
-                <Titles size={"h7"}>{t("EquipmentHauled")}</Titles>
-                <Titles size={"h7"}>{t("TransportedTo")}</Titles>
-              </Grids>
-
-              {allTruckingLogs.flatMap(
-                (log) =>
-                  log.EquipmentHauled?.map((hauled) => (
-                    <Grids
-                      key={hauled.id}
-                      cols={"3"}
-                      gap={"2"}
-                      className="p-2 border-b-[3px] border-black last:border-0"
-                    >
-                      <Texts size={"p7"}>{hauled.Equipment?.name}</Texts>
-                      <Images
-                        titleImg="/arrowRightThin.svg"
-                        titleImgAlt="arrow"
-                        className="max-w-5 h-auto mx-auto"
-                      />
-                      <Texts size={"p7"}>{hauled.JobSite?.name}</Texts>
-                    </Grids>
-                  )) || []
-              )}
-            </Holds>
-          )}
-        </Holds>
-      </Grids>
-    </Holds>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }

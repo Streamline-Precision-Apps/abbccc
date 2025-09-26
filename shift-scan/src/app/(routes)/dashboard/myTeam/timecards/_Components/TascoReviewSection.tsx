@@ -1,4 +1,14 @@
 "use client";
+import { Holds } from "@/components/(reusable)/holds";
+import { Texts } from "@/components/(reusable)/texts";
+import { useTranslations } from "next-intl";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+
 type TimeSheet = {
   id: string;
   date: string;
@@ -81,36 +91,19 @@ type TimeSheet = {
   }[];
 };
 
-import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import { NewTab } from "@/components/(reusable)/newTabs";
-
-import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+interface TascoReviewSectionProps {
+  currentTimeSheets: TimeSheet[];
+}
 
 export default function TascoReviewSection({
   currentTimeSheets,
-}: {
-  currentTimeSheets: TimeSheet[];
-}) {
+}: TascoReviewSectionProps) {
   const t = useTranslations("TimeCardSwiper");
-  const [tabs, setTabs] = useState(1);
   const allTascoLogs = currentTimeSheets.flatMap(
-    (timesheet) => timesheet.TascoLogs || []
+    (timesheet) => timesheet.TascoLogs || [],
   );
-  useEffect(() => {
-    console.log(allTascoLogs);
-  }, [allTascoLogs]);
 
-  const hasAnyTascoData = allTascoLogs.length > 0;
-
-  const hasHaulingData = allTascoLogs.some(
-    (log) => log.materialType || log.LoadQuantity || log.Equipment?.name
-  );
-  const hasRefuelData = allTascoLogs.some((log) => log.RefuelLogs?.length);
-  if (!hasAnyTascoData) {
+  if (allTascoLogs.length === 0) {
     return (
       <Holds className="h-full w-full flex items-center justify-center">
         <Texts size="p6">{t("NoTascoDataAvailable")}</Texts>
@@ -118,151 +111,57 @@ export default function TascoReviewSection({
     );
   }
 
+  // Helper to format hauling info
+  const formatHauling = (log: any) => {
+    return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType || "-"} | ${log.Equipment?.name || "-"} | ${log.materialType || "N/A"} | Loads: ${log.LoadQuantity || "0"}`;
+  };
+
+  // Helper to format refuel info
+  const formatRefuel = (log: any) => {
+    if (!log.RefuelLogs?.length) return "-";
+    return log.RefuelLogs.map((r: any) => `${r.gallonsRefueled} gal`).join(
+      ", ",
+    );
+  };
+
   return (
-    <Holds
-      className="h-full w-full overflow-y-auto no-scrollbar"
-      style={{ touchAction: "pan-y" }}
-    >
-      <Grids rows={"9"} className="w-full h-full">
-        {/* Tab Navigation */}
-        <Holds
-          position={"row"}
-          className="row-start-1 row-end-2 w-full h-full gap-x-[2px] relative"
+    <Accordion type="single" collapsible>
+      {allTascoLogs.map((log: any) => (
+        <AccordionItem
+          value={log.id}
+          key={log.id}
+          className="bg-white rounded-lg mb-2"
         >
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black z-0" />
-
-          {hasHaulingData && (
-            <NewTab
-              isActive={tabs === 1}
-              onClick={() => setTabs(1)}
-              titleImage={"/haulingFilled.svg"}
-              titleImageAlt={"haulingFilled"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 1
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            >
-              <Titles position={"right"} size="h5">
-                {t("HaulingLogs")}
-              </Titles>
-            </NewTab>
-          )}
-
-          {hasRefuelData && (
-            <NewTab
-              isActive={tabs === 2}
-              onClick={() => setTabs(2)}
-              titleImage={"/refuelFilled.svg"}
-              titleImageAlt={"refuelFilled"}
-              activeColor={"white"}
-              inActiveColor={"lightBlue"}
-              isComplete={true}
-              activeBorder={"border"}
-              inActiveBorder={"default"}
-              className={
-                tabs === 2
-                  ? "relative z-10 after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2px] after:bg-white"
-                  : ""
-              }
-            >
-              <Titles position={"right"} size="h5">
-                {t("RefuelLogs")}
-              </Titles>
-            </NewTab>
-          )}
-        </Holds>
-
-        {/* Content Area */}
-        <Holds
-          background={"white"}
-          className="row-start-2 row-end-10 h-full rounded-t-none border-x-[3px] border-b-[3px] border-black"
-        >
-          {/* Hauling Logs Tab */}
-          {tabs === 1 && (
-            <Holds className="w-full h-full">
-              <Holds>
-                <Grids className="grid grid-cols-[.5fr_1fr_1fr_1fr_.5fr] gap-2 py-2 px-1 border-b-[3px] border-black">
-                  <Titles size={"h7"}>{t("Shift")}</Titles>
-                  <Titles size={"h7"}>{t("Labor")}</Titles>
-                  <Titles size={"h7"}>{t("Equipment")}</Titles>
-                  <Titles size={"h7"}>{t("Material")}</Titles>
-                  <Titles position={"right"} size={"h7"}>
-                    {t("Loads")}
-                  </Titles>
-                </Grids>
-              </Holds>
-
-              <Holds className="overflow-y-auto no-scrollbar">
-                {allTascoLogs.map((log) => (
-                  <Grids
-                    key={log.id}
-                    className="grid grid-cols-[.5fr_1fr_1fr_1fr_.5fr] gap-2 p-2 border-b-[3px] border-black justify-center items-center"
-                  >
-                    <Texts position={"left"} size={"p7"}>
-                      {log.shiftType?.split(" ")[0] || "-"}
-                    </Texts>
-                    <Texts position={"left"} size={"p7"}>
-                      {log.laborType === "tascoAbcdEquipment"
-                        ? "EQ.Operator"
-                        : log.laborType === "tascoAbcdLabor"
-                        ? "Labor"
-                        : log.laborType === "tascoEEquipment"
-                        ? "EQ.Operator"
-                        : log.laborType || "-"}
-                    </Texts>
-                    <Texts size={"p7"}>{log.Equipment?.name || "-"}</Texts>
-                    <Texts size={"p7"}>{log.materialType || "N/A"}</Texts>
-                    <Texts size={"p7"} className="text-right">
-                      {log.LoadQuantity || "0"}
-                    </Texts>
-                  </Grids>
-                ))}
-              </Holds>
+          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-col items-start gap-1">
+            <p className="text-xs font-semibold">
+              Hauling: {formatHauling(log)}
+            </p>
+            <p className="text-xs">Refuel: {formatRefuel(log)}</p>
+          </AccordionTrigger>
+          <AccordionContent>
+            <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
+              <Texts size="sm" className="text-xs">
+                <strong>Shift:</strong> {log.shiftType?.split(" ")[0] || "-"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Labor:</strong> {log.laborType || "-"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Equipment:</strong> {log.Equipment?.name || "-"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Material:</strong> {log.materialType || "N/A"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Loads:</strong> {log.LoadQuantity || "0"}
+              </Texts>
+              <Texts size="sm" className="text-xs">
+                <strong>Refuel:</strong> {formatRefuel(log)}
+              </Texts>
             </Holds>
-          )}
-
-          {/* Refuel Logs Tab */}
-          {tabs === 2 && (
-            <Holds background="white" className="w-full h-full">
-              <Holds>
-                <Grids
-                  cols={"2"}
-                  gap={"2"}
-                  className="p-2 h-full border-b-[3px] border-black"
-                >
-                  <Titles size={"h7"}>{t("Equipment")}</Titles>
-                  <Titles size={"h7"}>{t("Gallons")}</Titles>
-                </Grids>
-              </Holds>
-
-              <Holds className="overflow-y-auto no-scrollbar">
-                {allTascoLogs.flatMap(
-                  (log) =>
-                    log.RefuelLogs?.map((refuel) => (
-                      <Grids
-                        key={refuel.id}
-                        cols={"2"}
-                        gap={"2"}
-                        className="p-2 border-b border-gray-200 last:border-0"
-                      >
-                        <Texts size={"p7"}>{log.Equipment?.name || "-"}</Texts>
-                        <Texts size={"p7"} className="text-right">
-                          {refuel.gallonsRefueled} Gal
-                        </Texts>
-                      </Grids>
-                    )) || []
-                )}
-              </Holds>
-            </Holds>
-          )}
-        </Holds>
-      </Grids>
-    </Holds>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }

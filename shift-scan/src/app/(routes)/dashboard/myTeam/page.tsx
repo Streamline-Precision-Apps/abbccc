@@ -14,7 +14,6 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import { z } from "zod";
 import { Texts } from "@/components/(reusable)/texts";
-import { Images } from "@/components/(reusable)/images";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Zod schema for Team data

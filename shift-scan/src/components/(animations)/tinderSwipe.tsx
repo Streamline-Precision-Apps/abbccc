@@ -33,7 +33,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
       swipeThreshold = 80, // Lower threshold for easier swipe
       minHoldTime = 50, // Lower hold time for quicker drag enable
     },
-    ref
+    ref,
   ) {
     const controls = useAnimation();
     const [bgColor, setBgColor] = useState("bg-transparent");
@@ -78,7 +78,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         setBgColor("bg-transparent");
         setMessage("");
       },
-      [controls, onSwipeLeft, onSwipeRight]
+      [controls, onSwipeLeft, onSwipeRight],
     );
 
     // Expose swipe functions to parent component
@@ -88,7 +88,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         swipeLeft: () => triggerSwipe("left"),
         swipeRight: () => triggerSwipe("right"),
       }),
-      [triggerSwipe]
+      [triggerSwipe],
     );
 
     const handleDragStart = () => {
@@ -105,7 +105,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
 
     const handleDrag = (
       event: MouseEvent | TouchEvent | PointerEvent,
-      info: PanInfo
+      info: PanInfo,
     ) => {
       // If minimum hold time hasn't passed, prevent dragging
       if (!dragEnabled) {
@@ -133,7 +133,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
 
     const handleDragEnd = (
       event: MouseEvent | TouchEvent | PointerEvent,
-      info: PanInfo
+      info: PanInfo,
     ) => {
       // Clear any pending hold timer
       if (holdTimerRef.current) {
@@ -208,7 +208,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         className={`w-full h-full rounded-[10px] relative overflow-hidden transition-colors duration-200 ${bgColor}`}
       >
         {message && (
-          <>
+          <div className="flex flex-col h-full items-center justify-center absolute w-full top-0 left-0 pointer-events-none">
             <Images
               titleImg={
                 bgColor === "bg-app-orange"
@@ -216,12 +216,12 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
                   : "/statusApprovedFilled.svg"
               }
               titleImgAlt="verification icon"
-              className="absolute top-0 h-full w-32 p-3"
+              className=" h-10 w-10 mb-4 animate-fade-in"
             />
-            <Texts className="absolute w-full bottom-1/4 transform translate-y-1/4 text-center">
+            <Texts size={"md"} className=" w-full text-center">
               {message}
             </Texts>
-          </>
+          </div>
         )}
         <motion.div
           drag="x"
@@ -242,7 +242,7 @@ const TinderSwipe = forwardRef<TinderSwipeRef, SlidingDivProps>(
         </motion.div>
       </Holds>
     );
-  }
+  },
 );
 
 export default TinderSwipe;
