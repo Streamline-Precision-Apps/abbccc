@@ -5,18 +5,18 @@ import { format, isToday, isYesterday } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ResolvedNotification } from "../page";
-import { BookCheck, SearchCheck, Verified } from "lucide-react";
+import { Bell, BellPlus, BookCheck, SearchCheck, Verified } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { updateNotificationReadStatus } from "@/actions/NotificationActions";
 import { markAllNotificationsAsRead } from "@/actions/NotificationActions";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import React from "react";
+import { useRouter } from "next/navigation";
 
 export default function NotificationActionsList({
   resolved,
@@ -27,10 +27,14 @@ export default function NotificationActionsList({
   currentUserId: string;
   unreadCount: number;
 }) {
+  const router = useRouter();
   // Local state to track read notifications
   const [readIds, setReadIds] = useState<Set<number>>(new Set());
   // State for switch
   const [showOnlyUnread, setShowOnlyUnread] = useState(false);
+  // ...existing code...
+  // Add state for expanded body
+  const [expandedBodyId, setExpandedBodyId] = useState<number | null>(null);
   // Async function to mark notification as read
   const markNotificationAsRead = async (notificationId: number) => {
     try {
@@ -68,7 +72,10 @@ export default function NotificationActionsList({
     <div className="w-1/3  h-[90vh] pb-2 rounded-lg bg-neutral-100 ">
       <div className="flex flex-col h-full">
         <div className="flex flex-row justify-between items-center bg-white rounded-lg border-b border-gray-200 p-3">
-          <h2 className="text-md">Resolved</h2>
+          <div className="flex flex-row items-center gap-2 ">
+            <Bell className="h-4 w-4 text-blue-500" />
+            <h2 className="text-md">Resolved</h2>
+          </div>
           <div className="flex items-center space-x-2">
             <Switch
               id="unread-notifications"
@@ -186,61 +193,144 @@ export default function NotificationActionsList({
                     if (!item.Response) return null;
                     const respondedDate = new Date(item.Response.respondedAt);
                     return (
-                      <React.Fragment key={item.id}>
+                      <Fragment key={item.id}>
                         <div
                           className={`relative border rounded-md transition-colors duration-200 hover:bg-neutral-50 
             ${isRead ? "bg-white border-gray-200" : "bg-blue-50 border-blue-300"}`}
                         >
-                          <div className="flex flex-row justify-between p-2">
+                          <div className="w-full flex flex-row justify-between p-2">
                             {/* Response title and time */}
-                            <div className="flex flex-row items-center gap-4">
-                              <Tooltip delayDuration={1000}>
-                                <TooltipTrigger>
-                                  <div className="relative group w-8 h-8">
-                                    <div className="flex items-center justify-center rounded-full bg-blue-200 text-blue-900 font-bold text-xs w-8 h-8 cursor-pointer">
-                                      {`${item.Response.user?.firstName?.[0] ?? ""}${item.Response.user?.lastName?.[0] ?? ""}`}
+                            <div className="w-full flex flex-col">
+                              <div className="w-full flex flex-row items-center gap-4">
+                                <Tooltip delayDuration={1000}>
+                                  <TooltipTrigger>
+                                    <div className="relative group w-8 h-8">
+                                      <div className="flex items-center justify-center rounded-full bg-blue-200 text-blue-900 font-bold text-xs w-8 h-8 cursor-pointer">
+                                        {`${item.Response.user?.firstName?.[0] ?? ""}${item.Response.user?.lastName?.[0] ?? ""}`}
+                                      </div>
+                                      {item.Response.response === "Verified" ? (
+                                        <span className="absolute -bottom-1 -right-1">
+                                          <Verified className="h-4 w-4 text-white bg-green-500 rounded-full" />
+                                        </span>
+                                      ) : item.Response.response ===
+                                        "Approved" ? (
+                                        <span className="absolute -bottom-1 -right-1">
+                                          <Verified className="h-4 w-4 text-white bg-green-500 rounded-full" />
+                                        </span>
+                                      ) : item.Response.response === "Read" ? (
+                                        <span className="absolute -bottom-1 -right-1">
+                                          <SearchCheck className="h-4 w-4 text-white bg-green-500 rounded-full" />
+                                        </span>
+                                      ) : null}
                                     </div>
-                                    {item.Response.response === "Verified" ? (
-                                      <span className="absolute -bottom-1 -right-1">
-                                        <Verified className="h-4 w-4 text-white bg-green-500 rounded-full" />
-                                      </span>
-                                    ) : item.Response.response ===
-                                      "Approved" ? (
-                                      <span className="absolute -bottom-1 -right-1">
-                                        <Verified className="h-4 w-4 text-white bg-green-500 rounded-full" />
-                                      </span>
-                                    ) : item.Response.response === "Read" ? (
-                                      <span className="absolute -bottom-1 -right-1">
-                                        <SearchCheck className="h-4 w-4 text-white bg-green-500 rounded-full" />
-                                      </span>
-                                    ) : null}
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    side="right"
+                                    sideOffset={10}
+                                    className="bg-white text-blue-700 border border-blue-300 font-semibold text-xs p-3"
+                                  >
+                                    {`${item.Response.response} by ${item.Response.user?.firstName ?? ""} ${item.Response.user?.lastName ?? ""}`}
+                                  </TooltipContent>
+                                </Tooltip>
+                                <div className="w-full flex flex-col gap-1">
+                                  <div className="flex flex-row justify-between gap-4 ">
+                                    <p
+                                      className={`text-xs font-semibold ${!isRead ? "text-blue-700" : "text-gray-800"}`}
+                                    >
+                                      {item.title === "Timecard Approval Needed"
+                                        ? "Timecard Approved"
+                                        : item.title}
+                                    </p>
+                                    <span className="text-xs text-gray-500 ">
+                                      {formatDistanceToNow(respondedDate, {
+                                        addSuffix: true,
+                                      })}
+                                    </span>
                                   </div>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  side="right"
-                                  sideOffset={10}
-                                  className="bg-white text-blue-700 border border-blue-300 font-semibold text-xs p-3"
-                                >
-                                  {`${item.Response.response} by ${item.Response.user?.firstName ?? ""} ${item.Response.user?.lastName ?? ""}`}
-                                </TooltipContent>
-                              </Tooltip>
-
-                              <div className="flex flex-row gap-4 ">
-                                <p
-                                  className={`text-sm font-semibold ${!isRead ? "text-blue-700" : "text-gray-800"}`}
-                                >
-                                  {item.title === "Timecard Approval Needed"
-                                    ? "Timecard Approved"
-                                    : item.title}
-                                </p>
-                                <span className="text-xs text-gray-500 mt-1">
-                                  {formatDistanceToNow(respondedDate, {
-                                    addSuffix: true,
-                                  })}
-                                </span>
+                                  {/* Truncated notification body with expand/collapse */}
+                                  <div className="flex items-center justify-between w-full">
+                                    <span
+                                      className={`text-xs text-gray-500 transition-all duration-200 ${
+                                        expandedBodyId === item.id
+                                          ? ""
+                                          : "truncate max-w-[230px]"
+                                      }`}
+                                      style={{
+                                        whiteSpace:
+                                          expandedBodyId === item.id
+                                            ? "normal"
+                                            : "nowrap",
+                                      }}
+                                    >
+                                      {item.body}
+                                    </span>
+                                    {item.body && (
+                                      <button
+                                        type="button"
+                                        className="ml-2 focus:outline-none"
+                                        onClick={() =>
+                                          setExpandedBodyId(
+                                            expandedBodyId === item.id
+                                              ? null
+                                              : item.id,
+                                          )
+                                        }
+                                        aria-label={
+                                          expandedBodyId === item.id
+                                            ? "Collapse message"
+                                            : "Expand message"
+                                        }
+                                      >
+                                        {expandedBodyId === item.id ? (
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 text-gray-400"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M19 15l-7-7-7 7"
+                                            />
+                                          </svg>
+                                        ) : (
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 text-gray-400"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth={2}
+                                              d="M19 9l-7 7-7-7"
+                                            />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
+                              {expandedBodyId === item.id && (
+                                <div className="w-full h-fit flex justify-end">
+                                  <Button
+                                    size="sm"
+                                    onClick={() =>
+                                      router.push(item.url ?? "/admins")
+                                    }
+                                    className="bg-blue-100 text-blue-700 hover:bg-blue-200  "
+                                  >
+                                    <p className="text-xs ">View</p>
+                                  </Button>
+                                </div>
+                              )}
                             </div>
-
                             <div className="flex flex-row gap-2 items-start">
                               {!isRead && (
                                 <Tooltip>
@@ -262,14 +352,14 @@ export default function NotificationActionsList({
                             </div>
                           </div>
                         </div>
-                      </React.Fragment>
+                      </Fragment>
                     );
                   })
                 )}
 
                 {/* Other days, only if notifications exist */}
                 {otherDayLabels.map((dayLabel) => (
-                  <React.Fragment key={dayLabel}>
+                  <Fragment key={dayLabel}>
                     <div className="flex items-center justify-between w-full mb-2">
                       <div className="text-sm font-semibold text-gray-500 mt-4 ">
                         {dayLabel}
@@ -283,7 +373,7 @@ export default function NotificationActionsList({
                       if (!item.Response) return null;
                       const respondedDate = new Date(item.Response.respondedAt);
                       return (
-                        <React.Fragment key={item.id}>
+                        <Fragment key={item.id}>
                           <div
                             className={`relative border rounded-md transition-colors duration-200 hover:bg-neutral-50 
             ${isRead ? "bg-white border-gray-200" : "bg-blue-50 border-blue-300"}`}
@@ -329,6 +419,16 @@ export default function NotificationActionsList({
                                     })}
                                   </span>
                                 </div>
+
+                                <Button
+                                  size="sm"
+                                  onClick={() =>
+                                    router.push(item.url ?? "/admins")
+                                  }
+                                  variant={"ghost"}
+                                >
+                                  View
+                                </Button>
                               </div>
 
                               <div className="flex flex-row gap-2 items-start">
@@ -354,10 +454,10 @@ export default function NotificationActionsList({
                               </div>
                             </div>
                           </div>
-                        </React.Fragment>
+                        </Fragment>
                       );
                     })}
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </>
             );

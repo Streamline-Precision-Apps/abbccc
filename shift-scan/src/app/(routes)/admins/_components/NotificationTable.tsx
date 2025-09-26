@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Notification } from "../../../../../prisma/generated/prisma/client";
 import { notificationTableColumns } from "./notificationTableColumns";
+import { Bell, BellDot, BellElectric, BellPlus } from "lucide-react";
 
 interface NotificationTableProps {
   data: Notification[];
@@ -40,7 +41,8 @@ export function NotificationTable({
   return (
     <div className="h-[90vh] w-full flex flex-col bg-neutral-100 pb-2 rounded-lg">
       <div className="p-3 h-[5vh] flex flex-col bg-white rounded-lg border-b border-gray-200">
-        <div className="flex justify-center items-center">
+        <div className="flex flex-row items-center gap-2 ">
+          <BellPlus className="h-4 w-4 text-blue-500" />
           <h2 className="text-md">Needs Attention</h2>
         </div>
       </div>
@@ -65,19 +67,16 @@ export function NotificationTable({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody className="h-full divide-y divide-gray-200 bg-white rounded-b-lg">
+        <TableBody className="h-full divide-y divide-gray-300 bg-white rounded-b-lg">
           {loading ? (
-            Array.from({ length: 48 }).map((_, idx) => (
-              <TableRow
-                key={`loading-row-${idx}`}
-                className="first:rounded-lg last:rounded-lg"
-              >
+            Array.from({ length: 10 }).map((_, idx) => (
+              <TableRow key={`loading-row-${idx}`}>
                 {columns.map((col, colIdx) => (
                   <TableCell
                     key={colIdx}
                     className="first:rounded-bl-lg last:rounded-br-lg"
                   >
-                    <div className="h-4 w-3/4 bg-gray-200 first:rounded-bl-lg last:rounded-br-lg animate-pulse " />
+                    <div className="h-4 w-3/4 bg-gray-200 rounded-lg  animate-pulse " />
                   </TableCell>
                 ))}
               </TableRow>
@@ -102,11 +101,11 @@ export function NotificationTable({
             <TableRow className="h-full first:rounded-bl-lg last:rounded-br-lg">
               <TableCell
                 colSpan={columns.length}
-                className="text-center h-full align-middle py-24 first:rounded-bl-lg last:rounded-br-lg "
+                className="text-center h-full align-middle bg-gray-100 first:rounded-bl-lg last:rounded-br-lg "
               >
-                <div className="flex flex-col items-center justify-center h-full w-full ">
-                  <span className="text-gray-400 text-lg">
-                    No notifications found.
+                <div className="flex flex-col items-center justify-center h-full w-full pt-5 ">
+                  <span className="text-gray-400 text-md">
+                    You're all caught up 🎉
                   </span>
                 </div>
               </TableCell>

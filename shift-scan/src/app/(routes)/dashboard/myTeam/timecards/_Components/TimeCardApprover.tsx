@@ -239,6 +239,7 @@ export default function TimeCardApprover({
         formData.append("id", id);
         formData.append("timesheetIds", JSON.stringify(timeSheetIds));
         formData.append("statusComment", `Approved by ${manager}`);
+        formData.append("editorId", managerId || "");
         const response = await ApproveUsersTimeSheets(formData);
         if (!response.success) {
           console.error("Failed to approve timecards");
