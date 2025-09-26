@@ -362,7 +362,29 @@ export default function CombinedForm({
       formData.append("repaired", String(false));
 
       // Make a single server call to update everything
-      await updateEmployeeEquipmentLog(formData);
+      const res = await updateEmployeeEquipmentLog(formData);
+
+      if (
+        res.success &&
+        res.data.madeMaintenanceLog &&
+        res.data.id !== null &&
+        res.data.name !== undefined
+      ) {
+        // Handle success case equipment-break if equipment is marked broken
+        await fetch("/api/notifications/send-multicast", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: "equipment-break",
+            title: "Broken Equipment",
+            message: `${res.data.name ? res.data.name : "An equipment"} has been reported broken by ${res.data?.name ? res.data.name : "a user"}.`,
+            link: "/admins/equipment?id=" + res.data?.id,
+            referenceId: res.data?.id,
+          }),
+        });
+      }
 
       setState((prev) => ({
         ...prev,
