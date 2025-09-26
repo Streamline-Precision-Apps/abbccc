@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useDBCostcode } from "@/app/context/dbCodeContext";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useTranslations } from "next-intl";
+import CostCodeSelectorLoading from "../(loading)/costCodeSelectorLoading";
 
 type Option = {
   id: string;
@@ -36,7 +37,7 @@ export const CostCodeSelector = ({
   useEffect(() => {
     if (initialValue && costCodeOptions.length > 0) {
       const foundOption = costCodeOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       if (foundOption) {
         setSelectedCostCode(foundOption);
@@ -51,12 +52,14 @@ export const CostCodeSelector = ({
   };
 
   return (
-    <NewCodeFinder
-      options={costCodeOptions}
-      selectedOption={selectedCostCode}
-      onSelect={handleSelect}
-      placeholder={t("SearchBarPlaceholder")}
-      label="Select Cost Code"
-    />
+    <Suspense fallback={<CostCodeSelectorLoading />}>
+      <NewCodeFinder
+        options={costCodeOptions}
+        selectedOption={selectedCostCode}
+        onSelect={handleSelect}
+        placeholder={t("SearchBarPlaceholder")}
+        label="Select Cost Code"
+      />
+    </Suspense>
   );
 };
