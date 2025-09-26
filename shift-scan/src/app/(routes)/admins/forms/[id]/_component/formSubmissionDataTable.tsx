@@ -28,12 +28,13 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormIndividualTemplate, Submission } from "./hooks/types";
 import { format } from "date-fns";
 import { highlight } from "../../../_pages/higlight";
 import { Check, X } from "lucide-react";
+import LoadingFormSubmissionTableState from "./loadingFormSubmissionTableState";
 
 interface FormsDataTableProps {
   formTemplate?: FormIndividualTemplate;
@@ -478,84 +479,46 @@ export function FormSubmissionDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* ID column */}
-                    <TableCell className="text-xs text-center">
-                      <Skeleton className="h-4 w-12 mx-auto" />
-                    </TableCell>
-
-                    {/* Submitted By column */}
-                    <TableCell className="text-xs text-center">
-                      <Skeleton className="h-4 w-24 mx-auto" />
-                    </TableCell>
-
-                    {/* Dynamic field columns */}
-                    {fields.map((field) => (
-                      <TableCell key={field.id} className="text-xs text-center">
-                        <Skeleton className="h-4 w-20 mx-auto" />
-                      </TableCell>
-                    ))}
-
-                    {/* Status column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-4 w-16 mx-auto" />
-                    </TableCell>
-
-                    {/* Submitted At column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-4 w-24 mx-auto" />
-                    </TableCell>
-
-                    {/* Signature column (if required) */}
-                    {isSignatureRequired && (
-                      <TableCell className="text-center text-xs">
-                        <Skeleton className="h-4 w-16 mx-auto" />
-                      </TableCell>
-                    )}
-
-                    {/* Actions column */}
-                    <TableCell className="w-[100px]">
-                      <div className="flex flex-row justify-center gap-2">
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                      </div>
-                    </TableCell>
+              <Suspense
+                fallback={
+                  <LoadingFormSubmissionTableState
+                    columnsCount={columns.length}
+                  />
+                }
+              >
+                {loading ? (
+                  <LoadingFormSubmissionTableState
+                    columnsCount={columns.length}
+                  />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center px-3 py-2"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-[74vh] text-center"
+                    ></TableCell>
                   </TableRow>
-                ))
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center px-3 py-2"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-[74vh] text-center"
-                  ></TableCell>
-                </TableRow>
-              )}
+                )}
+              </Suspense>
             </TableBody>
           </Table>
           {!loading && formTemplate?.Submissions.length === 0 && (
