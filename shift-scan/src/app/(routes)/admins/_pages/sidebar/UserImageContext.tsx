@@ -2,6 +2,7 @@
 
 import { se } from "date-fns/locale";
 import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import React, {
   createContext,
   useContext,
@@ -17,7 +18,7 @@ interface UserProfileContextType {
   refresh: () => Promise<void>;
   setImage: (img: string | null) => void;
   loading: boolean;
-  session: any; // Add session to context
+  session: Session | null; // Properly typed session from next-auth
 }
 
 // Create a cache for the user image promise

@@ -1,4 +1,3 @@
-"use server";
 import { NextResponse } from 'next/server';
 import { unstable_cache } from "next/cache";
 import * as Sentry from '@sentry/nextjs';
