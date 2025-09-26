@@ -45,7 +45,6 @@ export default async function Dashboard() {
     <Bases>
       <Contents>
         <Grids rows={"8"} gap={"5"}>
-          <HamburgerMenuNew />
           {/* Active timesheet check component - runs on dashboard load */}
           <ActiveTimesheetCheck userId={session.user.id} />
           <Suspense fallback={<LoadingHamburgerMenuNew />}>

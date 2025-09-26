@@ -57,7 +57,7 @@ export default function HamburgerMenuNew({
           <img
             src={"/settingsFilled.svg"}
             alt={"settings"}
-            className="w-5 h-5 absolute -right-1  -bottom-1 z-20 rounded-full "
+            className="w-5 h-5 absolute -right-1  -bottom-1 z-1 rounded-full "
           />
         </div>
       </Holds>
