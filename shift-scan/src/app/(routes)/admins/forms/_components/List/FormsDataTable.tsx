@@ -20,11 +20,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormItem } from "./hooks/types";
 import { formsTableColumns } from "./formsTableColumns";
 import Link from "next/link";
+import LoadingFormsTableState from "./loadingFormsTableState";
 
 interface FormsDataTableProps {
   data: FormItem[];
@@ -193,79 +194,40 @@ export function FormsDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* Name & Description column */}
-                    <TableCell className="text-xs text-left">
-                      <Skeleton className="h-4 w-3/4 mb-1" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </TableCell>
-                    {/* Form Type column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-6 w-2/3 mx-auto rounded-xl" />
-                    </TableCell>
-                    {/* Submissions column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-4 w-1/2 mx-auto" />
-                    </TableCell>
-                    {/* Status column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-6 w-8 mx-auto rounded-xl" />
-                    </TableCell>
-                    {/* Date Created column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-4 w-2/3 mx-auto" />
-                    </TableCell>
-                    {/* Date Updated column */}
-                    <TableCell className="text-center text-xs">
-                      <Skeleton className="h-4 w-2/3 mx-auto" />
-                    </TableCell>
-                    {/* Actions column */}
-                    <TableCell className="w-[160px]">
-                      <div className="flex flex-row justify-center gap-4">
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
-                      </div>
+              <Suspense fallback={<LoadingFormsTableState columns={columns} />}>
+                {loading ? (
+                  <LoadingFormsTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center px-3 py-2"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={formsTableColumns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
                   </TableRow>
-                ))
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center px-3 py-2"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={formsTableColumns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
+                )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>

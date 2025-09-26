@@ -116,9 +116,9 @@ export default function UsageData({
 
   return (
     <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar">
-      <Holds className="w-full">
+      <Holds className="w-full h-fit">
         <Holds position={"row"} className="w-full">
-          <Holds className="w-[90]">
+          <Holds className="w-1/2">
             <Labels size="p5">{t("StartTime")}</Labels>
             <Inputs
               type="time"
@@ -137,7 +137,7 @@ export default function UsageData({
               }}
             />
           </Holds>
-          <Holds className="w-full">
+          <Holds className="w-1/2">
             <Labels size="p5">{t("EndTime")}</Labels>
             <Inputs
               type="time"
@@ -162,10 +162,11 @@ export default function UsageData({
         </Texts>
       </Holds>
 
-      <Holds background="white" className="w-full relative">
+      <Holds background="white" className="w-full relative h-fit mb-4">
         <Labels size="p5">{t("Comment")}</Labels>
         <TextAreas
           maxLength={40}
+          rows={4}
           placeholder={t("EnterCommentsHere")}
           value={formState.comment || ""}
           onChange={(e) => handleFieldChange("comment", e.target.value)}

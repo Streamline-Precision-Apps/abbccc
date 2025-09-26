@@ -1175,6 +1175,9 @@
     "ConfirmPassword": "Confirm Password"
   },
   "Hamburger-Inbox": {
+    "PullToRefresh": "Pull to refresh",
+    "ReleaseToRefresh": "Release to refresh",
+    "Refreshing": "Refreshing...",
     "FormsDocuments": "Forms & Documents",
     "Forms": "My Forms",
     "MySubmissions": "My Submissions",

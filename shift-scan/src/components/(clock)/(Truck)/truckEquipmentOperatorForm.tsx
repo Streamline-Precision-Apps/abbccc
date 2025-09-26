@@ -1,7 +1,7 @@
 import { setEquipment } from "@/actions/cookieActions";
 import { Holds } from "@/components/(reusable)/holds";
 
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { EquipmentSelector } from "../(General)/equipmentSelector";
 import { Grids } from "@/components/(reusable)/grids";
 import StepButtons from "../step-buttons";

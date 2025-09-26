@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBEquipment } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
+import TruckSelectorLoading from "../(loading)/truckSelectorLoading";
 
 type Option = {
   id: string; // ID is now required
@@ -52,13 +53,15 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
   };
 
   return (
-    <NewCodeFinder
-      options={truckOptions}
-      selectedOption={selectedTruck}
-      onSelect={handleSelect}
-      placeholder={t("SearchBarPlaceholder")}
-      label="Select a truck"
-    />
+    <Suspense fallback={<TruckSelectorLoading />}>
+      <NewCodeFinder
+        options={truckOptions}
+        selectedOption={selectedTruck}
+        onSelect={handleSelect}
+        placeholder={t("SearchBarPlaceholder")}
+        label="Select a truck"
+      />
+    </Suspense>
   );
 };
 

@@ -1,5 +1,7 @@
 "use server";
+import { Suspense } from "react";
 import InboxContent from "@/app/(routes)/hamburger/inbox/_components/inboxContent";
+import InboxSkeleton from "@/app/(routes)/hamburger/inbox/_components/inboxSkeleton";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -12,7 +14,9 @@ export default async function Inbox() {
   return (
     <Bases>
       <Contents>
-        <InboxContent isManager={isManager} />
+        <Suspense fallback={<InboxSkeleton />}>
+          <InboxContent isManager={isManager} />
+        </Suspense>
       </Contents>
     </Bases>
   );

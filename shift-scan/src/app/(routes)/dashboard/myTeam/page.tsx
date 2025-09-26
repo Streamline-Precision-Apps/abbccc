@@ -1,6 +1,7 @@
 "use client";
 
 import Spinner from "@/components/(animations)/spinner";
+import { Suspense } from "react";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
@@ -104,57 +105,71 @@ export default function Content() {
               />
             </TitleBoxes>
           </Holds>
-
-          {isLoading ? (
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-8 h-full"
-            >
-              <Contents width={"section"}>
-                <Holds className="my-auto">
-                  <Spinner />
-                </Holds>
-              </Contents>
-            </Holds>
-          ) : (
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-8 h-full py-5"
-            >
-              <Contents width={"section"}>
-                <Grids rows={"7"} gap={"5"}>
-                  <Holds className="row-start-1 row-end-7 h-full w-full">
-                    {myTeams.map((teams) => (
-                      <Holds className="w-full" key={teams.id}>
-                        <Buttons
-                          background="lightBlue"
-                          href={`/dashboard/myTeam/${teams.id}?rPath=${url}`}
-                          className="py-3 w-full relative"
-                        >
-                          <Titles size="lg">{teams.name}</Titles>
-                          <Texts
-                            size="md"
-                            className="absolute top-1/2 transform -translate-y-1/2 right-2"
+          <Suspense
+            fallback={
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-8 h-full"
+              >
+                <Contents width={"section"}>
+                  <Holds className="my-auto">
+                    <Spinner />
+                  </Holds>
+                </Contents>
+              </Holds>
+            }
+          >
+            {isLoading ? (
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-8 h-full"
+              >
+                <Contents width={"section"}>
+                  <Holds className="my-auto">
+                    <Spinner />
+                  </Holds>
+                </Contents>
+              </Holds>
+            ) : (
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-8 h-full py-5"
+              >
+                <Contents width={"section"}>
+                  <Grids rows={"7"} gap={"5"}>
+                    <Holds className="row-start-1 row-end-7 h-full w-full">
+                      {myTeams.map((teams) => (
+                        <Holds className="w-full" key={teams.id}>
+                          <Buttons
+                            background="lightBlue"
+                            href={`/dashboard/myTeam/${teams.id}?rPath=${url}`}
+                            className="py-3 w-full relative"
                           >
-                            ({teams._count.Users})
-                          </Texts>
-                        </Buttons>
-                      </Holds>
-                    ))}
-                  </Holds>
-                  <Holds className="row-start-7 row-end-8 w-full">
-                    <Buttons
-                      background="green"
-                      href={`/dashboard/myTeam/timecards?rPath=${url}`}
-                      className=" w-full py-3"
-                    >
-                      <Titles size="lg">{t("TimeCards")}</Titles>
-                    </Buttons>
-                  </Holds>
-                </Grids>
-              </Contents>
-            </Holds>
-          )}
+                            <Titles size="lg">{teams.name}</Titles>
+                            <Texts
+                              size="md"
+                              className="absolute top-1/2 transform -translate-y-1/2 right-2"
+                            >
+                              ({teams._count.Users})
+                            </Texts>
+                          </Buttons>
+                        </Holds>
+                      ))}
+                    </Holds>
+                    <Holds className="row-start-7 row-end-8 w-full">
+                      <Buttons
+                        background="green"
+                        href={`/dashboard/myTeam/timecards?rPath=${url}`}
+                        className=" w-full py-3"
+                      >
+                        <Titles size="lg">{t("TimeCards")}</Titles>
+                      </Buttons>
+                    </Holds>
+                  </Grids>
+                </Contents>
+              </Holds>
+            )}
+          </Suspense>
         </Grids>
       </Contents>
     </Bases>

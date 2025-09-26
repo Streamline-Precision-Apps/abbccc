@@ -20,10 +20,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CrewData } from "../useCrewsData";
 import { crewTableColumns } from "./crewTableColumns";
+import LoadingCrewTableState from "./loadingCrewTableState";
 
 interface CrewDataTableProps {
   data: CrewData[];
@@ -166,60 +167,48 @@ export function CrewDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* Create skeleton cells for each column */}
-                    {columns.map((col, colIndex) => (
-                      <TableCell
-                        key={`loading-cell-${colIndex}`}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        <Skeleton className="h-4 w-16 mx-auto" />
-                      </TableCell>
-                    ))}
+              <Suspense fallback={<LoadingCrewTableState columns={columns} />}>
+                {loading ? (
+                  <LoadingCrewTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {showInactive ? (
+                        <p className="text-gray-500 italic">
+                          No Inactive Crew.
+                        </p>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          No Crew found. Click Plus to add new Crew.
+                        </p>
+                      )}
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {showInactive ? (
-                      <p className="text-gray-500 italic">No Inactive Crew.</p>
-                    ) : (
-                      <p className="text-gray-500 italic">
-                        No Crew found. Click Plus to add new Crew.
-                      </p>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
+                )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>

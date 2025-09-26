@@ -23,9 +23,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { X, Check } from "lucide-react";
+import LoadingTimesheetTableState from "./loadingTimesheetTableState";
 
 interface TimesheetDataTableProps {
   data: Timesheet[];
@@ -228,66 +229,9 @@ export function TimesheetDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
+              <Suspense fallback={<LoadingTimesheetTableState columns={columns} />}>
               {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 18 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* ID column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Date column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Work Type column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-14 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Employee Name column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-24 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Profit ID column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Cost Code column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Start Time column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* End Time column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Comment column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-24 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Status column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-6 h-6 rounded-full mx-auto" />
-                    </TableCell>
-                    {/* Last modified column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <Skeleton className="w-16 h-4 mx-auto" />
-                    </TableCell>
-                    {/* Actions column */}
-                    <TableCell className="whitespace-nowrap border-r border-gray-200 text-xs text-center">
-                      <div className="flex flex-row justify-center items-center">
-                        <Skeleton className="w-4 h-4 mx-1" />
-                        <Skeleton className="w-4 h-4 mx-1" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                <LoadingTimesheetTableState columns={columns} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -318,6 +262,7 @@ export function TimesheetDataTable({
                   </TableCell>
                 </TableRow>
               )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>

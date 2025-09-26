@@ -1,11 +1,26 @@
 "use server";
 import { NextResponse } from 'next/server';
+import { unstable_cache } from "next/cache";
 import * as Sentry from '@sentry/nextjs';
 import prisma from '@/lib/prisma';
 
+export const dynamic = "force-dynamic"; // ✅ Ensures this API is dynamic and never pre-rendered
+
 export async function GET() {
   try {
-    const tags = await prisma.cCTag.findMany();
+    // Create a cached function for fetching tags
+    const getCachedTags = unstable_cache(
+      async () => {
+        return await prisma.cCTag.findMany();
+      },
+      ["all-tags"],
+      {
+        tags: ["tags"],
+        revalidate: 3600, // Cache for 1 hour
+      }
+    );
+
+    const tags = await getCachedTags();
 
     if (!tags || tags.length === 0) {
       return NextResponse.json(
