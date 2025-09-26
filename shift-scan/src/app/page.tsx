@@ -6,11 +6,8 @@ import { Grids } from "@/components/(reusable)/grids";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import WidgetSection from "./(content)/widgetSection";
 import prisma from "@/lib/prisma";
-<<<<<<< HEAD
 import { Suspense } from "react";
-=======
 import { cookies } from "next/headers";
->>>>>>> 63cb0af91b1662f27f4a234d742f3ffa0812c2ce
 import { Holds } from "@/components/(reusable)/holds";
 import Spinner from "@/components/(animations)/spinner";
 
