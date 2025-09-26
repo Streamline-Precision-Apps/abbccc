@@ -44,8 +44,6 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   isOpen,
   onClose,
   onUpdated,
-  notificationIds,
-  setNotificationIds,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -228,7 +226,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       formData.append("numberOfChanges", numberOfChanges.toString());
 
       const result = await adminUpdateTimesheet(formData);
-      if (result.success) {
+      if (result.success && !result.onlyStatusUpdated) {
         await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -242,8 +240,6 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
             referenceId: timesheetId,
           }),
         });
-
-        await refresh();
       }
 
       if (onUpdated) onUpdated();

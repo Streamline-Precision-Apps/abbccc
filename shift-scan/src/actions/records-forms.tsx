@@ -672,6 +672,39 @@ export async function updateFormSubmission(input: UpdateFormSubmissionInput) {
         });
       }
     }
+    // update the notification
+    const notification = await prisma.notification.findMany({
+      where: {
+        referenceId: submissionId.toString(),
+        topic: "form-submissions",
+        Response: {
+          is: null,
+        },
+      },
+    });
+    if (notification.length > 0) {
+      if (!adminUserId) {
+        throw new Error(
+          "Admin User ID is required to mark notifications as read",
+        );
+      }
+      await prisma.$transaction([
+        prisma.notificationResponse.createMany({
+          data: notification.map((notification) => ({
+            notificationId: notification.id,
+            userId: adminUserId, // Ensure adminUserId is defined and correct
+            response: "READ",
+          })),
+        }),
+        prisma.notificationRead.createMany({
+          data: notification.map((notification) => ({
+            notificationId: notification.id,
+            userId: adminUserId, // Ensure adminUserId is defined and correct
+          })),
+          skipDuplicates: true, // Avoid duplicate entries
+        }),
+      ]);
+    }
 
     revalidatePath(`/admins/forms/${updated.formTemplateId}`);
     return { success: true, submission: updated };
@@ -718,6 +751,42 @@ export async function ApproveFormSubmission(
         },
       },
     });
+
+    // update the notification
+    const notification = await prisma.notification.findMany({
+      where: {
+        referenceId: submissionId.toString(),
+        topic: "form-submissions",
+        Response: {
+          is: null,
+        },
+      },
+    });
+    if (notification.length > 0) {
+      if (!adminUserId) {
+        throw new Error(
+          "Admin User ID is required to mark notifications as read",
+        );
+      }
+      await prisma.$transaction([
+        prisma.notificationResponse.createMany({
+          data: notification.map((notification) => ({
+            notificationId: notification.id,
+            response: "Approved",
+            readAt: new Date(),
+            userId: adminUserId,
+          })),
+        }),
+        prisma.notificationRead.createMany({
+          data: notification.map((notification) => ({
+            notificationId: notification.id,
+            userId: adminUserId, // Ensure adminUserId is defined and correct
+          })),
+          skipDuplicates: true, // Avoid duplicate entries
+        }),
+      ]);
+    }
+
     revalidatePath(`/admins/forms/${updated.formTemplateId}`);
     return { success: true, submission: updated };
   } catch (error) {

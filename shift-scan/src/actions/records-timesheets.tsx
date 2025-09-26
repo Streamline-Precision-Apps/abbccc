@@ -601,12 +601,15 @@ export async function adminUpdateTimesheet(formData: FormData) {
     }
   });
 
+  const onlyStatusUpdated = wasStatusChanged && numberOfChanges === 1;
+
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
   return {
     success: true,
     editorFullName,
     userFullname,
+    onlyStatusUpdated,
   };
 }
 

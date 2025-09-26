@@ -227,7 +227,9 @@ export default function NotificationActionsList({
                                 <p
                                   className={`text-sm font-semibold ${!isRead ? "text-blue-700" : "text-gray-800"}`}
                                 >
-                                  {item.title}
+                                  {item.title === "Timecard Approval Needed"
+                                    ? "Timecard Approved"
+                                    : item.title}
                                 </p>
                                 <span className="text-xs text-gray-500 mt-1">
                                   {formatDistanceToNow(respondedDate, {

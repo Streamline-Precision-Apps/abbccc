@@ -20,14 +20,17 @@ interface NotificationTableProps {
   data: Notification[];
   totalCount: number;
   loading?: boolean;
+
+  setData: React.Dispatch<React.SetStateAction<Notification[] | undefined>>;
 }
 
 export function NotificationTable({
   data,
   totalCount,
   loading,
+  setData,
 }: NotificationTableProps) {
-  const columns = useMemo(() => notificationTableColumns, []);
+  const columns = useMemo(() => notificationTableColumns(setData), [data]);
   const table = useReactTable({
     data,
     columns,

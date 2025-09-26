@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         url: link ?? null,
         pushedAt: new Date(),
         pushAttempts: 1,
-        referenceId: referenceId ?? null,
+        referenceId: referenceId.toString() ?? null,
       },
     });
     const urlWithId = `${notification.url ? notification.url : "/admins"}${notification.url?.includes("?") ? "&" : "?"}notificationId=${notification.id}`;

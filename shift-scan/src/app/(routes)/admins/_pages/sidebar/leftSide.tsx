@@ -74,6 +74,13 @@ export default function LeftSidebar() {
       link: "/admins/cost-codes",
     },
     {
+      id: 7,
+      title: "Reports",
+      img: "formInspect",
+      white: "formInspect-white",
+      link: "/admins/reports",
+    },
+    {
       id: 8,
       title: "Forms",
       img: "form",
@@ -83,8 +90,8 @@ export default function LeftSidebar() {
     {
       id: 9,
       title: "Timesheets",
-      img: "formInspect",
-      white: "formInspect-white",
+      img: "timecards",
+      white: "timecards-white",
       link: "/admins/timesheets",
     },
   ];
