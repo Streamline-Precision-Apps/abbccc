@@ -30,7 +30,22 @@ export const CostCodeSelector = ({
       code: costcode.name,
       label: costcode.name,
     }));
-    setCostCodeOptions(options);
+
+    // Sort options numerically by the number after the "#"
+    const sortedOptions = options.sort((a, b) => {
+      // Extract the numerical part after "#" (e.g., "01.20" from "#01.20 Engineering Labor")
+      const extractNumber = (name: string): number => {
+        const match = name.match(/#(\d+(?:\.\d+)?)/);
+        return match ? parseFloat(match[1]) : 0;
+      };
+
+      const numA = extractNumber(a.label);
+      const numB = extractNumber(b.label);
+
+      return numA - numB;
+    });
+
+    setCostCodeOptions(sortedOptions);
   }, [costcodeResults]);
 
   // Initialize with the passed initialValue
