@@ -9,7 +9,24 @@ import WidgetSection from "./(content)/widgetSection";
 import prisma from "@/lib/prisma";
 
 // Server Action to set timesheet continuation cookies
-async function setTimesheetCookiesAction(incompleteTimesheet: any) {
+
+type IncompleteTimesheet = {
+  id: number;
+  workType: string;
+  Jobsite: { qrId: string; name: string; id: string };
+  CostCode: { name: string; id: string };
+  TascoLogs?: Array<{
+    laborType: string | null;
+    Equipment: { qrId: string; name: string } | null;
+  }>;
+  TruckingLogs?: Array<{
+    laborType: string | null;
+    startingMileage: number | null;
+    Equipment: { qrId: string; name: string } | null;
+  }>;
+};
+
+async function setTimesheetCookiesAction(incompleteTimesheet: IncompleteTimesheet) {
   "use server";
   
   const cookieStore = await cookies();
