@@ -19,23 +19,36 @@ export async function GET() {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    // fetch subscribed notifications
+    const subscribedNotifications = await prisma.topicSubscription.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
     const notifications = await prisma.notification.findMany({
       where: {
         Response: {
           is: null,
         },
+        topic: {
+          in: subscribedNotifications.map((notification) => notification.topic),
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+
     const count = await prisma.notification.count();
 
     const resolved = await prisma.notification.findMany({
       where: {
         Response: {
           isNot: null,
+        },
+        topic: {
+          in: subscribedNotifications.map((notification) => notification.topic),
         },
       },
       include: {
