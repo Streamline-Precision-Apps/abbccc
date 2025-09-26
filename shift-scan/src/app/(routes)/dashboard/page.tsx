@@ -10,6 +10,7 @@ import BannerRotating from "@/components/(reusable)/bannerRotating";
 import { cookies } from "next/headers";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import ClockOutCheck from "@/components/ClockOutCheck";
+import ActiveTimesheetCheck from "@/components/ActiveTimesheetCheck";
 
 export default async function Dashboard() {
   //------------------------------------------------------------------------
@@ -41,6 +42,8 @@ export default async function Dashboard() {
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           <HamburgerMenuNew />
+          {/* Active timesheet check component - runs on dashboard load */}
+          <ActiveTimesheetCheck userId={session.user.id} />
           {/* Clock-out check component - invisible but runs in background */}
           <ClockOutCheck
             userId={session.user.id}

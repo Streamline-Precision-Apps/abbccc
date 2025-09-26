@@ -49,3 +49,67 @@ certificates
 .env.sentry-build-plugin
 
 # prisma/generated/
+
+
+# annoying merge stuff to ignore - comprehensive service worker patterns
+# Service Worker files (root and public directory)
+sw.js
+sw.js.map
+public/sw.js
+public/sw.js.map
+shift-scan/public/sw.js
+shift-scan/public/sw.js.map
+
+# Development service workers with hashes
+swe-worker-*.js
+swe-worker-*.js.map
+swe-worker-*.smap
+public/swe-worker-*.js
+public/swe-worker-*.js.map
+public/swe-worker-*.smap
+shift-scan/public/swe-worker-*.js
+shift-scan/public/swe-worker-*.js.map
+shift-scan/public/swe-worker-*.smap
+
+swe-worker-development.js
+swe-worker-development.js.map
+service-worker.js
+service-worker.js.map
+
+# Workbox files with hashes
+workbox-*.js
+workbox-*.js.map
+public/workbox-*.js
+public/workbox-*.js.map  
+shift-scan/public/workbox-*.js
+shift-scan/public/workbox-*.js.map
+
+workbox.js
+workbox.js.map
+
+# PWA manifest and service worker variations
+manifest.json.bak
+sw-*.js
+sw-*.js.map
+*-sw.js
+*-sw.js.map
+
+# Firebase service worker files
+firebase-messaging-sw.js
+firebase-messaging-sw.js.map
+public/firebase-messaging-sw.js
+public/firebase-messaging-sw.js.map
+
+# Next.js PWA plugin generated files
+worker-*.js
+worker-*.js.map
+
+# Additional service worker patterns
+*worker*.js
+*worker*.js.map
+offline.js
+offline.js.map
+
+# Workbox precache manifest
+precache-manifest.*.js
+wb-manifest.*.js
