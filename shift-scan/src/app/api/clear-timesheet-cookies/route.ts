@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
       "laborType",
       "equipment",
       "truck",
-      "startingMileage"
+      "startingMileage",
+      "mechanicProjectID"
     ];
 
     cookiesToClear.forEach(cookieName => {
