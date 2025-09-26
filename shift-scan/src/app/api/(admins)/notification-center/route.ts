@@ -58,10 +58,21 @@ export async function GET() {
       },
     });
 
+    const unreadCount = await prisma.notification.count({
+      where: {
+        Reads: {
+          none: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
     return NextResponse.json({
       notifications,
       resolved,
       count,
+      unreadCount,
     });
   } catch (error) {
     Sentry.captureException(error);

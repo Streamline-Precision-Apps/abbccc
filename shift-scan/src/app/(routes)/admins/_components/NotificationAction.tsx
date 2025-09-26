@@ -21,9 +21,11 @@ import React from "react";
 export default function NotificationActionsList({
   resolved,
   currentUserId,
+  unreadCount,
 }: {
   resolved: ResolvedNotification[] | undefined;
   currentUserId: string;
+  unreadCount: number;
 }) {
   // Local state to track read notifications
   const [readIds, setReadIds] = useState<Set<number>>(new Set());
@@ -142,7 +144,7 @@ export default function NotificationActionsList({
                       className="text-xs text-blue-500 hover:text-blue-600 hover:bg-blue-100 rounded"
                       onClick={markAllAsRead}
                       type="button"
-                      disabled
+                      disabled={unreadCount === 0}
                     >
                       Mark All as Read
                     </Button>
@@ -166,7 +168,7 @@ export default function NotificationActionsList({
                     className="text-xs text-blue-500 hover:text-blue-600 hover:bg-blue-100 rounded"
                     onClick={markAllAsRead}
                     type="button"
-                    disabled={todayNotifications.length === 0}
+                    disabled={unreadCount === 0}
                   >
                     Mark All as Read
                   </Button>

@@ -40,6 +40,7 @@ export default function Admins() {
   const [resolved, setResolved] = useState<
     ResolvedNotification[] | undefined
   >();
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const initialLoad = useRef(true);
@@ -60,6 +61,7 @@ export default function Admins() {
       setData(json.notifications);
       setTotalCount(json.count);
       setResolved(json.resolved);
+      setUnreadCount(json.unreadCount);
       console.log("✅ Data refresh complete");
     } catch (error) {
       console.error("❌ Error refreshing data:", error);
@@ -97,6 +99,7 @@ export default function Admins() {
         <NotificationActionsList
           resolved={resolved}
           currentUserId={currentUserId}
+          unreadCount={unreadCount}
         />
       </div>
     </div>
