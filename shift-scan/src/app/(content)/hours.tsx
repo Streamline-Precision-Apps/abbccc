@@ -29,7 +29,7 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
       <Buttons onClick={handler} background={"darkBlue"}>
         <Grids cols={"10"} rows={"3"}>
           <Holds className="col-start-1 col-end-7 row-span-3">
-            <Texts text={"white"} size={"p2"}>
+            <Texts text={"white"} size={"xl"}>
               {t("PayPeriodHours")}
             </Texts>
           </Holds>
@@ -37,7 +37,7 @@ export default function Hours({ setToggle, display, loading }: HoursProps) {
             background={"white"}
             className="col-start-7 col-end-10 row-start-1 row-end-4 p-3 border-[3px] border-black rounded-[10px]"
           >
-            <Spinner size={30} />
+            <Spinner size={20} />
           </Holds>
         </Grids>
       </Buttons>

@@ -1,7 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
+import TrailerSelectorLoading from "../(loading)/trailerSelectorLoading";
 
 type Option = {
   id: string;
@@ -33,7 +34,7 @@ const TrailerSelector = ({
             qrId?: string;
             name: string;
             equipmentTag: string;
-          }[]
+          }[],
         ) => {
           const noTrailerOption: Option = {
             id: "none",
@@ -41,7 +42,7 @@ const TrailerSelector = ({
             label: t("NoTrailerOption", { default: "No Trailer" }),
           };
           const trailerFilteredData = data.filter(
-            (item) => item.equipmentTag === "TRAILER"
+            (item) => item.equipmentTag === "TRAILER",
           );
           const options: Option[] = trailerFilteredData
             .map((item) => ({
@@ -54,7 +55,7 @@ const TrailerSelector = ({
           // Pin 'No Trailer' to the top
           const finalOptions = [noTrailerOption, ...options];
           setTrailerOptions(finalOptions);
-        }
+        },
       )
       .catch(() => {
         setTrailerOptions([
@@ -70,7 +71,7 @@ const TrailerSelector = ({
   useEffect(() => {
     if (initialValue && trailerOptions.length > 0) {
       const foundOption = trailerOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       if (foundOption) {
         setSelectedTrailer(foundOption);
@@ -84,13 +85,15 @@ const TrailerSelector = ({
   };
 
   return (
-    <NewCodeFinder
-      options={trailerOptions}
-      selectedOption={selectedTrailer}
-      onSelect={handleSelect}
-      placeholder={t("SearchBarPlaceholder")}
-      label={t("Trailer-label")}
-    />
+    <Suspense fallback={<TrailerSelectorLoading />}>
+      <NewCodeFinder
+        options={trailerOptions}
+        selectedOption={selectedTrailer}
+        onSelect={handleSelect}
+        placeholder={t("SearchBarPlaceholder")}
+        label={t("Trailer-label")}
+      />
+    </Suspense>
   );
 };
 

@@ -56,114 +56,108 @@ export default function MaintenanceLogEquipment({
   };
 
   return (
-    <Holds className="w-full h-full py-5">
-      <Contents width={"section"}>
-        <Grids rows={"8"} gap={"5"} className="h-full w-full">
-          {formState.equipment.status === "AVAILABLE" &&
-          formState.fullyOperational ? (
-            <Holds className="row-start-1 row-end-8 h-full">
-              <Holds className="flex justify-center items-center h-full w-full">
-                <Titles size="h3">{t("EquipmentOperational")}</Titles>
-              </Holds>
-            </Holds>
-          ) : (
-            <Holds className="row-start-1 row-end-8 h-full">
-              <Holds>
-                <Texts size="p6" text={"italic"} className="mb-2">
-                  {t("UpdateFields")}
-                </Texts>
-              </Holds>
-              <Holds className="relative">
-                <Labels size="p6">
-                  {t("EquipmentStatus")} <span className="text-red-500">*</span>
-                </Labels>
-                <Selects
-                  value={formState.equipment.status}
-                  onChange={(e) =>
-                    handleFieldChange(
-                      "equipment.status",
-                      e.target.value as EquipmentState,
-                    )
-                  }
-                  className="w-full text-base text-center"
-                >
-                  <option value="AVAILABLE">{t("SelectAStatus")}</option>
-                  <option value="MAINTENANCE">
-                    {t("MaintenanceRequired")}
-                  </option>
-                  <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
-                </Selects>
-              </Holds>
+    <>
+      {formState.equipment.status === "AVAILABLE" &&
+      formState.fullyOperational ? (
+        <Holds className="row-start-1 row-end-8 h-full">
+          <Holds className="flex justify-center items-center h-full w-full">
+            <Titles size="h3">{t("EquipmentOperational")}</Titles>
+          </Holds>
+        </Holds>
+      ) : (
+        <Holds className="row-start-1 row-end-8 h-full py-3 flex-1 overflow-y-auto no-scrollbar">
+          <Holds>
+            <Texts size="xs" text={"italic"} className="mb-2">
+              {t("UpdateFields")}
+            </Texts>
+          </Holds>
+          <Holds className="relative">
+            <Labels size="p6">
+              {t("EquipmentStatus")} <span className="text-red-500">*</span>
+            </Labels>
+            <Selects
+              value={formState.equipment.status}
+              onChange={(e) =>
+                handleFieldChange(
+                  "equipment.status",
+                  e.target.value as EquipmentState,
+                )
+              }
+              className="w-full text-base text-center"
+            >
+              <option value="AVAILABLE">{t("SelectAStatus")}</option>
+              <option value="MAINTENANCE">{t("MaintenanceRequired")}</option>
+              <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
+            </Selects>
+          </Holds>
 
-              <Holds className="relative">
-                <Labels size="p6">
-                  {t("EquipmentIssue")} <span className="text-red-500">*</span>
-                </Labels>
-                <TextAreas
-                  maxLength={40}
-                  placeholder={t("DescribeTheEquipmentIssue")}
-                  value={formState.maintenanceId?.equipmentIssue || ""}
-                  onChange={(e) =>
-                    handleFieldChange(
-                      "maintenanceId.equipmentIssue",
-                      e.target.value,
-                    )
-                  }
-                  rows={4}
-                  required
-                  className="w-full text-sm"
-                  style={{ resize: "none" }}
-                />
-                <Texts
-                  size="p3"
-                  className="text-gray-500 absolute bottom-4 right-2"
-                >
-                  {formState.maintenanceId?.equipmentIssue?.length || 0}/40
-                </Texts>
-              </Holds>
+          <Holds className="relative">
+            <Labels size="p6">
+              {t("EquipmentIssue")} <span className="text-red-500">*</span>
+            </Labels>
+            <TextAreas
+              maxLength={40}
+              placeholder={t("DescribeTheEquipmentIssue")}
+              value={formState.maintenanceId?.equipmentIssue || ""}
+              onChange={(e) =>
+                handleFieldChange(
+                  "maintenanceId.equipmentIssue",
+                  e.target.value,
+                )
+              }
+              rows={4}
+              required
+              className="w-full text-sm"
+              style={{ resize: "none" }}
+            />
+            <Texts
+              size="p3"
+              className="text-gray-500 absolute bottom-4 right-2"
+            >
+              {formState.maintenanceId?.equipmentIssue?.length || 0}/40
+            </Texts>
+          </Holds>
 
-              <Holds className="relative">
-                <Labels size="p6">{t("AdditionalInformation")}</Labels>
-                <TextAreas
-                  maxLength={40}
-                  placeholder={t("ProvideAnyAdditionalInformation")}
-                  value={formState.maintenanceId?.additionalInfo || ""}
-                  onChange={(e) =>
-                    handleFieldChange(
-                      "maintenanceId.additionalInfo",
-                      e.target.value,
-                    )
-                  }
-                  rows={4}
-                  required
-                  className="w-full text-sm"
-                  style={{ resize: "none" }}
-                />
-                <Texts
-                  size="p3"
-                  className="text-gray-500 absolute bottom-4 right-2"
-                >
-                  {formState.maintenanceId?.additionalInfo?.length || 0}/40
-                </Texts>
-              </Holds>
+          <Holds className="relative">
+            <Labels size="p6">{t("AdditionalInformation")}</Labels>
+            <TextAreas
+              maxLength={40}
+              placeholder={t("ProvideAnyAdditionalInformation")}
+              value={formState.maintenanceId?.additionalInfo || ""}
+              onChange={(e) =>
+                handleFieldChange(
+                  "maintenanceId.additionalInfo",
+                  e.target.value,
+                )
+              }
+              rows={4}
+              required
+              className="w-full text-sm"
+              style={{ resize: "none" }}
+            />
+            <Texts
+              size="p3"
+              className="text-gray-500 absolute bottom-4 right-2"
+            >
+              {formState.maintenanceId?.additionalInfo?.length || 0}/40
+            </Texts>
+          </Holds>
 
-              <Holds className="relative">
-                {formState.maintenanceId?.id && (
-                  <Buttons
-                    background="red"
-                    onClick={handleDeleteRequest}
-                    className="mt-4 py-2"
-                  >
-                    <Holds className="flex  items-center justify-center">
-                      <Titles size="h6">{t("WithdrawRequest")}</Titles>
-                    </Holds>
-                  </Buttons>
-                )}
-              </Holds>
-            </Holds>
-          )}
-        </Grids>
-      </Contents>
+          <Holds className="relative">
+            {formState.maintenanceId?.id && (
+              <Buttons
+                background="red"
+                onClick={handleDeleteRequest}
+                className="mt-4 py-2"
+              >
+                <Holds className="flex  items-center justify-center">
+                  <Titles size="h6">{t("WithdrawRequest")}</Titles>
+                </Holds>
+              </Buttons>
+            )}
+          </Holds>
+        </Holds>
+      )}
 
       <NModals
         isOpen={showConfirmDialog}
@@ -201,6 +195,6 @@ export default function MaintenanceLogEquipment({
           </Holds>
         </Holds>
       </NModals>
-    </Holds>
+    </>
   );
 }

@@ -7,7 +7,9 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import TascoClientPage from "./components/tascoClientPage";
+import TascoClientPageSkeleton from "./components/TascoClientPageSkeleton";
 import { cookies } from "next/headers";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
@@ -36,7 +38,9 @@ export default async function TascoPage() {
               </TitleBoxes>
             </Holds>
             <Holds background={"none"} className="row-span-6 h-full">
-              <TascoClientPage />
+              <Suspense fallback={<TascoClientPageSkeleton />}>
+                <TascoClientPage />
+              </Suspense>
             </Holds>
           </Grids>
         </Contents>
@@ -66,7 +70,9 @@ export default async function TascoPage() {
               </TitleBoxes>
             </Holds>
             <Holds className="row-span-6 h-full">
-              <TascoClientPage />
+              <Suspense fallback={<TascoClientPageSkeleton />}>
+                <TascoClientPage />
+              </Suspense>
             </Holds>
           </Grids>
         </Contents>

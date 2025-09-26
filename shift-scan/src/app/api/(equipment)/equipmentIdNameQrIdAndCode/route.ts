@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -25,15 +26,27 @@ export async function GET() {
   }
 
   try {
-    // Fetch all equipment
-    const equipment = await prisma.equipment.findMany({
-      select: {
-        id: true,
-        qrId: true,
-        name: true,
-        code: true,
+    // Create a cached function for fetching equipment data
+    const getCachedEquipmentData = unstable_cache(
+      async () => {
+        return await prisma.equipment.findMany({
+          select: {
+            id: true,
+            qrId: true,
+            name: true,
+            code: true,
+          },
+        });
       },
-    });
+      ["equipment-id-name-qrid-code"],
+      {
+        tags: ["equipment"],
+        revalidate: 60 * 60, // Cache for 1 hour
+      }
+    );
+
+    // Get the cached equipment data
+    const equipment = await getCachedEquipmentData();
 
     // Return the equipment data
     return NextResponse.json(equipment);

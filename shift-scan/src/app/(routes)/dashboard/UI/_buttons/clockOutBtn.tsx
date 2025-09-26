@@ -14,7 +14,6 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 export default function ClockOutBtn({
   permission,
-  handleShowAdditionalButtons,
   View,
   laborType,
   logs,
@@ -22,7 +21,6 @@ export default function ClockOutBtn({
 }: {
   permission: string;
   View: string | null;
-  handleShowAdditionalButtons: (button: string) => void;
   laborType: string;
   logs: LogItem[];
   mechanicProjectID: string;

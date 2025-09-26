@@ -26,6 +26,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import Spinner from "@/components/(animations)/spinner";
 import { FooterPagination } from "../../../_pages/FooterPagination";
+import React, { Suspense } from "react";
+import LoadingTruckingReportTableState from "./loadingTruckingReportTableState";
 
 interface TruckingDataTableProps {
   data: TruckingReportRow[];
@@ -92,60 +94,58 @@ export function TruckingDataTable({ data, loading }: TruckingDataTableProps) {
                   </TableRow>
                 ))}
               </TableHeader>
-              {loading ? (
-                <TableBody className="divide-y divide-gray-200 bg-white">
-                  {Array.from({ length: 20 }).map((_, rowIdx) => (
-                    <TableRow
-                      key={rowIdx}
-                      className={rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"}
-                    >
-                      {truckingReportColumns.map((_, colIdx) => (
-                        <TableCell
-                          key={colIdx}
-                          className="border-r border-gray-200 text-xs text-center"
+              <Suspense
+                fallback={
+                  <TableBody className="divide-y divide-gray-200 bg-white">
+                    <LoadingTruckingReportTableState
+                      columns={truckingReportColumns}
+                    />
+                  </TableBody>
+                }
+              >
+                {loading ? (
+                  <TableBody className="divide-y divide-gray-200 bg-white">
+                    <LoadingTruckingReportTableState
+                      columns={truckingReportColumns}
+                    />
+                  </TableBody>
+                ) : (
+                  <TableBody className="divide-y divide-gray-200 bg-white">
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row, rowIdx) => (
+                        <TableRow
+                          key={row.id}
+                          className={
+                            rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"
+                          }
+                          data-state={row.getIsSelected() && "selected"}
                         >
-                          <Skeleton className="h-4 w-3/4 mx-auto" />
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                              key={cell.id}
+                              className="border-r border-gray-200 text-xs text-center"
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={truckingReportColumns.length}
+                          className="h-[73vh] text-center"
+                        >
+                          No data available for a Trucking Report.
                         </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              ) : (
-                <TableBody className="divide-y divide-gray-200 bg-white">
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row, rowIdx) => (
-                      <TableRow
-                        key={row.id}
-                        className={
-                          rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"
-                        }
-                        data-state={row.getIsSelected() && "selected"}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className="border-r border-gray-200 text-xs text-center"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={truckingReportColumns.length}
-                        className="h-[73vh] text-center"
-                      >
-                        No data available for a Trucking Report.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              )}
+                    )}
+                  </TableBody>
+                )}
+              </Suspense>
             </Table>
           </div>
         </div>

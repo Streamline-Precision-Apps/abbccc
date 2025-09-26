@@ -20,10 +20,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, Suspense, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PersonnelSummary } from "./usePersonnelData";
 import { personnelTableColumns } from "./personnelTableColumns";
+import LoadingPersonnelTableState from "./loadingPersonnelTableState";
 
 interface PersonnelDataTableProps {
   data: PersonnelSummary[];
@@ -166,52 +167,20 @@ export function PersonnelDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
+              <Suspense fallback={<LoadingPersonnelTableState columns={columns} />}>
               {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* User cell skeleton (matches new layout) */}
-                    <TableCell className="border-r border-gray-200 text-xs text-center">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          <Skeleton className="h-10 w-10 rounded-full" />
-                        </div>
-                        <div className="flex flex-col items-start flex-1 min-w-0">
-                          <Skeleton className="h-4 w-24 mb-1" />
-                          <Skeleton className="h-3 w-12" />
-                        </div>
-                        <div className="ml-2">
-                          <Skeleton className="h-4 w-4 rounded" />
-                        </div>
-                      </div>
-                    </TableCell>
-                    {/* Create other skeleton cells for each column */}
-                    {Array.from({ length: columns.length - 1 }).map(
-                      (_, colIndex) => (
-                        <TableCell
-                          key={`loading-cell-${colIndex}`}
-                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                        >
-                          <Skeleton className="h-4 w-16 mx-auto" />
-                        </TableCell>
-                      ),
-                    )}
-                  </TableRow>
-                ))
+                <LoadingPersonnelTableState columns={columns} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                      key={cell.id}
+                      className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -226,7 +195,7 @@ export function PersonnelDataTable({
                   <TableCell
                     colSpan={columns.length}
                     className="h-24 text-center"
-                  >
+                    >
                     {showInactive ? (
                       <p className="text-gray-500 italic">
                         No Inactive Personnel.
@@ -239,6 +208,7 @@ export function PersonnelDataTable({
                   </TableCell>
                 </TableRow>
               )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>
