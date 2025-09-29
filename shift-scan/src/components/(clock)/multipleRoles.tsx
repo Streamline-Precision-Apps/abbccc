@@ -68,7 +68,7 @@ export default function MultipleRoles({
     } else if (selectedRoleType === "general") {
       setClockInRole("general");
     } else {
-      setClockInRole(undefined); // Handle undefined or invalid cases
+      setClockInRole("general"); // Handle undefined or invalid cases
     }
 
     // Proceed to the next step
