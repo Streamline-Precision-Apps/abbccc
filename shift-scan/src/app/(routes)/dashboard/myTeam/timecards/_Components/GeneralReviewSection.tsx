@@ -43,15 +43,16 @@ type TimeSheet = {
       name: string;
       quantity: number;
       loadType: string;
-      unit: string;
-      locationOfMaterial: string | null;
+      grossWeight: number;
+      lightWeight: number;
       materialWeight: number;
     }[];
     EquipmentHauled: {
       id: string;
-      source: string;
-      destination: string;
       Equipment: {
+        name: string;
+      };
+      JobSite: {
         name: string;
       };
     }[];
@@ -81,12 +82,17 @@ type TimeSheet = {
   }[];
 };
 
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import React, { useState } from "react";
 
 export default function GeneralReviewSection({
   currentTimeSheets,
@@ -105,95 +111,96 @@ export default function GeneralReviewSection({
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], {
-      day: "2-digit",
-      month: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
     });
   };
 
+  const getDuration = (start: string, end: string) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffMs = endDate.getTime() - startDate.getTime();
+    if (isNaN(diffMs) || diffMs < 0) return "-";
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <>
-      <Holds
-        background={"white"}
-        className="h-full border-[3px] border-black overflow-auto no-scrollbar "
-      >
-        <Holds
-          position={"row"}
-          className="border-b-[3px] border-black last:border-b-none py-1"
-        >
-          <Holds className="max-w-7"></Holds>
-          <Grids cols={"2"} gap={"3"} className="w-full">
-            <Titles size={"sm"}>{t("StartEnd")}</Titles>
-            <Titles size={"sm"}>{`${t("Jobs")} & ${t("CostCode")}`}</Titles>
-          </Grids>
-        </Holds>
-        <Holds
-          className={`h-full no-scrollbar ${
-            isScrolling ? "overflow-y-scroll" : "overflow-none"
-          }`}
-          {...scrollSwipeHandlers}
-        >
-          {currentTimeSheets.map((timesheet: TimeSheet) => (
-            <Holds
-              position={"row"}
-              className=" border-b-[3px] border-black py-2 pr-1"
-              key={timesheet.id}
-            >
-              <Holds position={"row"}>
-                <Holds className="max-w-7 mx-2">
-                  {timesheet.workType === "TRUCK_DRIVER" ? (
-                    <Images
-                      titleImg="/trucking.svg"
-                      titleImgAlt="Trucking Icon"
-                      className="w-4 h-4 "
-                    />
-                  ) : timesheet.workType === "MECHANIC" ? (
-                    <Images
-                      titleImg="/mechanic.svg"
-                      titleImgAlt="Mechanic Icon"
-                      className="w-4 h-4 "
-                    />
-                  ) : timesheet.workType === "TASCO" ? (
-                    <Images
-                      titleImg="/tasco.svg"
-                      titleImgAlt="Tasco Icon"
-                      className="w-4 h-4 "
-                    />
-                  ) : (
-                    <Images
-                      titleImg="/equipment.svg"
-                      titleImgAlt="General Icon"
-                      className="w-4 h-4 "
-                    />
-                  )}
-                </Holds>
-                <Grids cols={"2"} gap={"3"} className="w-full h-full">
-                  <Holds className="col-span-1">
-                    <Holds>
-                      <Texts size={"p7"}>
-                        {formatTime(timesheet.startTime)}
-                      </Texts>
-                    </Holds>
-                    <Holds>
-                      <Texts size={"p7"}>{formatTime(timesheet.endTime)}</Texts>
-                    </Holds>
-                  </Holds>
+      {currentTimeSheets.map((timesheet) => (
+        <Accordion type="single" collapsible key={timesheet.id}>
+          {currentTimeSheets
+            .slice()
+            .sort((a, b) => {
+              const startTimeA = new Date(a.startTime).getTime();
+              const startTimeB = new Date(b.startTime).getTime();
+              return startTimeA - startTimeB;
+            })
+            .map((timesheet, index) => (
+              <AccordionItem
+                value={timesheet.id}
+                key={timesheet.id}
+                className="bg-white rounded-lg mb-2"
+              >
+                <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none ">
+                  <p className="text-xs ">{`Id: #${timesheet.id}`}</p>
+                  <p className="text-xs">
+                    {`Duration: ${getDuration(timesheet.startTime, timesheet.endTime)}`}
+                  </p>
+                </AccordionTrigger>
 
-                  <Holds className="col-span-1 flex flex-col ">
-                    <Texts position={"left"} size={"xs"}>
-                      {`Js: ${timesheet.Jobsite.name.slice(0, 9)}` || "-"}
+                <AccordionContent>
+                  <Holds className="p-2  bg-white flex flex-col items-start relative border-t border-gray-200">
+                    <Images
+                      titleImg={
+                        timesheet.workType === "TRUCK_DRIVER"
+                          ? "/trucking.svg"
+                          : timesheet.workType === "MECHANIC"
+                            ? "/mechanic.svg"
+                            : timesheet.workType === "TASCO"
+                              ? "/tasco.svg"
+                              : "/equipment.svg"
+                      }
+                      titleImgAlt="WorkType Icon"
+                      className="w-7 h-7 mb-1 absolute top-1 right-1"
+                    />
+                    <Texts size="sm" className="text-xs">
+                      <strong>Start:</strong>{" "}
+                      {timesheet.startTime
+                        ? new Date(timesheet.startTime).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : "-"}
                     </Texts>
-                    <Texts position={"left"} size={"xs"}>
-                      {`Cc: ${timesheet.CostCode.name.split(" ")[0]}` || "-"}
+                    <Texts size="sm" className="text-xs">
+                      <strong>End:</strong>{" "}
+                      {timesheet.endTime
+                        ? new Date(timesheet.endTime).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : "-"}
+                    </Texts>
+                    <Texts
+                      size="sm"
+                      className="text-xs text-left truncate max-w-[200px] "
+                    >
+                      <strong>Jobsite:</strong> {timesheet.Jobsite.name}
+                    </Texts>
+                    <Texts size="sm" className="text-xs truncate max-w-[200px]">
+                      <strong>Costcode:</strong>{" "}
+                      {timesheet.CostCode.name.split(" ")[0]}
                     </Texts>
                   </Holds>
-                </Grids>
-              </Holds>
-            </Holds>
-          ))}
-        </Holds>
-      </Holds>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+        </Accordion>
+      ))}
     </>
   );
 }
