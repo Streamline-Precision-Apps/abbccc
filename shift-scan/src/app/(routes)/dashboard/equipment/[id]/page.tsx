@@ -56,10 +56,10 @@ function transformApiToFormState(
           additionalInfo: apiData.MaintenanceId.additionalInfo,
         }
       : null,
-    refuelLogs: apiData.RefuelLogs
+    refuelLogs: apiData.RefuelLog
       ? {
-          id: apiData.RefuelLogs.id,
-          gallonsRefueled: apiData.RefuelLogs.gallonsRefueled,
+          id: apiData.RefuelLog.id,
+          gallonsRefueled: apiData.RefuelLog.gallonsRefueled,
         }
       : null,
 
@@ -120,6 +120,10 @@ export default function CombinedForm({
 
         const apiData = (await response.json()) as EmployeeEquipmentLogData;
         const formState = transformApiToFormState(apiData);
+
+        // Debug logging
+        console.log("API Data RefuelLog:", apiData.RefuelLog);
+        console.log("Transformed formState.refuelLogs:", formState.refuelLogs);
 
         // If the log isn't finished, set the end time to now when opening the form
         if (!apiData.isFinished) {
