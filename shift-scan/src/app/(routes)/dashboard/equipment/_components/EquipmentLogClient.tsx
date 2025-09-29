@@ -156,7 +156,7 @@ export default function EquipmentLogClient() {
                         </>
                       ) : (
                         <>
-                          <Holds className="row-start-1 row-end-7 h-full overflow-y-auto no-scrollbar">
+                          <Holds className="row-start-1 row-end-7 h-full overflow-y-auto w-full no-scrollbar">
                             {filteredLogs.map((log) => {
                               const start = parseISO(log.startTime.toString());
                               let diffInSeconds = 0;
