@@ -52,16 +52,15 @@ type TimeSheet = {
       name: string;
       quantity: number;
       loadType: string;
-      grossWeight: number;
-      lightWeight: number;
+      unit: string;
+      locationOfMaterial: string | null;
       materialWeight: number;
     }[];
     EquipmentHauled: {
       id: string;
+      source: string;
+      destination: string;
       Equipment: {
-        name: string;
-      };
-      JobSite: {
         name: string;
       };
     }[];
@@ -132,12 +131,12 @@ export default function TascoReviewSection({
 
   // Helper to format hauling info
   const formatHauling = (log: TascoLog) => {
-    return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType || "-"} | ${log.Equipment?.name || "-"} | ${log.materialType || "N/A"} | Loads: ${log.LoadQuantity || "0"}`;
+    return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType ? log.laborType : "Operator"}  |  Loads: ${log.LoadQuantity || "0"}`;
   };
 
   // Helper to format refuel info
   const formatRefuel = (log: TascoLog) => {
-    if (!log.RefuelLogs?.length) return "-";
+    if (!log.RefuelLogs?.length) return "N/A";
     return log.RefuelLogs.map(
       (r: RefuelLog) => `${r.gallonsRefueled} gal`,
     ).join(", ");
@@ -151,11 +150,8 @@ export default function TascoReviewSection({
           key={log.id}
           className="bg-white rounded-lg mb-2"
         >
-          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-col items-start gap-1">
-            <p className="text-xs font-semibold">
-              Hauling: {formatHauling(log)}
-            </p>
-            <p className="text-xs">Refuel: {formatRefuel(log)}</p>
+          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-row items-start gap-1">
+            <p className="text-xs font-semibold">{formatHauling(log)}</p>
           </AccordionTrigger>
           <AccordionContent>
             <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
@@ -163,14 +159,19 @@ export default function TascoReviewSection({
                 <strong>Shift:</strong> {log.shiftType?.split(" ")[0] || "-"}
               </Texts>
               <Texts size="sm" className="text-xs">
-                <strong>Labor:</strong> {log.laborType || "-"}
+                <strong>Labor:</strong>{" "}
+                {log.shiftType?.split(" ")[0] !== "E"
+                  ? log.laborType
+                  : "Mud Conditioning"}
               </Texts>
               <Texts size="sm" className="text-xs">
-                <strong>Equipment:</strong> {log.Equipment?.name || "-"}
+                <strong>Equipment:</strong> {log.Equipment?.name || "N/A"}
               </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>Material:</strong> {log.materialType || "N/A"}
-              </Texts>
+              {log.shiftType?.split(" ")[0] !== "E" && (
+                <Texts size="sm" className="text-xs">
+                  <strong>Material:</strong> {log.materialType || "N/A"}
+                </Texts>
+              )}
               <Texts size="sm" className="text-xs">
                 <strong>Loads:</strong> {log.LoadQuantity || "0"}
               </Texts>

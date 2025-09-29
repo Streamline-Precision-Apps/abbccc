@@ -39,6 +39,14 @@ type TimeSheet = {
     laborType: string;
     startingMileage: number;
     endingMileage: number | null;
+    Truck: {
+      id: string;
+      name: string;
+    };
+    Trailer: {
+      id: string;
+      name: string;
+    };
     Equipment: {
       id: string;
       name: string;
@@ -48,16 +56,15 @@ type TimeSheet = {
       name: string;
       quantity: number;
       loadType: string;
-      grossWeight: number;
-      lightWeight: number;
+      unit: string;
+      locationOfMaterial: string | null;
       materialWeight: number;
     }[];
     EquipmentHauled: {
       id: string;
+      source: string;
+      destination: string;
       Equipment: {
-        name: string;
-      };
-      JobSite: {
         name: string;
       };
     }[];
@@ -368,7 +375,7 @@ export default function TimeCardApprover({
                     </Holds>
 
                     {/* Content Section */}
-                    <Holds className="h-full  row-start-2 row-end-7 rounded-none">
+                    <Holds className="h-full  row-start-2 row-end-7 rounded-none ">
                       {viewOption === "highlight" && (
                         <GeneralReviewSection
                           currentTimeSheets={currentTimeSheets}

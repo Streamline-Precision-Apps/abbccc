@@ -91,6 +91,12 @@ export async function GET(request: Request) {
               select: {
                 id: true,
                 laborType: true,
+                Truck: {
+                  select: { id: true, name: true },
+                },
+                Trailer: {
+                  select: { id: true, name: true },
+                },
                 Equipment: {
                   select: {
                     id: true,
@@ -113,6 +119,8 @@ export async function GET(request: Request) {
                 EquipmentHauled: {
                   select: {
                     id: true,
+                    source: true,
+                    destination: true,
                     Equipment: {
                       select: {
                         name: true,

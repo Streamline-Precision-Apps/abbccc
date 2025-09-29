@@ -42,16 +42,15 @@ type TimeSheet = {
       name: string;
       quantity: number;
       loadType: string;
-      grossWeight: number;
-      lightWeight: number;
+      unit: string;
+      locationOfMaterial: string | null;
       materialWeight: number;
     }[];
     EquipmentHauled: {
       id: string;
+      source: string;
+      destination: string;
       Equipment: {
-        name: string;
-      };
-      JobSite: {
         name: string;
       };
     }[];
@@ -98,7 +97,7 @@ export default function EquipmentLogsSection({
   const t = useTranslations("TimeCardSwiper");
   const [tabs, setTabs] = useState(1);
   const allEquipmentLogs = currentTimeSheets.flatMap(
-    (timesheet) => timesheet.EmployeeEquipmentLogs || []
+    (timesheet) => timesheet.EmployeeEquipmentLogs || [],
   );
   useEffect(() => {
     console.log(allEquipmentLogs);
@@ -160,7 +159,7 @@ export default function EquipmentLogsSection({
                       {`${
                         log.RefuelLogs.map((log) => log.gallonsRefueled).reduce(
                           (a, b) => a + b,
-                          0
+                          0,
                         ) || "0"
                       } gal`}
                     </Texts>

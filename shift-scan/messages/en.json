@@ -1139,6 +1139,7 @@
     "TagUpdatedSuccessfully": "Tag updated successfully."
   },
   "Hamburger-Profile": {
+    "Saving": "Saving...",
     "Signature": "Signature",
     "Discard": "Discard",
     "AccountInformation": "Account Information",

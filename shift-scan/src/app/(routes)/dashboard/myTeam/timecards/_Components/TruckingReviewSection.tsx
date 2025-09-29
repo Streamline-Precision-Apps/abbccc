@@ -68,17 +68,16 @@ type Material = {
   name: string;
   quantity: number;
   loadType: string;
-  grossWeight: number;
-  lightWeight: number;
+  unit: string;
+  locationOfMaterial: string | null;
   materialWeight: number;
 };
 
 type EquipmentHauled = {
   id: string;
+  source: string;
+  destination: string;
   Equipment: {
-    name: string;
-  };
-  JobSite: {
     name: string;
   };
 };
@@ -88,6 +87,14 @@ type TruckingLog = {
   laborType: string;
   startingMileage: number;
   endingMileage: number | null;
+  Truck: {
+    id: string;
+    name: string;
+  };
+  Trailer: {
+    id: string;
+    name: string;
+  };
   Equipment: {
     id: string;
     name: string;
@@ -120,14 +127,14 @@ export default function TruckingReviewSection({
 
   // Helper to format mileage range
   const formatMileage = (log: TruckingLog) => {
-    const start = log.startingMileage ?? "-";
-    const end = log.endingMileage ?? "-";
-    return `${start} → ${end}`;
+    const start = log.startingMileage ?? "N/A";
+    const end = log.endingMileage ?? "N/A";
+    return `${start} → ${end} Mi`;
   };
 
   // Helper to format refuel info
   const formatRefuel = (log: TruckingLog) => {
-    if (!log.RefuelLogs?.length) return "-";
+    if (!log.RefuelLogs?.length) return "N/A";
     return log.RefuelLogs.map(
       (r: RefuelLog) => `${r.gallonsRefueled} gal`,
     ).join(", ");
@@ -135,7 +142,7 @@ export default function TruckingReviewSection({
 
   // Helper to format state mileage
   const formatStateMileage = (log: TruckingLog) => {
-    if (!log.StateMileages?.length) return "-";
+    if (!log.StateMileages?.length) return "N/A";
     return log.StateMileages.map(
       (s: StateMileage) => `${s.state}: ${s.stateLineMileage} mi`,
     ).join(", ");
@@ -143,9 +150,10 @@ export default function TruckingReviewSection({
 
   // Helper to format materials
   const formatMaterials = (log: TruckingLog) => {
-    if (!log.Materials?.length) return "-";
+    if (!log.Materials?.length) return "N/A";
     return log.Materials.map(
-      (m: Material) => `${m.name} (${m.materialWeight ?? "-"} lbs)`,
+      (m: Material) =>
+        `${m.name} (${m.quantity ?? "-"} ${m.quantity > 1 ? m.unit : m.unit.slice(0, -1)})`,
     ).join(", ");
   };
 
@@ -154,7 +162,7 @@ export default function TruckingReviewSection({
     if (!log.EquipmentHauled?.length) return "-";
     return log.EquipmentHauled.map(
       (e: EquipmentHauled) =>
-        `${e.Equipment?.name ?? "-"} → ${e.JobSite?.name ?? "-"}`,
+        `${e.Equipment?.name ?? "-"} → ${e.destination ?? "-"}`,
     ).join(", ");
   };
 
@@ -166,37 +174,31 @@ export default function TruckingReviewSection({
           key={log.id}
           className="bg-white rounded-lg mb-2"
         >
-          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-col items-start gap-1">
-            <p className="text-xs font-semibold">
-              Truck: {log.Equipment?.name ?? "-"}
+          <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none flex flex-row items-start gap-1">
+            <p className="text-sm truncate max-w-[200px] font-semibold">
+              {log.Truck?.name ?? "-"}
             </p>
-            <p className="text-xs">Mileage: {formatMileage(log)}</p>
-            <p className="text-xs">Refuel: {formatRefuel(log)}</p>
-            <p className="text-xs">State Mileage: {formatStateMileage(log)}</p>
-            <p className="text-xs">Materials: {formatMaterials(log)}</p>
-            <p className="text-xs">
-              Equipment Hauled: {formatEquipmentHauled(log)}
-            </p>
+            {log.Trailer && (
+              <p className="text-xs font-semibold">{`- ${log.Trailer.name}`}</p>
+            )}
           </AccordionTrigger>
           <AccordionContent>
             <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
-              <Texts size="sm" className="text-xs">
-                <strong>Truck:</strong> {log.Equipment?.name ?? "-"}
+              <Texts className="text-sm">
+                Trailer: {log.Trailer?.name ?? "N/A"}
               </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>Mileage:</strong> {formatMileage(log)}
+              <Texts className="text-sm mb-1">
+                Mileage: {formatMileage(log)}
               </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>Refuel:</strong> {formatRefuel(log)}
-              </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>State Mileage:</strong> {formatStateMileage(log)}
-              </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>Materials:</strong> {formatMaterials(log)}
-              </Texts>
-              <Texts size="sm" className="text-xs">
-                <strong>Equipment Hauled:</strong> {formatEquipmentHauled(log)}
+              <Texts className="text-sm underline">Refuel: </Texts>
+              <Texts className="text-sm mb-1">{formatRefuel(log)}</Texts>
+              <Texts className="text-sm underline"> State Mileage: </Texts>
+              <Texts className="text-sm mb-1">{formatStateMileage(log)}</Texts>
+              <Texts className="text-sm underline">Materials:</Texts>
+              <Texts className="text-sm mb-1">{formatMaterials(log)}</Texts>
+              <Texts className="text-sm underline">Equipment Hauled:</Texts>
+              <Texts className="text-sm mb-1">
+                {formatEquipmentHauled(log)}
               </Texts>
             </Holds>
           </AccordionContent>
