@@ -24,6 +24,7 @@ export default function TruckTabOptions({
   return (
     <Holds position={"row"} className=" h-full w-full gap-x-1">
       <NewTab
+        titleImageSize="6"
         titleImage="/haulingFilled.svg"
         titleImageAlt="Truck"
         onClick={() => setActiveTab(1)}
@@ -31,9 +32,10 @@ export default function TruckTabOptions({
         isComplete={isComplete.haulingLogsTab}
         isLoading={isLoading}
       >
-        <Titles size={"h4"}>{t("HaulingLogs")}</Titles>
+        <Titles size={"xs"}>{t("HaulingLogs")}</Titles>
       </NewTab>
       <NewTab
+        titleImageSize="6"
         titleImage="/comments.svg"
         titleImageAlt={t("WorkDetails")}
         onClick={() => setActiveTab(2)}
@@ -41,9 +43,10 @@ export default function TruckTabOptions({
         isComplete={isComplete.notesTab}
         isLoading={isLoading}
       >
-        <Titles size={"h4"}>{t("WorkDetails")}</Titles>
+        <Titles size={"xs"}>{t("WorkDetails")}</Titles>
       </NewTab>
       <NewTab
+        titleImageSize="6"
         titleImage="/stateFilled.svg"
         titleImageAlt="State Mileage"
         onClick={() => setActiveTab(3)}
@@ -51,9 +54,10 @@ export default function TruckTabOptions({
         isComplete={isComplete.stateMileageTab}
         isLoading={isLoading}
       >
-        <Titles size={"h4"}>{t("StateMileage")}</Titles>
+        <Titles size={"xs"}>{t("StateMileage")}</Titles>
       </NewTab>
       <NewTab
+        titleImageSize="6"
         titleImage="/refuelFilled.svg"
         titleImageAlt="Refuel"
         onClick={() => setActiveTab(4)}
@@ -61,7 +65,7 @@ export default function TruckTabOptions({
         isComplete={isComplete.refuelLogsTab}
         isLoading={isLoading}
       >
-        <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
+        <Titles size={"xs"}>{t("RefuelLogs")}</Titles>
       </NewTab>
     </Holds>
   );

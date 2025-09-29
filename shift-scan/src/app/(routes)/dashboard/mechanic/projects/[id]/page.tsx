@@ -59,7 +59,10 @@ export default function ProjectPage({
               setActiveTab={setActiveTab}
               loading={loading}
             />
-            <PullToRefresh onRefresh={handleRefresh}>
+            <PullToRefresh
+              onRefresh={handleRefresh}
+              textColor="text-app-dark-blue"
+            >
               {/* Tab Content */}
               {activeTab === 1 && (
                 <ReceivedInfoTab

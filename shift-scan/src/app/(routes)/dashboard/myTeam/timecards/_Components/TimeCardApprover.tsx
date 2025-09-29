@@ -395,7 +395,10 @@ export default function TimeCardApprover({
                   </Grids>
                 </TinderSwipe>
               ) : (
-                <PullToRefresh onRefresh={fetchCrewTimeCards}>
+                <PullToRefresh
+                  onRefresh={fetchCrewTimeCards}
+                  textColor="text-app-dark-blue"
+                >
                   <Holds className="h-full flex items-center justify-center">
                     <Texts size={"p6"} className="italic">
                       {t("NoTimesheetsToApprove")}

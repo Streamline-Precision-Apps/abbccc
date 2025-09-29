@@ -1262,6 +1262,12 @@
   },
 
   "TruckingAssistant": {
+    "Comments": "Comments",
+    "StartRequiredMileageMustBe": "* Required & must be (>=)",
+    "EndRequiredMileageMustBe": "* Required & must be (>=)",
+    "EndMileageMustBe": "* Must be (>=)",
+    "BeginningMileage": "Starting",
+    "EndMileage": "Ending",
     "Source": "Source",
     "Destination": "Destination",
     "Equipment": "Equipment being Hauled",

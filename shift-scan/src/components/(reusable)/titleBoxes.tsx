@@ -1,10 +1,11 @@
 "use client";
 import { cva, type VariantProps } from "class-variance-authority";
-import { HTMLAttributes, FC, SetStateAction, Dispatch } from "react";
+import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 import { Buttons } from "../(reusable)/buttons";
 import { Images } from "../(reusable)/images";
 
+import { useState } from "react";
 import { Holds } from "./holds";
 import { useRouter } from "next/navigation";
 
@@ -60,15 +61,35 @@ const TitleBoxes: FC<TitleBoxProps> = ({
   ...props
 }) => {
   const router = useRouter();
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  // Handles both sync and async onClick
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isDisabled) return;
+    setIsDisabled(true);
+    try {
+      if (onClick) {
+        onClick(e);
+      } else {
+        router.back();
+      }
+    } finally {
+      setTimeout(() => {
+        setIsDisabled(false);
+      }, 600);
+    }
+  };
+
   return (
     <div className={cn(TitleBoxVariants({ variant, className }))} {...props}>
       <Buttons
-        onClick={onClick ? onClick : () => router.back()}
+        onClick={handleClick}
         background={"none"}
         position={"left"}
         shadow={"none"}
         type={"button"}
         className="w-12 h-12 absolute top-0 left-3 z-50"
+        disabled={isDisabled}
       >
         <Images
           titleImg="/arrowBack.svg"

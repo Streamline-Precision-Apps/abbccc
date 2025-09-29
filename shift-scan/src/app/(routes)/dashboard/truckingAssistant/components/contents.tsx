@@ -26,14 +26,14 @@ export default function TruckingContexts({
             position={"row"}
             className=" w-full justify-center items-center space-x-2"
           >
-            <Titles size={"h2"} className="">
+            <Titles size={"lg"} className="">
               {laborType === "truckDriver"
                 ? t("TruckDriver")
                 : laborType === "operator"
-                ? t("Operator")
-                : laborType === "manualLabor"
-                ? t("ManualLabor")
-                : t("TruckingAssistant")}
+                  ? t("Operator")
+                  : laborType === "manualLabor"
+                    ? t("ManualLabor")
+                    : t("TruckingAssistant")}
             </Titles>
             <Images
               className="max-w-8 h-auto object-contain"

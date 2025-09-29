@@ -2,7 +2,9 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { updateTruckingMileage } from "@/actions/truckingActions";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
 import { Texts } from "@/components/(reusable)/texts";
+import { Titles } from "@/components/(reusable)/titles";
 
 type StateMileage = {
   id: string;
@@ -25,6 +27,7 @@ export const EndingMileage = ({
   truckingLog,
   endMileage,
   setEndMileage,
+  setStartingMileage,
   startingMileage,
   stateMileage,
   refuelLogs,
@@ -32,6 +35,7 @@ export const EndingMileage = ({
   truckingLog: string | undefined;
   endMileage: number | null;
   setEndMileage: React.Dispatch<React.SetStateAction<number | null>>;
+  setStartingMileage: React.Dispatch<React.SetStateAction<number | null>>;
   startingMileage: number | null;
   stateMileage?: StateMileage[];
   refuelLogs?: Refueled[];
@@ -80,7 +84,7 @@ export const EndingMileage = ({
     // Show validation message for empty/null values
     if (value === null || value === 0) {
       setValidationMessage(
-        `End mileage required, must be ${minRequired.toLocaleString()} or greater`
+        `${t(`EndRequiredMileageMustBe`)} ${minRequired.toLocaleString()}`,
       );
       setIsValid(false);
       return false;
@@ -88,7 +92,7 @@ export const EndingMileage = ({
 
     if (value < minRequired) {
       setValidationMessage(
-        `End mileage must be ${minRequired.toLocaleString()} or greater`
+        `${t(`EndMileageMustBe`)} ${minRequired.toLocaleString()}`,
       );
       setIsValid(false);
       return false;
@@ -125,24 +129,42 @@ export const EndingMileage = ({
 
   return (
     <div className="w-full">
-      <Inputs
-        type="text"
-        name="endingMileage"
-        value={endMileage ? endMileage.toLocaleString() : ""}
-        onChange={(e) => handleMileageChange(e.target.value)}
-        onBlur={updateEndingMileage}
-        placeholder={t("EnterEndingMileageHere")}
-        className={`w-full ${
-          endMileage === null || !isValid
-            ? "placeholder:text-app-red border-red-500"
-            : "border-black"
-        } border-[3px] rounded-[10px] pl-3 text-base py-2 focus:outline-hidden focus:ring-transparent focus:border-current`}
-      />
-      {validationMessage && (
-        <div className="text-xs  text-app-red text-center leading-tight">
-          {validationMessage}
+      <div className="w-full border-b-[2px] border-black mb-2">
+        <Titles size={"md"} className="text-left">
+          {t("Mileage")}
+        </Titles>
+      </div>
+      <div className="w-full flex flex-row gap-2 items-center pb-1">
+        <Texts size={"sm"} className="text-left mb-1">
+          {startingMileage ? `${t("BeginningMileage")}:` : ""}
+        </Texts>
+        <Texts size={"sm"} className="text-left mb-1">
+          {startingMileage ? `${startingMileage.toLocaleString()} Mi` : ""}
+        </Texts>
+      </div>
+      <div className="w-full flex flex-col pb-1">
+        <p className="text-sm">{t("EndMileage")}: </p>
+        <div className="w-full">
+          <Inputs
+            type="text"
+            name="endingMileage"
+            value={endMileage ? endMileage.toLocaleString() : ""}
+            onChange={(e) => handleMileageChange(e.target.value)}
+            onBlur={updateEndingMileage}
+            placeholder={t("EnterEndingMileageHere")}
+            className={`w-full ${
+              endMileage === null || !isValid
+                ? "placeholder:text-app-red border-red-500"
+                : "border-black"
+            } border-[3px] rounded-[10px] pl-3 text-sm  focus:outline-hidden focus:ring-transparent focus:border-current`}
+          />
+          {validationMessage && (
+            <div className="text-xs text-app-red leading-tight">
+              {validationMessage}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

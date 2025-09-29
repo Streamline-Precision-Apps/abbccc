@@ -1247,6 +1247,11 @@
     "LabelCostCode": "Código de costo"
   },
   "TruckingAssistant": {
+    "Comments": "Comentarios",
+    "EndRequiredMileageMustBe": "* Requerido y debe ser (>=)",
+    "EndMileageMustBe": "* Debe ser (>=)",
+    "BeginningMileage": "Iniciando",
+    "EndMileage": "Finalizando",
     "Source": "Fuente",
     "Destination": "Destino",
     "Equipment": "Equipo que se transporta",

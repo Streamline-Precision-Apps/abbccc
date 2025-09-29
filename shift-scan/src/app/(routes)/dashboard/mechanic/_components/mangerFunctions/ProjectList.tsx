@@ -84,7 +84,15 @@ export function ProjectList({
   }
 
   return (
-    <PullToRefresh onRefresh={onRefresh}>
+    <PullToRefresh
+      onRefresh={onRefresh}
+      bgColor="bg-darkBlue/70"
+      textColor="text-app-dark-blue"
+      pullText={"Pull To Refresh"}
+      releaseText={"Release To Refresh"}
+      refreshingText="Loading..."
+      containerClassName="h-full"
+    >
       <Holds className="row-start-2 row-end-9 h-full w-full overflow-y-auto no-scrollbar rounded-none px-2 py-2">
         {projects.map((project) => (
           <ProjectItem

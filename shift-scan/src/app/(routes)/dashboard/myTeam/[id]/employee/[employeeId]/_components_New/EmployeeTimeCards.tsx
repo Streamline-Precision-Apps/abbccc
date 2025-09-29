@@ -66,7 +66,7 @@ export default function EmployeeTimeCards() {
             refreshingText=""
             pullText="Pull to refresh"
             releaseText="Release to refresh"
-            textColor="text-app-darkBlue"
+            textColor="text-app-dark-blue"
           >
             {error && (
               <div className="text-center text-xs text-red-500">{error}</div>

@@ -7,6 +7,8 @@ import RefuelLogsList from "./RefuelLogsList";
 import { useTranslations } from "next-intl";
 import { Contents } from "@/components/(reusable)/contents";
 import TruckTabOptions from "../TruckTabOptions";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 type Refueled = {
   id: string;
@@ -69,24 +71,19 @@ export default function RefuelLayout({
         background={"white"}
         className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
       >
-        <Contents width={"section"} className="h-full">
-          <Holds position={"row"} className="h-full gap-2">
-            <Holds size={"80"}>
-              <Texts size={"p3"}>{t("DidYouRefuel")}</Texts>
-            </Holds>
-            <Holds size={"20"}>
-              <Buttons
-                background={"green"}
-                className="py-1.5"
-                onClick={() => {
-                  AddRefuelLog();
-                }}
-              >
-                +
-              </Buttons>
-            </Holds>
-          </Holds>
-        </Contents>
+        <div className="h-full w-full flex items-center justify-between px-2">
+          <Texts size={"sm"}>{t("DidYouRefuel")}</Texts>
+
+          <Button
+            size={"icon"}
+            className="bg-app-green hover:bg-app-green   w-10  text-black py-1.5 px-3 border-[3px] border-black rounded-[10px] shadow-none"
+            onClick={() => {
+              AddRefuelLog();
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
       </Holds>
       <Holds
         background={"white"}

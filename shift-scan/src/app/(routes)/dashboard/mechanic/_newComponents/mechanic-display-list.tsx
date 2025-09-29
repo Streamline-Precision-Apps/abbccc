@@ -512,7 +512,7 @@ export function MechanicDisplayList() {
             <div className="h-full border-gray-200 bg-gray-50 border rounded-md px-2 overflow-hidden">
               <PullToRefresh
                 onRefresh={fetchData}
-                textColor="text-blue-700"
+                textColor="text-app-dark-blue"
                 pullText={t("PullToRefresh")}
                 releaseText={t("ReleaseToRefresh")}
                 containerClassName="h-full pt-5 pb-2"

@@ -13,6 +13,8 @@ import {
 import EquipmentList from "./EquipmentList";
 import { useTranslations } from "next-intl";
 import MaterialItem from "./MaterialItem";
+import { Button } from "@/components/ui/button";
+import { Minus, Plus } from "lucide-react";
 
 type EquipmentHauled = {
   id: string;
@@ -153,7 +155,43 @@ export default function HaulingLogs({
         background={"white"}
         className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
       >
-        <Contents width={"section"} className="h-full">
+        <div className="h-full w-full flex items-center justify-between gap-4 pl-3 pr-2">
+          <div className="w-full max-w-[200px]">
+            <Sliders
+              leftTitle={"Material"}
+              rightTitle={"Equipment"}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+
+          <Button
+            size={"icon"}
+            variant={"outline"}
+            className={`${activeTab === 1 ? "bg-app-green" : equipmentHauled?.length === 0 ? "bg-app-green" : "bg-app-red"} w-10  text-black py-1.5 px-3 border-[3px] border-black rounded-[10px] shadow-none focus:ring-0 hover:${activeTab === 1 ? "bg-app-green" : equipmentHauled?.length === 0 ? "bg-app-green" : "bg-app-red"}`}
+            onClick={() => {
+              if (activeTab === 1) {
+                addTempMaterial();
+              } else if (equipmentHauled?.length === 0) {
+                addTempEquipmentList();
+              } else {
+                if (equipmentHauled && equipmentHauled.length > 0) {
+                  handleDelete(equipmentHauled[0].id);
+                }
+              }
+            }}
+          >
+            {activeTab === 1 ? (
+              <Plus className="w-4 h-4" />
+            ) : equipmentHauled?.length === 0 ? (
+              <Plus className="w-4 h-4" />
+            ) : (
+              <Minus className="w-4 h-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* <Contents width={"section"} className="h-full">
           <Holds position={"row"} className="h-full gap-2">
             <Holds size={"80"}>
               <Sliders
@@ -169,6 +207,7 @@ export default function HaulingLogs({
                   background={"green"}
                   className="py-1.5"
                   onClick={() => addTempMaterial()}
+                  shadow={"none"}
                 >
                   +
                 </Buttons>
@@ -177,6 +216,7 @@ export default function HaulingLogs({
                   background={"green"}
                   className="py-1.5"
                   onClick={() => addTempEquipmentList()}
+                  shadow={"none"}
                 >
                   +
                 </Buttons>
@@ -184,6 +224,7 @@ export default function HaulingLogs({
                 <Buttons
                   background={"red"}
                   className="py-1.5"
+                  shadow={"none"}
                   onClick={() => {
                     if (equipmentHauled && equipmentHauled.length > 0) {
                       handleDelete(equipmentHauled[0].id);
@@ -195,7 +236,7 @@ export default function HaulingLogs({
               )}
             </Holds>
           </Holds>
-        </Contents>
+        </Contents> */}
       </Holds>
       <Holds
         className={`${
