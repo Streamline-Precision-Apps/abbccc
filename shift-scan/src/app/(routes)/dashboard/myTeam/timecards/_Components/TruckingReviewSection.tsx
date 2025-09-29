@@ -10,6 +10,19 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 
+type TascoLog = {
+  id: string;
+  shiftType: string;
+  laborType: string;
+  materialType: string | null;
+  LoadQuantity: number;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  RefuelLogs: RefuelLog[];
+};
+
 type TimeSheet = {
   id: string;
   date: string;
@@ -24,59 +37,8 @@ type TimeSheet = {
   Jobsite: {
     name: string;
   };
-  TascoLogs: {
-    id: string;
-    shiftType: string;
-    laborType: string;
-    materialType: string | null;
-    LoadQuantity: number;
-    Equipment: {
-      id: string;
-      name: string;
-    };
-    RefuelLogs: {
-      id: string;
-      gallonsRefueled: number;
-    }[];
-  }[];
-  TruckingLogs: {
-    id: string;
-    laborType: string;
-    startingMileage: number;
-    endingMileage: number | null;
-    Equipment: {
-      id: string;
-      name: string;
-    };
-    Materials: {
-      id: string;
-      name: string;
-      quantity: number;
-      loadType: string;
-      grossWeight: number;
-      lightWeight: number;
-      materialWeight: number;
-    }[];
-    EquipmentHauled: {
-      id: string;
-      Equipment: {
-        name: string;
-      };
-      JobSite: {
-        name: string;
-      };
-    }[];
-    RefuelLogs: {
-      id: string;
-      gallonsRefueled: number;
-      milesAtFueling?: number;
-    }[];
-    StateMileages: {
-      id: string;
-      state: string;
-      stateLineMileage: number;
-    }[];
-  }[];
+  TascoLogs: TascoLog[];
+  TruckingLogs: TruckingLog[];
   EmployeeEquipmentLogs: {
     id: string;
     startTime: string;
@@ -85,11 +47,55 @@ type TimeSheet = {
       id: string;
       name: string;
     };
-    RefuelLogs: {
-      id: string;
-      gallonsRefueled: number;
-    }[];
+    RefuelLogs: RefuelLog[];
   }[];
+};
+
+type RefuelLog = {
+  id: string;
+  gallonsRefueled: number;
+  milesAtFueling?: number;
+};
+
+type StateMileage = {
+  id: string;
+  state: string;
+  stateLineMileage: number;
+};
+
+type Material = {
+  id: string;
+  name: string;
+  quantity: number;
+  loadType: string;
+  grossWeight: number;
+  lightWeight: number;
+  materialWeight: number;
+};
+
+type EquipmentHauled = {
+  id: string;
+  Equipment: {
+    name: string;
+  };
+  JobSite: {
+    name: string;
+  };
+};
+
+type TruckingLog = {
+  id: string;
+  laborType: string;
+  startingMileage: number;
+  endingMileage: number | null;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  Materials: Material[];
+  EquipmentHauled: EquipmentHauled[];
+  RefuelLogs: RefuelLog[];
+  StateMileages: StateMileage[];
 };
 
 export default function TruckingReviewSection({
@@ -113,47 +119,48 @@ export default function TruckingReviewSection({
   }
 
   // Helper to format mileage range
-  const formatMileage = (log: any) => {
+  const formatMileage = (log: TruckingLog) => {
     const start = log.startingMileage ?? "-";
     const end = log.endingMileage ?? "-";
     return `${start} → ${end}`;
   };
 
   // Helper to format refuel info
-  const formatRefuel = (log: any) => {
+  const formatRefuel = (log: TruckingLog) => {
     if (!log.RefuelLogs?.length) return "-";
-    return log.RefuelLogs.map((r: any) => `${r.gallonsRefueled} gal`).join(
-      ", ",
-    );
+    return log.RefuelLogs.map(
+      (r: RefuelLog) => `${r.gallonsRefueled} gal`,
+    ).join(", ");
   };
 
   // Helper to format state mileage
-  const formatStateMileage = (log: any) => {
+  const formatStateMileage = (log: TruckingLog) => {
     if (!log.StateMileages?.length) return "-";
     return log.StateMileages.map(
-      (s: any) => `${s.state}: ${s.stateLineMileage} mi`,
+      (s: StateMileage) => `${s.state}: ${s.stateLineMileage} mi`,
     ).join(", ");
   };
 
   // Helper to format materials
-  const formatMaterials = (log: any) => {
+  const formatMaterials = (log: TruckingLog) => {
     if (!log.Materials?.length) return "-";
     return log.Materials.map(
-      (m: any) => `${m.name} (${m.materialWeight ?? "-"} lbs)`,
+      (m: Material) => `${m.name} (${m.materialWeight ?? "-"} lbs)`,
     ).join(", ");
   };
 
   // Helper to format equipment hauled
-  const formatEquipmentHauled = (log: any) => {
+  const formatEquipmentHauled = (log: TruckingLog) => {
     if (!log.EquipmentHauled?.length) return "-";
     return log.EquipmentHauled.map(
-      (e: any) => `${e.Equipment?.name ?? "-"} → ${e.JobSite?.name ?? "-"}`,
+      (e: EquipmentHauled) =>
+        `${e.Equipment?.name ?? "-"} → ${e.JobSite?.name ?? "-"}`,
     ).join(", ");
   };
 
   return (
     <Accordion type="single" collapsible>
-      {allTruckingLogs.map((log: any) => (
+      {allTruckingLogs.map((log: TruckingLog) => (
         <AccordionItem
           value={log.id}
           key={log.id}

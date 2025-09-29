@@ -91,6 +91,25 @@ type TimeSheet = {
   }[];
 };
 
+type RefuelLog = {
+  id: string;
+  gallonsRefueled: number;
+  milesAtFueling?: number;
+};
+
+type TascoLog = {
+  id: string;
+  shiftType: string;
+  laborType: string;
+  materialType: string | null;
+  LoadQuantity: number;
+  Equipment: {
+    id: string;
+    name: string;
+  };
+  RefuelLogs: RefuelLog[];
+};
+
 interface TascoReviewSectionProps {
   currentTimeSheets: TimeSheet[];
 }
@@ -112,21 +131,21 @@ export default function TascoReviewSection({
   }
 
   // Helper to format hauling info
-  const formatHauling = (log: any) => {
+  const formatHauling = (log: TascoLog) => {
     return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType || "-"} | ${log.Equipment?.name || "-"} | ${log.materialType || "N/A"} | Loads: ${log.LoadQuantity || "0"}`;
   };
 
   // Helper to format refuel info
-  const formatRefuel = (log: any) => {
+  const formatRefuel = (log: TascoLog) => {
     if (!log.RefuelLogs?.length) return "-";
-    return log.RefuelLogs.map((r: any) => `${r.gallonsRefueled} gal`).join(
-      ", ",
-    );
+    return log.RefuelLogs.map(
+      (r: RefuelLog) => `${r.gallonsRefueled} gal`,
+    ).join(", ");
   };
 
   return (
     <Accordion type="single" collapsible>
-      {allTascoLogs.map((log: any) => (
+      {allTascoLogs.map((log: TascoLog) => (
         <AccordionItem
           value={log.id}
           key={log.id}

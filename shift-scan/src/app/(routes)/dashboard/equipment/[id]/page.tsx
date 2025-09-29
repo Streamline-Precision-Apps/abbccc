@@ -98,6 +98,7 @@ export default function CombinedForm({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const router = useRouter();
   const id = use(params).id;
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");

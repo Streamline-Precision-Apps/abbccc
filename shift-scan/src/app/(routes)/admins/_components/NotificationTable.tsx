@@ -105,7 +105,7 @@ export function NotificationTable({
               >
                 <div className="flex flex-col items-center justify-center h-full w-full pt-5 ">
                   <span className="text-gray-400 text-md">
-                    You're all caught up 🎉
+                    {`You're all caught up 🎉`}
                   </span>
                 </div>
               </TableCell>
