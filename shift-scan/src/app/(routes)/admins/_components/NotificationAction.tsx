@@ -5,7 +5,7 @@ import { format, isToday, isYesterday } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ResolvedNotification } from "../page";
-import { Bell, BellPlus, BookCheck, SearchCheck, Verified } from "lucide-react";
+import { Bell, BookCheck, SearchCheck, Verified } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { updateNotificationReadStatus } from "@/actions/NotificationActions";
 import { markAllNotificationsAsRead } from "@/actions/NotificationActions";
@@ -200,7 +200,7 @@ export default function NotificationActionsList({
                         >
                           <div className="w-full flex flex-row justify-between p-2">
                             {/* Response title and time */}
-                            <div className="w-full flex flex-col">
+                            <div className="w-full flex flex-col gap-1">
                               <div className="w-full flex flex-row items-center gap-4">
                                 <Tooltip delayDuration={1000}>
                                   <TooltipTrigger>
@@ -331,11 +331,12 @@ export default function NotificationActionsList({
                                 </div>
                               )}
                             </div>
-                            <div className="flex flex-row gap-2 items-start">
-                              {!isRead && (
+                            <div className="flex flex-row items-start ml-2">
+                              {!isRead ? (
                                 <Tooltip>
                                   <TooltipTrigger>
                                     <Button
+                                      className="w-4 h-4"
                                       size="icon"
                                       variant="outline"
                                       onClick={async (e) => {
@@ -343,11 +344,13 @@ export default function NotificationActionsList({
                                         await markNotificationAsRead(item.id);
                                       }}
                                     >
-                                      <BookCheck className="h-4 w-4 text-blue-500" />
+                                      <BookCheck className="h-3 w-3 text-blue-500" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>Mark as Read</TooltipContent>
                                 </Tooltip>
+                              ) : (
+                                <div className="w-4 h-4"></div>
                               )}
                             </div>
                           </div>
