@@ -19,23 +19,36 @@ export async function GET() {
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    // fetch subscribed notifications
+    const subscribedNotifications = await prisma.topicSubscription.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
     const notifications = await prisma.notification.findMany({
       where: {
         Response: {
           is: null,
         },
+        topic: {
+          in: subscribedNotifications.map((notification) => notification.topic),
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+
     const count = await prisma.notification.count();
 
     const resolved = await prisma.notification.findMany({
       where: {
         Response: {
           isNot: null,
+        },
+        topic: {
+          in: subscribedNotifications.map((notification) => notification.topic),
         },
       },
       include: {
@@ -58,10 +71,21 @@ export async function GET() {
       },
     });
 
+    const unreadCount = await prisma.notification.count({
+      where: {
+        Reads: {
+          none: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
     return NextResponse.json({
       notifications,
       resolved,
       count,
+      unreadCount,
     });
   } catch (error) {
     Sentry.captureException(error);

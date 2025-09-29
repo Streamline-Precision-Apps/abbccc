@@ -248,6 +248,7 @@ export function useTimecardIdData(id: string) {
             title: "Timecard Modified ",
             message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${id}.`,
             link: `/admins/timesheets?id=${id}`,
+            referenceId: id,
           }),
         });
         await response.json();

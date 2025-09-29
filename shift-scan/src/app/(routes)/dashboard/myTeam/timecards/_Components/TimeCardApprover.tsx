@@ -191,7 +191,7 @@ export default function TimeCardApprover({
       }
       return Array.from(options);
     },
-    []
+    [],
   );
 
   // Memoized fetchCrewTimeCards for stable reference
@@ -199,7 +199,7 @@ export default function TimeCardApprover({
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/getPendingTeamTimeSheets?managerId=${managerId}`
+        `/api/getPendingTeamTimeSheets?managerId=${managerId}`,
       );
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -233,12 +233,13 @@ export default function TimeCardApprover({
         const approveMember = teamMembers.find((member) => member.id === id);
         if (!approveMember) return;
         const timeSheetIds = approveMember.TimeSheets.map(
-          (timesheet) => timesheet.id
+          (timesheet) => timesheet.id,
         );
         const formData = new FormData();
         formData.append("id", id);
         formData.append("timesheetIds", JSON.stringify(timeSheetIds));
         formData.append("statusComment", `Approved by ${manager}`);
+        formData.append("editorId", managerId || "");
         const response = await ApproveUsersTimeSheets(formData);
         if (!response.success) {
           console.error("Failed to approve timecards");
@@ -247,18 +248,18 @@ export default function TimeCardApprover({
         console.error("Error submitting timecards:", error);
       }
     },
-    [teamMembers, manager]
+    [teamMembers, manager],
   );
 
   // Memoized swipe handler
   const swiped = useCallback(
     (direction: string, memberId: string) => {
       const myTeamId = currentMember?.Crews.find(
-        (crew) => crew.leadId === managerId
+        (crew) => crew.leadId === managerId,
       )?.id;
       if (direction === "left") {
         router.push(
-          `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/timecards?rPath=${rPath}`
+          `/dashboard/myTeam/${myTeamId}/employee/${memberId}?timeCard=/dashboard/myTeam/timecards?rPath=${rPath}`,
         );
       } else {
         ApproveTimeSheets(memberId);
@@ -277,7 +278,7 @@ export default function TimeCardApprover({
       ApproveTimeSheets,
       currentIndex,
       teamMembers.length,
-    ]
+    ],
   );
 
   // Memoized edit/approve click handlers
@@ -309,13 +310,13 @@ export default function TimeCardApprover({
                 </Holds>
               ) : completed ? (
                 <Holds className="h-full flex flex-col items-center justify-center gap-4">
-                  <Titles size={"h5"}>{t("Complete")}</Titles>
+                  <Titles size={"sm"}>{t("Complete")}</Titles>
                   <Images
                     titleImg="/statusApprovedFilled.svg"
                     titleImgAlt="approved"
-                    className="w-16 h-16 border-[3px] border-black rounded-full"
+                    className="w-8 h-8 border-[3px] border-black rounded-full"
                   />
-                  <Texts size={"p6"}>{t("YouHaveApprovedAllTimesheets")}</Texts>
+                  <Texts size={"sm"}>{t("YouHaveApprovedAllTimesheets")}</Texts>
                 </Holds>
               ) : currentMember ? (
                 <TinderSwipe
@@ -327,7 +328,11 @@ export default function TimeCardApprover({
                     ApproveTimeSheets(currentMember.id);
                   }}
                 >
-                  <Grids rows={"6"} gap={"5"} className="h-full w-full p-3">
+                  <Grids
+                    rows={"6"}
+                    gap={"5"}
+                    className="bg-[#EBC68E] h-full w-full p-2 rounded-lg"
+                  >
                     {/* Header Section */}
                     <Holds className="row-start-1 row-end-2 w-full h-full rounded-none">
                       <Holds position={"row"} className="h-full">
@@ -357,13 +362,13 @@ export default function TimeCardApprover({
                             <option key={option} value={option}>
                               {t(option)}
                             </option>
-                          )
+                          ),
                         )}
                       </Selects>
                     </Holds>
 
                     {/* Content Section */}
-                    <Holds className="h-full row-start-2 row-end-7 rounded-none">
+                    <Holds className="h-full  row-start-2 row-end-7 rounded-none">
                       {viewOption === "highlight" && (
                         <GeneralReviewSection
                           currentTimeSheets={currentTimeSheets}

@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { PageHeaderContainer } from "./_pages/PageHeaderContainer";
 import { NotificationTable } from "./_components/NotificationTable";
-import NotificationActions from "./_components/NotificationAction";
 import { JsonValue } from "../../../../prisma/generated/prisma/runtime/library";
 import { Notification } from "../../../../prisma/generated/prisma/client";
 import { useSession } from "next-auth/react";
@@ -42,6 +40,7 @@ export default function Admins() {
   const [resolved, setResolved] = useState<
     ResolvedNotification[] | undefined
   >();
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const initialLoad = useRef(true);
@@ -62,6 +61,7 @@ export default function Admins() {
       setData(json.notifications);
       setTotalCount(json.count);
       setResolved(json.resolved);
+      setUnreadCount(json.unreadCount);
       console.log("✅ Data refresh complete");
     } catch (error) {
       console.error("❌ Error refreshing data:", error);
@@ -89,15 +89,17 @@ export default function Admins() {
         />
       </div>
 
-      <div className="flex flex-row h-[95vh] w-full overflow-y-hidden gap-x-4 pt-4 ">
+      <div className="flex flex-row h-[90vh] w-full gap-x-4 pt-4 ">
         <NotificationTable
           data={data || []}
+          setData={setData}
           totalCount={totalCount}
           loading={isLoading || isRefreshing}
         />
         <NotificationActionsList
           resolved={resolved}
           currentUserId={currentUserId}
+          unreadCount={unreadCount}
         />
       </div>
     </div>

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { useSession } from "next-auth/react";
 import { saveDraft, saveDraftToPending } from "@/actions/hamburgerActions";
+import { ref } from "process";
 
 // Form field type definitions
 interface FormField {
@@ -285,6 +286,7 @@ export default function EditFormPage({
             title: "Form Submission",
             message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${formTemplate.name}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
+            referenceId: result.id,
           }),
         });
         await response.json();

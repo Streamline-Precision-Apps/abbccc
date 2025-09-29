@@ -110,6 +110,7 @@ export default function AddJobsiteForm() {
               title: "Jobsite Created",
               message: `${response.data?.name || "A jobsite"} has been submitted by ${response.data?.createdBy?.firstName || ""} ${response.data?.createdBy?.lastName || "a user"} and is pending approval.`,
               link: `/admins/jobsites?isPendingApproval=true`,
+              referenceId: response.data?.id,
             }),
           },
         );

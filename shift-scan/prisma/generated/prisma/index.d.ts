@@ -49596,6 +49596,7 @@ export namespace Prisma {
     body: string | null
     url: string | null
     createdAt: Date | null
+    referenceId: string | null
     pushedAt: Date | null
     pushAttempts: number | null
     readAt: Date | null
@@ -49608,6 +49609,7 @@ export namespace Prisma {
     body: string | null
     url: string | null
     createdAt: Date | null
+    referenceId: string | null
     pushedAt: Date | null
     pushAttempts: number | null
     readAt: Date | null
@@ -49621,6 +49623,7 @@ export namespace Prisma {
     url: number
     metadata: number
     createdAt: number
+    referenceId: number
     pushedAt: number
     pushAttempts: number
     readAt: number
@@ -49645,6 +49648,7 @@ export namespace Prisma {
     body?: true
     url?: true
     createdAt?: true
+    referenceId?: true
     pushedAt?: true
     pushAttempts?: true
     readAt?: true
@@ -49657,6 +49661,7 @@ export namespace Prisma {
     body?: true
     url?: true
     createdAt?: true
+    referenceId?: true
     pushedAt?: true
     pushAttempts?: true
     readAt?: true
@@ -49670,6 +49675,7 @@ export namespace Prisma {
     url?: true
     metadata?: true
     createdAt?: true
+    referenceId?: true
     pushedAt?: true
     pushAttempts?: true
     readAt?: true
@@ -49770,6 +49776,7 @@ export namespace Prisma {
     url: string | null
     metadata: JsonValue | null
     createdAt: Date
+    referenceId: string | null
     pushedAt: Date | null
     pushAttempts: number
     readAt: Date | null
@@ -49802,6 +49809,7 @@ export namespace Prisma {
     url?: boolean
     metadata?: boolean
     createdAt?: boolean
+    referenceId?: boolean
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
@@ -49818,6 +49826,7 @@ export namespace Prisma {
     url?: boolean
     metadata?: boolean
     createdAt?: boolean
+    referenceId?: boolean
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
@@ -49831,6 +49840,7 @@ export namespace Prisma {
     url?: boolean
     metadata?: boolean
     createdAt?: boolean
+    referenceId?: boolean
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
@@ -49844,12 +49854,13 @@ export namespace Prisma {
     url?: boolean
     metadata?: boolean
     createdAt?: boolean
+    referenceId?: boolean
     pushedAt?: boolean
     pushAttempts?: boolean
     readAt?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "title" | "body" | "url" | "metadata" | "createdAt" | "pushedAt" | "pushAttempts" | "readAt", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "title" | "body" | "url" | "metadata" | "createdAt" | "referenceId" | "pushedAt" | "pushAttempts" | "readAt", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Reads?: boolean | Notification$ReadsArgs<ExtArgs>
     Response?: boolean | Notification$ResponseArgs<ExtArgs>
@@ -49872,6 +49883,7 @@ export namespace Prisma {
       url: string | null
       metadata: Prisma.JsonValue | null
       createdAt: Date
+      referenceId: string | null
       pushedAt: Date | null
       pushAttempts: number
       readAt: Date | null
@@ -50307,6 +50319,7 @@ export namespace Prisma {
     readonly url: FieldRef<"Notification", 'String'>
     readonly metadata: FieldRef<"Notification", 'Json'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
+    readonly referenceId: FieldRef<"Notification", 'String'>
     readonly pushedAt: FieldRef<"Notification", 'DateTime'>
     readonly pushAttempts: FieldRef<"Notification", 'Int'>
     readonly readAt: FieldRef<"Notification", 'DateTime'>
@@ -53528,6 +53541,7 @@ export namespace Prisma {
     url: 'url',
     metadata: 'metadata',
     createdAt: 'createdAt',
+    referenceId: 'referenceId',
     pushedAt: 'pushedAt',
     pushAttempts: 'pushAttempts',
     readAt: 'readAt'
@@ -56978,6 +56992,7 @@ export namespace Prisma {
     url?: StringNullableFilter<"Notification"> | string | null
     metadata?: JsonNullableFilter<"Notification">
     createdAt?: DateTimeFilter<"Notification"> | Date | string
+    referenceId?: StringNullableFilter<"Notification"> | string | null
     pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     pushAttempts?: IntFilter<"Notification"> | number
     readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
@@ -56993,6 +57008,7 @@ export namespace Prisma {
     url?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    referenceId?: SortOrderInput | SortOrder
     pushedAt?: SortOrderInput | SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrderInput | SortOrder
@@ -57011,6 +57027,7 @@ export namespace Prisma {
     url?: StringNullableFilter<"Notification"> | string | null
     metadata?: JsonNullableFilter<"Notification">
     createdAt?: DateTimeFilter<"Notification"> | Date | string
+    referenceId?: StringNullableFilter<"Notification"> | string | null
     pushedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     pushAttempts?: IntFilter<"Notification"> | number
     readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
@@ -57026,6 +57043,7 @@ export namespace Prisma {
     url?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    referenceId?: SortOrderInput | SortOrder
     pushedAt?: SortOrderInput | SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrderInput | SortOrder
@@ -57047,6 +57065,7 @@ export namespace Prisma {
     url?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"Notification">
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+    referenceId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     pushedAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     pushAttempts?: IntWithAggregatesFilter<"Notification"> | number
     readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
@@ -60453,6 +60472,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -60468,6 +60488,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -60482,6 +60503,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60497,6 +60519,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60512,6 +60535,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -60524,6 +60548,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -60537,6 +60562,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -63291,6 +63317,7 @@ export namespace Prisma {
     url?: SortOrder
     metadata?: SortOrder
     createdAt?: SortOrder
+    referenceId?: SortOrder
     pushedAt?: SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrder
@@ -63308,6 +63335,7 @@ export namespace Prisma {
     body?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
+    referenceId?: SortOrder
     pushedAt?: SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrder
@@ -63320,6 +63348,7 @@ export namespace Prisma {
     body?: SortOrder
     url?: SortOrder
     createdAt?: SortOrder
+    referenceId?: SortOrder
     pushedAt?: SortOrder
     pushAttempts?: SortOrder
     readAt?: SortOrder
@@ -77485,6 +77514,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -77499,6 +77529,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -77617,6 +77648,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77631,6 +77663,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77739,6 +77772,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -77753,6 +77787,7 @@ export namespace Prisma {
     url?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    referenceId?: string | null
     pushedAt?: Date | string | null
     pushAttempts?: number
     readAt?: Date | string | null
@@ -77871,6 +77906,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77885,6 +77921,7 @@ export namespace Prisma {
     url?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    referenceId?: NullableStringFieldUpdateOperationsInput | string | null
     pushedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     pushAttempts?: IntFieldUpdateOperationsInput | number
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

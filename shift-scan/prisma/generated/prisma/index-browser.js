@@ -569,6 +569,7 @@ exports.Prisma.NotificationScalarFieldEnum = {
   url: 'url',
   metadata: 'metadata',
   createdAt: 'createdAt',
+  referenceId: 'referenceId',
   pushedAt: 'pushedAt',
   pushAttempts: 'pushAttempts',
   readAt: 'readAt'

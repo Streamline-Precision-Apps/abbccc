@@ -289,22 +289,51 @@ export async function adminUpdateTimesheetStatus(
       throw new Error("User not authenticated");
     }
 
-    await prisma.timeSheet.update({
-      where: { id },
-      data: {
-        status: status as ApprovalStatus,
-        ChangeLogs: {
-          create: {
-            changeReason: `Timesheet ${status === "APPROVED" ? "approved" : "denied"} on dashboard.`,
-            changes: changes as Prisma.InputJsonValue, // Convert the changes object to a JSON string,
-            changedBy,
-            changedAt: new Date(),
-            numberOfChanges: 1,
-            wasStatusChange: true,
+    await prisma.$transaction(async (tx) => {
+      const notifications = await tx.notification.findMany({
+        where: {
+          topic: "timecard-submission",
+          referenceId: id.toString(),
+          Response: {
+            is: null,
           },
         },
-      },
+      });
+      if (notifications.length > 0) {
+        await tx.notificationRead.createMany({
+          data: notifications.map((notification) => ({
+            notificationId: notification.id,
+            userId: changedBy,
+          })),
+        });
+        await tx.notificationResponse.createMany({
+          data: notifications.map((notification) => ({
+            notificationId: notification.id,
+            userId: changedBy,
+            response: "Approved",
+            respondedAt: new Date(),
+          })),
+        });
+      }
+
+      await tx.timeSheet.update({
+        where: { id },
+        data: {
+          status: status as ApprovalStatus,
+          ChangeLogs: {
+            create: {
+              changeReason: `Timesheet ${status === "APPROVED" ? "approved" : "denied"} on dashboard.`,
+              changes: changes as Prisma.InputJsonValue, // Convert the changes object to a JSON string,
+              changedBy,
+              changedAt: new Date(),
+              numberOfChanges: 1,
+              wasStatusChange: true,
+            },
+          },
+        },
+      });
     });
+    revalidateTag("notifications");
     revalidateTag("timesheets");
     return { success: true };
   } catch (error) {
@@ -372,6 +401,37 @@ export async function adminUpdateTimesheet(formData: FormData) {
   const data: TimesheetData = JSON.parse(dataJson);
 
   await prisma.$transaction(async (tx) => {
+    // check to see if there is a notification for this timesheet
+    const notifications = await tx.notification.findMany({
+      where: {
+        topic: "timecard-submission",
+        referenceId: id.toString(),
+        Response: {
+          is: null,
+        },
+      },
+    });
+
+    if (notifications.length > 0) {
+      // If there are notifications, mark them as read for the editor
+      await tx.notificationRead.createMany({
+        data: notifications.map((n) => ({
+          notificationId: n.id,
+          userId: editorId,
+          readAt: new Date(),
+        })),
+      });
+      // Add a response
+      await tx.notificationResponse.createMany({
+        data: notifications.map((n) => ({
+          notificationId: n.id,
+          userId: editorId,
+          response: "Approved",
+          respondedAt: new Date(),
+        })),
+      });
+    }
+
     // First, record the changes if there are any
     if (Object.keys(changes).length > 0) {
       await tx.timeSheetChangeLog.create({
@@ -541,63 +601,86 @@ export async function adminUpdateTimesheet(formData: FormData) {
     }
   });
 
+  const onlyStatusUpdated = wasStatusChanged && numberOfChanges === 1;
+
   revalidatePath("/admins/records/timesheets");
   revalidateTag("timesheets");
   return {
     success: true,
     editorFullName,
     userFullname,
+    onlyStatusUpdated,
   };
 }
 
 export async function adminSetNotificationToRead(
-  notificationId: number,
   userId: string,
+  timesheetId: number,
   response: string = "READ",
 ) {
   try {
-    if (!notificationId || !userId || !response) {
+    if (!userId || !response) {
       throw new Error("Notification ID, User ID, and Response are required.");
     }
 
-    await prisma.notificationRead.upsert({
+    const notifications = await prisma.notification.findMany({
       where: {
-        notificationId_userId: {
-          notificationId,
-          userId,
+        topic: "timecards-changes",
+        referenceId: timesheetId.toString(),
+        Response: {
+          is: null,
         },
-      },
-      update: {
-        readAt: new Date(),
-      },
-      create: {
-        notificationId,
-        userId,
-        readAt: new Date(),
       },
     });
 
-    await prisma.notificationResponse.upsert({
-      where: { notificationId },
-      update: {
-        response,
-        respondedAt: new Date(),
-      },
-      create: {
-        notificationId,
-        userId,
-        response,
-        respondedAt: new Date(),
-      },
+    if (notifications.length === 0) {
+      console.log(
+        `No notifications found for timesheet ID ${timesheetId}. Skipping read/response update.`,
+      );
+      return { success: false, message: "No notifications found" };
+    }
+
+    // Use a transaction to update all found notifications
+    await prisma.$transaction(async (tx) => {
+      for (const notification of notifications) {
+        const notificationId = notification.id;
+        await tx.notificationRead.upsert({
+          where: {
+            notificationId_userId: {
+              notificationId,
+              userId,
+            },
+          },
+          update: {
+            readAt: new Date(),
+          },
+          create: {
+            notificationId,
+            userId,
+            readAt: new Date(),
+          },
+        });
+
+        await tx.notificationResponse.upsert({
+          where: { notificationId },
+          update: {
+            response,
+            respondedAt: new Date(),
+          },
+          create: {
+            notificationId,
+            userId,
+            response,
+            respondedAt: new Date(),
+          },
+        });
+      }
     });
 
     revalidateTag("notifications");
     return { success: true };
   } catch (error) {
-    console.error(
-      `Error setting notification ${notificationId} to read:`,
-      error,
-    );
+    console.error(`Error setting notification(s) to read:`, error);
     return { success: false };
   }
 }

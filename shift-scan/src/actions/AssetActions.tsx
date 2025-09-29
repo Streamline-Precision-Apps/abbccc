@@ -13,6 +13,7 @@ import {
   Condition,
   OwnershipType,
 } from "../../prisma/generated/prisma/client";
+import { auth } from "@/auth";
 
 /**
  * Server action to update equipment asset data
@@ -26,15 +27,6 @@ export async function updateEquipmentAsset(formData: FormData) {
 
     if (!id) {
       throw new Error("Equipment ID is required");
-    }
-
-    // Fetch existing equipment early
-    const existingEquipment = await prisma.equipment.findUnique({
-      where: { id },
-    });
-
-    if (!existingEquipment) {
-      throw new Error("Equipment not found");
     }
 
     const updateData: Prisma.EquipmentUpdateInput = {};
@@ -137,6 +129,45 @@ export async function updateEquipmentAsset(formData: FormData) {
       where: { id },
       data: updateData,
     });
+
+    const notification = await prisma.notification.findMany({
+      where: {
+        topic: "items",
+        referenceId: id.toString(),
+        Response: {
+          is: null,
+        },
+      },
+    });
+    if (notification.length > 0) {
+      const session = await auth();
+      if (!session?.user) {
+        return {
+          success: false,
+          message: "User not authenticated",
+        };
+      }
+      const userId = session.user.id;
+
+      // Wrap notificationRead and notificationResponse createMany in a transaction
+      await prisma.$transaction([
+        prisma.notificationRead.createMany({
+          data: notification.map((n) => ({
+            notificationId: n.id,
+            userId,
+            readAt: new Date(),
+          })),
+        }),
+        prisma.notificationResponse.createMany({
+          data: notification.map((n) => ({
+            notificationId: n.id,
+            userId,
+            response: "Approved",
+            respondedAt: new Date(),
+          })),
+        }),
+      ]);
+    }
 
     revalidateTag("equipment");
     revalidateTag("assets");
@@ -391,16 +422,6 @@ export async function updateJobsiteAdmin(formData: FormData) {
       throw new Error("Jobsite ID is required");
     }
 
-    // Fetch existing jobsite early
-    const existingJobsite = await prisma.jobsite.findUnique({
-      where: { id },
-      include: { CCTags: true },
-    });
-
-    if (!existingJobsite) {
-      throw new Error("Jobsite not found");
-    }
-
     const updateData: Prisma.JobsiteUpdateInput = {};
     if (formData.has("code")) {
       updateData.code = (formData.get("code") as string)?.trim();
@@ -447,6 +468,45 @@ export async function updateJobsiteAdmin(formData: FormData) {
       data: updateData,
       include: { CCTags: true },
     });
+
+    const notification = await prisma.notification.findMany({
+      where: {
+        topic: "items",
+        referenceId: id.toString(),
+        Response: {
+          is: null,
+        },
+      },
+    });
+    if (notification.length > 0) {
+      const session = await auth();
+      if (!session?.user) {
+        return {
+          success: false,
+          message: "User not authenticated",
+        };
+      }
+      const userId = session.user.id;
+
+      // Wrap notificationRead and notificationResponse createMany in a transaction
+      await prisma.$transaction([
+        prisma.notificationRead.createMany({
+          data: notification.map((n) => ({
+            notificationId: n.id,
+            userId,
+            readAt: new Date(),
+          })),
+        }),
+        prisma.notificationResponse.createMany({
+          data: notification.map((n) => ({
+            notificationId: n.id,
+            userId,
+            response: "Approved",
+            respondedAt: new Date(),
+          })),
+        }),
+      ]);
+    }
 
     revalidatePath("/admins/jobsites");
 

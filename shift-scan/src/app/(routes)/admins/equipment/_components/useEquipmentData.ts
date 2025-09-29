@@ -1,11 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import QRCode from "qrcode";
 import { deleteEquipment } from "@/actions/AssetActions";
-import { useSidebar } from "@/components/ui/sidebar";
 import { FilterOptions } from "./FilterPopover";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
-import { set } from "lodash";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset

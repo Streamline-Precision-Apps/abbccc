@@ -1,6 +1,7 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { s } from "framer-motion/dist/types.d-Cjd591yU";
 /**
  * Upserts (updates or inserts) an FCM token in the database
  * - If token exists for the same user, updates lastUsedAt
@@ -182,5 +183,63 @@ export async function markAllNotificationsAsRead() {
   } catch (error) {
     console.error("Error marking all notifications as read:", error);
     throw new Error("Failed to mark all as read");
+  }
+}
+
+export async function markBrokenEquipmentNotificationsAsRead({
+  notificationId,
+}: {
+  notificationId: number;
+}) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const notification = await prisma.notification.findFirst({
+      where: {
+        id: notificationId,
+        topic: "equipment-break",
+        Response: {
+          is: null,
+        },
+      },
+    });
+
+    if (notification) {
+      return { success: false, message: "Notification action done" };
+    }
+
+    if (!notification) {
+      await prisma.$transaction(async (tx) => {
+        // Create a response record for the notification
+        await tx.notificationResponse.create({
+          data: {
+            notificationId: notificationId,
+            userId: userId,
+            response: "Repaired",
+            respondedAt: new Date(),
+          },
+        });
+        // Create a read record for the notification
+        await tx.notificationRead.create({
+          data: {
+            notificationId: notificationId,
+            userId: userId,
+            readAt: new Date(),
+          },
+        });
+      });
+    }
+    return { success: true };
+  } catch (error) {
+    console.error(
+      "Error marking broken equipment notifications as read:",
+      error,
+    );
+    throw new Error("Failed to mark broken equipment notifications as read");
   }
 }

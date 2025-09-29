@@ -118,6 +118,7 @@ export default function VerificationStep({
             title: "Timecard Approval Needed",
             message: `#${responseAction.createdTimeSheet.id} has been submitted by ${responseAction.createdTimeSheet.User.firstName} ${responseAction.createdTimeSheet.User.lastName} for approval.`,
             link: `/admins/timesheets?id=${responseAction.createdTimeSheet.id}`,
+            referenceId: responseAction.createdTimeSheet.id,
           }),
         });
         await response.json();

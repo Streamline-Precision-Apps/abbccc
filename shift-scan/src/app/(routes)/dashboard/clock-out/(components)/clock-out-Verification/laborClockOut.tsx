@@ -80,6 +80,7 @@ export const LaborClockOut = ({
               title: "Timecard Approval Needed",
               message: `#${result.timesheetId} has been submitted by ${result.userFullName} for approval.`,
               link: `/admins/timesheets?id=${result.timesheetId}`,
+              referenceId: result.timesheetId,
             }),
           });
         } catch (error) {
@@ -93,12 +94,12 @@ export const LaborClockOut = ({
             fetch("/api/cookies?method=deleteAll");
             localStorage.clear();
           }, 500);
-        };
+        }
       }
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
     }
-  };
+  }
 
   return (
     <Bases>

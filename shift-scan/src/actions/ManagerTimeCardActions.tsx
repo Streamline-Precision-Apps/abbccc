@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function ApproveUsersTimeSheets(formData: FormData) {
   const id = formData.get("id") as string;
@@ -8,6 +8,7 @@ export async function ApproveUsersTimeSheets(formData: FormData) {
   const timesheetIdsString = formData.get("timesheetIds") as string;
   const stringIds = JSON.parse(timesheetIdsString) as number[];
   const timesheetIds = stringIds.map((id) => id);
+  const editorId = formData.get("editorId") as string;
 
   try {
     // Update all matching timesheets with the same values
@@ -22,6 +23,34 @@ export async function ApproveUsersTimeSheets(formData: FormData) {
       },
     });
 
+    // check for notifications
+    const notifications = await prisma.notification.findMany({
+      where: {
+        topic: "timecard-submission",
+        referenceId: { in: timesheetIds.map(String) },
+        Response: { is: null },
+      },
+    });
+
+    if (notifications.length > 0) {
+      await prisma.$transaction(async (tx) => {
+        await tx.notificationRead.createMany({
+          data: notifications.map((n) => ({
+            notificationId: n.id,
+            userId: editorId,
+            readAt: new Date(),
+          })),
+        });
+        await tx.notificationResponse.createMany({
+          data: notifications.map((n) => ({
+            notificationId: n.id,
+            userId: editorId,
+            response: "Approved",
+            respondedAt: new Date(),
+          })),
+        });
+      });
+    }
     revalidatePath("/dashboard/myTeam/timecards");
     return { success: true };
   } catch (error) {

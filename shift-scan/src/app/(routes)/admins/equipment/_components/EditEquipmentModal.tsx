@@ -107,6 +107,7 @@ export default function EditEquipmentModal({
 
     try {
       const fd = new FormData();
+
       const changedFields: Record<string, unknown> = {};
 
       // Required ID

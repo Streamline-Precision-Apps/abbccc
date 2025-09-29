@@ -744,13 +744,14 @@ model TopicSubscription {
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  topic     String?
-  title     String
-  body      String?
-  url       String?
-  metadata  Json?
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  topic       String?
+  title       String
+  body        String?
+  url         String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  referenceId String? // e.g., timecard ID or other entity reference
 
   // push state: null = not pushed / not scheduled; timestamp when push was sent
   pushedAt     DateTime?
@@ -761,7 +762,7 @@ model Notification {
   Reads    NotificationRead[]
   Response NotificationResponse?
 
-  @@index([topic, createdAt])
+  @@index([topic, createdAt, referenceId])
 }
 
 model NotificationResponse {

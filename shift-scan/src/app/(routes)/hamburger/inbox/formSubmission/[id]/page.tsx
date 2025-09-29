@@ -519,6 +519,7 @@ export default function DynamicForm({
             title: "New Form Submission",
             message: `${result.User.firstName} ${result.User.lastName} has submitted a form titled "${result.formTemplateId}" for approval.`,
             link: `/admins/forms/${result.formTemplateId}`,
+            referenceId: result.id,
           }),
         });
         await response.json();

@@ -8,9 +8,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FileSymlink } from "lucide-react";
+import { Check, FileSymlink } from "lucide-react";
+import { markBrokenEquipmentNotificationsAsRead } from "@/actions/NotificationActions";
 
-export const notificationTableColumns: ColumnDef<Notification>[] = [
+export const notificationTableColumns = (
+  setData: React.Dispatch<React.SetStateAction<Notification[] | undefined>>,
+): ColumnDef<Notification>[] => [
   {
     accessorKey: "createdAt",
     header: "Received",
@@ -24,12 +27,20 @@ export const notificationTableColumns: ColumnDef<Notification>[] = [
   },
   {
     accessorKey: "topic",
-    header: "Type",
+    header: "Request Type",
     cell: ({ row }) => (
       <div className="text-xs text-center bg-blue-100 text-blue-700 py-1 px-2 rounded-full inline-block min-w-[60px]">
         {row.original.topic === "timecards-changes"
           ? "Modification"
-          : row.original.topic || "-"}
+          : row.original.topic === "timecard-submission"
+            ? "Approval"
+            : row.original.topic === "form-submissions"
+              ? "Approval"
+              : row.original.topic === "items"
+                ? "New Item"
+                : row.original.topic === "equipment-break"
+                  ? "Repair"
+                  : row.original.topic || "-"}
       </div>
     ),
   },
@@ -55,21 +66,47 @@ export const notificationTableColumns: ColumnDef<Notification>[] = [
     header: "Available Actions",
     cell: ({ row }) =>
       row.original.url ? (
-        <div className="flex flex-row justify-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link href={row.original.url}>
-                <Button variant="ghost" size={"icon"}>
-                  <FileSymlink
-                    className="h-4 w-4 cursor-pointer"
-                    strokeWidth={2}
-                  />
-                </Button>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>Start Task</TooltipContent>
-          </Tooltip>
-        </div>
+        <>
+          {row.original.topic === "equipment-break" ? (
+            <div className="flex flex-row justify-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size={"icon"}
+                    onClick={async () => {
+                      await markBrokenEquipmentNotificationsAsRead({
+                        notificationId: row.original.id,
+                      });
+                      setData((prev) =>
+                        prev?.filter((n) => n.id !== row.original.id),
+                      );
+                    }}
+                  >
+                    <Check className="h-4 w-4 cursor-pointer" strokeWidth={2} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Completed Task</TooltipContent>
+              </Tooltip>
+            </div>
+          ) : (
+            <div className="flex flex-row justify-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href={row.original.url}>
+                    <Button variant="ghost" size={"icon"}>
+                      <FileSymlink
+                        className="h-4 w-4 cursor-pointer"
+                        strokeWidth={2}
+                      />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Start Task</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </>
       ) : (
         <span className="text-xs text-gray-400"></span>
       ),

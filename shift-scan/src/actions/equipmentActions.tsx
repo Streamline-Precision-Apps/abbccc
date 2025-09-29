@@ -186,7 +186,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       throw new Error("Unauthorized user");
     }
 
-    await prisma.$transaction(async (prisma) => {
+    const result = await prisma.$transaction(async (prisma) => {
       const id = formData.get("id") as string;
       const equipmentId = formData.get("equipmentId") as string;
       const startTime = formData.get("startTime") as string;
@@ -242,6 +242,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
 
       // --- MAINTENANCE LOGIC ---
       let createdMaintenanceId: string | null = null;
+      let madeMaintenanceLog = false;
       if (status === "NEEDS_REPAIR" || status === "MAINTENANCE") {
         if (
           (equipmentIssue && equipmentIssue.length > 0) ||
@@ -260,6 +261,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
               where: { id: maintenanceId },
               data: maintenanceData,
             });
+            madeMaintenanceLog = true;
           } else {
             // Create a new maintenance request and capture its ID
             const newMaintenance = await prisma.maintenance.create({
@@ -273,6 +275,7 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
             });
             createdMaintenanceId = newMaintenance.id;
             maintenanceId = newMaintenance.id;
+            madeMaintenanceLog = true;
           }
         }
       }
@@ -288,6 +291,14 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
             ? { RefuelLog: refuelLogUpdate }
             : {}),
           ...(maintenanceId ? { maintenanceId } : {}),
+        },
+        include: {
+          Equipment: true,
+          TimeSheet: {
+            include: {
+              User: { select: { firstName: true, lastName: true } },
+            },
+          },
         },
       });
 
@@ -311,9 +322,23 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         });
       }
 
+      // Prepare data for send-multicast
+      const resultData = {
+        name: log.Equipment?.name || null,
+        id: log.Equipment?.id || null,
+        createdBy: `${log.TimeSheet?.User.firstName} ${log.TimeSheet?.User.lastName}`,
+        madeMaintenanceLog,
+      };
+
       revalidatePath(`/dashboard/equipment/${id}`);
       revalidatePath("/dashboard/equipment");
+      return resultData;
     });
+    return {
+      success: true,
+      message: "Equipment log updated successfully",
+      data: result,
+    };
   } catch (error) {
     console.error("Error updating employee equipment log:", error);
     throw new Error(`Failed to update employee equipment log: ${error}`);
