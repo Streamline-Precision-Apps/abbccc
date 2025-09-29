@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic"; // This API needs to be dynamic for cookie operations
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

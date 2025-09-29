@@ -7,7 +7,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useState } from "react";
+import { Suspense, use, useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { differenceInSeconds, parseISO } from "date-fns";
 import {
@@ -31,6 +31,8 @@ import {
   EquipmentState,
 } from "./types";
 import { FormStatus } from "../../../../../../prisma/generated/prisma/client";
+import EquipmentIdClientPage from "./_components/EquipmentIdClientPage";
+import LoadingEquipmentIdPage from "./_components/loadingEquipmentIdPage";
 
 // Helper function to transform API response to form state
 function transformApiToFormState(
@@ -96,7 +98,6 @@ export default function CombinedForm({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
   const id = use(params).id;
   const { setNotification } = useNotification();
   const t = useTranslations("Equipment");
@@ -485,134 +486,9 @@ export default function CombinedForm({
     <Bases>
       <Contents>
         <Grids rows={"7"} gap={"5"} className="h-full w-full ">
-          <Holds
-            background="white"
-            className={
-              state.isLoading
-                ? "row-span-1 h-full justify-center animate-pulse"
-                : "row-span-1 h-full justify-center"
-            }
-          >
-            <TitleBoxes onClick={() => router.push("/dashboard/equipment")}>
-              <Titles size={"h2"}>
-                {state.isLoading
-                  ? "Loading..."
-                  : `${state.formState.equipment.name.slice(0, 16)}${
-                      state.formState.equipment.name.length > 16 ? "..." : ""
-                    }`}
-              </Titles>
-            </TitleBoxes>
-          </Holds>
-          <Holds className="row-start-2 row-end-8 h-full w-full">
-            <Grids rows={"10"} className="h-full w-full ">
-              <Holds
-                position={"row"}
-                className={`row-start-1 row-end-2 h-full w-full gap-1 ${
-                  state.isLoading ? "animate-pulse" : ""
-                }`}
-              >
-                <NewTab
-                  isActive={state.tab === 1}
-                  onClick={() => setTab(1)}
-                  titleImage="/form.svg"
-                  titleImageAlt=""
-                  isComplete={true}
-                  isLoading={state.isLoading}
-                >
-                  {t("UsageData")}
-                </NewTab>
-                <NewTab
-                  isActive={state.tab === 2}
-                  onClick={() => setTab(2)}
-                  titleImage="/broken.svg"
-                  titleImageAlt=""
-                  isComplete={true}
-                  isLoading={state.isLoading}
-                >
-                  {t("MaintenanceLog")}
-                </NewTab>
-              </Holds>
-              <Holds
-                background="white"
-                className={
-                  state.isLoading
-                    ? "row-start-2 row-end-11 h-full rounded-t-none animate-pulse"
-                    : "row-start-2 row-end-11 h-full rounded-t-none "
-                }
-              >
-                {state.isLoading ? (
-                  <Holds className="h-full w-full justify-center">
-                    <Spinner />
-                  </Holds>
-                ) : (
-                  <Contents width={"section"}>
-                    <Grids rows={"8"} gap={"5"} className="h-full w-full pb-3">
-                      {state.tab === 1 && (
-                        <UsageData
-                          formState={state.formState}
-                          refuelLog={state.formState.refuelLogs}
-                          setRefuelLog={setRefuelLog}
-                          handleFieldChange={handleFieldChange}
-                          formattedTime={formattedTime}
-                          isRefueled={state.markedForRefuel}
-                          handleChangeRefueled={handleChangeRefueled}
-                          AddRefuelLog={addRefuelLog}
-                          handleFullOperational={handleFullOperational}
-                          t={t}
-                          deleteLog={deleteLog}
-                          saveEdits={saveEdits}
-                          isFormValid={isFormValid}
-                        />
-                      )}
-                      {state.tab === 2 && (
-                        <MaintenanceLogEquipment
-                          formState={state.formState}
-                          handleFieldChange={handleFieldChange}
-                          hasChanged={state.hasChanged}
-                          t={t}
-                        />
-                      )}
-                      <Holds
-                        position={"row"}
-                        background="white"
-                        className="w-full gap-4 row-start-8 row-end-9 py-2"
-                      >
-                        <Buttons
-                          onClick={deleteEquipmentLog}
-                          background="red"
-                          className="w-full "
-                        >
-                          <Titles size="h5">{t("DeleteLog")}</Titles>
-                        </Buttons>
-
-                        {state.hasChanged && (
-                          <Buttons
-                            onClick={() => {
-                              if (!isFormValid()) {
-                                setNotification(
-                                  "Please complete maintenance requirements",
-                                  "error",
-                                );
-                                return;
-                              }
-                              saveEdits();
-                            }}
-                            background={
-                              isFormValid() ? "lightBlue" : "darkGray"
-                            }
-                            className="w-full "
-                            disabled={!isFormValid()}
-                          >
-                            <Titles size="h5">{t("FinishLogs")}</Titles>
-                          </Buttons>
-                        )}
-                      </Holds>
-                    </Grids>
-                  </Contents>
-                )}
-              </Holds>
-            </Grids>
-          </Holds>
+          <Suspense fallback={<LoadingEquipmentIdPage />}>
+            <EquipmentIdClientPage id={id} />
+          </Suspense>
         </Grids>
       </Contents>
     </Bases>

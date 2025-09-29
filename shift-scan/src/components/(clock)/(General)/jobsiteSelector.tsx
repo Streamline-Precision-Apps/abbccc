@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 import { useTranslations } from "next-intl";
+import JobsiteSelectorLoading from "../(loading)/jobsiteSelectorLoading";
 
 type Option = {
   id: string;
@@ -39,7 +40,7 @@ export const JobsiteSelector = ({
   useEffect(() => {
     if (initialValue && jobsiteOptions.length > 0) {
       const foundOption = jobsiteOptions.find(
-        (opt) => opt.code === initialValue.code
+        (opt) => opt.code === initialValue.code,
       );
       if (foundOption) {
         setSelectedJobsite(foundOption);
@@ -54,12 +55,14 @@ export const JobsiteSelector = ({
   };
 
   return (
-    <NewCodeFinder
-      options={jobsiteOptions}
-      selectedOption={selectedJobsite}
-      onSelect={handleSelect}
-      placeholder={t("SearchBarPlaceholder")}
-      label="Select Job Site"
-    />
+    <Suspense fallback={<JobsiteSelectorLoading />}>
+      <NewCodeFinder
+        options={jobsiteOptions}
+        selectedOption={selectedJobsite}
+        onSelect={handleSelect}
+        placeholder={t("SearchBarPlaceholder")}
+        label="Select Job Site"
+      />
+    </Suspense>
   );
 };

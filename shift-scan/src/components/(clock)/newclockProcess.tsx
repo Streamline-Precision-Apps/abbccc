@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -25,6 +25,9 @@ import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
 import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
+import JobsiteSelectorLoading from "./(loading)/jobsiteSelectorLoading";
+import CostCodeSelectorLoading from "./(loading)/costCodeSelectorLoading";
+import TrailerSelectorLoading from "./(loading)/trailerSelectorLoading";
 
 type NewClockProcessProps = {
   mechanicView: boolean;

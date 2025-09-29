@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -32,17 +33,28 @@ export async function GET() {
       );
     }
 
-    // Find all equipment logs for the current timesheet that are not finished (endTime is null)
-    const logs = await prisma.employeeEquipmentLog.findMany({
-      where: {
-        startTime: { gte: past24Hours, lte: currentDate },
-        timeSheetId: timeSheetId?.id,
+    // Create a cached function for fetching active equipment logs
+    const getCachedEquipmentLogs = unstable_cache(
+      async (userId: string, timesheetId: number, past24Hours: Date, currentDate: Date) => {
+        return await prisma.employeeEquipmentLog.findMany({
+          where: {
+            startTime: { gte: past24Hours, lte: currentDate },
+            timeSheetId: timesheetId,
+          },
+          include: {
+            Equipment: true,
+          },
+        });
       },
-      include: {
-        Equipment: true,
-      },
-    });
+      [`equipment-logs-${userId}-${timeSheetId.id}`],
+      {
+        tags: [`equipment-logs-${userId}`, "equipment", "timesheets"],
+        revalidate: 60, // Cache for 1 minute (very short for real-time data)
+      }
+    );
 
+    // Get the cached equipment logs
+    const logs = await getCachedEquipmentLogs(userId, timeSheetId.id, past24Hours, currentDate);
 
     return NextResponse.json(logs);
   } catch (error) {

@@ -1,5 +1,3 @@
-"use server";
-import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
@@ -8,6 +6,10 @@ import { Grids } from "@/components/(reusable)/grids";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
 import WidgetSection from "./(content)/widgetSection";
 import prisma from "@/lib/prisma";
+import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { Holds } from "@/components/(reusable)/holds";
+import Spinner from "@/components/(animations)/spinner";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -82,46 +84,10 @@ export default async function Home() {
     },
   });
 
-  // If there's an incomplete timesheet, redirect to continue-timesheet page with URL parameters
+  // If there's an incomplete timesheet, redirect to continue-timesheet API route
   if (incompleteTimesheet) {
-    const params = new URLSearchParams({
-      timesheetId: incompleteTimesheet.id.toString(),
-      workType: incompleteTimesheet.workType,
-      jobsiteCode: incompleteTimesheet.Jobsite.qrId,
-      jobsiteName: incompleteTimesheet.Jobsite.name,
-      costCode: incompleteTimesheet.CostCode.name,
-    });
-
-    // Add TASCO-specific parameters
-    if (incompleteTimesheet.TascoLogs?.[0]) {
-      const tascoLog = incompleteTimesheet.TascoLogs[0];
-      if (tascoLog.laborType) {
-        params.append("tascoLaborType", tascoLog.laborType);
-      }
-      if (tascoLog.Equipment?.qrId) {
-        params.append("tascoEquipmentQrId", tascoLog.Equipment.qrId);
-      }
-    }
-
-    // Add Trucking-specific parameters
-    if (incompleteTimesheet.TruckingLogs?.[0]) {
-      const truckingLog = incompleteTimesheet.TruckingLogs[0];
-      if (truckingLog.laborType) {
-        params.append("truckingLaborType", truckingLog.laborType);
-      }
-      if (truckingLog.Equipment?.qrId) {
-        params.append("truckingEquipmentQrId", truckingLog.Equipment.qrId);
-      }
-      if (truckingLog.startingMileage) {
-        params.append(
-          "truckingStartingMileage",
-          truckingLog.startingMileage.toString(),
-        );
-      }
-    }
-
-    // Redirect to the continue-timesheet page with parameters
-    redirect(`/continue-timesheet?${params.toString()}`);
+    // Single redirect to API route that sets cookies and redirects to dashboard
+    redirect(`/api/continue-timesheet?id=${incompleteTimesheet.id}`);
   }
 
   // Get the current language from cookies
@@ -132,12 +98,36 @@ export default async function Home() {
     <Bases>
       <Contents>
         <Grids rows={"8"} gap={"5"}>
-          <HamburgerMenuNew />
-          <WidgetSection
-            locale={locale}
-            session={session}
-            isTerminate={isTerminate}
-          />
+          <Suspense
+            fallback={
+              <Holds
+                position={"row"}
+                background={"white"}
+                className="row-start-1 row-end-2 h-full p-2 py-3"
+              />
+            }
+          >
+            <HamburgerMenuNew isHome={true} />
+          </Suspense>
+          <Suspense
+            fallback={
+              <>
+                <Holds className="row-span-2 bg-app-blue bg-opacity-20 w-full p-10 h-[80%] rounded-[10px] animate-pulse"></Holds>
+                <Holds
+                  background={"white"}
+                  className="row-span-5 h-full justify-center items-center animate-pulse"
+                >
+                  <Spinner />
+                </Holds>
+              </>
+            }
+          >
+            <WidgetSection
+              locale={locale}
+              session={session}
+              isTerminate={isTerminate}
+            />
+          </Suspense>
         </Grids>
       </Contents>
     </Bases>

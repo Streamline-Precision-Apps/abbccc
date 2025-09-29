@@ -1,12 +1,14 @@
 "use server";
 import { ClockOutComment } from "@/actions/timeSheetActions";
 import { auth } from "@/auth";
+import Spinner from "@/components/(animations)/spinner";
 import NewClockProcess from "@/components/(clock)/newclockProcess";
 import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 // Helper function to fetch cookie data
 const getCookieData = async () => {
@@ -45,23 +47,31 @@ export default async function SwitchJobs() {
     <Bases>
       <Contents>
         <Holds background={"white"} className="h-full">
-          <NewClockProcess
-            mechanicView={user.mechanicView}
-            tascoView={user.tascoView}
-            truckView={user.truckView}
-            laborView={user.laborView}
-            option="clockin"
-            returnpath="/dashboard"
-            type={"switchJobs"}
-            scannerType={"jobsite"}
-            locale={locale}
-            timeSheetId={timeSheetId}
-            jobSiteId={jobSiteId}
-            costCode={costCode}
-            workRole={workRole}
-            switchLaborType={switchLaborType}
-            clockOutComment={clockOutComment}
-          />
+          <Suspense
+            fallback={
+              <div className="flex rounded-[10px]  justify-center items-center h-full w-full bg-neutral-50 animate-pulse">
+                <Spinner color="border-app-dark-blue" />
+              </div>
+            }
+          >
+            <NewClockProcess
+              mechanicView={user.mechanicView}
+              tascoView={user.tascoView}
+              truckView={user.truckView}
+              laborView={user.laborView}
+              option="clockin"
+              returnpath="/dashboard"
+              type={"switchJobs"}
+              scannerType={"jobsite"}
+              locale={locale}
+              timeSheetId={timeSheetId}
+              jobSiteId={jobSiteId}
+              costCode={costCode}
+              workRole={workRole}
+              switchLaborType={switchLaborType}
+              clockOutComment={clockOutComment}
+            />
+          </Suspense>
         </Holds>
       </Contents>
     </Bases>

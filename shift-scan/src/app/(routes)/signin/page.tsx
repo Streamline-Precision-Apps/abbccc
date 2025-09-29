@@ -6,6 +6,7 @@ import { Images } from "@/components/(reusable)/images";
 import Password from "./password";
 import { Holds } from "@/components/(reusable)/holds";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 export default async function SignInPage() {
   const t = await getTranslations("Login");
@@ -20,7 +21,9 @@ export default async function SignInPage() {
           className="mb-5 p-3"
         />
         <Holds background={"white"}>
-          <Password />
+          <Suspense fallback={<div>Loading sign in...</div>}>
+            <Password />
+          </Suspense>
         </Holds>
       </Contents>
     </Bases>

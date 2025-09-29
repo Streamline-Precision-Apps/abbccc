@@ -12,14 +12,12 @@ import { useModalState } from "@/hooks/(dashboard)/useModalState";
 import EquipmentBtn from "../_buttons/equipmentBtn";
 
 export default function TascoDashboardView({
-  additionalButtonsType,
   verifyLogsCompletion,
   permission,
   logs,
   laborType,
   mechanicProjectID,
 }: {
-  additionalButtonsType: string | null;
   isModalOpen: boolean;
   isModal2Open: boolean;
   setIsModal2Open: Dispatch<SetStateAction<boolean>>;
@@ -40,41 +38,36 @@ export default function TascoDashboardView({
 
   if (laborType === "tascoAbcdLabor") {
     return (
-        <>
-          <Contents width={"section"} className="py-5">
-            <Grids cols={"2"} rows={"3"} gap={"5"}>
-              <>
-                <EquipmentBtn permission={permission} />
-    
-                <SwitchJobsBtn
-                  {...modalState}
-                  permission={permission}
-                  logs={logs}
-                  laborType={"general"}
-                  view={"general"}
-                />
-    
-                {permission !== "USER" && !additionalButtonsType && (
-                  <GeneratorBtn />
-                )}
-    
-                {permission !== "USER" && !additionalButtonsType && (
-                  <MyTeamWidget />
-                )}
-    
-                <ClockOutBtn
-                  handleShowAdditionalButtons={verifyLogsCompletion}
-                  permission={permission}
-                  logs={logs}
-                  mechanicProjectID={mechanicProjectID}
-                  View={"general"}
-                  laborType="general"
-                />
-              </>
-            </Grids>
-          </Contents>
-        </>
-      );
+      <>
+        <Contents width={"section"} className="py-5">
+          <Grids cols={"2"} rows={"3"} gap={"5"}>
+            <>
+              <EquipmentBtn permission={permission} />
+
+              <SwitchJobsBtn
+                {...modalState}
+                permission={permission}
+                logs={logs}
+                laborType={"general"}
+                view={"general"}
+              />
+
+              {permission !== "USER" && <GeneratorBtn />}
+
+              {permission !== "USER" && <MyTeamWidget />}
+
+              <ClockOutBtn
+                permission={permission}
+                logs={logs}
+                mechanicProjectID={mechanicProjectID}
+                View={"general"}
+                laborType="general"
+              />
+            </>
+          </Grids>
+        </Contents>
+      </>
+    );
   } else {
     return (
       <>
@@ -93,15 +86,10 @@ export default function TascoDashboardView({
                 laborType={laborType}
                 view={"tasco"}
               />
-              {permission !== "USER" && !additionalButtonsType && (
-                <GeneratorBtn />
-              )}
-              {permission !== "USER" && !additionalButtonsType && (
-                <MyTeamWidget />
-              )}
+              {permission !== "USER" && <GeneratorBtn />}
+              {permission !== "USER" && <MyTeamWidget />}
 
               <ClockOutBtn
-                handleShowAdditionalButtons={verifyLogsCompletion}
                 permission={permission}
                 laborType={laborType}
                 mechanicProjectID={mechanicProjectID}

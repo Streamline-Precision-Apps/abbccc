@@ -4,11 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 
-export default function DashboardLoadingView({
-  loading,
-}: {
-  loading: boolean;
-}) {
+export default function DashboardLoadingView() {
   return (
     <>
       <Contents width={"section"} className="py-5">

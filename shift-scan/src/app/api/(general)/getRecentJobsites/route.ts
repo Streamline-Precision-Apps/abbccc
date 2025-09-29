@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -14,33 +15,44 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch the 5 most recent unique jobsites used by the authenticated user
-    const jobsiteDetails = await prisma.timeSheet.findMany({
-      where: { userId },
-      select: {
-        Jobsite: {
+    // Create a cached function for fetching recent jobsites for this user
+    const getCachedRecentJobsites = unstable_cache(
+      async (userId: string) => {
+        const jobsiteDetails = await prisma.timeSheet.findMany({
+          where: { userId },
           select: {
-            id: true,
-            qrId: true,
-            name: true,
+            Jobsite: {
+              select: {
+                id: true,
+                qrId: true,
+                name: true,
+              },
+            },
           },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 5,
-    });
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+        });
 
-    // Extract unique jobsites (filter out duplicates)
-    const uniqueJobsites = new Map();
-    jobsiteDetails.forEach((log) => {
-      if (log.Jobsite) {
-        uniqueJobsites.set(log.Jobsite.id, log.Jobsite);
+        // Extract unique jobsites (filter out duplicates)
+        const uniqueJobsites = new Map();
+        jobsiteDetails.forEach((log) => {
+          if (log.Jobsite) {
+            uniqueJobsites.set(log.Jobsite.id, log.Jobsite);
+          }
+        });
+
+        return Array.from(uniqueJobsites.values());
+      },
+      [`recent-jobsites-${userId}`],
+      {
+        tags: [`recent-jobsites-${userId}`, "timesheets"],
+        revalidate: 600, // Cache for 10 minutes
       }
-    });
+    );
 
-    const jobsitesList = Array.from(uniqueJobsites.values());
+    const jobsitesList = await getCachedRecentJobsites(userId);
 
     if (jobsitesList.length === 0) {
       return NextResponse.json(

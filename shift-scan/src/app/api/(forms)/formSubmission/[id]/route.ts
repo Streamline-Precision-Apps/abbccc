@@ -113,6 +113,11 @@ export async function PUT(
       },
     });
 
+    // Revalidate related cache tags after updating form submission
+    revalidateTag("forms");
+    revalidateTag("form-submissions");
+    revalidateTag(`form-submission-${userId}`);
+
     return NextResponse.json(updatedSubmission);
   } catch (error) {
     console.error("Error updating form submission:", error);

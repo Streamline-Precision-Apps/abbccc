@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import {
@@ -37,32 +38,42 @@ export async function GET(req: Request) {
       licensePlate: true,
     } as const;
 
-    let equipment;
+    // Create a cached function for fetching equipment with filters
+    const getCachedEquipment = unstable_cache(
+      async (filter: string | null) => {
+        if (filter === "inactive") {
+          return await prisma.equipment.findMany({
+            where: { isDisabledByAdmin: true },
+            select: baseSelect,
+          });
+        } else if (filter === "needsRepair") {
+          return await prisma.equipment.findMany({
+            where: { state: EquipmentState.NEEDS_REPAIR },
+            select: baseSelect,
+          });
+        } else if (
+          filter &&
+          Object.values(EquipmentTags).includes(filter as EquipmentTags)
+        ) {
+          return await prisma.equipment.findMany({
+            where: { equipmentTag: filter as EquipmentTags },
+            select: baseSelect,
+          });
+        } else {
+          // Default: fetch all equipment
+          return await prisma.equipment.findMany({
+            select: baseSelect,
+          });
+        }
+      },
+      [`all-equipment-${filter || "all"}`],
+      {
+        tags: ["equipment", "admin-equipment"],
+        revalidate: 1800, // Cache for 30 minutes
+      }
+    );
 
-    if (filter === "inactive") {
-      equipment = await prisma.equipment.findMany({
-        where: { isDisabledByAdmin: true },
-        select: baseSelect,
-      });
-    } else if (filter === "needsRepair") {
-      equipment = await prisma.equipment.findMany({
-        where: { state: EquipmentState.NEEDS_REPAIR },
-        select: baseSelect,
-      });
-    } else if (
-      filter &&
-      Object.values(EquipmentTags).includes(filter as EquipmentTags)
-    ) {
-      equipment = await prisma.equipment.findMany({
-        where: { equipmentTag: filter as EquipmentTags },
-        select: baseSelect,
-      });
-    } else {
-      // Default: fetch all equipment
-      equipment = await prisma.equipment.findMany({
-        select: baseSelect,
-      });
-    }
+    const equipment = await getCachedEquipment(filter);
 
     return NextResponse.json(equipment);
   } catch (error) {

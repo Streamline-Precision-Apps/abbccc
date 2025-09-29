@@ -69,29 +69,33 @@ export const LaborClockOut = ({
 
       const result = await updateTimeSheet(formData);
       if (result.success) {
-        const response = await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: "timecard-submission",
-            title: "Timecard Approval Needed",
-            message: `#${result.timesheetId} has been submitted by ${result.userFullName} for approval.`,
-            link: `/admins/timesheets?id=${result.timesheetId}`,
-            referenceId: result.timesheetId,
-          }),
-        });
-        const data = await response.json();
+        try {
+          const response = await fetch("/api/notifications/send-multicast", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: "timecard-submission",
+              title: "Timecard Approval Needed",
+              message: `#${result.timesheetId} has been submitted by ${result.userFullName} for approval.`,
+              link: `/admins/timesheets?id=${result.timesheetId}`,
+              referenceId: result.timesheetId,
+            }),
+          });
+        } catch (error) {
+          console.error("🔴 Failed to send notification:", error);
+          return;
+        } finally {
+          setLoading(false);
+          router.push("/");
+          // clear the saved storage after navigation
+          setTimeout(() => {
+            fetch("/api/cookies?method=deleteAll");
+            localStorage.clear();
+          }, 500);
+        }
       }
-
-      setLoading(false);
-      router.push("/");
-      // clear the saved storage after navigation
-      setTimeout(() => {
-        fetch("/api/cookies?method=deleteAll");
-        localStorage.clear();
-      }, 500);
     } catch (error) {
       console.error("🔴 Failed to process the time sheet:", error);
     }

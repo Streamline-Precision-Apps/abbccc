@@ -51,7 +51,8 @@ export default function TruckDriverForm({
   handleNextStep,
 }: TruckDriverFormProps) {
   const t = useTranslations("Clock");
-  const [lastMileageData, setLastMileageData] = useState<LastMileageData | null>(null);
+  const [lastMileageData, setLastMileageData] =
+    useState<LastMileageData | null>(null);
   const [isValidMileage, setIsValidMileage] = useState(true);
   const [validationMessage, setValidationMessage] = useState("");
   const [isLoadingMileage, setIsLoadingMileage] = useState(false);
@@ -72,6 +73,12 @@ export default function TruckDriverForm({
         const data: LastMileageData = await response.json();
         setLastMileageData(data);
         
+        // Auto-set starting mileage to last ending mileage if available
+        if (data?.lastMileage !== null && data?.lastMileage !== undefined && startingMileage === 0) {
+          setStartingMileage(data.lastMileage);
+          setDisplayValue(`${data.lastMileage.toLocaleString()}`);
+        }
+        
         // Always validate current starting mileage, even if it's empty
         validateMileageWithData(startingMileage, data);
       } catch (error) {
@@ -83,10 +90,20 @@ export default function TruckDriverForm({
     };
 
     fetchLastMileage();
-  }, [truck.id, startingMileage]);
+  }, [truck.id]); // Removed startingMileage from dependencies to prevent infinite loop
+
+  // Separate effect to handle validation when starting mileage changes
+  useEffect(() => {
+    if (lastMileageData && truck.id) {
+      validateMileageWithData(startingMileage, lastMileageData);
+    }
+  }, [startingMileage, lastMileageData, truck.id]);
 
   // Enhanced validation that handles empty values and shows appropriate messages
-  const validateMileageWithData = (currentMileage: number, data: LastMileageData | null) => {
+  const validateMileageWithData = (
+    currentMileage: number,
+    data: LastMileageData | null,
+  ) => {
     // If no truck selected, no validation needed
     if (!truck.id) {
       setIsValidMileage(true);
@@ -98,7 +115,9 @@ export default function TruckDriverForm({
     if (!currentMileage || currentMileage <= 0) {
       if (data?.lastMileage !== null && data?.lastMileage !== undefined) {
         setIsValidMileage(false);
-        setValidationMessage(`Starting mileage required, must be ${data.lastMileage.toLocaleString()} or greater`);
+        setValidationMessage(
+          `Starting mileage required, must be ${data.lastMileage.toLocaleString()} or greater`,
+        );
       } else {
         setIsValidMileage(false);
         setValidationMessage("Starting mileage is required");
@@ -111,7 +130,7 @@ export default function TruckDriverForm({
       if (currentMileage < data.lastMileage) {
         setIsValidMileage(false);
         setValidationMessage(
-          `Starting mileage (${currentMileage.toLocaleString()}) cannot be less than the last recorded mileage (${data.lastMileage.toLocaleString()})`
+          `Starting mileage (${currentMileage.toLocaleString()}) cannot be less than the last recorded mileage (${data.lastMileage.toLocaleString()})`,
         );
       } else {
         setIsValidMileage(true);
@@ -124,11 +143,14 @@ export default function TruckDriverForm({
   };
 
   // Legacy function for backward compatibility
-  const validateMileage = (currentMileage: number, lastRecordedMileage: number) => {
+  const validateMileage = (
+    currentMileage: number,
+    lastRecordedMileage: number,
+  ) => {
     if (currentMileage < lastRecordedMileage) {
       setIsValidMileage(false);
       setValidationMessage(
-        `Starting mileage (${currentMileage.toLocaleString()}) cannot be less than the last recorded mileage (${lastRecordedMileage.toLocaleString()})`
+        `Starting mileage (${currentMileage.toLocaleString()}) cannot be less than the last recorded mileage (${lastRecordedMileage.toLocaleString()})`,
       );
     } else {
       setIsValidMileage(true);
@@ -147,7 +169,10 @@ export default function TruckDriverForm({
     setStartingMileage(number);
 
     // Validate against last recorded mileage if available
-    if (lastMileageData?.lastMileage !== null && lastMileageData?.lastMileage !== undefined) {
+    if (
+      lastMileageData?.lastMileage !== null &&
+      lastMileageData?.lastMileage !== undefined
+    ) {
       validateMileage(number, lastMileageData.lastMileage);
     }
   };
@@ -157,11 +182,12 @@ export default function TruckDriverForm({
     if (isLoadingMileage) {
       return "Loading last mileage...";
     }
-    
+
     return t("StartingMileage");
   };
 
-  const isFormValid = truck.code !== "" && startingMileage > 0 && isValidMileage;
+  const isFormValid =
+    truck.code !== "" && startingMileage > 0 && isValidMileage;
 
   return (
     <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
@@ -169,15 +195,17 @@ export default function TruckDriverForm({
         <Grids rows={"12"}>
           {/* Validation Message - only show when validation fails */}
           {!isValidMileage && lastMileageData?.lastMileage !== null && lastMileageData?.lastMileage !== undefined && (
-            <Holds className="row-start-1 row-end-2 h-full w-full px-4">
+            <Holds className={`h-full w-full px-4 row-start-1 row-end-2`}>
               <Texts size="p6" className="text-red-600 text-center">
-                Minimum required: {lastMileageData.lastMileage.toLocaleString()} miles
+                Minimum required: {lastMileageData.lastMileage.toLocaleString()}
               </Texts>
             </Holds>
           )}
 
           {/* Starting Mileage Input */}
-          <Holds className={`${!isValidMileage && lastMileageData?.lastMileage !== null && lastMileageData?.lastMileage !== undefined ? 'row-start-2 row-end-3' : 'row-start-1 row-end-2'} h-full w-full`}>
+          <Holds className={`${
+            (!isValidMileage ? 'row-start-2 row-end-3' : 'row-start-1 row-end-2')
+          } h-full w-full`}>
             <Inputs
               type="text"
               name={"startingMileage"}
@@ -186,13 +214,17 @@ export default function TruckDriverForm({
               onChange={(e) => handleMileageChange(e.target.value)}
               onBlur={() => {
                 if (startingMileage) {
-                  setDisplayValue(`${startingMileage.toLocaleString()} Miles`);
+                  setDisplayValue(`${startingMileage.toLocaleString()}`);
                 }
               }}
               onFocus={() => {
                 // Remove commas when focusing to allow easy editing
                 // Only show value if it's greater than 0 to avoid auto-filling with "0"
-                setDisplayValue(startingMileage && startingMileage > 0 ? startingMileage.toString() : "");
+                setDisplayValue(
+                  startingMileage && startingMileage > 0
+                    ? startingMileage.toString()
+                    : "",
+                );
               }}
               className={`text-center placeholder:text-sm ${
                 !isValidMileage ? "border-red-500 border-2" : ""
@@ -201,7 +233,9 @@ export default function TruckDriverForm({
           </Holds>
 
           {/* Truck Selector - dynamically adjust position */}
-          <Holds className={`${!isValidMileage && lastMileageData?.lastMileage !== null && lastMileageData?.lastMileage !== undefined ? 'row-start-3 row-end-12' : 'row-start-2 row-end-12'} h-full w-full`}>
+          <Holds className={`${
+            (!isValidMileage ? 'row-start-3 row-end-13' : 'row-start-2 row-end-13')
+          } h-full w-full`}>
             <TruckSelector
               onTruckSelect={(selectedTruck) => {
                 if (selectedTruck) {
@@ -216,7 +250,7 @@ export default function TruckDriverForm({
           </Holds>
         </Grids>
       </Holds>
-      
+
       {/* Continue Button */}
       <Holds className="row-start-7 row-end-8 w-full">
         <Buttons

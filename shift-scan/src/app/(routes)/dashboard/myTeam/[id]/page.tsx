@@ -10,7 +10,7 @@ import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, Suspense } from "react";
 import { z } from "zod";
 
 const CrewMemberSchema = z.object({
@@ -102,89 +102,103 @@ export default function Content({
               <Titles size={"lg"}>{titles}</Titles>
             </TitleBoxes>
           </Holds>
-
-          {isLoading ? (
-            <Holds
-              background={"white"}
-              className="row-start-2 row-end-8 py-5  h-full"
-            >
-              <Contents width={"section"}>
-                <Holds className="my-auto">
-                  <Spinner />
-                </Holds>
-              </Contents>
-            </Holds>
-          ) : (
-            <>
+          <Suspense
+            fallback={
               <Holds
                 background={"white"}
-                className="row-start-2 row-end-8 py-5 h-full"
+                className="row-start-2 row-end-8 py-5  h-full"
               >
-                <Grids rows={"7"} gap={"5"} className="h-full w-full">
-                  <Holds
-                    className={`row-start-1 ${
-                      crewType === "Mechanic" ? "row-end-7" : "row-end-8"
-                    } h-full w-full overflow-y-auto no-scrollbar`}
-                  >
-                    <Contents width={"section"}>
-                      {crewMembers.map((member) => (
-                        <Holds key={member.id} className="w-full pb-3.5 ">
-                          <Buttons
-                            href={`/dashboard/myTeam/${id}/employee/${member.id}?rPath=${url}`}
-                            background="lightBlue"
-                            className="w-full h-full py-2 relative"
-                          >
-                            <Holds position={"row"} className="w-full gap-x-4">
-                              <Holds className="w-24 relative">
-                                <Images
-                                  titleImg={
-                                    member.image
-                                      ? member.image
-                                      : "/profileEmpty.svg"
-                                  }
-                                  titleImgAlt="profileFilled"
-                                  loading="lazy"
-                                  className={`rounded-full max-w-12 h-auto object-contain ${
-                                    member.image
-                                      ? "border-[3px] border-black"
-                                      : ""
-                                  } `}
-                                />
-                                <Holds
-                                  background={
-                                    member.clockedIn ? "green" : "gray"
-                                  }
-                                  className="absolute top-1 right-0 w-3 h-3 rounded-full p-1.5 border-[3px] border-black"
-                                />
-                              </Holds>
-                              <Holds className="w-full">
-                                <Titles position={"left"} size="lg">
-                                  {member.firstName} {member.lastName}
-                                </Titles>
-                              </Holds>
-                            </Holds>
-                          </Buttons>
-                        </Holds>
-                      ))}
-                    </Contents>
+                <Contents width={"section"}>
+                  <Holds className="my-auto">
+                    <Spinner />
                   </Holds>
-                  {crewType === "Mechanic" && (
-                    <Holds className="row-start-7 row-end-8 ">
+                </Contents>
+              </Holds>
+            }
+          >
+            {isLoading ? (
+              <Holds
+                background={"white"}
+                className="row-start-2 row-end-8 py-5  h-full"
+              >
+                <Contents width={"section"}>
+                  <Holds className="my-auto">
+                    <Spinner />
+                  </Holds>
+                </Contents>
+              </Holds>
+            ) : (
+              <>
+                <Holds
+                  background={"white"}
+                  className="row-start-2 row-end-8 py-5 h-full"
+                >
+                  <Grids rows={"7"} gap={"5"} className="h-full w-full">
+                    <Holds
+                      className={`row-start-1 ${
+                        crewType === "Mechanic" ? "row-end-7" : "row-end-8"
+                      } h-full w-full overflow-y-auto no-scrollbar`}
+                    >
                       <Contents width={"section"}>
-                        <Buttons
-                          background={"green"}
-                          className="w-full py-3"
-                          href={`/dashboard/mechanic?rUrl=/dashboard/myTeam/${id}?rPath=${url}`}
-                        >
-                          <Titles size={"h2"}>{t("ManageProjects")}</Titles>
-                        </Buttons>
+                        {crewMembers.map((member) => (
+                          <Holds key={member.id} className="w-full pb-3.5 ">
+                            <Buttons
+                              href={`/dashboard/myTeam/${id}/employee/${member.id}?rPath=${url}`}
+                              background="lightBlue"
+                              className="w-full h-full py-2 relative"
+                            >
+                              <Holds position={"row"} className="w-full gap-x-4">
+                                <Holds className="w-24 relative">
+                                  <Images
+                                    titleImg={
+                                      member.image
+                                        ? member.image
+                                        : "/profileEmpty.svg"
+                                    }
+                                    titleImgAlt="profileFilled"
+                                    loading="lazy"
+                                    className={`rounded-full max-w-12 h-auto object-contain ${
+                                      member.image
+                                        ? "border-[3px] border-black"
+                                        : ""
+                                    } `}
+                                  />
+                                  <Holds
+                                    background={
+                                      member.clockedIn ? "green" : "gray"
+                                    }
+                                    className="absolute top-1 right-0 w-3 h-3 rounded-full p-1.5 border-[3px] border-black"
+                                  />
+                                </Holds>
+                                <Holds className="w-full">
+                                  <Titles position={"left"} size="lg">
+                                    {member.firstName} {member.lastName}
+                                  </Titles>
+                                </Holds>
+                              </Holds>
+                            </Buttons>
+                          </Holds>
+                        ))}
                       </Contents>
                     </Holds>
-                  )}
-                </Grids>
-              </Holds>
-            </>
-          )}
+                    {crewType === "Mechanic" && (
+                      <Holds className="row-start-7 row-end-8 ">
+                        <Contents width={"section"}>
+                          <Buttons
+                            background={"green"}
+                            className="w-full py-3"
+                            href={`/dashboard/mechanic?rUrl=/dashboard/myTeam/${id}?rPath=${url}`}
+                          >
+                            <Titles size={"h2"}>{t("ManageProjects")}</Titles>
+                          </Buttons>
+                        </Contents>
+                      </Holds>
+                    )}
+                  </Grids>
+                </Holds>
+              </>
+            )}
+          </Suspense>
         </Grids>
       </Contents>
     </Bases>

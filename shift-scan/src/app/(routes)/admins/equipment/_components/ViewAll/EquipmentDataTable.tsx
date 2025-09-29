@@ -21,10 +21,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useMemo, useState, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EquipmentSummary } from "../useEquipmentData";
 import { equipmentTableColumns } from "./equipmentTableColumns";
+import LoadingEquipmentTableState from "./loadingEquipmentTableState";
 
 interface EquipmentDataTableProps {
   data: EquipmentSummary[];
@@ -199,24 +200,9 @@ export function EquipmentDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
+              <Suspense fallback={<LoadingEquipmentTableState columns={columns} />}>
               {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* Create skeleton cells for each column */}
-                    {columns.map((col, colIndex) => (
-                      <TableCell
-                        key={`loading-cell-${colIndex}`}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        <Skeleton className="h-4 w-16 mx-auto" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
+                <LoadingEquipmentTableState columns={columns} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -249,6 +235,7 @@ export function EquipmentDataTable({
                   </TableCell>
                 </TableRow>
               )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>

@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, LogOut, BellPlus } from "lucide-react";
 import NotificationModal from "./NotificationModal";
 import { useDashboardData } from "./DashboardDataContext";
-import { useUserProfile } from "./UserImageContext";
+import { useUserProfile, UserImage, UserName, UserRole } from "./UserImageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import useFcmToken from "@/hooks/useFcmToken";
@@ -28,7 +28,7 @@ export default function LeftSidebar() {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const { data } = useDashboardData();
-  const { image, name, role, loading } = useUserProfile();
+  const { refresh } = useUserProfile(); // Only need refresh function now
   const { token, notificationPermissionStatus } = useFcmToken();
   const Page = [
     {
@@ -183,32 +183,26 @@ export default function LeftSidebar() {
                 {/* Profile section */}
                 <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                   <div className="flex items-center w-11 h-11 justify-center">
-                    {image === null ? (
-                      <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
-                    ) : (
-                      <img
-                        src={image || "/profileEmpty.svg"}
-                        alt="profile"
-                        className="w-11 h-11 rounded-full object-cover bg-gray-100"
-                        onError={(e) => {
-                          e.currentTarget.src = "/profileEmpty.svg";
-                        }}
-                      />
-                    )}
+                    <UserImage
+                      onImageLoad={(img) => {
+                        // Optional: Update context state when image loads
+                      }}
+                      className="w-11 h-11 rounded-full object-cover bg-gray-100"
+                      alt="profile"
+                    />
                   </div>
                   <div className="inline-flex flex-col  flex-1 justify-center items-start">
-                    <div className="justify-start text-black text-xs font-bold ">
-                      {loading ? (
-                        <Skeleton className="h-2 w-24" />
-                      ) : name.length >= 12 ? (
-                        name.slice(0, 12) + "..."
-                      ) : (
-                        name
-                      )}
-                    </div>
-                    <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                      {loading ? <Skeleton className="h-2 w-16" /> : role}
-                    </div>
+                    <UserName
+                      onDataLoad={(data) => {
+                        // Optional: Handle data load if needed
+                      }}
+                      maxLength={12}
+                    />
+                    <UserRole
+                      onDataLoad={(data) => {
+                        // Optional: Handle data load if needed
+                      }}
+                    />
                   </div>
                   <div className="flex justify-end items-center w-fit">
                     <Button
@@ -252,32 +246,27 @@ export default function LeftSidebar() {
             ) : (
               <div className="w-full px-4 py-2 bg-white rounded-[10px] inline-flex justify-start items-center gap-3">
                 <div className="flex items-center w-11 h-11 justify-center">
-                  {image === null ? (
-                    <Skeleton className="w-11 h-11 rounded-full bg-gray-200" />
-                  ) : (
-                    <img
-                      src={image || "/profileEmpty.svg"}
-                      alt="profile"
-                      className="w-11 h-11 rounded-full object-cover bg-gray-100"
-                      onError={(e) => {
-                        e.currentTarget.src = "/profileEmpty.svg";
-                      }}
-                    />
-                  )}
+                  <UserImage
+                    onImageLoad={(img) => {
+                      // Optional: Update context state when image loads
+                    }}
+                    className="w-11 h-11 rounded-full object-cover bg-gray-100"
+                    alt="profile"
+                  />
                 </div>
                 <div className="inline-flex flex-col flex-1 justify-center items-start">
-                  <div className="justify-start text-black text-xs font-bold ">
-                    {loading ? (
-                      <Skeleton className="h-2 w-24 mb-2" />
-                    ) : name.length >= 12 ? (
-                      name.slice(0, 12) + "..."
-                    ) : (
-                      name
-                    )}
-                  </div>
-                  <div className="text-center justify-start text-neutral-400 text-[10px] font-normal ">
-                    {loading ? <Skeleton className="h-2 w-16" /> : role}
-                  </div>
+                  <UserName
+                    onDataLoad={(data) => {
+                      // Optional: Handle data load if needed
+                    }}
+                    className="mb-2"
+                    maxLength={12}
+                  />
+                  <UserRole
+                    onDataLoad={(data) => {
+                      // Optional: Handle data load if needed
+                    }}
+                  />
                 </div>
                 <div className="flex justify-end items-center w-fit">
                   <Button

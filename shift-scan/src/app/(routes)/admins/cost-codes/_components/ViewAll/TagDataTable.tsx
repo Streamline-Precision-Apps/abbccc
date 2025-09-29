@@ -20,10 +20,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TagSummary } from "../useTagData";
 import { tagTableColumns } from "./tagTableColumns";
+import LoadingTagTableState from "./loadingTagTableState";
 
 interface TagDataTableProps {
   data: TagSummary[];
@@ -176,61 +177,47 @@ export default function TagDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              {loading ? (
-                // Skeleton loading state with customized widths
-                Array.from({ length: 10 }).map((_, index) => (
-                  <TableRow
-                    key={`loading-row-${index}`}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {/* Create skeleton cells for each column */}
-                    {columns.map((col, colIndex) => (
-                      <TableCell
-                        key={`loading-cell-${colIndex}`}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        <Skeleton className="h-4 w-16 mx-auto" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => {
-                  // Check if this is the ALL tag
-                  const isAllTag = row.original.name.toUpperCase() === "ALL";
+              <Suspense fallback={<LoadingTagTableState columns={columns} />}>
+                {loading ? (
+                  <LoadingTagTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => {
+                    // Check if this is the ALL tag
+                    const isAllTag = row.original.name.toUpperCase() === "ALL";
 
-                  return (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                      className={`odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2 ${
-                        isAllTag ? "bg-blue-50 hover:bg-blue-100" : ""
-                      }`}
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className={`odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2 ${
+                          isAllTag ? "bg-blue-50 hover:bg-blue-100" : ""
+                        }`}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Suspense>
             </TableBody>
           </Table>
         </div>
