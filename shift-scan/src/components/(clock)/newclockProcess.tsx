@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, use } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -76,6 +76,18 @@ export default function NewClockProcess({
   const t = useTranslations("Clock");
   const router = useRouter();
   const [laborType, setLaborType] = useState<string>("");
+
+  useEffect(() => {
+    console.log("laborType:", laborType);
+  }, [laborType]);
+
+  useEffect(() => {
+    console.log("clockInRole:", clockInRole);
+  }, [clockInRole]);
+  
+  useEffect(() => {
+    console.log("clockInRoleTypes:", clockInRoleTypes);
+  }, [clockInRoleTypes]);
 
   // Truck states
   const [truck, setTruck] = useState<Option>({
