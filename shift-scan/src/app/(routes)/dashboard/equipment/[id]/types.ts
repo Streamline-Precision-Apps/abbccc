@@ -67,7 +67,7 @@ export type EmployeeEquipmentLogData = {
   relatedLogId: string | null;
   timeSheetId: string | null;
   Equipment: EquipmentData;
-  RefuelLogs: RefuelLogData | null; // Array to support compatibility with existing code
+  RefuelLog: RefuelLogData | null; // Changed from RefuelLogs to RefuelLog to match API response
   MaintenanceId: MaintenanceData | null;
 };
 
