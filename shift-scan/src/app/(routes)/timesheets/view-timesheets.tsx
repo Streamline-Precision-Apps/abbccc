@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
@@ -63,6 +63,14 @@ export default function ViewTimesheets({ user }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Get current date in YYYY-MM-DD format
+  const currentDate = new Date().toISOString().split("T")[0];
+
+  // Auto-fetch timesheets for today when component mounts
+  useEffect(() => {
+    fetchTimesheets(currentDate);
+  }, [currentDate]);
+
   // Function to calculate duration
   const calculateDuration = (
     startTime: string | Date | null | undefined,
@@ -117,8 +125,6 @@ export default function ViewTimesheets({ user }: Props) {
     await fetchTimesheets(date);
   };
 
-  const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-
   return (
     <>
       <Holds
@@ -149,9 +155,9 @@ export default function ViewTimesheets({ user }: Props) {
           background={"darkBlue"}
           className={`px-4 h-20 row-start-1 row-end-2 rounded-b-none`}
         >
-          <Forms onSubmit={handleSubmit} className=" h-full">
+          <Forms onSubmit={handleSubmit} className=" h-full w-full">
             <Inputs type="hidden" name="id" value={user} readOnly />
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 w-full">
               <Label htmlFor="date" className="text-white">
                 {t("EnterDate")}
               </Label>
@@ -160,7 +166,7 @@ export default function ViewTimesheets({ user }: Props) {
                 type="date"
                 name="date"
                 defaultValue={currentDate}
-                className="text-center w-full bg-white"
+                className="text-center flex-col w-full bg-white w-[240px] items-center"
                 onChange={(e) => fetchTimesheets(e.target.value)}
               />
             </div>

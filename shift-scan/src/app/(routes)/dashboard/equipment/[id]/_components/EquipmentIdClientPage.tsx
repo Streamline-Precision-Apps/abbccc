@@ -53,10 +53,10 @@ function transformApiToFormState(
           additionalInfo: apiData.MaintenanceId.additionalInfo,
         }
       : null,
-    refuelLogs: apiData.RefuelLogs
+    refuelLogs: apiData.RefuelLog
       ? {
-          id: apiData.RefuelLogs.id,
-          gallonsRefueled: apiData.RefuelLogs.gallonsRefueled,
+          id: apiData.RefuelLog.id,
+          gallonsRefueled: apiData.RefuelLog.gallonsRefueled,
         }
       : null,
 
@@ -334,10 +334,9 @@ export default function CombinedForm({ id }: { id: string }) {
       }
 
       // Handle refuel log data
-      if (
-        state.formState.refuelLogs === null &&
-        state.markedForRefuel === false
-      ) {
+      // Check if we need to disconnect/delete an existing refuel log
+      if (state.formState.refuelLogs === null) {
+        // If refuelLogs is null, we want to disconnect any existing refuel log
         formData.append("disconnectRefuelLog", "true");
       } else if (state.formState.refuelLogs) {
         formData.append(

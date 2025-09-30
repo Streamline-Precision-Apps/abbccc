@@ -15,6 +15,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { X, Check } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export default function ChangePassword({ userId }: { userId: string }) {
   // Shared password scoring function
@@ -95,7 +96,12 @@ export default function ChangePassword({ userId }: { userId: string }) {
 
     try {
       await setUserPassword(formData);
-      route.push("/hamburger/settings");
+
+      // Sign out the user and redirect to sign in page
+      await signOut({
+        redirect: true,
+        callbackUrl: "/signin",
+      });
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
@@ -144,7 +150,10 @@ export default function ChangePassword({ userId }: { userId: string }) {
       "Very Strong",
     ];
 
-    setScore(score);
+    // Update parent score state using useEffect to avoid setState during render
+    useEffect(() => {
+      setScore(score);
+    }, [score]);
 
     return (
       <div className="w-full flex flex-col gap-1" aria-live="polite">
