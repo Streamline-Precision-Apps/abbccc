@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
@@ -63,6 +63,14 @@ export default function ViewTimesheets({ user }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Get current date in YYYY-MM-DD format
+  const currentDate = new Date().toISOString().split("T")[0];
+
+  // Auto-fetch timesheets for today when component mounts
+  useEffect(() => {
+    fetchTimesheets(currentDate);
+  }, [currentDate]);
+
   // Function to calculate duration
   const calculateDuration = (
     startTime: string | Date | null | undefined,
@@ -116,8 +124,6 @@ export default function ViewTimesheets({ user }: Props) {
     const date = formData.get("date")?.toString();
     await fetchTimesheets(date);
   };
-
-  const currentDate = new Date().toISOString().split("T")[0]; // Format date as YYYY-MM-DD
 
   return (
     <>

@@ -38,7 +38,7 @@ type VerifyProcessProps = {
   comments?: string;
   laborType?: string;
   truck: Options | null;
-  trailer?: Options | null;
+  // trailer?: Options | null;
   startingMileage?: number;
   clockInRoleTypes: string | undefined;
   handlePrevStep: () => void;
@@ -53,7 +53,7 @@ export default function TruckVerificationStep({
   comments,
   role,
   truck,
-  trailer,
+  // trailer,
   startingMileage,
   laborType,
   clockInRoleTypes,
@@ -102,7 +102,7 @@ export default function TruckVerificationStep({
       formData.append("laborType", clockInRoleTypes || ""); // sets the title of task to the labor type worked on
       formData.append("startingMileage", startingMileage?.toString() || ""); // sets new starting mileage
       formData.append("truck", truck?.id || ""); // sets truck ID if applicable
-      formData.append("trailer", trailer?.id || ""); // sets trailer ID if applicable
+      // formData.append("trailer", trailer?.id || ""); // sets trailer ID if applicable
       formData.append("equipment", equipment?.id || ""); // sets equipment Id if applicable
 
       // If switching jobs, include the previous timesheet ID
@@ -283,7 +283,7 @@ export default function TruckVerificationStep({
                               className={"pl-2 text-base text-center"}
                             />
                           </Holds>
-                          <Holds className={"row-span-1 col-span-2"}>
+                          {/* <Holds className={"row-span-1 col-span-2"}>
                             <Labels
                               htmlFor="trailerId"
                               size={"p3"}
@@ -301,7 +301,7 @@ export default function TruckVerificationStep({
                               }
                               className={"pl-2 text-base text-center"}
                             />
-                          </Holds>
+                          </Holds> */}
                         </>
                       )}
                       {clockInRoleTypes === "truckEquipmentOperator" && (
