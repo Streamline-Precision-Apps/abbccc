@@ -49,6 +49,7 @@ export async function GET(req: Request) {
           prisma.tascoLog.findMany({
             where: { timeSheetId: timesheetId },
             select: {
+              shiftType: true,
               laborType: true,
               Equipment: { select: { qrId: true, name: true } },
             },
@@ -75,6 +76,7 @@ export async function GET(req: Request) {
         // Format Logs
         const formattedTascoLogs = tascoLogs.map((log) => ({
           laborType: log.laborType,
+          shiftType: log.shiftType,
           equipment: log.Equipment || { qrId: null, name: "Unknown" },
         }));
 
