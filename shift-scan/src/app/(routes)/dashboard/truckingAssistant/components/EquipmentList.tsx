@@ -159,7 +159,9 @@ export default function EquipmentList({
             >
               {/* Equipment Input with Label */}
               <Holds className="w-full h-full justify-center">
-                <Label>{t("Equipment")}</Label>
+                <Label>
+                  {t("Equipment")} <span className="text-app-red">*</span>
+                </Label>
                 {equipmentLoading && selectedIndex === mat.id ? (
                   <Spinner size={20} />
                 ) : (
@@ -185,7 +187,10 @@ export default function EquipmentList({
               </Holds>
 
               <Holds>
-                <Label>{t("Source")}</Label>
+                <Label>
+                  {t("Source")}
+                  <span className="text-app-red">*</span>
+                </Label>
                 <Inputs
                   type="text"
                   placeholder="Source"
@@ -200,7 +205,10 @@ export default function EquipmentList({
 
               {/* Destination Input with Label */}
               <Holds>
-                <Label>{t("Destination")}</Label>
+                <Label>
+                  {t("Destination")}
+                  <span className="text-app-red">*</span>
+                </Label>
                 <Inputs
                   type="text"
                   placeholder="Destination"

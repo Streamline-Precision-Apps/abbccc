@@ -44,7 +44,7 @@ export default function MaterialList({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [editedMaterials, setEditedMaterials] = useState<Material[]>(
-    material || []
+    material || [],
   );
 
   const isMaterialComplete = (mat: Material): boolean => {
@@ -59,7 +59,7 @@ export default function MaterialList({
   // Handle Delete
   const handleDelete = async (materialId: string) => {
     const updatedMaterials = editedMaterials.filter(
-      (material) => material.id !== materialId
+      (material) => material.id !== materialId,
     );
     setEditedMaterials(updatedMaterials);
     setMaterial(updatedMaterials); // Sync with parent state
@@ -88,7 +88,11 @@ export default function MaterialList({
             </Holds>
           )}
           {editedMaterials.map((mat, index) => (
-            <SlidingDiv key={mat.id} onSwipeLeft={() => handleDelete(mat.id)}>
+            <SlidingDiv
+              key={mat.id}
+              onSwipeLeft={() => handleDelete(mat.id)}
+              confirmationMessage={t("DeleteMaterialPrompt")}
+            >
               <Holds
                 position={"row"}
                 background={"lightBlue"}
@@ -105,8 +109,8 @@ export default function MaterialList({
                   {mat.name === "Material"
                     ? `${mat.name} ${index + 1}`
                     : mat.name
-                    ? mat.name
-                    : t("NoMaterialTypeSelected")}
+                      ? mat.name
+                      : t("NoMaterialTypeSelected")}
                 </Texts>
               </Holds>
             </SlidingDiv>

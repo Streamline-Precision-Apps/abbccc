@@ -11,7 +11,6 @@ import BannerRotatingSkeleton from "@/components/(reusable)/BannerRotatingSkelet
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import HamburgerMenuNew from "@/components/(animations)/hamburgerMenuNew";
-import ClockOutCheck from "@/components/ClockOutCheck";
 import ActiveTimesheetCheck from "@/components/ActiveTimesheetCheck";
 import DashboardLoadingView from "./UI/_dashboards/dashboardLoadingView";
 import LoadingHamburgerMenuNew from "@/components/(animations)/loadingHamburgerMenuNew";
@@ -50,18 +49,11 @@ export default async function Dashboard() {
           <Suspense fallback={<LoadingHamburgerMenuNew />}>
             <HamburgerMenuNew isHome={false} />
           </Suspense>
-          {/* Clock-out check component - invisible but runs in background */}
-          {/* <Suspense fallback={null}>
-            <ClockOutCheck
-              userId={session.user.id}
-              timesheetId={prevTimeSheetId}
-            />
-          </Suspense> */}
-          <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
+          <div className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <Suspense fallback={<BannerRotatingSkeleton />}>
-              <BannerRotating />
+              <BannerRotating prevTimeSheetId={prevTimeSheetId} />
             </Suspense>
-          </Holds>
+          </div>
           <Holds background={"white"} className="row-start-4 row-end-9 h-full">
             <Suspense fallback={<DashboardLoadingView />}>
               <DbWidgetSection

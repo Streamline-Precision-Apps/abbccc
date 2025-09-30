@@ -1,4 +1,3 @@
-import { Contents } from "@/components/(reusable)/contents";
 import { useEffect, useState, useCallback } from "react";
 import { deleteRefuelLog, updateRefuelLog } from "@/actions/truckingActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
@@ -29,7 +28,7 @@ export default function RefuelLogsList({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [editedRefuel, setEditedRefuel] = useState<Refueled[]>(
-    refuelLogs || []
+    refuelLogs || [],
   );
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
@@ -38,7 +37,7 @@ export default function RefuelLogsList({
   // Helper function to get validation message for mileage input
   const getValidationMessage = (
     milesAtFueling: number | null | undefined,
-    itemId: string
+    itemId: string,
   ): string => {
     if (!startingMileage) return "";
 
@@ -64,11 +63,11 @@ export default function RefuelLogsList({
       formData.append("id", refuelLog.id);
       formData.append(
         "gallonsRefueled",
-        refuelLog.gallonsRefueled?.toString() || "0"
+        refuelLog.gallonsRefueled?.toString() || "0",
       );
       formData.append(
         "milesAtfueling",
-        refuelLog.milesAtFueling?.toString() || "0"
+        refuelLog.milesAtFueling?.toString() || "0",
       );
 
       try {
@@ -77,7 +76,7 @@ export default function RefuelLogsList({
         console.error("Error updating refuel log:", error);
       }
     }, 1000),
-    []
+    [],
   );
 
   const handleDelete = async (id: string) => {
@@ -131,7 +130,7 @@ export default function RefuelLogsList({
       editedRefuel.forEach((item) => {
         const validationMessage = getValidationMessage(
           item.milesAtFueling,
-          item.id
+          item.id,
         );
         if (validationMessage) {
           newValidationErrors[item.id] = validationMessage;
@@ -142,7 +141,7 @@ export default function RefuelLogsList({
   }, [startingMileage, editedRefuel]);
 
   return (
-    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
+    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar">
       <div className=" row-span-1 h-full ">
         {editedRefuel.length === 0 && (
           <Holds className="px-10 mt-4">
@@ -155,19 +154,19 @@ export default function RefuelLogsList({
           </Holds>
         )}
         {editedRefuel.map((rL, index) => (
-          <div key={rL.id} className="mb-2">
-            <SlidingDiv onSwipeLeft={() => handleDelete(rL.id)}>
-              <Holds
-                position={"row"}
-                background={"white"}
-                className={`w-full h-full  border-[3px] rounded-[10px]  border-black
+          <div key={rL.id} className="">
+            <SlidingDiv
+              onSwipeLeft={() => handleDelete(rL.id)}
+              confirmationMessage={t("DeleteRefuelLogPrompt")}
+            >
+              <div
+                key={rL.id}
+                className={` w-full h-full bg-white flex flex-row  border-[3px] rounded-[10px] border-black
               `}
               >
-                <Holds
-                  background={"white"}
-                  className="w-1/2 px-2 h-full justify-center"
-                >
+                <div className="w-full flex flex-row items-center">
                   <Inputs
+                    variant={"noBorder"}
                     type="number"
                     name="gallons"
                     placeholder={t("TotalGallons")}
@@ -178,26 +177,27 @@ export default function RefuelLogsList({
                       formData.append("id", rL.id);
                       formData.append(
                         "gallonsRefueled",
-                        rL.gallonsRefueled?.toString() || ""
+                        rL.gallonsRefueled?.toString() || "",
                       );
                       formData.append(
                         "milesAtfueling",
-                        rL.milesAtFueling?.toString() || ""
+                        rL.milesAtFueling?.toString() || "",
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
+                    className={`text-xs h-8 py-2 mb-0 placeholder:text-left text-right rounded-r-none focus:outline-none focus:ring-0 ${
                       rL.gallonsRefueled
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
                     } `}
                   />
-                </Holds>
-                <Holds
-                  background={"white"}
-                  className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
-                >
+                  <span className="bg-white h-8 pr-2 flex justify-center items-center  text-xs text-black">
+                    Gals
+                  </span>
+                </div>
+                <div className="w-full flex flex-row items-center">
                   <Inputs
+                    variant={"noBorder"}
                     type="number"
                     name="currentMileage"
                     placeholder={t("CurrentMileage")}
@@ -208,24 +208,27 @@ export default function RefuelLogsList({
                       formData.append("id", rL.id);
                       formData.append(
                         "gallonsRefueled",
-                        rL.gallonsRefueled?.toString() || ""
+                        rL.gallonsRefueled?.toString() || "",
                       );
                       formData.append(
                         "milesAtfueling",
-                        rL.milesAtFueling?.toString() || ""
+                        rL.milesAtFueling?.toString() || "",
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
+                    className={`text-xs h-8 py-2 mb-0 placeholder:text-left text-right focus:outline-none  focus:ring-0 border-l-[3px] border-black rounded-l-none ${
                       rL.milesAtFueling
                         ? "text-black"
-                        : "text-app-red placeholder:text-app-red"
+                        : "text-app-red placeholder:text-app-red "
                     } `}
                   />
-                </Holds>
-              </Holds>
+                  <span className="bg-white h-8 pr-3 flex justify-center items-center rounded-r-md text-xs text-black">
+                    MI
+                  </span>
+                </div>
+              </div>
             </SlidingDiv>
-            {validationErrors[rL.id] && (
+            {validationErrors[rL.id] && rL.milesAtFueling !== 0 && (
               <div className="text-xs text-app-red text-center px-1 leading-tight">
                 {validationErrors[rL.id]}
               </div>

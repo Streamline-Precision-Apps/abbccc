@@ -46,13 +46,12 @@ export default function HamburgerMenuNew({
           background={"none"}
           shadow={"none"}
           className="absolute inset-0 w-full h-full z-10"
-          style={{ pointerEvents: "auto" }}
         />
         <div className="relative">
           <img
             src={image ? image : "/profileEmpty.svg"}
             alt="profile"
-            className="max-w-12  h-auto object-contain border-2 border-black rounded-full  z-0"
+            className="max-w-12  h-auto object-contain border-[3px] border-black rounded-full z-0"
           />
           <img
             src={"/settingsFilled.svg"}

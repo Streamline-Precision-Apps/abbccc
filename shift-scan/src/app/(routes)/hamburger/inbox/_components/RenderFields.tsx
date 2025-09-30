@@ -40,6 +40,7 @@ export default function RenderFields({
   costCodeOptions = [],
   readOnly = false,
   hideSubmittedBy = false,
+  useNativeInput = false,
 }: {
   formTemplate: FormIndividualTemplate;
   userOptions: { value: string; label: string }[];
@@ -56,6 +57,7 @@ export default function RenderFields({
   readOnly?: boolean;
   hideSubmittedBy?: boolean;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }) {
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>(
     {},
@@ -178,6 +180,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "TEXTAREA":
@@ -197,6 +200,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "NUMBER":
@@ -216,6 +220,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "DATE":
@@ -233,6 +238,7 @@ export default function RenderFields({
                             }
                       }
                       handleFieldTouch={handleFieldTouch}
+                      useNativeInput={useNativeInput}
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
@@ -275,6 +281,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "RADIO":
@@ -350,6 +357,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "SEARCH_PERSON":
@@ -441,6 +449,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
               }

@@ -1,17 +1,12 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { FormEvent } from "react";
 import { deleteFormSubmission, saveDraft } from "@/actions/hamburgerActions";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { Labels } from "@/components/(reusable)/labels";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import Signature from "@/components/(reusable)/signature";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -259,6 +254,7 @@ export default function FormDraft({
               formValues={formValues}
               setFormValues={updateFormValues}
               readOnly={false}
+              useNativeInput={true}
             />
           </div>
 

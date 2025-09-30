@@ -31,14 +31,14 @@ export default function Sliders({
           className={`h-full w-full col-span-1 py-2 z-0  flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(1)}
         >
-          <Texts size={"p6"}>{leftTitle}</Texts>
+          <Texts size={"xs"}>{leftTitle}</Texts>
         </Holds>
 
         <Holds
           className={`h-full w-full col-span-1 py-2 z-0 flex justify-center items-center cursor-pointer`}
           onClick={() => setActiveTab(2)}
         >
-          <Texts size={"p6"}>{rightTitle}</Texts>
+          <Texts size={"xs"}>{rightTitle}</Texts>
         </Holds>
       </Grids>
     </div>

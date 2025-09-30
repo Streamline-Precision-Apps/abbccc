@@ -67,7 +67,7 @@ export default function MaterialItem({
       formData.append("name", updatedMaterial.name || "");
       formData.append(
         "LocationOfMaterial",
-        updatedMaterial.LocationOfMaterial || ""
+        updatedMaterial.LocationOfMaterial || "",
       );
       formData.append("unit", updatedMaterial.unit || "");
       formData.append("loadType", updatedMaterial.loadType?.toString() || "");
@@ -76,7 +76,7 @@ export default function MaterialItem({
 
       await updateHaulingLogs(formData);
     }, 1000),
-    []
+    [],
   );
 
   // Handle Input Change
@@ -93,8 +93,8 @@ export default function MaterialItem({
     // Update the parent state
     setMaterial((prev) =>
       prev?.map((mat) =>
-        mat.id === currentMaterial.id ? updatedMaterial : mat
-      )
+        mat.id === currentMaterial.id ? updatedMaterial : mat,
+      ),
     );
 
     // Trigger server action to update database
@@ -185,6 +185,7 @@ export default function MaterialItem({
                 {t("unit")}
                 <span className="text-red-500 pl-0.5">*</span>
               </label>
+
               <Selects
                 value={currentMaterial.unit || ""}
                 onChange={(e) => handleChange("unit", e.target.value)}
@@ -228,6 +229,7 @@ export default function MaterialItem({
           */}
           <Holds className="mb-2">
             <label className="text-sm font-medium">{t("LoadType")}</label>
+
             <Selects
               value={currentMaterial.loadType || ""}
               onChange={(e) => handleChange("loadType", e.target.value)}

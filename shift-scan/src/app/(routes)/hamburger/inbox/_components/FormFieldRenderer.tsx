@@ -63,6 +63,7 @@ interface FormFieldRendererProps {
   setFormValues?: (values: Record<string, string>) => void;
   readOnly?: boolean;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
@@ -71,6 +72,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   setFormValues,
   readOnly = false,
   disabled = false,
+  useNativeInput = false,
 }) => {
   const [equipmentOptions, setEquipmentOptions] = useState<Option[]>([]);
   const [jobsiteOptions, setJobsiteOptions] = useState<Option[]>([]);
@@ -355,6 +357,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       readOnly={readOnly}
       hideSubmittedBy={true}
       disabled={disabled}
+      useNativeInput={useNativeInput}
     />
   );
 };

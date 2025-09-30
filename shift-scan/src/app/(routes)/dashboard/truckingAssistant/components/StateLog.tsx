@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import { StateOptions } from "@/data/stateValues";
 import { Contents } from "@/components/(reusable)/contents";
 import TruckTabOptions from "../TruckTabOptions";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 type StateMileage = {
   id: string;
@@ -70,24 +72,19 @@ export default function StateLog({
           background={"white"}
           className={"w-full h-full rounded-t-none row-start-1 row-end-2"}
         >
-          <Contents width={"section"} className="h-full">
-            <Holds position={"row"} className="h-full gap-2">
-              <Holds size={"80"}>
-                <Texts size={"p3"}>{t("DidYouLeaveIdaho")}</Texts>
-              </Holds>
-              <Holds size={"20"} className="my-auto">
-                <Buttons
-                  background={"green"}
-                  className="py-1.5"
-                  onClick={() => {
-                    AddStateMileage();
-                  }}
-                >
-                  +
-                </Buttons>
-              </Holds>
-            </Holds>
-          </Contents>
+          <div className="h-full w-full flex items-center justify-between px-2">
+            <Texts size={"sm"}>{t("DidYouLeaveIdaho")}</Texts>
+
+            <Button
+              size={"icon"}
+              className="bg-app-green w-10 hover:bg-app-green text-black py-1.5 px-3 border-[3px] border-black rounded-[10px] shadow-none"
+              onClick={() => {
+                AddStateMileage();
+              }}
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
         </Holds>
         <Holds
           background={"white"}

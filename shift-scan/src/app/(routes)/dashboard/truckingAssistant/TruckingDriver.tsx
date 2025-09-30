@@ -8,7 +8,6 @@ import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
 import WorkDetails from "./components/workDetails";
 import TruckTabOptions from "./TruckTabOptions";
-import { ZodNullable } from "zod";
 
 type StateMileage = {
   id: string;
@@ -62,13 +61,6 @@ enum LoadType {
   SCREENED,
 }
 
-type LaborType = {
-  id: string;
-  type: string | null;
-  startTime: string;
-  endTime: string | null;
-};
-
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
   const [isLoading, setIsLoading] = useState(true);
@@ -80,7 +72,6 @@ export default function TruckDriver() {
   const [notes, setNotes] = useState<string>("");
   const [equipmentHauled, setEquipmentHauled] = useState<EquipmentHauled[]>();
   const [material, setMaterial] = useState<Material[]>();
-  const [laborType, setLaborType] = useState<LaborType[]>([]);
   const [startingMileage, setStartingMileage] = useState<number | null>(null);
 
   const [isComplete, setIsComplete] = useState({
@@ -136,13 +127,7 @@ export default function TruckDriver() {
           material &&
           material.length >= 0 &&
           material.every(
-            (item) =>
-              item.LocationOfMaterial &&
-              // TODO: These fields don't exist in current database schema - temporarily commented out
-              // item.grossWeight &&
-              item.name &&
-              item.unit,
-            // && item.lightWeight
+            (item) => item.LocationOfMaterial && item.name && item.unit,
           ),
       ),
       notesTab: isEndMileageValid(),
@@ -213,7 +198,6 @@ export default function TruckDriver() {
     setStateMileage([]);
     setMaterial([]);
     setEquipmentHauled([]);
-    setLaborType([]);
     setStartingMileage(null);
 
     const fetchData = async () => {
@@ -228,7 +212,6 @@ export default function TruckDriver() {
           `/api/getTruckingLogs/stateMileage/${timeSheetId}`, // 3
           `/api/getTruckingLogs/material/${timeSheetId}`, // 4
           `/api/getTruckingLogs/equipmentHauled/${timeSheetId}`, // 5
-          `/api/getTruckingLogs/laborType/${timeSheetId}`, // 6
           `/api/getTruckingLogs/startingMileage/${timeSheetId}`, // 7
         ];
 
@@ -244,8 +227,8 @@ export default function TruckDriver() {
         setStateMileage(data[3] || []);
         setMaterial(data[4] || []);
         setEquipmentHauled(data[5] || []);
-        setLaborType(data[6] || []);
-        setStartingMileage(data[7]?.startingMileage || null);
+
+        setStartingMileage(data[6]?.startingMileage || null);
       } catch (error) {
         console.error(t("FetchingError"), error);
       } finally {
@@ -286,8 +269,7 @@ export default function TruckDriver() {
             setNotes={setNotes}
             endMileage={endMileage}
             setEndMileage={setEndMileage}
-            laborType={laborType}
-            setLaborType={setLaborType}
+            setStartingMileage={setStartingMileage}
             startingMileage={startingMileage}
             stateMileage={StateMileage}
             refuelLogs={refuelLogs}

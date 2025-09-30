@@ -128,11 +128,11 @@ export const NewTab: FC<TabProps> = ({
         .join(" ")}
     >
       <div
-        className={`w-full h-full flex ${isActive ? "flex-row px-2 items-center gap-2 justify-between" : ""}`}
+        className={`w-full h-full flex ${isActive ? "flex-row px-2 items-center gap-2 justify-between" : " justify-center items-center flex-col"}`}
       >
         {isActive ? (
           <>
-            <div className="w-full flex items-end gap-x-2 justify-between p-1">
+            <div className="w-full flex items-end gap-x-2 justify-between">
               {children}
               <img
                 src={titleImage}
@@ -142,7 +142,7 @@ export const NewTab: FC<TabProps> = ({
             </div>
           </>
         ) : (
-          <img src={titleImage} alt={titleImageAlt} className="w-10 h-10 p-1" />
+          <img src={titleImage} alt={titleImageAlt} className="w-10 h-10 " />
         )}
         {!isComplete && !isLoading && (
           <div className="rounded-full w-4 h-4 bg-app-red absolute top-[-0.3rem] right-[-0.1rem] border-[3px] border-black"></div>

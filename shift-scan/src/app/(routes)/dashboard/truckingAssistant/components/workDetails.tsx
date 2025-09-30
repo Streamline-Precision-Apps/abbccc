@@ -9,6 +9,8 @@ import { Contents } from "@/components/(reusable)/contents";
 import { useState } from "react";
 import TruckDriverNotes from "./TruckDriverNotes";
 import { useTranslations } from "next-intl";
+import { set } from "lodash";
+import { setStartingMileage } from "@/actions/cookieActions";
 
 type StateMileage = {
   id: string;
@@ -41,9 +43,8 @@ export default function WorkDetails({
   setEndMileage,
   isLoading,
   timeSheetId,
-  laborType,
-  setLaborType,
   startingMileage,
+  setStartingMileage,
   stateMileage,
   refuelLogs,
 }: {
@@ -53,9 +54,8 @@ export default function WorkDetails({
   setEndMileage: React.Dispatch<React.SetStateAction<number | null>>;
   isLoading: boolean;
   timeSheetId: string | undefined;
-  laborType: LaborType[] | undefined;
-  setLaborType: React.Dispatch<React.SetStateAction<LaborType[]>>;
   startingMileage: number | null;
+  setStartingMileage: React.Dispatch<React.SetStateAction<number | null>>;
   stateMileage?: StateMileage[];
   refuelLogs?: Refueled[];
 }) {
@@ -67,25 +67,23 @@ export default function WorkDetails({
   return (
     <Holds background={"white"} className={"w-full h-full rounded-t-none"}>
       <Contents width={"section"} className="h-full">
-        <Grids rows={"8"} gap={"5"} className="h-full py-3">
-          <Holds className="w-full h-full row-start-1 row-end-2">
-            <EndingMileage
-              truckingLog={timeSheetId}
-              endMileage={endMileage ?? null}
-              setEndMileage={setEndMileage}
-              startingMileage={startingMileage}
-              stateMileage={stateMileage}
-              refuelLogs={refuelLogs}
-            />
-          </Holds>
-          <Holds className="h-full w-full row-start-2 row-end-9 relative">
-            <TruckDriverNotes
-              truckingLog={timeSheetId}
-              notes={notes}
-              setNotes={setNotes}
-            />
-          </Holds>
-        </Grids>
+        <div className="flex flex-col gap-3 py-3 overflow-y-auto no-scrollbar h-full">
+          <EndingMileage
+            truckingLog={timeSheetId}
+            endMileage={endMileage ?? null}
+            setEndMileage={setEndMileage}
+            startingMileage={startingMileage}
+            setStartingMileage={setStartingMileage}
+            stateMileage={stateMileage}
+            refuelLogs={refuelLogs}
+          />
+
+          <TruckDriverNotes
+            truckingLog={timeSheetId}
+            notes={notes}
+            setNotes={setNotes}
+          />
+        </div>
       </Contents>
     </Holds>
   );

@@ -90,7 +90,7 @@ export default function MechanicPriority({
     }[]
   >([]);
   const FilteredProject = projects.filter(
-    (project) => project.selected && !project.repaired
+    (project) => project.selected && !project.repaired,
   );
 
   const [projectPreviewId, setProjectPreviewId] = useState<string | null>(null);
@@ -112,7 +112,7 @@ export default function MechanicPriority({
 
       if (project) {
         const activeUsersList = project.MaintenanceLogs.filter(
-          (log) => log.startTime && !log.endTime
+          (log) => log.startTime && !log.endTime,
         ) // Only logs with an active session
           .map((log) => ({
             id: log.userId,
@@ -134,7 +134,7 @@ export default function MechanicPriority({
   const startIndex = (currentPage - 1) * workersPerPage;
   const currentWorker = activeUsers.slice(
     startIndex,
-    startIndex + workersPerPage
+    startIndex + workersPerPage,
   );
 
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -164,7 +164,7 @@ export default function MechanicPriority({
 
   // Start project action
   const StartLogAndSaveProject = async (
-    e: React.MouseEvent<HTMLButtonElement>
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     try {
@@ -189,7 +189,7 @@ export default function MechanicPriority({
     // Clear any existing interval
     const interval = setInterval(() => {
       setCurrentPage((prevPage) =>
-        prevPage < activeUsers.length ? prevPage + 1 : 1
+        prevPage < activeUsers.length ? prevPage + 1 : 1,
       );
     }, 5000); // Rotate every 5 seconds
 
@@ -220,7 +220,15 @@ export default function MechanicPriority({
       className="row-start-2 row-end-8 rounded-t-none h-full "
     >
       <Holds className="h-full w-full no-scrollbar overflow-y-auto ">
-        <PullToRefresh onRefresh={handleRefresh}>
+        <PullToRefresh
+          onRefresh={handleRefresh}
+          bgColor="bg-darkBlue/70"
+          textColor="text-app-dark-blue"
+          pullText={"Pull To Refresh"}
+          releaseText={"Release To Refresh"}
+          refreshingText="Loading..."
+          containerClassName="h-full"
+        >
           <Contents width="section" className="pt-3 pb-5 ">
             {FilteredProject.length === 0 ? (
               <Holds className="h-3/4 w-full flex items-center justify-center px-6">
@@ -231,7 +239,7 @@ export default function MechanicPriority({
             ) : (
               FilteredProject.map((project: Project, index) => {
                 const isActive = project.MaintenanceLogs.some(
-                  (log) => log.startTime && !log.endTime
+                  (log) => log.startTime && !log.endTime,
                 );
                 return (
                   <Holds
@@ -305,7 +313,7 @@ export default function MechanicPriority({
                       {previewedProjectData?.Equipment?.name
                         ? `${previewedProjectData?.Equipment?.name.slice(
                             0,
-                            20
+                            20,
                           )}...`
                         : t("ProjectPreview")}
                     </Titles>
@@ -358,7 +366,7 @@ export default function MechanicPriority({
                                 type="text"
                                 value={getFormattedDuration(
                                   user.startTime,
-                                  endTime
+                                  endTime,
                                 )}
                               />
 
@@ -415,7 +423,7 @@ export default function MechanicPriority({
                       ${t("On")}
                       ${format(
                         new Date(previewedProjectData?.createdAt ?? ""),
-                        "MM/dd/yy"
+                        "MM/dd/yy",
                       )}  
                       `}
                       </span>

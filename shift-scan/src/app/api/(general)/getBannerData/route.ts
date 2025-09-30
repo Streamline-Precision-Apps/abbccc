@@ -57,6 +57,7 @@ export async function GET(req: Request) {
             where: { timeSheetId: timesheetId },
             select: {
               laborType: true,
+              Truck: { select: { qrId: true, name: true } },
               Equipment: { select: { qrId: true, name: true } },
             },
           }),
@@ -79,7 +80,7 @@ export async function GET(req: Request) {
 
         const formattedTruckingLogs = truckingLogs.map((log) => ({
           laborType: log.laborType,
-          equipment: log.Equipment || { qrId: null, name: "Unknown" },
+          equipment: log.Truck || { qrId: null, name: "Unknown" },
         }));
 
         const formattedEmployeeEquipmentLogs = eqLogs.map((log) => ({
@@ -115,7 +116,7 @@ export async function GET(req: Request) {
       {
         tags: [`banner-data-${userId}`, "timesheets", "equipment-logs"],
         revalidate: 300, // Cache for 5 minutes (banner data changes frequently)
-      }
+      },
     );
 
     const responseData = await getCachedBannerData(id, userId);

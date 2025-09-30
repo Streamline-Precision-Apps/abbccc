@@ -512,7 +512,7 @@ export function MechanicDisplayList() {
             <div className="h-full border-gray-200 bg-gray-50 border rounded-md px-2 overflow-hidden">
               <PullToRefresh
                 onRefresh={fetchData}
-                textColor="text-blue-700"
+                textColor="text-app-dark-blue"
                 pullText={t("PullToRefresh")}
                 releaseText={t("ReleaseToRefresh")}
                 containerClassName="h-full pt-5 pb-2"
@@ -525,6 +525,7 @@ export function MechanicDisplayList() {
                       <SlidingDiv
                         key={project.id}
                         onSwipeLeft={() => confirmDelete(project.id)}
+                        confirmationMessage={t("DeleteProjectPrompt")}
                       >
                         <div className="pb-2 pl-4 pt-1 pr-1 rounded-lg border border-gray-200 bg-white shadow-sm flex flex-col gap-1">
                           <div className="flex justify-between items-end">

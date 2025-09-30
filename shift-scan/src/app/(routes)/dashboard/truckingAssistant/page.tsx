@@ -4,9 +4,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { cookies } from "next/headers";
-import { Suspense } from "react";
 import TruckingContexts from "./components/contents";
-import TruckingContextsSkeleton from "./components/TruckingContextsSkeleton";
 
 export default async function Inbox() {
   const session = await auth();
@@ -17,9 +15,7 @@ export default async function Inbox() {
     <Bases>
       <Contents>
         <Grids rows={"7"} gap={"5"} className="h-full">
-          <Suspense fallback={<TruckingContextsSkeleton />}>
-            <TruckingContexts laborType={laborType} />
-          </Suspense>
+          <TruckingContexts laborType={laborType} />
         </Grids>
       </Contents>
     </Bases>
