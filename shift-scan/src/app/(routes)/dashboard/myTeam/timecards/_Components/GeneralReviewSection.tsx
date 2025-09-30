@@ -8,6 +8,7 @@ type TimeSheet = {
   jobsiteId: string;
   workType: string;
   status: string;
+
   CostCode: {
     name: string;
   };
@@ -34,6 +35,14 @@ type TimeSheet = {
     laborType: string;
     startingMileage: number;
     endingMileage: number | null;
+    Truck: {
+      id: string;
+      name: string;
+    };
+    Trailer: {
+      id: string;
+      name: string;
+    };
     Equipment: {
       id: string;
       name: string;
@@ -43,16 +52,15 @@ type TimeSheet = {
       name: string;
       quantity: number;
       loadType: string;
-      grossWeight: number;
-      lightWeight: number;
+      unit: string;
+      locationOfMaterial: string | null;
       materialWeight: number;
     }[];
     EquipmentHauled: {
       id: string;
+      source: string;
+      destination: string;
       Equipment: {
-        name: string;
-      };
-      JobSite: {
         name: string;
       };
     }[];
@@ -81,7 +89,6 @@ type TimeSheet = {
     }[];
   }[];
 };
-
 import { Holds } from "@/components/(reusable)/holds";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";

@@ -18,6 +18,7 @@ export default function RenderTimeField({
   touchedFields,
   error,
   disabled,
+  useNativeInput = false,
 }: {
   field: {
     id: string;
@@ -30,6 +31,7 @@ export default function RenderTimeField({
   touchedFields: Record<string, boolean>;
   error: string | null;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">

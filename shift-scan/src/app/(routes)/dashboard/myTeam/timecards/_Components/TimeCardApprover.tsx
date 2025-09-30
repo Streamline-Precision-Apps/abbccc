@@ -375,7 +375,7 @@ export default function TimeCardApprover({
                     </Holds>
 
                     {/* Content Section */}
-                    <Holds className="h-full  row-start-2 row-end-7 rounded-none ">
+                    <Holds className="h-full row-start-2 row-end-7 rounded-none pb-2 no-scrollbar">
                       {viewOption === "highlight" && (
                         <GeneralReviewSection
                           currentTimeSheets={currentTimeSheets}
