@@ -108,27 +108,13 @@ export default function BannerRotating({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Step 1: Fetch the most recent timeSheetId
-        let timeSheetData = null;
-
-        // if (!prevTimeSheetId) {
-        const timeSheetResponse = await fetch("/api/getRecentTimecard");
-        timeSheetData = await timeSheetResponse.json();
-        // } else {
-        //   timeSheetData = { id: prevTimeSheetId };
-        // }
-
-        if (!timeSheetData?.id) {
-          throw new Error("No valid timesheet ID found.");
-        }
+        // Step 1: Fetch timeSheetId
 
         // Step 2: Fetch banner data using the obtained timeSheetId
         const bannerResponse = await fetch(
-          `/api/getBannerData?id=${timeSheetData.id}`,
+          `/api/getBannerData?id=${prevTimeSheetId}`,
         );
         const bannerData = await bannerResponse.json();
-        // console.log(bannerData); // Uncomment for debugging
-
         setBannerData(bannerData);
       } catch (error) {
         console.error("Error fetching data:", error);

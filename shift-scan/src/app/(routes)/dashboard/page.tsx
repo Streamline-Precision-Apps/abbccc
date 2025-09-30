@@ -34,7 +34,7 @@ export default async function Dashboard() {
     (await cookies()).get("mechanicProjectID")?.value || "";
 
   // Get the current timesheet ID for clock-out checking
-  const prevTimeSheetId = (await cookies()).get("prevTimeSheet")?.value || null;
+  const prevTimeSheetId = (await cookies()).get("timeSheetId")?.value || null;
 
   // const user = session.user;
   const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set

@@ -4,11 +4,12 @@ import { cookies } from "next/headers";
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies();
-    
+
     // Clear all timesheet-related cookies
     const cookiesToClear = [
       "prevTimeSheet",
-      "currentPageView", 
+      "timeSheetId",
+      "currentPageView",
       "workRole",
       "jobSite",
       "costCode",
@@ -16,10 +17,10 @@ export async function POST(request: NextRequest) {
       "equipment",
       "truck",
       "startingMileage",
-      "mechanicProjectID"
+      "mechanicProjectID",
     ];
 
-    cookiesToClear.forEach(cookieName => {
+    cookiesToClear.forEach((cookieName) => {
       cookieStore.delete(cookieName);
     });
 
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     console.error("Failed to clear timesheet cookies:", error);
     return NextResponse.json(
       { error: "Failed to clear cookies" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

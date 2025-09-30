@@ -6,19 +6,19 @@ export const dynamic = "force-dynamic"; // This API needs to be dynamic for cook
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      timesheetId,
-      workType,
-      jobsite,
-      costCode,
-      tascoLog,
-      truckingLog,
-    } = body;
+    const { timesheetId, workType, jobsite, costCode, tascoLog, truckingLog } =
+      body;
 
     const cookieStore = await cookies();
-    
+
     // Set the timesheet ID cookie
     cookieStore.set("prevTimeSheet", timesheetId, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    // Set the timesheet ID cookie
+    cookieStore.set("timeSheetId", timesheetId, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
@@ -43,13 +43,17 @@ export async function POST(request: NextRequest) {
     });
 
     // Set jobsite information
-    cookieStore.set("jobSite", JSON.stringify({
-      code: jobsite.code,
-      label: jobsite.name,
-    }), {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
+    cookieStore.set(
+      "jobSite",
+      JSON.stringify({
+        code: jobsite.code,
+        label: jobsite.name,
+      }),
+      {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      },
+    );
 
     // Set cost code
     cookieStore.set("costCode", costCode, {
@@ -81,10 +85,14 @@ export async function POST(request: NextRequest) {
         });
       }
       if (truckingLog.startingMileage) {
-        cookieStore.set("startingMileage", truckingLog.startingMileage.toString(), {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-        });
+        cookieStore.set(
+          "startingMileage",
+          truckingLog.startingMileage.toString(),
+          {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7, // 1 week
+          },
+        );
       }
     } else {
       // For LABOR and MECHANIC, set default labor type
@@ -99,7 +107,7 @@ export async function POST(request: NextRequest) {
     console.error("Failed to set timesheet cookies:", error);
     return NextResponse.json(
       { error: "Failed to set cookies" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -87,6 +87,12 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
 
+    // Set the timesheet ID cookie
+    cookieStore.set("timeSheetId", incompleteTimesheet.id.toString(), {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
     // Set the current page view
     cookieStore.set("currentPageView", "dashboard", {
       path: "/",
@@ -107,13 +113,17 @@ export async function GET(request: NextRequest) {
     });
 
     // Set jobsite information
-    cookieStore.set("jobSite", JSON.stringify({
-      code: incompleteTimesheet.Jobsite.qrId,
-      label: incompleteTimesheet.Jobsite.name,
-    }), {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
+    cookieStore.set(
+      "jobSite",
+      JSON.stringify({
+        code: incompleteTimesheet.Jobsite.qrId,
+        label: incompleteTimesheet.Jobsite.name,
+      }),
+      {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      },
+    );
 
     // Set cost code
     cookieStore.set("costCode", incompleteTimesheet.CostCode.name, {
@@ -122,7 +132,10 @@ export async function GET(request: NextRequest) {
     });
 
     // Set labor type and additional cookies based on work type
-    if (incompleteTimesheet.workType === "TASCO" && incompleteTimesheet.TascoLogs?.[0]) {
+    if (
+      incompleteTimesheet.workType === "TASCO" &&
+      incompleteTimesheet.TascoLogs?.[0]
+    ) {
       const tascoLog = incompleteTimesheet.TascoLogs[0];
       cookieStore.set("laborType", tascoLog.laborType || "", {
         path: "/",
@@ -134,7 +147,10 @@ export async function GET(request: NextRequest) {
           maxAge: 60 * 60 * 24 * 7, // 1 week
         });
       }
-    } else if (incompleteTimesheet.workType === "TRUCK_DRIVER" && incompleteTimesheet.TruckingLogs?.[0]) {
+    } else if (
+      incompleteTimesheet.workType === "TRUCK_DRIVER" &&
+      incompleteTimesheet.TruckingLogs?.[0]
+    ) {
       const truckingLog = incompleteTimesheet.TruckingLogs[0];
       cookieStore.set("laborType", truckingLog.laborType || "truckDriver", {
         path: "/",
@@ -147,10 +163,14 @@ export async function GET(request: NextRequest) {
         });
       }
       if (truckingLog.startingMileage) {
-        cookieStore.set("startingMileage", truckingLog.startingMileage.toString(), {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-        });
+        cookieStore.set(
+          "startingMileage",
+          truckingLog.startingMileage.toString(),
+          {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7, // 1 week
+          },
+        );
       }
     } else {
       // For LABOR and MECHANIC, set default labor type
@@ -160,11 +180,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log("Successfully set timesheet continuation cookies, redirecting to dashboard");
-    
+    console.log(
+      "Successfully set timesheet continuation cookies, redirecting to dashboard",
+    );
+
     // Redirect directly to dashboard - single redirect!
     return NextResponse.redirect(new URL("/dashboard", request.url));
-
   } catch (error) {
     console.error("Failed to continue timesheet:", error);
     return NextResponse.redirect(new URL("/", request.url));
