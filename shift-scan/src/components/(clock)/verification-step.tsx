@@ -108,20 +108,44 @@ export default function VerificationStep({
       // Use the new transaction-based function
       const responseAction = await handleGeneralTimeSheet(formData);
       if (responseAction.success && type === "switchJobs") {
-        const response = await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: "timecard-submission",
-            title: "Timecard Approval Needed",
-            message: `#${responseAction.createdTimeSheet.id} has been submitted by ${responseAction.createdTimeSheet.User.firstName} ${responseAction.createdTimeSheet.User.lastName} for approval.`,
-            link: `/admins/timesheets?id=${responseAction.createdTimeSheet.id}`,
-            referenceId: responseAction.createdTimeSheet.id,
-          }),
-        });
-        await response.json();
+        try {
+          const response = await fetch("/api/notifications/send-multicast", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: "timecard-submission",
+              title: "Timecard Approval Needed",
+              message: `#${responseAction.createdTimeSheet.id} has been submitted by ${responseAction.createdTimeSheet.User.firstName} ${responseAction.createdTimeSheet.User.lastName} for approval.`,
+              link: `/admins/timesheets?id=${responseAction.createdTimeSheet.id}`,
+              referenceId: responseAction.createdTimeSheet.id,
+            }),
+          });
+
+          // Check if response is ok before trying to parse JSON
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Notification result:", result);
+            if (!result.success) {
+              console.warn(
+                "Notification service not available:",
+                result.details,
+              );
+            }
+          } else {
+            // Log the error but don't fail the clock-in process
+            const errorText = await response.text();
+            console.error(
+              "Notification API error:",
+              response.status,
+              errorText,
+            );
+          }
+        } catch (notificationError) {
+          // Log the error but don't fail the clock-in process
+          console.error("Failed to send notification:", notificationError);
+        }
       }
 
       // Update state and redirect
