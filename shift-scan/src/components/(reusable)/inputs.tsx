@@ -14,6 +14,7 @@ const InputVariants = cva(
   {
     variants: {
       variant: {
+        noBorder: "border-black disabled:bg-app-gray mb-1 last:mb-0 w-full p-1",
         default:
           "border border-[3px] border-black disabled:bg-app-gray mb-1 last:mb-0 w-full p-1",
         white: "border border-2 border-black mb-3 last:mb-0 w-full p-1",
@@ -29,7 +30,7 @@ const InputVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 // this extends the capability of HTMLAttributes or the VariantProps that it can hold, specify your props here
@@ -56,10 +57,10 @@ const Inputs: FC<InputProps> = ({
           background === "orange"
             ? "#fb923c" // orange-400 equivalent
             : background === "white"
-            ? "#ffffff"
-            : background === "transparent"
-            ? "transparent"
-            : undefined,
+              ? "#ffffff"
+              : background === "transparent"
+                ? "transparent"
+                : undefined,
       }
     : undefined;
 

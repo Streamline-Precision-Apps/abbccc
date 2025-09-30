@@ -40,7 +40,7 @@ export default function StateMileageList({
 }) {
   const t = useTranslations("TruckingAssistant");
   const [editedStateMileage, setEditedStateMileage] = useState<StateMileage[]>(
-    StateMileage || []
+    StateMileage || [],
   );
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
@@ -49,20 +49,16 @@ export default function StateMileageList({
   // Helper function to get validation message for mileage input
   const getValidationMessage = (
     stateLineMileage: number | null | undefined,
-    itemId: string
+    itemId: string,
   ): string => {
     if (!startingMileage) return "";
 
-    // Show message for empty or null values
+    // Only show validation message when mileage is not null and less than startingMileage
     if (
-      stateLineMileage === null ||
-      stateLineMileage === undefined ||
-      stateLineMileage <= 0
+      stateLineMileage !== null &&
+      stateLineMileage !== undefined &&
+      stateLineMileage < startingMileage
     ) {
-      return `Mileage required, must be ${startingMileage.toLocaleString()} or greater`;
-    }
-
-    if (stateLineMileage < startingMileage) {
       return `Mileage must be ${startingMileage.toLocaleString()} or greater`;
     }
     return "";
@@ -76,7 +72,7 @@ export default function StateMileageList({
       formData.append("state", stateMileage.state || "");
       formData.append(
         "stateLineMileage",
-        stateMileage.stateLineMileage?.toString() || "0"
+        stateMileage.stateLineMileage?.toString() || "0",
       );
 
       try {
@@ -85,7 +81,7 @@ export default function StateMileageList({
         console.error("Error updating state mileage:", error);
       }
     }, 1000),
-    []
+    [],
   );
 
   // Handle Delete
@@ -113,7 +109,7 @@ export default function StateMileageList({
     formData.append("state", value);
     formData.append(
       "stateLineMileage",
-      newStateMileage[index].stateLineMileage?.toString() || "0"
+      newStateMileage[index].stateLineMileage?.toString() || "0",
     );
     await updateStateMileage(formData);
   };
@@ -149,7 +145,7 @@ export default function StateMileageList({
       editedStateMileage.forEach((item) => {
         const validationMessage = getValidationMessage(
           item.stateLineMileage,
-          item.id
+          item.id,
         );
         if (validationMessage) {
           newValidationErrors[item.id] = validationMessage;
@@ -160,7 +156,7 @@ export default function StateMileageList({
   }, [startingMileage, editedStateMileage]);
 
   return (
-    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
+    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar ">
       <div className=" row-start-1 row-end-2 h-full ">
         {editedStateMileage.length === 0 && (
           <Holds className="px-10 mt-4">
@@ -173,44 +169,38 @@ export default function StateMileageList({
           </Holds>
         )}
         {editedStateMileage.map((sm, index) => (
-          <div key={sm.id} className="mb-2">
-            <SlidingDiv onSwipeLeft={() => handleDelete(sm.id)}>
-              <Holds
-                position={"row"}
-                background={"white"}
-                className={`w-full h-full  border-[3px] rounded-[10px]  border-black
+          <div key={sm.id} className="mb-3 last:pb-5">
+            <SlidingDiv
+              key={sm.id}
+              onSwipeLeft={() => handleDelete(sm.id)}
+              confirmationMessage={t("DeleteStateMileagePrompt")}
+            >
+              <div
+                key={sm.id}
+                className={`w-full h-full bg-white  flex flex-row justify-center items-center border-[3px] rounded-[10px] gap-1  border-black
               `}
               >
-                <Holds
-                  background={"white"}
-                  size={"50"}
-                  className="h-full justify-center px-2"
-                >
-                  <Selects
-                    name="state"
-                    value={sm.state || ""}
-                    onChange={(e) => handleStateChange(index, e.target.value)}
-                    className={`
-                        border-none h-full text-xs text-center py-2  focus:outline-hidden ${
+                <Selects
+                  variant={"NoPadding"}
+                  name="state"
+                  value={sm.state || ""}
+                  onChange={(e) => handleStateChange(index, e.target.value)}
+                  className={`
+                        h-8 text-xs text-center rounded-l-[10px] focus:outline-none ${
                           sm.state ? "text-app-black" : "text-app-red"
                         }
                     `}
-                  >
-                    <option value={""}>{t("State")}</option>
-                    {StateOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Selects>
-                </Holds>
-                <Holds
-                  size={"50"}
-                  background={"white"}
-                  className={`h-full justify-center border-l-[3px] py-1 rounded-l-none border-black
-                  } `}
                 >
+                  <option value={""}>{t("State")}</option>
+                  {StateOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Selects>
+                <div className="w-full flex flex-row items-center">
                   <Inputs
+                    variant={"noBorder"}
                     type="number"
                     name="stateLineMileage"
                     value={sm.stateLineMileage || ""}
@@ -222,18 +212,19 @@ export default function StateMileageList({
                       formData.append("state", sm.state || "");
                       formData.append(
                         "stateLineMileage",
-                        sm.stateLineMileage?.toString() || "0"
+                        sm.stateLineMileage?.toString() || "0",
                       );
                       updateStateMileage(formData);
                     }}
-                    className={
-                      "h-full py-2 border-none text-xs text-center focus:outline-hidden focus:ring-0 empty: placeholder:text-app-red"
-                    }
+                    className={`h-8 py-2 border-l-[3px] text-right mr-1 mb-0 rounded-none border-black text-xs focus:outline-none focus:ring-0 placeholder:text-app-red ${sm.stateLineMileage ? "text-black" : "text-app-red placeholder:text-app-red"}`}
                   />
-                </Holds>
-              </Holds>
+                  <span className="bg-app-dark-gray h-8 px-3 flex justify-center items-center rounded-r-md text-xs text-white">
+                    Mi
+                  </span>
+                </div>
+              </div>
             </SlidingDiv>
-            {validationErrors[sm.id] && (
+            {validationErrors[sm.id] && sm.stateLineMileage !== 0 && (
               <div className="text-xs text-app-red text-center px-1 leading-tight">
                 {validationErrors[sm.id]}
               </div>

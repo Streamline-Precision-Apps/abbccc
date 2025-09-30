@@ -3,13 +3,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { Images } from "../(reusable)/images";
 import { Buttons } from "../(reusable)/buttons";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "../ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 // Define prop types for flexibility
 interface SlidingDivProps extends React.PropsWithChildren {
@@ -29,6 +32,7 @@ export default function SlidingDiv({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const t = useTranslations("Animations");
 
   useEffect(() => {
     if (containerRef.current) {
@@ -72,7 +76,7 @@ export default function SlidingDiv({
   return (
     <>
       <div
-        className="w-full h-fit mb-4 bg-app-red rounded-[10px] relative overflow-hidden"
+        className="w-full h-fit mb-2 bg-app-red rounded-[10px] relative overflow-hidden"
         ref={containerRef}
       >
         {/* Image in Background */}
@@ -95,33 +99,45 @@ export default function SlidingDiv({
         </motion.div>
       </div>
 
-      {/* Confirmation Modal */}
-      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="sm:max-w-md rounded-lg w-[90%]">
-          <DialogHeader>
-            <DialogTitle className="text-center">Confirm Delete</DialogTitle>
-            <DialogDescription className="text-center pb-3">
+      {/* Confirmation AlertDialog */}
+      <AlertDialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <AlertDialogContent className="max-w-[450px] border-black border-[3px] rounded-[10px] w-[90%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-center">
+              Confirm Delete
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-center pb-3">
               {confirmationMessage}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center flex flex-row gap-4">
-            <Buttons
-              shadow={"none"}
-              onClick={() => setShowConfirmation(false)}
-              className="bg-gray-300 text-black px-6 py-2 rounded-md"
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="w-full flex flex-row items-center justify-center gap-4">
+            <AlertDialogCancel
+              asChild
+              className="border-gray-200 hover:bg-white border-2 rounded-[10px]"
             >
-              Cancel
-            </Buttons>
-            <Buttons
-              shadow={"none"}
+              <Buttons
+                shadow="none"
+                className="bg-gray-300 text-black px-6 py-2 rounded-md mt-0 w-24"
+                onClick={() => setShowConfirmation(false)}
+              >
+                {t("cancel")}
+              </Buttons>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              asChild
+              className=" bg-red-500   rounded-[10px] w-24"
               onClick={handleDelete}
-              className="bg-app-red text-white px-6 py-2 rounded-md"
             >
-              Delete
-            </Buttons>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <Buttons
+                shadow="none"
+                className="bg-app-red text-white px-6 py-2 rounded-md"
+              >
+                {t("delete")}
+              </Buttons>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

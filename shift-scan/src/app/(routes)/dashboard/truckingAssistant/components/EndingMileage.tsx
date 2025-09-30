@@ -145,19 +145,24 @@ export const EndingMileage = ({
       <div className="w-full flex flex-col pb-1">
         <p className="text-sm">{t("EndMileage")}: </p>
         <div className="w-full">
-          <Inputs
-            type="text"
-            name="endingMileage"
-            value={endMileage ? endMileage.toLocaleString() : ""}
-            onChange={(e) => handleMileageChange(e.target.value)}
-            onBlur={updateEndingMileage}
-            placeholder={t("EnterEndingMileageHere")}
-            className={`w-full ${
-              endMileage === null || !isValid
-                ? "placeholder:text-app-red border-red-500"
-                : "border-black"
-            } border-[3px] rounded-[10px] pl-3 text-sm  focus:outline-hidden focus:ring-transparent focus:border-current`}
-          />
+          <div className="w-full flex flex-row items-center">
+            <Inputs
+              type="text"
+              name="endingMileage"
+              value={endMileage ? endMileage.toLocaleString() : ""}
+              onChange={(e) => handleMileageChange(e.target.value)}
+              onBlur={updateEndingMileage}
+              placeholder={t("EnterEndingMileageHere")}
+              className={`w-full ${
+                endMileage === null || !isValid
+                  ? "placeholder:text-app-red border-red-500"
+                  : "border-black"
+              } h-8 border-[3px] rounded-[10px] pl-3 text-sm mb-0 rounded-r-none  focus:outline-hidden focus:ring-transparent focus:border-current`}
+            />
+            <span className="bg-app-dark-gray border-[3px] border-l-0 border-black h-8 px-3 flex justify-center items-center rounded-r-md text-xs text-white">
+              Mi
+            </span>
+          </div>
           {validationMessage && (
             <div className="text-xs text-app-red leading-tight">
               {validationMessage}

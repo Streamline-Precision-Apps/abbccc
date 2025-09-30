@@ -8,7 +8,6 @@ import StateLog from "./components/StateLog";
 import RefuelLayout from "./components/RefuelLayout";
 import WorkDetails from "./components/workDetails";
 import TruckTabOptions from "./TruckTabOptions";
-import { ZodNullable } from "zod";
 
 type StateMileage = {
   id: string;
@@ -61,13 +60,6 @@ enum LoadType {
   UNSCREENED,
   SCREENED,
 }
-
-type LaborType = {
-  id: string;
-  type: string | null;
-  startTime: string;
-  endTime: string | null;
-};
 
 export default function TruckDriver() {
   const t = useTranslations("TruckingAssistant");
@@ -135,13 +127,7 @@ export default function TruckDriver() {
           material &&
           material.length >= 0 &&
           material.every(
-            (item) =>
-              item.LocationOfMaterial &&
-              // TODO: These fields don't exist in current database schema - temporarily commented out
-              // item.grossWeight &&
-              item.name &&
-              item.unit,
-            // && item.lightWeight
+            (item) => item.LocationOfMaterial && item.name && item.unit,
           ),
       ),
       notesTab: isEndMileageValid(),
@@ -212,7 +198,6 @@ export default function TruckDriver() {
     setStateMileage([]);
     setMaterial([]);
     setEquipmentHauled([]);
-
     setStartingMileage(null);
 
     const fetchData = async () => {

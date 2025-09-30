@@ -256,6 +256,7 @@
     "SaveCropImage": "Salvar el imagen"
   },
   "Equipment": {
+    "DeletePrompt": "¿Está seguro de que desea eliminar este registro de equipo?",
     "CurrentLogs": "Registros de equipos actuales",
     "FinishedLogs": "Registros finalizados",
     "ScanQR": "Escanear código QR",
@@ -1248,6 +1249,12 @@
     "LabelCostCode": "Código de costo"
   },
   "TruckingAssistant": {
+    "DeleteMaterialPrompt": "¿Estás seguro que deseas eliminar este material?",
+    "DeleteStateMileagePrompt": "¿Está seguro de que desea eliminar este registro de kilometraje estatal?",
+    "DeleteRefuelLogPrompt": "¿Está seguro de que desea eliminar este registro de combustible?",
+
+    "NoMaterialSelected": "No material seleccionado",
+    "BackToList": "Volver a la lista",
     "Comments": "Comentarios",
     "EndRequiredMileageMustBe": "* Requerido y debe ser (>=)",
     "EndMileageMustBe": "* Debe ser (>=)",
@@ -1303,7 +1310,11 @@
     "NoMaterialsHauledRecorded": "No se registró materiales",
     "NoMaterialTypeSelected": "No hay tipo de material seleccionado",
     "MileageAndComments": "Kilometraje y comentarios",
-    "FetchingError": "Se produjo un error mientras obtenía contenido recibido"
+    "FetchingError": "Se produjo un error mientras obtenía contenido recibido",
+    "ConfirmDeletion": "Confirmar eliminación",
+    "DeleteEquipmentConfirmation": "¿Está seguro de que desea eliminar este registro de equipo? Esta acción no se puede deshacer.",
+    "Cancel": "Cancelar",
+    "Delete": "Eliminar"
   },
   "Tasco": {
     "LoadCounter": "Contador de carga",
@@ -1315,6 +1326,7 @@
     "TotalGallons": "Total de galones"
   },
   "MechanicWidget": {
+    "DeleteProjectPrompt": "¿Está seguro de que desea eliminar este registro?",
     "AddDelay": "Agregar retraso",
     "RemoveDelay": "Eliminar retraso",
     "ExpectedArrival": "Llegada esperada",
@@ -1416,5 +1428,9 @@
     "DeleteProject": "Eliminar proyecto",
     "DeleteProjectConfirmation": "¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.",
     "Deleting": "Eliminando..."
+  },
+  "Animations": {
+    "Cancel": "Cancelar",
+    "Delete": "Eliminar"
   }
 }

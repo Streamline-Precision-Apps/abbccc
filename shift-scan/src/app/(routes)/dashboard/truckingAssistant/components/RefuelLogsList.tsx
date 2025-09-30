@@ -141,7 +141,7 @@ export default function RefuelLogsList({
   }, [startingMileage, editedRefuel]);
 
   return (
-    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar mb-5">
+    <Grids rows={"1"} className="h-full overflow-y-auto no-scrollbar">
       <div className=" row-span-1 h-full ">
         {editedRefuel.length === 0 && (
           <Holds className="px-10 mt-4">
@@ -155,18 +155,18 @@ export default function RefuelLogsList({
         )}
         {editedRefuel.map((rL, index) => (
           <div key={rL.id} className="">
-            <SlidingDiv onSwipeLeft={() => handleDelete(rL.id)}>
-              <Holds
-                position={"row"}
-                background={"white"}
-                className={`w-full h-full  border-[3px] rounded-[10px]  border-black
+            <SlidingDiv
+              onSwipeLeft={() => handleDelete(rL.id)}
+              confirmationMessage={t("DeleteRefuelLogPrompt")}
+            >
+              <div
+                key={rL.id}
+                className={` w-full h-full bg-white flex flex-row  border-[3px] rounded-[10px] border-black
               `}
               >
-                <Holds
-                  background={"white"}
-                  className="w-1/2 px-2 h-full justify-center"
-                >
+                <div className="w-full flex flex-row items-center">
                   <Inputs
+                    variant={"noBorder"}
                     type="number"
                     name="gallons"
                     placeholder={t("TotalGallons")}
@@ -185,18 +185,19 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
+                    className={`text-xs h-8 py-2 mb-0 text-right mr-1 rounded-r-none focus:outline-none focus:ring-0 ${
                       rL.gallonsRefueled
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
                     } `}
                   />
-                </Holds>
-                <Holds
-                  background={"white"}
-                  className="w-1/2 px-2 h-full justify-center  border-black border-l-[3px] rounded-l-none"
-                >
+                  <span className="bg-app-dark-gray h-8 px-2 flex justify-center items-center  text-xs text-white">
+                    Gals
+                  </span>
+                </div>
+                <div className="w-full flex flex-row items-center">
                   <Inputs
+                    variant={"noBorder"}
                     type="number"
                     name="currentMileage"
                     placeholder={t("CurrentMileage")}
@@ -215,16 +216,19 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`border-none text-xs py-3 focus:outline-hidden focus:ring-0 ${
+                    className={`text-xs h-8 py-2 mb-0 text-right mr-1 focus:outline-none  focus:ring-0 border-l-[3px] border-black rounded-l-none ${
                       rL.milesAtFueling
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
                     } `}
                   />
-                </Holds>
-              </Holds>
+                  <span className="bg-app-dark-gray h-8 px-3 flex justify-center items-center rounded-r-md text-xs text-white">
+                    Mi
+                  </span>
+                </div>
+              </div>
             </SlidingDiv>
-            {validationErrors[rL.id] && (
+            {validationErrors[rL.id] && rL.milesAtFueling !== 0 && (
               <div className="text-xs text-app-red text-center px-1 leading-tight">
                 {validationErrors[rL.id]}
               </div>

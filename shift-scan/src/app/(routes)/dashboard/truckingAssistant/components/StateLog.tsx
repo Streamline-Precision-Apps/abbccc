@@ -77,7 +77,7 @@ export default function StateLog({
 
             <Button
               size={"icon"}
-              className="bg-app-green w-10  text-black py-1.5 px-3 border-[3px] border-black rounded-[10px] shadow-none"
+              className="bg-app-green w-10 hover:bg-app-green text-black py-1.5 px-3 border-[3px] border-black rounded-[10px] shadow-none"
               onClick={() => {
                 AddStateMileage();
               }}

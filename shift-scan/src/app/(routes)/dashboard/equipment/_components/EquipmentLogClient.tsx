@@ -195,6 +195,7 @@ export default function EquipmentLogClient() {
                                 <Holds key={log.id}>
                                   <SlidingDiv
                                     onSwipeLeft={() => handleDelete(log.id)}
+                                    confirmationMessage={t("DeletePrompt")}
                                   >
                                     <Buttons
                                       background={

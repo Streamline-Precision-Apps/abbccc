@@ -261,6 +261,7 @@
     "SaveCropImage": "Save Image"
   },
   "Equipment": {
+    "DeletePrompt": "Are you sure you want to delete this Equipment log?",
     "CurrentLogs": "Current Logs",
     "FinishedLogs": "Finished Logs",
     "ScanQR": "Scan QR Code",
@@ -1263,6 +1264,12 @@
   },
 
   "TruckingAssistant": {
+    "DeleteMaterialPrompt": "Are you sure you want to delete this material?",
+    "DeleteStateMileagePrompt": "Are you sure you want to delete this state mileage log?",
+    "DeleteRefuelLogPrompt": "Are you sure you want to delete this refuel log?",
+
+    "NoMaterialSelected": "No Material Selected",
+    "BackToList": "Back to List",
     "Comments": "Comments",
     "StartRequiredMileageMustBe": "* Required & must be (>=)",
     "EndRequiredMileageMustBe": "* Required & must be (>=)",
@@ -1319,7 +1326,11 @@
     "NoMaterialsHauledRecorded": "No Materials Hauled Recorded",
     "NoMaterialTypeSelected": "No Material Type Selected",
     "MileageAndComments": "Mileage & Comments",
-    "FetchingError": "An error occurred while fetching received content"
+    "FetchingError": "An error occurred while fetching received content",
+    "ConfirmDeletion": "Confirm Deletion",
+    "DeleteEquipmentConfirmation": "Are you sure you want to delete this equipment log? This action cannot be undone.",
+    "Cancel": "Cancel",
+    "Delete": "Delete"
   },
 
   "Tasco": {
@@ -1333,6 +1344,7 @@
   },
 
   "MechanicWidget": {
+    "DeleteProjectPrompt": "Are you sure you want to delete this log?",
     "AddDelay": "Add Delay",
     "RemoveDelay": "Remove Delay",
     "ExpectedArrival": "Expected Arrival",
@@ -1444,5 +1456,9 @@
     "offerDetails": "\n ",
     "welcome": "Welcome to the Shift Scan!",
     "welcomeMessage": "This is a tool to help you manage your work shifts, track your time, and communicate with your team via QR technology."
+  },
+  "Animations": {
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

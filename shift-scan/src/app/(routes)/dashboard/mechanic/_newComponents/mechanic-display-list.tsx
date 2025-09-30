@@ -525,6 +525,7 @@ export function MechanicDisplayList() {
                       <SlidingDiv
                         key={project.id}
                         onSwipeLeft={() => confirmDelete(project.id)}
+                        confirmationMessage={t("DeleteProjectPrompt")}
                       >
                         <div className="pb-2 pl-4 pt-1 pr-1 rounded-lg border border-gray-200 bg-white shadow-sm flex flex-col gap-1">
                           <div className="flex justify-between items-end">

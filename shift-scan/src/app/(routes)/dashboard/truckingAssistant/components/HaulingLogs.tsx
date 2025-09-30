@@ -15,6 +15,17 @@ import { useTranslations } from "next-intl";
 import MaterialItem from "./MaterialItem";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type EquipmentHauled = {
   id: string;
@@ -77,6 +88,10 @@ export default function HaulingLogs({
   const [activeTab, setActiveTab] = useState<number>(1);
   const [contentView, setContentView] = useState<"Item" | "List">("List");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<string | null>(
+    null,
+  );
 
   // Add Temporary Equipment
   const addTempEquipmentList = async () => {
@@ -138,12 +153,19 @@ export default function HaulingLogs({
     }
   };
 
+  const openDeleteDialog = (id: string) => {
+    setEquipmentToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
   const handleDelete = async (id: string) => {
     try {
       await deleteEquipmentHauled(id);
       setEquipmentHauled(
         (prevLogs) => prevLogs?.filter((log) => log.id !== id) ?? [],
       );
+      setDeleteDialogOpen(false);
+      setEquipmentToDelete(null);
     } catch (error) {
       console.error("Error deleting equipment log:", error);
     }
@@ -176,7 +198,7 @@ export default function HaulingLogs({
                 addTempEquipmentList();
               } else {
                 if (equipmentHauled && equipmentHauled.length > 0) {
-                  handleDelete(equipmentHauled[0].id);
+                  openDeleteDialog(equipmentHauled[0].id);
                 }
               }
             }}
@@ -190,53 +212,6 @@ export default function HaulingLogs({
             )}
           </Button>
         </div>
-
-        {/* <Contents width={"section"} className="h-full">
-          <Holds position={"row"} className="h-full gap-2">
-            <Holds size={"80"}>
-              <Sliders
-                leftTitle={"Material"}
-                rightTitle={"Equipment"}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-              />
-            </Holds>
-            <Holds size={"20"} className="my-auto">
-              {activeTab === 1 ? (
-                <Buttons
-                  background={"green"}
-                  className="py-1.5"
-                  onClick={() => addTempMaterial()}
-                  shadow={"none"}
-                >
-                  +
-                </Buttons>
-              ) : equipmentHauled?.length === 0 ? (
-                <Buttons
-                  background={"green"}
-                  className="py-1.5"
-                  onClick={() => addTempEquipmentList()}
-                  shadow={"none"}
-                >
-                  +
-                </Buttons>
-              ) : (
-                <Buttons
-                  background={"red"}
-                  className="py-1.5"
-                  shadow={"none"}
-                  onClick={() => {
-                    if (equipmentHauled && equipmentHauled.length > 0) {
-                      handleDelete(equipmentHauled[0].id);
-                    }
-                  }}
-                >
-                  -
-                </Buttons>
-              )}
-            </Holds>
-          </Holds>
-        </Contents> */}
       </Holds>
       <Holds
         className={`${
@@ -284,6 +259,41 @@ export default function HaulingLogs({
           </Grids>
         </Holds>
       </Holds>
+
+      {/* Delete Confirmation AlertDialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="max-w-[450px] border-black border-[3px] rounded-[10px] w-[90%]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold">
+              {t("ConfirmDeletion")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
+              {t("DeleteEquipmentConfirmation")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="w-full flex flex-row items-center justify-center gap-4">
+            <AlertDialogCancel
+              asChild
+              className="border-gray-200 hover:bg-white border-2 rounded-[10px]"
+            >
+              <Button size="lg" variant="outline" className="mt-0 w-24">
+                {t("Cancel")}
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              asChild
+              className=" bg-red-500   rounded-[10px] w-24"
+              onClick={() =>
+                equipmentToDelete && handleDelete(equipmentToDelete)
+              }
+            >
+              <Button variant="outline" size="lg">
+                {t("Delete")}
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Grids>
   );
 }

@@ -96,7 +96,8 @@ export async function middleware(request: NextRequest) {
       // If the user is an admin and trying to access mobile-only paths, redirect to admin section
       if (isAdmin) {
         // Only apply mobile path restrictions if not in development
-        if (process.env.NODE_ENV !== "development") {
+        const isProdTest = process.env.IS_PROD_TEST === "true";
+        if (isProdTest && process.env.NODE_ENV !== "development") {
           const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
             // Skip the check for paths that are allowed on both mobile and desktop
             if (path === "/signin") {
