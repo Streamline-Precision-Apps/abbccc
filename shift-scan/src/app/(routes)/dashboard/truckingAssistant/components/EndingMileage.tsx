@@ -2,7 +2,6 @@ import { Inputs } from "@/components/(reusable)/inputs";
 import { updateTruckingMileage } from "@/actions/truckingActions";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
-import { Label } from "@/components/ui/label";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 
