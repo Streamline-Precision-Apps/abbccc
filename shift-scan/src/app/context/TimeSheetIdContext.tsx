@@ -1,6 +1,5 @@
 "use client";
 import { setPrevTimeSheet } from "@/actions/cookieActions";
-import { usePathname } from "next/navigation";
 import React, {
   createContext,
   useState,
@@ -16,6 +15,7 @@ type TimeSheetData = {
 type TimeSheetDataContextType = {
   savedTimeSheetData: TimeSheetData | null;
   setTimeSheetData: (timesheetData: TimeSheetData | null) => void;
+  refetchTimesheet: () => Promise<void>;
 };
 
 const TimeSheetDataContext = createContext<
@@ -28,49 +28,57 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   const [savedTimeSheetData, setTimeSheetData] = useState<TimeSheetData | null>(
     null,
   );
-  const url = usePathname();
 
+  // Load from localStorage on mount
   useEffect(() => {
-    const savedTimeSheet = async () => {
+    const stored = localStorage.getItem("timesheetId");
+    if (stored) {
       try {
-        if (
-          url === "/clock" ||
-          url === "/dashboard/equipment/log-new" ||
-          url === "/dashboard/switch-jobs" ||
-          url === "/break"
-        ) {
-          const prevTimeSheet = await fetch("/api/getRecentTimecard");
-
-          // Check if the response is OK (status code 200-299)
-          if (!prevTimeSheet.ok) {
-            throw new Error(
-              `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`,
-            );
-          }
-
-          // Parse the response as JSON
-          const data = await prevTimeSheet.json();
-
-          // Check if the data is valid
-          if (data && data.id) {
-            setTimeSheetData(data);
-            setPrevTimeSheet(data.id as string);
-          } else {
-            console.warn("No TimeSheet data received from the API.");
-            setTimeSheetData(null); // Clear any previous data
-          }
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed.id === "number") {
+          setTimeSheetData(parsed);
         }
-      } catch (error) {
-        console.error("Error fetching recent timecard:", error);
-        setTimeSheetData(null); // Clear any previous data
+      } catch {}
+    }
+  }, []);
+
+  // Save to localStorage whenever timesheet changes
+  useEffect(() => {
+    if (savedTimeSheetData) {
+      localStorage.setItem("timesheetId", JSON.stringify(savedTimeSheetData));
+      setPrevTimeSheet(savedTimeSheetData.id.toString());
+    } else {
+      localStorage.removeItem("timesheetId");
+      setPrevTimeSheet("");
+    }
+  }, [savedTimeSheetData]);
+
+  // Manual trigger to refetch timesheet data
+  const refetchTimesheet = async () => {
+    try {
+      const prevTimeSheet = await fetch("/api/getRecentTimecard");
+      if (!prevTimeSheet.ok) {
+        throw new Error(
+          `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`,
+        );
       }
-    };
-    savedTimeSheet();
-  }, [url]);
+      const data = await prevTimeSheet.json();
+      if (data && data.id) {
+        setTimeSheetData(data);
+        setPrevTimeSheet(data.id as string);
+      } else {
+        setTimeSheetData(null);
+        setPrevTimeSheet("");
+      }
+    } catch (error) {
+      console.error("Error fetching recent timecard:", error);
+      setTimeSheetData(null);
+    }
+  };
 
   return (
     <TimeSheetDataContext.Provider
-      value={{ savedTimeSheetData, setTimeSheetData }}
+      value={{ savedTimeSheetData, setTimeSheetData, refetchTimesheet }}
     >
       {children}
     </TimeSheetDataContext.Provider>

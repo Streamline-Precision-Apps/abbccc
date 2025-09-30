@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import Spinner from "../(animations)/spinner";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Texts } from "../(reusable)/texts";
+import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 
 type Options = {
   id: string;
@@ -60,20 +61,10 @@ export default function VerificationStep({
   const { data: session } = useSession();
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
+  const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
-
-  const fetchRecentTimeSheetId = async (): Promise<string | null> => {
-    try {
-      const res = await fetch("/api/getRecentTimecard");
-      const data = await res.json();
-      return data?.id || null;
-    } catch (error) {
-      console.error("Error fetching recent timesheet ID:", error);
-      return null;
-    }
-  };
 
   const handleSubmit = async () => {
     if (!id) {
@@ -94,9 +85,17 @@ export default function VerificationStep({
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
-        const timeSheetId = await fetchRecentTimeSheetId();
-        if (!timeSheetId) throw new Error("No valid TimeSheet ID found.");
-        formData.append("id", timeSheetId);
+        let timeSheetId = savedTimeSheetData?.id;
+        if (!timeSheetId) {
+          await refetchTimesheet();
+          const ts = savedTimeSheetData?.id;
+          if (!ts) {
+            console.error("No active timesheet found for job switch.");
+          }
+          return (timeSheetId = ts);
+        }
+
+        formData.append("id", timeSheetId.toString());
         formData.append("endTime", new Date().toISOString());
         formData.append(
           "timeSheetComments",
@@ -108,7 +107,7 @@ export default function VerificationStep({
       // Use the new transaction-based function
       const responseAction = await handleGeneralTimeSheet(formData);
       if (responseAction.success && type === "switchJobs") {
-        const response = await fetch("/api/notifications/send-multicast", {
+        await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -121,7 +120,6 @@ export default function VerificationStep({
             referenceId: responseAction.createdTimeSheet.id,
           }),
         });
-        await response.json();
       }
 
       // Update state and redirect
@@ -132,6 +130,7 @@ export default function VerificationStep({
         setCurrentPageView("dashboard"),
         setWorkRole(role),
         setLaborType(clockInRoleTypes || ""),
+        refetchTimesheet(),
       ]).then(() => router.push("/dashboard"));
     } catch (error) {
       console.error("Error in handleSubmit:", error);

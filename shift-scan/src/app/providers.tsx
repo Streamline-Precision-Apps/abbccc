@@ -21,6 +21,7 @@ import { EquipmentIdProvider } from "./context/operatorContext";
 import { PermissionsProvider } from "./context/PermissionsContext";
 import { DashboardDataProvider } from "./(routes)/admins/_pages/sidebar/DashboardDataContext";
 import { UserProfileProvider } from "./(routes)/admins/_pages/sidebar/UserImageContext";
+import { TimeSheetDataProvider } from "./context/TimeSheetIdContext";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -44,7 +45,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                                       <EquipmentIdProvider>
                                         <DashboardDataProvider>
                                           <UserProfileProvider>
-                                            {children}
+                                            <TimeSheetDataProvider>
+                                              {children}
+                                            </TimeSheetDataProvider>
                                           </UserProfileProvider>
                                         </DashboardDataProvider>
                                       </EquipmentIdProvider>

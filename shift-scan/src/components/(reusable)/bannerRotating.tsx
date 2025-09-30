@@ -29,6 +29,7 @@ interface EmployeeEquipmentLog {
 
 // Type for Tasco Logs
 interface TascoLog {
+  shiftType: string;
   laborType: string;
   equipment?: Equipment;
 }
@@ -107,27 +108,13 @@ export default function BannerRotating({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Step 1: Fetch the most recent timeSheetId
-        let timeSheetData = null;
-
-        if (!prevTimeSheetId) {
-          const timeSheetResponse = await fetch("/api/getRecentTimecard");
-          timeSheetData = await timeSheetResponse.json();
-        } else {
-          timeSheetData = { id: prevTimeSheetId };
-        }
-
-        if (!timeSheetData?.id) {
-          throw new Error("No valid timesheet ID found.");
-        }
+        // Step 1: Fetch timeSheetId
 
         // Step 2: Fetch banner data using the obtained timeSheetId
         const bannerResponse = await fetch(
-          `/api/getBannerData?id=${timeSheetData.id}`,
+          `/api/getBannerData?id=${prevTimeSheetId}`,
         );
         const bannerData = await bannerResponse.json();
-        // console.log(bannerData); // Uncomment for debugging
-
         setBannerData(bannerData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -139,7 +126,7 @@ export default function BannerRotating({
   }, []);
 
   return (
-    <div className="w-[80%] h-full m-auto">
+    <div className="w-[80%] h-full mx-auto">
       {bannerData ? (
         <Slider {...settings}>
           {/* Jobsite Information */}
@@ -154,7 +141,9 @@ export default function BannerRotating({
           {bannerData.costCode && (
             <Holds className="h-full justify-center items-center space-y-1">
               <h3>{t("CurrentCostCode")} </h3>
-              <p>{bannerData.costCode.name || ""}</p>
+              <p className="truncate-slick ">
+                {bannerData.costCode.name || ""}
+              </p>
             </Holds>
           )}
 
@@ -162,58 +151,43 @@ export default function BannerRotating({
           {bannerData.tascoLogs &&
             bannerData.tascoLogs.map((equipment, index) => (
               <Holds key={index} className="h-full justify-center items-center">
-                {equipment.laborType === "tascoAbcdEquipment" ? (
-                  <>
-                    <Holds className="h-full justify-center items-center space-y-1">
-                      <h3>{t("AbcdShift")} </h3>
-                      <p>{t("EquipmentOperator")}</p>
-                    </Holds>
-                  </>
-                ) : equipment.laborType === "tascoEEquipment" ? (
-                  <>
+                {equipment.shiftType === "ABCD Shift" &&
+                equipment.laborType === "Operator" ? (
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <h3>{t("AbcdShift")} </h3>
+                    <p>{t("EquipmentOperator")}</p>
+                  </Holds>
+                ) : equipment.shiftType === "E shift" ? (
+                  <Holds className="h-full justify-center items-center space-y-1">
                     <h3>{t("EShift")} </h3>
 
                     <p>{t("MudConditioning")}</p>
-                  </>
-                ) : equipment.laborType === "tascoAbcdLabor" ? (
-                  <>
-                    <Holds className="h-full justify-center items-center space-y-1">
-                      <h3>{t("AbcdShift")} </h3>
-                      <p>{t("ManualLabor")}</p>
-                    </Holds>
-                  </>
+                  </Holds>
+                ) : equipment.shiftType === "ABCD Shift" &&
+                  equipment.laborType === "Manual Labor" ? (
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <h3>{t("AbcdShift")} </h3>
+                    <p>{t("ManualLabor")}</p>
+                  </Holds>
                 ) : null}
               </Holds>
             ))}
 
           {bannerData.tascoLogs
-            .filter((log) => log.laborType !== "tascoAbcdLabor")
+            .filter((log) => log.laborType !== "Manual Labor")
             .map((log, index) => {
-              if (log.laborType === "tascoAbcdEquipment") {
-                return (
-                  <Holds
-                    key={index}
-                    className="h-full justify-center items-center"
-                  >
-                    <Holds className="h-full justify-center items-center space-y-1">
-                      <h3>{t("CurrentlyOperating")} </h3>
-                      <p>{log.equipment?.name}</p>
-                    </Holds>
-                  </Holds>
-                );
-              } else if (log.laborType === "tascoEEquipment") {
-                return (
-                  <Holds
-                    key={index}
-                    className="h-full justify-center items-center space-y-1"
-                  >
+              if (!log.equipment) return null;
+              return (
+                <Holds
+                  key={index}
+                  className="h-full justify-center items-center"
+                >
+                  <Holds className="h-full justify-center items-center space-y-1">
                     <h3>{t("CurrentlyOperating")} </h3>
-
                     <p>{log.equipment?.name}</p>
                   </Holds>
-                );
-              }
-              return null;
+                </Holds>
+              );
             })}
 
           {/* Trucking Logs */}
@@ -260,7 +234,9 @@ export default function BannerRotating({
           <h3>{t("ErrorFetchingClockInDetails")} </h3>
         </Holds>
       ) : (
-        <Spinner size={40} color="white" />
+        <Holds className="w-[80%] h-full mx-auto justify-center items-center">
+          <Spinner size={40} color="white" />
+        </Holds>
       )}
     </div>
   );

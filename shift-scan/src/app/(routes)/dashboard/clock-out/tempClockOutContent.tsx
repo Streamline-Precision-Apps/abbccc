@@ -9,6 +9,7 @@ import { Bases } from "@/components/(reusable)/bases";
 import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockOut";
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
+import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 
 type crewUsers = {
   id: string;
@@ -77,7 +78,8 @@ export default function TempClockOutContent({
   const [employeeId, setEmployeeId] = useState<string>("");
   const [teamUsers, setTeamUsers] = useState<crewUsers[]>([]);
   const [wasInjured, setWasInjured] = useState<boolean>(false);
-  const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
+  // const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
+  const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
 
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
@@ -90,19 +92,6 @@ export default function TempClockOutContent({
   useEffect(() => {
     setCommentsValue(clockOutComment || "");
   }, [clockOutComment]);
-
-  useEffect(() => {
-    const getRecentTimeCard = async () => {
-      try {
-        const response = await fetch("/api/getRecentTimecard");
-        const data = await response.json();
-        setCurrentTimesheetId(data.id);
-      } catch (error) {
-        console.error("Error fetching recent time card:", error);
-      }
-    };
-    getRecentTimeCard();
-  }, []);
 
   // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {
@@ -187,6 +176,7 @@ export default function TempClockOutContent({
               handleCheckboxChange={handleCheckboxChange}
               loading={loading}
               setLoading={setLoading}
+              currentTimesheetId={savedTimeSheetData?.id}
             />
           </Holds>
         </Contents>
@@ -202,7 +192,7 @@ export default function TempClockOutContent({
         loading={loading}
         timesheets={timesheets}
         setReviewYourTeam={() => {}}
-        currentTimesheetId={currentTimesheetId}
+        currentTimesheetId={savedTimeSheetData?.id}
       />
     );
   }
@@ -229,7 +219,7 @@ export default function TempClockOutContent({
         setWasInjured={setWasInjured}
       />
     );
-  } else if (step === 3 && path === "clockOut") {
+  } else if (step === 3 && path !== "Injury") {
     // Final Clock-Out step
     return (
       <LaborClockOut
@@ -237,7 +227,8 @@ export default function TempClockOutContent({
         commentsValue={commentsValue}
         pendingTimeSheets={pendingTimeSheets}
         wasInjured={wasInjured}
-        timeSheetId={currentTimesheetId}
+        timeSheetId={savedTimeSheetData?.id}
+        refetchTimesheet={refetchTimesheet}
       />
     );
   } else {

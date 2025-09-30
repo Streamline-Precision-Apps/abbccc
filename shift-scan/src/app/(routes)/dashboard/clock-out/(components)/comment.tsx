@@ -13,6 +13,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
+import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 
 export default function Comment({
   handleClick,
@@ -22,6 +23,7 @@ export default function Comment({
   handleCheckboxChange,
   setLoading,
   loading = false,
+  currentTimesheetId,
 }: {
   commentsValue: string;
   handleClick: () => void;
@@ -31,9 +33,11 @@ export default function Comment({
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
+  currentTimesheetId: number | undefined;
 }) {
   const c = useTranslations("Clock");
-
+  const { refetchTimesheet, savedTimeSheetData, setTimeSheetData } =
+    useTimeSheetData();
   const router = useRouter();
   const returnRoute = () => {
     window.history.back();
@@ -42,23 +46,29 @@ export default function Comment({
   const processOne = async () => {
     try {
       // Step 1: Get the recent timecard ID.
-      const response = await fetch("/api/getRecentTimecard");
-      const tsId = await response.json();
-      const timeSheetId = tsId.id;
+      // const response = await fetch("/api/getRecentTimecard");
+      // const tsId = await response.json();
+      // const timeSheetId = tsId.id;
+      let timeSheetId = currentTimesheetId;
 
       if (!timeSheetId) {
-        alert("No valid TimeSheet ID was found. Please try again later.");
-        return;
+        await refetchTimesheet();
+        const ts = savedTimeSheetData?.id;
+        if (!ts) {
+          console.error("No active timesheet found for job switch.");
+        }
+        return (timeSheetId = ts);
       }
-      const formData2 = new FormData();
 
-      formData2.append("id", timeSheetId);
+      const formData2 = new FormData();
+      formData2.append("id", timeSheetId.toString());
       formData2.append("endTime", new Date().toISOString());
       formData2.append("timesheetComments", commentsValue);
 
       const isUpdated = await breakOutTimeSheet(formData2);
       if (isUpdated) {
         await setCurrentPageView("break");
+        setTimeSheetData(null);
         router.push("/");
       }
     } catch (err) {
