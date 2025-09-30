@@ -185,13 +185,13 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`text-xs h-8 py-2 mb-0 text-right mr-1 rounded-r-none focus:outline-none focus:ring-0 ${
+                    className={`text-xs h-8 py-2 mb-0 placeholder:text-left text-right rounded-r-none focus:outline-none focus:ring-0 ${
                       rL.gallonsRefueled
                         ? "text-black"
                         : "text-app-red placeholder:text-app-red"
                     } `}
                   />
-                  <span className="bg-app-dark-gray h-8 px-2 flex justify-center items-center  text-xs text-white">
+                  <span className="bg-white h-8 pr-2 flex justify-center items-center  text-xs text-black">
                     Gals
                   </span>
                 </div>
@@ -216,14 +216,14 @@ export default function RefuelLogsList({
                       );
                       updateRefuelLog(formData);
                     }}
-                    className={`text-xs h-8 py-2 mb-0 text-right mr-1 focus:outline-none  focus:ring-0 border-l-[3px] border-black rounded-l-none ${
+                    className={`text-xs h-8 py-2 mb-0 placeholder:text-left text-right focus:outline-none  focus:ring-0 border-l-[3px] border-black rounded-l-none ${
                       rL.milesAtFueling
                         ? "text-black"
-                        : "text-app-red placeholder:text-app-red"
+                        : "text-app-red placeholder:text-app-red "
                     } `}
                   />
-                  <span className="bg-app-dark-gray h-8 px-3 flex justify-center items-center rounded-r-md text-xs text-white">
-                    Mi
+                  <span className="bg-white h-8 pr-3 flex justify-center items-center rounded-r-md text-xs text-black">
+                    MI
                   </span>
                 </div>
               </div>

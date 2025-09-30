@@ -139,7 +139,7 @@ export default function BannerRotating({
   }, []);
 
   return (
-    <div className="w-[80%] h-full m-auto pb-5 ">
+    <div className="w-[80%] h-full m-auto">
       {bannerData ? (
         <Slider {...settings}>
           {/* Jobsite Information */}

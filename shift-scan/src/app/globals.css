@@ -153,6 +153,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+ul.slick-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px; /* Adjust as needed */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  text-align: center;
+  z-index: 0;
+}
+
 .slick-track {
   height: 100% !important;
   display: flex !important;

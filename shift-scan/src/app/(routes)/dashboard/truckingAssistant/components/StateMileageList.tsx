@@ -216,10 +216,10 @@ export default function StateMileageList({
                       );
                       updateStateMileage(formData);
                     }}
-                    className={`h-8 py-2 border-l-[3px] text-right mr-1 mb-0 rounded-none border-black text-xs focus:outline-none focus:ring-0 placeholder:text-app-red ${sm.stateLineMileage ? "text-black" : "text-app-red placeholder:text-app-red"}`}
+                    className={`h-8 py-2 border-l-[3px] text-right mb-0 rounded-none border-black text-xs focus:outline-none focus:ring-0 placeholder:text-app-red ${sm.stateLineMileage ? "text-black" : "text-app-red placeholder:text-app-red"}`}
                   />
-                  <span className="bg-app-dark-gray h-8 px-3 flex justify-center items-center rounded-r-md text-xs text-white">
-                    Mi
+                  <span className="bg-white h-8 pr-3 flex justify-center items-center rounded-r-md text-xs text-black">
+                    MI
                   </span>
                 </div>
               </div>
