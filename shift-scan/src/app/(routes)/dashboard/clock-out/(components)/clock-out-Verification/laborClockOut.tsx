@@ -41,12 +41,14 @@ export const LaborClockOut = ({
   pendingTimeSheets,
   wasInjured,
   timeSheetId,
+  refetchTimesheet,
 }: {
   prevStep: () => void;
   commentsValue: string;
   pendingTimeSheets: TimeSheet | undefined;
   wasInjured: boolean;
   timeSheetId: number | undefined;
+  refetchTimesheet: () => Promise<void>;
 }) => {
   // const { token, notificationPermissionStatus } = useFcmToken();
   const t = useTranslations("ClockOut");
@@ -70,7 +72,7 @@ export const LaborClockOut = ({
       const result = await updateTimeSheet(formData);
       if (result.success) {
         try {
-          const response = await fetch("/api/notifications/send-multicast", {
+          await fetch("/api/notifications/send-multicast", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -88,7 +90,7 @@ export const LaborClockOut = ({
           return;
         } finally {
           setLoading(false);
-          router.push("/");
+          await Promise.all([refetchTimesheet(), router.push("/")]);
           // clear the saved storage after navigation
           setTimeout(() => {
             fetch("/api/cookies?method=deleteAll");

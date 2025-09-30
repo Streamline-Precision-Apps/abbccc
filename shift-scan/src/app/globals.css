@@ -196,4 +196,8 @@ ul.slick-dots {
   color: white !important;
   font-family: mako !important;
   font-size: 1.1rem !important;
+  max-width: 250px; /* Adjust as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

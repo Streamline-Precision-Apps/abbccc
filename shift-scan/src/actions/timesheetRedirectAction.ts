@@ -22,12 +22,19 @@ type TimesheetRedirectData = {
   };
 };
 
-export async function setTimesheetCookiesAndRedirect(data: TimesheetRedirectData) {
+export async function setTimesheetCookiesAndRedirect(
+  data: TimesheetRedirectData,
+) {
   const cookieStore = await cookies();
-  
+
   try {
     // Set the timesheet ID cookie
     cookieStore.set("prevTimeSheet", data.timesheetId, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+    cookieStore.set("timeSheetId", data.timesheetId, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
@@ -52,13 +59,17 @@ export async function setTimesheetCookiesAndRedirect(data: TimesheetRedirectData
     });
 
     // Set jobsite information
-    cookieStore.set("jobSite", JSON.stringify({
-      code: data.jobsite.code,
-      label: data.jobsite.name,
-    }), {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
+    cookieStore.set(
+      "jobSite",
+      JSON.stringify({
+        code: data.jobsite.code,
+        label: data.jobsite.name,
+      }),
+      {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      },
+    );
 
     // Set cost code
     cookieStore.set("costCode", data.costCode, {
@@ -79,10 +90,14 @@ export async function setTimesheetCookiesAndRedirect(data: TimesheetRedirectData
         });
       }
     } else if (data.workType === "TRUCK_DRIVER" && data.truckingLog) {
-      cookieStore.set("laborType", data.truckingLog.laborType || "truckDriver", {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-      });
+      cookieStore.set(
+        "laborType",
+        data.truckingLog.laborType || "truckDriver",
+        {
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7, // 1 week
+        },
+      );
       if (data.truckingLog.equipmentQrId) {
         cookieStore.set("truck", data.truckingLog.equipmentQrId, {
           path: "/",
@@ -90,10 +105,14 @@ export async function setTimesheetCookiesAndRedirect(data: TimesheetRedirectData
         });
       }
       if (data.truckingLog.startingMileage) {
-        cookieStore.set("startingMileage", data.truckingLog.startingMileage.toString(), {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7, // 1 week
-        });
+        cookieStore.set(
+          "startingMileage",
+          data.truckingLog.startingMileage.toString(),
+          {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7, // 1 week
+          },
+        );
       }
     } else {
       // For LABOR and MECHANIC, set default labor type
