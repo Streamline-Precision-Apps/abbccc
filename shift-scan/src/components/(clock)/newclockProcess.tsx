@@ -5,7 +5,7 @@ import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
 import VerificationStep from "./verification-step";
 import TruckClockInForm from "./(Truck)/truckClockInForm";
-import TrailerSelector from "./(Truck)/trailerSelector";
+// import TrailerSelector from "./(Truck)/trailerSelector";
 import { Titles } from "../(reusable)/titles";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -96,11 +96,11 @@ export default function NewClockProcess({
     code: "",
   });
   // Trailer state
-  const [trailer, setTrailer] = useState<Option>({
-    id: "",
-    label: "",
-    code: "",
-  });
+  // const [trailer, setTrailer] = useState<Option>({
+  //   id: "",
+  //   label: "",
+  //   code: "",
+  // });
   // Equipment state
   const [equipment, setEquipment] = useState<Option>({
     id: "",
@@ -512,7 +512,7 @@ export default function NewClockProcess({
         />
       )}
       {/* Trailer selection step for trucking */}
-      {step === 6 && clockInRole === "truck" && (
+      {/* {step === 6 && clockInRole === "truck" && (
         <Holds background={"white"} className="h-full w-full">
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
@@ -542,13 +542,13 @@ export default function NewClockProcess({
             </Holds>
           </Grids>
         </Holds>
-      )}
-      {step === 7 && clockInRole === "truck" && (
+      )} */}
+      {step === 6 && clockInRole === "truck" && (
         <TruckVerificationStep
           jobsite={jobsite}
           laborType={laborType}
           truck={truck}
-          trailer={trailer}
+          // trailer={trailer}
           handlePrevStep={handlePrevStep}
           startingMileage={startingMileage}
           type={type}
