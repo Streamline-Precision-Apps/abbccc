@@ -123,13 +123,6 @@ export default function Content({
           currentStep={step}
         />
       )}
-      {/* {step === 7 && (
-        <Bases>
-          <Contents>
-            <SignUpOutro handleComplete={handleComplete} />
-          </Contents>
-        </Bases>
-      )} */}
     </Holds>
   );
 }
