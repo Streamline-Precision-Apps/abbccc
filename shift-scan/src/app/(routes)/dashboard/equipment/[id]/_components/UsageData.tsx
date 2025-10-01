@@ -68,7 +68,7 @@ export default function UsageData({
                   ? format(new Date(formState.startTime), "HH:mm")
                   : ""
               }
-              className="w-[240px] border-[3px] border-black p-1 rounded-[10px] flex-col items-center"
+              className="w-full border-[3px] border-black p-1 rounded-[10px] flex-col items-center"
               onChange={(e) => {
                 const newTime = e.target.value;
                 const currentDate = new Date(formState.startTime || new Date());

@@ -93,7 +93,15 @@
     "ConfirmPasswordEmptyError": "Invalid Attempt. Confirm Password cannot be empty!",
     "PasswordMismatchError": "Invalid Attempt. Passwords do not match!",
     "PasswordLengthError": "Invalid Attempt. Password must be at least 8 characters long, contain 1 number, and 1 symbol.",
-    "EyeImageAlt": "Eyeball Image"
+    "EyeImageAlt": "Eyeball Image",
+    "ChangePassword": "Change Password",
+
+    "NumberCriteriaLabel": "At Least One numeral (0-9)",
+    "SpecialCharacterCriteriaLabel": "At Least One special character",
+    "CapitalCriteriaLabel": "At Least One capital letter (A-Z)",
+    "LowerCriteriaLabel": "At Least One lowercase letter (a-z)",
+    "LengthCriteriaLabel": "Minimum 8 characters",
+    "PasswordsMatch": "Passwords Match"
   },
 
   "SignUpPermissions": {
@@ -139,7 +147,8 @@
     "Save": "Save",
     "Next": "Next",
     "Submitting": "Submitting...",
-    "SignatureMissingError": "Invalid Attempt. You must add a Signature!"
+    "SignatureMissingError": "Invalid Attempt. You must add a Signature!",
+    "Signature": "Signature"
   },
 
   "SignUpOutro": {

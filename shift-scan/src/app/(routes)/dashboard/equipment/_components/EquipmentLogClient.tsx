@@ -2,7 +2,7 @@
 import { Buttons } from "@/components/(reusable)/buttons";
 import { useTranslations } from "next-intl";
 import { Holds } from "@/components/(reusable)/holds";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Spinner from "@/components/(animations)/spinner";
 import { Contents } from "@/components/(reusable)/contents";
 import { useRouter } from "next/navigation";
@@ -119,43 +119,28 @@ export default function EquipmentLogClient() {
             >
               <Contents width={"section"}>
                 <Grids rows={"7"} gap={"5"} className="h-full w-full py-5">
-                  {loading ? (
-                    <>
+                  <Suspense
+                    fallback={
                       <Holds className="row-start-1 row-end-7 h-full justify-center items-center">
                         <Spinner />
                       </Holds>
-                      <Holds className="row-start-7 row-end-8 h-full w-full gap-1 ">
-                        <Buttons
-                          background={"darkGray"}
-                          className="w-full py-2"
-                        >
-                          <Titles size={"md"}>{t("LogNew")}</Titles>
-                        </Buttons>
+                    }
+                  >
+                    {loading ? (
+                      <Holds className="row-start-1 row-end-7 h-full justify-center items-center">
+                        <Spinner />
                       </Holds>
-                    </>
-                  ) : (
-                    <>
-                      {filteredLogs.length === 0 ? (
-                        <>
-                          <Holds className="row-start-1 row-end-7 h-full justify-center">
-                            <Texts size="p6" className="text-gray-500 italic">
-                              {t("NoCurrent")}
-                            </Texts>
-                          </Holds>
-                          <Holds className="row-span-1 w-full h-full">
-                            <Buttons
-                              background={"green"}
-                              className="w-full py-2"
-                              onClick={() =>
-                                router.push("/dashboard/equipment/log-new")
-                              }
-                            >
-                              <Titles size={"md"}>{t("LogNew")}</Titles>
-                            </Buttons>
-                          </Holds>
-                        </>
-                      ) : (
-                        <>
+                    ) : (
+                      <>
+                        {filteredLogs.length === 0 ? (
+                          <>
+                            <Holds className="row-start-1 row-end-7 h-full justify-center">
+                              <Texts size="p6" className="text-gray-500 italic">
+                                {t("NoCurrent")}
+                              </Texts>
+                            </Holds>
+                          </>
+                        ) : (
                           <Holds className="row-start-1 row-end-7 h-full overflow-y-auto no-scrollbar">
                             {filteredLogs.map((log) => {
                               const start = parseISO(log.startTime.toString());
@@ -219,21 +204,22 @@ export default function EquipmentLogClient() {
                               );
                             })}
                           </Holds>
-                          <Holds className="row-start-7 row-end-8 h-full w-full">
-                            <Buttons
-                              background={"green"}
-                              onClick={() =>
-                                router.push("/dashboard/equipment/log-new")
-                              }
-                              className="w-full py-2"
-                            >
-                              <Titles size={"sm"}>{t("LogNew")}</Titles>
-                            </Buttons>
-                          </Holds>
-                        </>
-                      )}
-                    </>
-                  )}
+                        )}
+                      </>
+                    )}
+                  </Suspense>
+                  <Holds className="row-start-7 row-end-8 h-full w-full gap-1 ">
+                    <Buttons
+                      background={loading ? "darkGray" : "green"}
+                      className="w-full py-2"
+                      onClick={() =>
+                        router.push("/dashboard/equipment/log-new")
+                      }
+                      disabled={loading}
+                    >
+                      <Titles size={"md"}>{t("LogNew")}</Titles>
+                    </Buttons>
+                  </Holds>
                 </Grids>
               </Contents>
             </Holds>

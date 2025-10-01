@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     // Authentication
     const session = await auth();
