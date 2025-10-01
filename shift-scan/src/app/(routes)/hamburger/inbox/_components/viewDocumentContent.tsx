@@ -39,7 +39,6 @@ export function ViewDocumentContent({ id }: { id: string }) {
         }
 
         const blob = await response.blob();
-        console.log("Blob size:", blob.size);
         if (blob.size === 0) {
           throw new Error("Received empty PDF file");
         }
@@ -49,7 +48,7 @@ export function ViewDocumentContent({ id }: { id: string }) {
       } catch (err) {
         console.error("Fetch document error:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load document"
+          err instanceof Error ? err.message : "Failed to load document",
         );
       } finally {
         setLoading(false);

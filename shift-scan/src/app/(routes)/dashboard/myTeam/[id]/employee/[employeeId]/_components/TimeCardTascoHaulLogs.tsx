@@ -31,7 +31,7 @@ type TimeCardTascoHaulLogsProps = {
 // Helper to reconstruct the nested TascoHaulLogData structure
 const reconstructTascoHaulLogData = (
   original: TascoHaulLogData,
-  updated: ProcessedTascoHaulLog[]
+  updated: ProcessedTascoHaulLog[],
 ): TascoHaulLogData => {
   return original.map((item) => ({
     ...item,
@@ -61,24 +61,6 @@ export default function TimeCardTascoHaulLogs({
 }: TimeCardTascoHaulLogsProps) {
   const t = useTranslations("MyTeam.TimeCardTascoHaulLogs");
 
-  // Debug the received data structure
-  console.log("TimeCardTascoHaulLogs received:", {
-    isReviewYourTeam,
-    tascoHaulLogsType: typeof tascoHaulLogs,
-    isArray: Array.isArray(tascoHaulLogs),
-    dataLength: Array.isArray(tascoHaulLogs)
-      ? tascoHaulLogs.length
-      : "not an array",
-    firstItem:
-      Array.isArray(tascoHaulLogs) && tascoHaulLogs.length > 0
-        ? tascoHaulLogs[0]
-        : "no items",
-    hasTascoLogs:
-      Array.isArray(tascoHaulLogs) &&
-      tascoHaulLogs.length > 0 &&
-      "TascoLogs" in tascoHaulLogs[0],
-  });
-
   // Add state to store local input values to prevent losing focus while typing
   const [inputValues, setInputValues] = useState<
     Record<string, string | number | null>
@@ -93,7 +75,7 @@ export default function TimeCardTascoHaulLogs({
   const getDisplayValue = (
     logId: string,
     fieldName: string,
-    originalValue: string | number | null
+    originalValue: string | number | null,
   ) => {
     const key = getInputKey(logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -103,7 +85,7 @@ export default function TimeCardTascoHaulLogs({
   const handleLocalChange = (
     logId: string,
     fieldName: string,
-    value: string | number | null
+    value: string | number | null,
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -137,7 +119,7 @@ export default function TimeCardTascoHaulLogs({
   const allTascoHaulLogs: ProcessedTascoHaulLog[] = safeTascoHaulLogs
     .flatMap((log) => log.TascoLogs)
     .filter(
-      (log): log is TascoHaulLogs => log !== null && log?.id !== undefined
+      (log): log is TascoHaulLogs => log !== null && log?.id !== undefined,
     )
     .map((log) => ({
       id: log.id,
@@ -185,7 +167,7 @@ export default function TimeCardTascoHaulLogs({
     (
       id: string,
       field: keyof ProcessedTascoHaulLog,
-      value: string | number
+      value: string | number,
     ) => {
       const updatedLogs = editedTascoHaulLogs.map((log) => {
         if (log.id === id) {
@@ -204,7 +186,7 @@ export default function TimeCardTascoHaulLogs({
       const nested = reconstructTascoHaulLogData(tascoHaulLogs, updatedLogs);
       onDataChange(nested);
     },
-    [editedTascoHaulLogs, onDataChange, tascoHaulLogs]
+    [editedTascoHaulLogs, onDataChange, tascoHaulLogs],
   );
 
   const isEmptyData = editedTascoHaulLogs.length === 0;
@@ -269,7 +251,7 @@ export default function TimeCardTascoHaulLogs({
                                 handleTascoHaulChange(
                                   log.id,
                                   "shiftType",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               className="w-full h-full text-xs text-center border-none rounded-none rounded-tl-md py-2 bg-white"
@@ -298,7 +280,7 @@ export default function TimeCardTascoHaulLogs({
                               handleTascoHaulChange(
                                 log.id,
                                 "equipmentId",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             disabled={true}
@@ -314,7 +296,7 @@ export default function TimeCardTascoHaulLogs({
                                 handleTascoHaulChange(
                                   log.id,
                                   "materialType",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               className="w-full h-full text-xs text-center border-none rounded-none rounded-tr-md py-2 bg-white"
@@ -344,7 +326,7 @@ export default function TimeCardTascoHaulLogs({
                               getDisplayValue(
                                 log.id,
                                 "LoadQuantity",
-                                log.LoadQuantity?.toString() || ""
+                                log.LoadQuantity?.toString() || "",
                               ) ?? ""
                             }
                             background={isFocused ? "orange" : "white"}
@@ -352,7 +334,7 @@ export default function TimeCardTascoHaulLogs({
                               handleLocalChange(
                                 log.id,
                                 "LoadQuantity",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             onBlur={() => handleBlur(log.id, "LoadQuantity")}

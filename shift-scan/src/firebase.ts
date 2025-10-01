@@ -34,8 +34,6 @@ export const fetchToken = async () => {
       if (token) {
         await upsertFCMToken({ token });
       }
-
-      console.log("Cloud Messaging Enabled:");
       return token;
     }
     return null;

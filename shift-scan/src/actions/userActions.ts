@@ -20,15 +20,11 @@ export async function createUser(formData: FormData) {
         id: true,
       },
     });
-    const existingUser = user[0]?.id;
 
     if (user.length > 0) {
-      console.log("User already exists");
-      console.log(existingUser);
       return;
     }
 
-    console.log("Creating user:", formData);
     await prisma.user.create({
       data: {
         firstName: formData.get("firstName") as string,
@@ -48,9 +44,8 @@ export async function createUser(formData: FormData) {
         Company: { connect: { id: "1" } },
       },
     });
-    console.log("User created successfully.");
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
   revalidatePath("/");
 }
@@ -82,9 +77,6 @@ export async function adminCreateUser(formData: FormData) {
     });
 
     if (user.length > 0) {
-      console.log(
-        "User already exists based on first name, last name, and DOB",
-      );
       return;
     }
 
@@ -96,11 +88,9 @@ export async function adminCreateUser(formData: FormData) {
     });
 
     if (existingEmailUser) {
-      console.log("User already exists with the provided email:", email);
       return;
     }
 
-    console.log("Creating user:", formData);
     const newUser = await prisma.user.create({
       data: {
         firstName,
@@ -143,8 +133,6 @@ export async function adminCreateUser(formData: FormData) {
         locationAccess: formData.get("locationAccess") === "false",
       },
     });
-
-    console.log("User created successfully.");
   } catch (error) {
     console.error("Error creating user:", error);
   }
@@ -203,7 +191,6 @@ export async function deleteUser(formData: FormData) {
 }
 
 export async function uploadImage(formdata: FormData) {
-  console.log(formdata);
   await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
@@ -214,7 +201,6 @@ export async function uploadImage(formdata: FormData) {
 }
 
 export async function uploadFirstImage(formdata: FormData) {
-  console.log(formdata);
   await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
@@ -224,30 +210,24 @@ export async function uploadFirstImage(formdata: FormData) {
 }
 
 export async function uploadFirstSignature(formdata: FormData) {
-  console.log(formdata);
-
-  const result = await prisma.user.update({
+  await prisma.user.update({
     where: { id: formdata.get("id") as string },
     data: {
       signature: formdata.get("signature") as string,
     },
   });
-  console.log(result);
 }
 
 export async function uploadSignature(id: string, signature: string) {
-  console.log("id:", id, "signature:", signature);
-  const result = await prisma.user.update({
+  await prisma.user.update({
     where: { id: id },
     data: {
       signature: signature,
     },
   });
-  console.log(result);
 }
 
 export async function setUserSettings(formdata: FormData) {
-  console.log(formdata);
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
@@ -258,7 +238,6 @@ export async function setUserSettings(formdata: FormData) {
 }
 
 export async function setUserPermissions(formdata: FormData) {
-  console.log(formdata);
   await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
@@ -272,7 +251,6 @@ export async function setUserPermissions(formdata: FormData) {
 }
 
 export async function setUserLanguage(formdata: FormData) {
-  console.log(formdata);
   const result = await prisma.userSettings.update({
     where: { userId: formdata.get("id") as string },
     data: {
@@ -316,7 +294,6 @@ export async function setUserPassword(formData: FormData) {
 }
 
 export async function updateContactInfo(formData: FormData) {
-  console.log(formData);
   await prisma.contacts.update({
     where: { id: formData.get("id") as string },
     data: {
@@ -339,7 +316,6 @@ export async function updateContactInfo(formData: FormData) {
 export default async function updateUserAccountInfo(formData: FormData) {
   try {
     const id = formData.get("id") as string;
-    console.log("Updating user account info for ID:", id);
     await prisma.user.update({
       where: { id },
       data: {

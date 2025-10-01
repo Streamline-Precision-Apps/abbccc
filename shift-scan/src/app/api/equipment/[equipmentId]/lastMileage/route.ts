@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ equipmentId: string }> }
+  { params }: { params: Promise<{ equipmentId: string }> },
 ) {
   // Authenticate user
   const session = await auth();
@@ -20,13 +20,11 @@ export async function GET(
   if (!equipmentId || typeof equipmentId !== "string") {
     return NextResponse.json(
       { error: "Invalid or missing equipmentId" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   try {
-    console.log('Looking for last mileage for equipmentId:', equipmentId);
-    
     // Find the most recent trucking log entry for this equipment that has an ending mileage
     // Prioritize truck usage, then trailer, then hauled equipment
     const lastMileageEntry = await prisma.truckingLog.findFirst({
@@ -58,10 +56,7 @@ export async function GET(
       },
     });
 
-    console.log('Found lastMileageEntry:', lastMileageEntry);
-
     if (!lastMileageEntry) {
-      console.log('No mileage entry found for equipmentId:', equipmentId);
       // No previous mileage found for this equipment
       return NextResponse.json({
         lastMileage: null,
@@ -82,14 +77,13 @@ export async function GET(
       timesheetEndTime: lastMileageEntry.TimeSheet?.endTime,
     };
 
-    console.log('Returning response:', response);
     return NextResponse.json(response);
   } catch (error) {
     Sentry.captureException(error);
     console.error("Error fetching last mileage:", error);
     return NextResponse.json(
       { error: "Failed to fetch last mileage" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

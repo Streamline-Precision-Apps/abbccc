@@ -254,9 +254,6 @@ export async function saveDraftToPending(
           changedFields[key] = formData[key]; // Only include changed fields
         }
       }
-
-      console.log("Updating submission with changed fields:", changedFields);
-
       // Update the submission with the changed fields
       const updatedSubmission = await prisma.formSubmission.update({
         where: { id: submissionId },
@@ -278,8 +275,6 @@ export async function saveDraftToPending(
           },
         },
       });
-
-      console.log("Submission updated successfully:", updatedSubmission.id);
 
       return updatedSubmission;
     } else {
@@ -427,7 +422,6 @@ export async function createFormApproval(
   approval: FormStatus.APPROVED | FormStatus.DENIED,
 ) {
   try {
-    console.log("Creating form approval...");
     const formSubmissionId = Number(formData.get("formSubmissionId"));
     const signedBy = formData.get("signedBy") as string;
     const signature = formData.get("signature") as string;
@@ -459,21 +453,11 @@ export async function createFormApproval(
 
 export async function updateFormApproval(formData: FormData) {
   try {
-    console.log("Updating form approval...");
-
     // Extract data from FormData
     const id = formData.get("id") as string;
     const formSubmissionId = Number(formData.get("formSubmissionId"));
     const comment = formData.get("comment") as string;
     const isApp = formData.get("isApproved") === "true"; // Convert string to boolean
-
-    // Log input data for debugging
-    console.log("Input Data:", {
-      id,
-      formSubmissionId,
-      comment,
-      isApp,
-    });
 
     // Use a transaction to ensure atomicity
     const [approval, updatedSubmission] = await prisma.$transaction([
@@ -492,12 +476,6 @@ export async function updateFormApproval(formData: FormData) {
         },
       }),
     ]);
-
-    // Log updated records for debugging
-    console.log("Updated Approval:", approval);
-    console.log("Updated Submission:", updatedSubmission);
-
-    console.log("Form approval updated successfully.");
     return { approval, updatedSubmission }; // Return both updated records
   } catch (error) {
     console.error("Error updating form approval:", error);

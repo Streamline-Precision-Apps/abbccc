@@ -15,7 +15,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
     if (!session) {
       throw new Error("Unauthorized user");
     }
-    console.log("Handle Tasco TimeSheet:", formData);
     let newTimeSheet: number | null = null;
 
     // Start a transaction
@@ -39,9 +38,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
       } else {
         materialType = undefined;
       }
-
-      // Log the equipment ID for debugging
-      console.log("Equipment ID for connection:", equipmentId);
 
       // Create TascoLog create data without equipment initially
       type TascoLogCreateData = {
@@ -72,8 +68,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
         });
 
         if (equipment) {
-          console.log("Found equipment:", equipment);
-          // Use the actual equipment ID for the connection
           tascoLogCreateData.Equipment = { connect: { id: equipment.id } };
         } else {
           console.warn(`No equipment found with ID: ${equipmentId}`);
@@ -94,7 +88,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
         },
       });
 
-      console.log("New TimeSheet created:", createdTimeSheet);
       newTimeSheet = createdTimeSheet.id;
 
       // Step 2: If type is "switchJobs", end the previous TimeSheet
@@ -112,8 +105,6 @@ export async function handleTascoTimeSheet(formData: FormData) {
             comment: previousTimeSheetComments,
           },
         });
-
-        console.log("Previous TimeSheet ended:", previousTimeSheetId);
       }
 
       // Revalidate paths

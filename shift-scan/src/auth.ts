@@ -57,7 +57,7 @@ const providers: Provider[] = [
       });
 
       if (!userId || !userId.password) {
-        console.log("User not found or password not found");
+        console.error("User not found or password not found");
         throw new InvalidLoginError();
       }
 
@@ -67,7 +67,7 @@ const providers: Provider[] = [
       const isValidPassword = await compare(passwords, userId.password);
 
       if (!isValidPassword) {
-        console.log("Invalid password");
+        console.error("Invalid password");
         throw new InvalidLoginError();
       }
 

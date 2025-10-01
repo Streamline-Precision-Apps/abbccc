@@ -121,10 +121,6 @@ export default function CombinedForm({
         const apiData = (await response.json()) as EmployeeEquipmentLogData;
         const formState = transformApiToFormState(apiData);
 
-        // Debug logging
-        console.log("API Data RefuelLog:", apiData.RefuelLog);
-        console.log("Transformed formState.refuelLogs:", formState.refuelLogs);
-
         // If the log isn't finished, set the end time to now when opening the form
         if (!apiData.isFinished) {
           formState.endTime = new Date().toISOString();
@@ -246,12 +242,6 @@ export default function CombinedForm({
       setNotification("Failed to save refuel log", "error");
     }
   };
-  useEffect(() => {
-    console.log(
-      "fullyOperational state changed:",
-      state.formState.fullyOperational,
-    );
-  }, [state.formState.fullyOperational]);
 
   const handleChangeRefueled = () => {
     setState((prev) => ({

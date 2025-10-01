@@ -114,7 +114,6 @@ export const EndingMileage = ({
     formData.append("endingMileage", endMileage?.toString() || "");
     formData.append("id", truckingLog ?? "");
     updateTruckingMileage(formData);
-    console.log("Mileage Updated:", endMileage);
   };
 
   const handleMileageChange = (value: string) => {

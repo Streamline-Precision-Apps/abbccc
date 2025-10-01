@@ -151,7 +151,6 @@ export const useEquipmentData = () => {
   }, [searchTerm, showPendingOnly, filters]);
 
   const openHandleQr = (id: string) => {
-    console.log("openHandleQr called with id:", id);
     setPendingQrId(id);
     const equipment = equipmentDetails.find((j) => j.id === id);
     if (equipment) {

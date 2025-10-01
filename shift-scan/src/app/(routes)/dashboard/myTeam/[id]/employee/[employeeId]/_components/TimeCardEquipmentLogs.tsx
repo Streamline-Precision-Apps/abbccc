@@ -88,7 +88,7 @@ const TimeCardEquipmentLogs = forwardRef<
       setFocusIds,
       isReviewYourTeam,
     },
-    ref
+    ref,
   ) => {
     const t = useTranslations("MyTeam.TimeCardEquipmentLogs");
 
@@ -106,7 +106,7 @@ const TimeCardEquipmentLogs = forwardRef<
     const getDisplayValue = (
       logId: string,
       fieldName: string,
-      originalValue: string | number | null
+      originalValue: string | number | null,
     ) => {
       const key = getInputKey(logId, fieldName);
       return key in inputValues ? inputValues[key] : originalValue;
@@ -116,7 +116,7 @@ const TimeCardEquipmentLogs = forwardRef<
     const handleLocalChange = (
       logId: string,
       fieldName: string,
-      value: string | number | null
+      value: string | number | null,
     ) => {
       setInputValues((prev) => ({
         ...prev,
@@ -126,12 +126,10 @@ const TimeCardEquipmentLogs = forwardRef<
 
     // Update parent state only when field loses focus (onBlur)
     const handleBlur = (logId: string, field: string) => {
-      console.log("handleBlur called:", { logId, field });
       const key = getInputKey(logId, field);
 
       if (key in inputValues) {
         const value = inputValues[key];
-        console.log("Processing blur with value:", value);
         // Find the log and update it with the local value
         const log = editedEquipmentLogs.find((l) => l.id === logId);
         if (log) {
@@ -154,7 +152,7 @@ const TimeCardEquipmentLogs = forwardRef<
     >([]);
     // Helper function to safely create date objects
     const createSafeDate = (
-      dateString: string
+      dateString: string,
     ): { date: Date | null; formatted: string } => {
       try {
         // Check if dateString is valid and not empty
@@ -179,7 +177,7 @@ const TimeCardEquipmentLogs = forwardRef<
         const localDate = new Date(
           dateUTC.getTime() +
             dateUTC.getTimezoneOffset() * 60000 -
-            new Date().getTimezoneOffset() * 60000
+            new Date().getTimezoneOffset() * 60000,
         );
 
         // Format the date
@@ -207,7 +205,7 @@ const TimeCardEquipmentLogs = forwardRef<
               log &&
               typeof log === "object" &&
               "EmployeeEquipmentLogs" in log &&
-              Array.isArray(log.EmployeeEquipmentLogs)
+              Array.isArray(log.EmployeeEquipmentLogs),
           )
           .flatMap((log) => log.EmployeeEquipmentLogs || []);
       } else if (Array.isArray(equipmentLogs)) {
@@ -230,10 +228,10 @@ const TimeCardEquipmentLogs = forwardRef<
         .map((log) => {
           // Safely parse dates
           const { date: start, formatted: formattedStart } = createSafeDate(
-            log.startTime!
+            log.startTime!,
           );
           const { date: end, formatted: formattedEnd } = createSafeDate(
-            log.endTime!
+            log.endTime!,
           );
 
           // Calculate duration only if both dates are valid
@@ -274,10 +272,8 @@ const TimeCardEquipmentLogs = forwardRef<
       if (equipmentLogs && equipmentLogs.length > 0) {
         const processedLogs = processLogs();
         setEditedEquipmentLogs(processedLogs);
-        console.log("Processed equipment logs:", processedLogs);
       } else {
         setEditedEquipmentLogs([]);
-        console.log("No equipment logs to process");
       }
     }, [equipmentLogs, processLogs]);
 
@@ -285,7 +281,6 @@ const TimeCardEquipmentLogs = forwardRef<
     // setEditedEquipmentLogs(equipmentLogs ?? []);
     const handleTimeChange = useCallback(
       (id: string, field: "startTime" | "endTime", timeString: string) => {
-        console.log("handleTimeChange called:", { id, field, timeString });
         const updatedLogs = editedEquipmentLogs.map((log) => {
           if (log.id === id) {
             try {
@@ -311,7 +306,7 @@ const TimeCardEquipmentLogs = forwardRef<
               const newDateTime = parse(
                 `${datePart} ${timeString}`,
                 "yyyy-MM-dd HH:mm",
-                new Date()
+                new Date(),
               );
 
               // Validate parsing result
@@ -319,7 +314,7 @@ const TimeCardEquipmentLogs = forwardRef<
                 console.error(
                   "Failed to parse new date time:",
                   datePart,
-                  timeString
+                  timeString,
                 );
                 return log;
               }
@@ -370,7 +365,7 @@ const TimeCardEquipmentLogs = forwardRef<
         // Don't call onDataChange here - let the parent handle updates differently
         // The parent should not replace the entire equipmentLogs structure
       },
-      [editedEquipmentLogs]
+      [editedEquipmentLogs],
     );
 
     // Function to get current updates - can be called by parent when needed
@@ -380,7 +375,6 @@ const TimeCardEquipmentLogs = forwardRef<
         startTime: log.originalStart,
         endTime: log.originalEnd,
       }));
-      console.log("TimeCardEquipmentLogs getCurrentUpdates called:", updates);
       return updates;
     }, [editedEquipmentLogs]);
 
@@ -390,19 +384,10 @@ const TimeCardEquipmentLogs = forwardRef<
       () => ({
         getCurrentUpdates,
       }),
-      [getCurrentUpdates]
+      [getCurrentUpdates],
     );
 
     const isEmptyData = editedEquipmentLogs.length === 0;
-
-    // Debug logging
-    console.log("TimeCardEquipmentLogs render:", {
-      isEmptyData,
-      editedEquipmentLogsLength: editedEquipmentLogs.length,
-      editedEquipmentLogs: editedEquipmentLogs.slice(0, 2), // Show first 2 for debugging
-      equipmentLogsLength: equipmentLogs.length,
-      equipmentLogs: equipmentLogs.slice(0, 1), // Show first 1 for debugging
-    });
 
     return (
       <Holds className="w-full h-full">
@@ -503,14 +488,14 @@ const TimeCardEquipmentLogs = forwardRef<
                                     getDisplayValue(
                                       log.id,
                                       "startTime",
-                                      log.startTime
+                                      log.startTime,
                                     ) ?? ""
                                   }
                                   onChange={(e) =>
                                     handleLocalChange(
                                       log.id,
                                       "startTime",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   onBlur={() => handleBlur(log.id, "startTime")}
@@ -527,7 +512,7 @@ const TimeCardEquipmentLogs = forwardRef<
                                     getDisplayValue(
                                       log.id,
                                       "endTime",
-                                      log.endTime
+                                      log.endTime,
                                     ) ?? ""
                                   }
                                   background={isFocused ? "orange" : "white"}
@@ -535,7 +520,7 @@ const TimeCardEquipmentLogs = forwardRef<
                                     handleLocalChange(
                                       log.id,
                                       "endTime",
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                   onBlur={() => handleBlur(log.id, "endTime")}
@@ -562,7 +547,7 @@ const TimeCardEquipmentLogs = forwardRef<
         </Grids>
       </Holds>
     );
-  }
+  },
 );
 
 TimeCardEquipmentLogs.displayName = "TimeCardEquipmentLogs";

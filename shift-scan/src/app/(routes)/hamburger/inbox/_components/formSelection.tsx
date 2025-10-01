@@ -138,7 +138,6 @@ export default function FormSelection({
       const submission = await createFormSubmission(formData);
 
       if (!submission || !submission.id) {
-        console.log("no data returned");
         setCreateLoading(false);
         return;
       }

@@ -31,9 +31,6 @@ export default function TascoDashboardView({
   laborType: string;
   mechanicProjectID: string;
 }) {
-  useEffect(() => {
-    console.log("laborType: ", laborType);
-  }, []);
   const modalState = useModalState();
 
   if (laborType === "tascoAbcdLabor") {

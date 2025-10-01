@@ -273,18 +273,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
     if (dataLoaded && !loading) {
       const userTimesheets = pendingTimesheets[focusUser?.id] || [];
       checkTabsCompletion(userTimesheets);
-      if (userTimesheets.length > 0) {
-        console.log("ReviewYourTeam debug data:", {
-          timesheetData: userTimesheets.map((ts) => ({
-            id: ts.id,
-            startTime: ts.startTime,
-            endTime: ts.endTime,
-            jobsiteId: ts.jobsiteId,
-            workType: ts.workType,
-            status: ts.status,
-          })),
-        });
-      }
     }
   }, [dataLoaded, loading, pendingTimesheets, focusUser?.id]); // Calculate total hours from all timesheets with endTime
   const calculateTotalHours = (timesheets: TimesheetHighlights[]): number => {
@@ -323,20 +311,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   const timesheetData = pendingTimesheets[focusUser?.id] || [];
   const timesheetLoading = loading; // Use parent loading state
 
-  // Debug effect for timesheetData changes (optional, can be removed)
-  useEffect(() => {
-    if (timesheetData) {
-      console.log("ReviewYourTeam - timesheetData updated:", {
-        filter: getCurrentTimesheetFilter(),
-        isArray: Array.isArray(timesheetData),
-        length: Array.isArray(timesheetData)
-          ? timesheetData.length
-          : "not array",
-        data: timesheetData,
-      });
-    }
-  }, [timesheetData, getCurrentTimesheetFilter]);
-
   // Ensure API is called on tab click (immediate fetch)
   const handleTruckingTabChange = (tab: TimesheetFilter) => {
     setTruckingTab(tab);
@@ -374,10 +348,8 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   useEffect(() => {
     // Only run this check after we've loaded data
     if (dataLoaded && !loading) {
-      console.log(`Data loaded. Review list length: ${reviewList.length}`);
       if (reviewList.length === 0) {
         // Set flag that we've determined there are no members
-        console.log("No users with pending timesheets, will navigate away");
         setHasNoMembers(true);
       }
     }
@@ -386,9 +358,6 @@ const ReviewYourTeam: React.FC<ReviewYourTeamProps> = ({
   // Separate effect for navigation to avoid render-during-render issues
   useEffect(() => {
     if (hasNoMembers) {
-      console.log(
-        "No team members with pending timesheets found, navigating to next step",
-      );
       // Use setTimeout to defer state updates to next tick to avoid React warnings
       setTimeout(() => {
         setEditFilter(null);

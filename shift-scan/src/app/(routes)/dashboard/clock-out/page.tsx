@@ -16,7 +16,6 @@ export default async function ClockOutPage() {
   // Pass user id and permission so downstream logic can determine manager/team status
   // by user id finds the timecard comment if it exists for switch jobs
   const clockOutComment = await ClockOutComment({ userId: user.id });
-  console.log("ClockOutComment fetched:", clockOutComment);
 
   return (
     <TempClockOutContent

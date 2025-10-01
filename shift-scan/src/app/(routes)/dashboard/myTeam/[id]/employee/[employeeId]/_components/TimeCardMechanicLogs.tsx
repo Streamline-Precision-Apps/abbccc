@@ -45,15 +45,6 @@ export default function TimeCardMechanicLogs({
 }: TimeCardMechanicLogsProps) {
   const t = useTranslations("MyTeam.TimeCardMechanicLogs");
 
-  // Debug what data we're receiving
-  useEffect(() => {
-    console.log("TimeCardMechanicLogs received data:", {
-      isReviewYourTeam,
-      maintenanceLogsLength: maintenanceLogs?.length,
-      maintenanceLogs,
-    });
-  }, [maintenanceLogs, isReviewYourTeam]);
-
   // Add state to store local input values to prevent losing focus while typing
   const [inputValues, setInputValues] = useState<
     Record<string, string | number | null>
@@ -61,7 +52,7 @@ export default function TimeCardMechanicLogs({
 
   // Type guard to check for MaintenanceLogs property
   function hasMaintenanceLogs(
-    obj: unknown
+    obj: unknown,
   ): obj is { MaintenanceLogs: MaintenanceLogData } {
     return (
       typeof obj === "object" &&
@@ -92,7 +83,7 @@ export default function TimeCardMechanicLogs({
   const getDisplayValue = (
     logId: string,
     fieldName: string,
-    originalValue: string | number | null
+    originalValue: string | number | null,
   ) => {
     const key = getInputKey(logId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -102,7 +93,7 @@ export default function TimeCardMechanicLogs({
   const handleLocalChange = (
     logId: string,
     fieldName: string,
-    value: string | number | null
+    value: string | number | null,
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -157,7 +148,7 @@ export default function TimeCardMechanicLogs({
   const handleTimeChange = (
     id: string,
     field: "startTime" | "endTime",
-    timeString: string
+    timeString: string,
   ) => {
     if (!timeString) return;
 
@@ -243,7 +234,7 @@ export default function TimeCardMechanicLogs({
         eq.qrId === eqId ||
         eq.qrId === maintenanceEquipmentId ||
         eq.qrId === eqQrId ||
-        eq.id === eqQrId
+        eq.id === eqQrId,
     );
     return found?.name || log.Maintenance?.Equipment?.name || "";
   };
@@ -332,7 +323,7 @@ export default function TimeCardMechanicLogs({
                                 getDisplayValue(
                                   log.id,
                                   "startTime",
-                                  formatTimeForDisplay(log.startTime)
+                                  formatTimeForDisplay(log.startTime),
                                 ) ?? ""
                               }
                               className="text-xs border-none h-full rounded-none justify-left"
@@ -342,7 +333,7 @@ export default function TimeCardMechanicLogs({
                                 handleLocalChange(
                                   log.id,
                                   "startTime",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               onBlur={() => handleBlur(log.id, "startTime")}
@@ -358,7 +349,7 @@ export default function TimeCardMechanicLogs({
                                 getDisplayValue(
                                   log.id,
                                   "endTime",
-                                  formatTimeForDisplay(log.endTime)
+                                  formatTimeForDisplay(log.endTime),
                                 ) ?? ""
                               }
                               className="text-xs border-none h-full rounded-md rounded-tl-none rounded-bl-none justify-center text-right"
@@ -368,7 +359,7 @@ export default function TimeCardMechanicLogs({
                                 handleLocalChange(
                                   log.id,
                                   "endTime",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               onBlur={() => handleBlur(log.id, "endTime")}

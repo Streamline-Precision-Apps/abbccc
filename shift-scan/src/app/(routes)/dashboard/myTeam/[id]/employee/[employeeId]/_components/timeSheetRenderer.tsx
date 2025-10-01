@@ -172,31 +172,6 @@ export default function TimeSheetRenderer({
   const t = useTranslations("MyTeam");
   const isEmptyData = !data || (Array.isArray(data) && data.length === 0);
 
-  // Add comprehensive debug logging
-  console.log("TimeSheetRenderer received:", {
-    filter,
-    isReviewYourTeam,
-    isEmptyData,
-    dataType: data ? (Array.isArray(data) ? "array" : "object") : "null",
-    dataLength: Array.isArray(data)
-      ? data.length
-      : data
-        ? Object.keys(data).length
-        : 0,
-    data,
-  });
-
-  // Debug incoming data when needed
-  // useEffect(() => {
-  //  console.log('TimeSheetRenderer received data:', {
-  //    filter,
-  //    isReviewYourTeam,
-  //    dataType: data ? Array.isArray(data) ? 'array' : 'object' : 'null',
-  //    dataLength: Array.isArray(data) ? data.length : data ? Object.keys(data).length : 0,
-  //    data,
-  //  });
-  // }, [filter, data, isReviewYourTeam]);
-
   const renderContent = () => {
     if (isEmptyData) {
       return (
@@ -209,14 +184,6 @@ export default function TimeSheetRenderer({
     }
     switch (filter) {
       case "truckingEquipmentHaulLogs": {
-        // Debug data
-        console.log("truckingEquipmentHaulLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-          data,
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
@@ -232,9 +199,6 @@ export default function TimeSheetRenderer({
           };
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
-            console.log(
-              "Found direct TruckingLogs format for hauls - using as-is",
-            );
             // Data is already in the expected format
             return (
               <TimeCardTruckingHaulLogs
@@ -270,13 +234,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "truckingMaterialHaulLogs": {
-        // Debug data
-        console.log("truckingMaterialHaulLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
@@ -292,9 +249,6 @@ export default function TimeSheetRenderer({
           };
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
-            console.log(
-              "Found direct TruckingLogs format for material hauls - using as-is",
-            );
             // Data is already in the expected format
             return (
               <TimeCardTruckingMaterialLogs
@@ -330,13 +284,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "truckingRefuelLogs": {
-        // Debug data
-        console.log("truckingRefuelLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
@@ -352,9 +299,6 @@ export default function TimeSheetRenderer({
           };
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
-            console.log(
-              "Found direct TruckingLogs format for refuel - using as-is",
-            );
             // Data is already in the expected format
             return (
               <TimeCardTruckingRefuelLogs
@@ -388,13 +332,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "truckingStateLogs": {
-        // Debug data
-        console.log("truckingStateLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with TruckingLogs
@@ -410,9 +347,6 @@ export default function TimeSheetRenderer({
           };
 
           if (data.length > 0 && hasDirectTruckingLogs(data[0])) {
-            console.log(
-              "Found direct TruckingLogs format for state logs - using as-is",
-            );
             // Data is already in the expected format
             return (
               <TimeCardTruckingStateMileageLogs
@@ -446,14 +380,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "tascoHaulLogs": {
-        // Debug TASCO haul logs data flow
-        console.log("tascoHaulLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-          data,
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // NEW FIX: Handle direct API format from useTimesheetData with pendingOnly=true
@@ -475,7 +401,6 @@ export default function TimeSheetRenderer({
 
           // NEW LOGIC: Check if data is already in the [{TascoLogs:[...]}] format
           if (data.length > 0 && hasDirectTascoLogs(data[0])) {
-            console.log("Found direct TascoLogs format - using as-is");
             // Already in correct format, use as is
             formattedData = data as TascoHaulLogData;
           } else {
@@ -515,7 +440,6 @@ export default function TimeSheetRenderer({
 
             // Convert data with proper type checking
             const validTimesheets = (data as unknown[]).filter(hasTascoLogs);
-            console.log("Valid timesheets after filter:", validTimesheets);
 
             formattedData = [
               {
@@ -534,8 +458,6 @@ export default function TimeSheetRenderer({
               },
             ];
           }
-
-          console.log("Final TASCO haul logs data:", formattedData);
 
           return (
             <TimeCardTascoHaulLogs
@@ -566,14 +488,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "tascoRefuelLogs": {
-        // Debug data in tascoRefuelLogs case
-        console.log("tascoRefuelLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-          data,
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // NEW FIX: Handle direct API format from useTimesheetData with pendingOnly=true
@@ -594,9 +508,6 @@ export default function TimeSheetRenderer({
           let formattedData: TascoRefuelLogData;
           // Check if data is already in [{TascoLogs:[...]}] format
           if (data.length > 0 && hasDirectTascoLogs(data[0])) {
-            console.log(
-              "Found direct TascoLogs format for refuel - using as-is",
-            );
             // Original API data can be used directly after filtering for refuel logs
             formattedData = [
               {
@@ -692,8 +603,6 @@ export default function TimeSheetRenderer({
             ];
           }
 
-          console.log("Final TASCO refuel logs data:", formattedData);
-
           return (
             <TimeCardTascoRefuelLogs
               tascoRefuelLog={formattedData}
@@ -725,14 +634,6 @@ export default function TimeSheetRenderer({
         );
       }
       case "equipmentLogs": {
-        // Debug data in equipmentLogs case
-        console.log("equipmentLogs case debug:", {
-          isReviewYourTeam,
-          isArray: Array.isArray(data),
-          dataLength: Array.isArray(data) ? data.length : "not an array",
-          data,
-        });
-
         // Handle review mode data conversion
         if (isReviewYourTeam && Array.isArray(data)) {
           // Type guard for direct API format with EmployeeEquipmentLogs
@@ -754,9 +655,6 @@ export default function TimeSheetRenderer({
 
           // Check if data is already in [{EmployeeEquipmentLogs:[...]}] format from API
           if (data.length > 0 && hasDirectEmployeeEquipmentLogs(data[0])) {
-            console.log(
-              "Found direct EmployeeEquipmentLogs format - using as-is",
-            );
             formattedData = data as EquipmentLogsData;
           } else {
             // Original logic for EditTeamTimesheet format
@@ -799,8 +697,6 @@ export default function TimeSheetRenderer({
               },
             ];
           }
-
-          console.log("Final equipment logs data:", formattedData);
 
           return (
             <TimeCardEquipmentLogs
@@ -867,14 +763,11 @@ export default function TimeSheetRenderer({
 
         let logs: EquipmentRefuelLog[] = [];
 
-        console.log("equipmentRefuelLogs processing data:", data);
-
         if (Array.isArray(data)) {
           if (isEquipmentRefuelLogArray(data)) {
             logs = data;
           } else if (data.length > 0 && hasEmployeeEquipmentLogs(data[0])) {
             // Handle the specific API format: [{ EmployeeEquipmentLogs: [...] }]
-            console.log("Found EmployeeEquipmentLogs format");
             logs = data.flatMap((item) => {
               const equipmentLogsContainer = item as {
                 EmployeeEquipmentLogs: unknown[];
@@ -1034,7 +927,6 @@ export default function TimeSheetRenderer({
           }
         }
 
-        console.log("equipmentRefuelLogs processed logs:", logs);
         return (
           <TimeCardEquipmentRefuelLogs
             edit={edit}

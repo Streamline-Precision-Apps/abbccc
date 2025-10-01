@@ -26,7 +26,6 @@ export default function MechanicBtn({
         "/api/cookies?method=get&name=mechanicProjectID",
       );
       const data = await response.json();
-      console.log(data);
       setProjectID(data);
     };
 

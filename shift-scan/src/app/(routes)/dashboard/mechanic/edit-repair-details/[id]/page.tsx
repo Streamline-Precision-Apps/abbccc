@@ -87,7 +87,7 @@ export default function EditRepairDetails({
             log.MaintenanceLogs.reduce(
               (
                 subTotal: number,
-                log: { startTime: string; endTime: string | null }
+                log: { startTime: string; endTime: string | null },
               ) => {
                 const startTime = new Date(log.startTime);
                 const endTime = log.endTime
@@ -97,13 +97,12 @@ export default function EditRepairDetails({
                   (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
                 return subTotal + hours;
               },
-              0
+              0,
             )
           );
         }, 0);
 
         setTotalHours(totalHours);
-        console.log("Updated Total Hours:", totalHours);
       }
     } catch (error) {
       console.error("Error fetching repair details:", error);

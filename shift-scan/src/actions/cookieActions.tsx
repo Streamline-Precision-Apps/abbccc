@@ -99,10 +99,8 @@ export async function setLaborType(laborType: string) {
   ];
 
   if (!VALID_LABOR_TYPES.includes(laborType)) {
-    console.log(laborType);
     throw new Error("Not Authorized - Invalid labor type");
   }
-  console.log(laborType);
   try {
     if (laborType === "tascoEEquipment") {
       (await cookies()).set({

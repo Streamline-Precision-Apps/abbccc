@@ -20,8 +20,6 @@ import { auth } from "@/auth";
  * Handles both basic equipment data and vehicle information
  */
 export async function updateEquipmentAsset(formData: FormData) {
-  console.log("Updating equipment asset...");
-  console.log("Form data entries:", Array.from(formData.entries()));
   try {
     const id = formData.get("id") as string;
 
@@ -120,11 +118,6 @@ export async function updateEquipmentAsset(formData: FormData) {
     // Always update the timestamp
     updateData.updatedAt = new Date();
 
-    console.log(
-      "Updating equipment with data:",
-      JSON.stringify(updateData, null, 2),
-    );
-
     const updatedEquipment = await prisma.equipment.update({
       where: { id },
       data: updateData,
@@ -174,8 +167,6 @@ export async function updateEquipmentAsset(formData: FormData) {
     revalidatePath("/admins/assets");
     revalidatePath(`/admins/assets/${id}`);
     revalidatePath("/admins/equipment");
-
-    console.log("Equipment updated successfully:", updatedEquipment.id);
     return {
       success: true,
       data: updatedEquipment,
@@ -217,9 +208,6 @@ export async function registerEquipment(
   },
   createdById: string,
 ) {
-  console.log("Registering equipment...");
-  console.log(equipmentData);
-
   try {
     // Validate required fields
     if (!equipmentData.name.trim()) {
@@ -282,9 +270,6 @@ export async function registerEquipment(
  */
 
 export async function updateJobsite(formData: FormData) {
-  console.log("Updating jobsite...");
-  console.log(formData);
-
   try {
     // Extract form data
     const id = formData.get("id") as string;
@@ -413,8 +398,6 @@ export async function updateJobsite(formData: FormData) {
  * Handles both basic jobsite data and vehicle information
  */
 export async function updateJobsiteAdmin(formData: FormData) {
-  console.log("Updating jobsite...");
-  console.log(formData);
   try {
     const id = formData.get("id") as string;
 
@@ -509,8 +492,6 @@ export async function updateJobsiteAdmin(formData: FormData) {
     }
 
     revalidatePath("/admins/jobsites");
-
-    console.log("Jobsite updated successfully:", updatedJobsite.id);
     return {
       success: true,
       data: updatedJobsite,
@@ -554,8 +535,6 @@ export async function createJobsiteAdmin({
   };
 }) {
   try {
-    console.log("Creating jobsite...");
-    console.log(payload);
     await prisma.$transaction(async (prisma) => {
       const existingAddress = await prisma.address.findFirst({
         where: {
@@ -641,9 +620,6 @@ export async function createJobsiteFromObject(jobsiteData: {
   isActive?: boolean;
   CCTags?: Array<{ id: string; name: string }>;
 }) {
-  console.log("Creating jobsite from object...");
-  console.log(jobsiteData);
-
   try {
     // Validate required fields
     if (!jobsiteData.name?.trim()) {
@@ -710,7 +686,6 @@ export async function createJobsiteFromObject(jobsiteData: {
 }
 
 export async function deleteJobsite(id: string) {
-  console.log("Deleting jobsite with ID:", id);
   try {
     await prisma.jobsite.delete({
       where: { id },
@@ -738,7 +713,6 @@ export async function deleteJobsite(id: string) {
  * @returns Success status and message
  */
 export async function deleteEquipment(id: string) {
-  console.log("Deleting equipment with ID:", id);
   try {
     // Check if equipment exists
     const existingEquipment = await prisma.equipment.findUnique({
@@ -773,8 +747,6 @@ export async function deleteEquipment(id: string) {
  * Server action to create a new cost code
  */
 export async function updateCostCodeAdmin(formData: FormData) {
-  console.log("Updating cost code...");
-  console.log(formData);
   try {
     const id = formData.get("id") as string;
 
@@ -835,8 +807,6 @@ export async function updateCostCodeAdmin(formData: FormData) {
     });
 
     revalidatePath("/admins/cost-codes");
-
-    console.log("Cost code updated successfully:", updatedCostCode.id);
     return {
       success: true,
       data: updatedCostCode,
@@ -862,9 +832,6 @@ export async function createCostCode(payload: {
     name: string;
   }[];
 }) {
-  console.log("Creating new cost code...");
-  console.log(payload);
-
   try {
     // Validate required fields
     if (!payload.name?.trim()) {
@@ -925,8 +892,6 @@ export async function updateCostCode(
     CCTags?: { id: string; name: string }[];
   }>,
 ) {
-  console.log("Updating cost code...", id, costCodeData);
-
   try {
     // Validate cost code exists
     const existingCostCode = await prisma.costCode.findUnique({
@@ -1034,8 +999,6 @@ export async function updateCostCode(
  * Server action to delete a cost code
  */
 export async function deleteCostCode(id: string) {
-  console.log("Deleting cost code with ID:", id);
-
   try {
     // Check for related records before deletion
     const costCodeWithRelations = await prisma.costCode.findUnique({
@@ -1093,8 +1056,6 @@ export async function deleteCostCode(id: string) {
 }
 
 export async function updateTagAdmin(formData: FormData) {
-  console.log("Updating tag ...");
-  console.log(formData);
   try {
     const id = formData.get("id") as string;
     if (!id) {
@@ -1151,7 +1112,6 @@ export async function updateTagAdmin(formData: FormData) {
 
     revalidatePath("/admins/cost-codes");
 
-    console.log("Tag updated successfully:", updatedTag.id);
     return {
       success: true,
       data: updatedTag,
@@ -1176,8 +1136,6 @@ export async function updateTags(
     CostCodes?: { id: string; name: string }[];
   }>,
 ) {
-  console.log("Updating tag...", id, tagData);
-
   try {
     // Validate tag exists
     const existingTag = await prisma.cCTag.findUnique({
@@ -1282,8 +1240,6 @@ export async function updateTags(
  * @returns Results object with success status and optional error message
  */
 export async function deleteTag(id: string) {
-  console.log("Deleting Tag with ID:", id);
-
   try {
     // Check if the tag exists before attempting to delete
     const existingTag = await prisma.cCTag.findUnique({
@@ -1337,13 +1293,6 @@ export async function createTag(payload: {
     name: string;
   }[];
 }) {
-  console.log("Creating new tag...", {
-    name: payload.name,
-    description: payload.description,
-    costCodesCount: payload.CostCode.length,
-    jobsitesCount: payload.Jobsites.length,
-  });
-
   try {
     // Validate required fields
     if (!payload.name?.trim()) {
@@ -1435,9 +1384,6 @@ export async function createTag(payload: {
         },
       },
     });
-
-    console.log("Tag created successfully:", newTag.id);
-
     // Revalidate relevant paths and tags
     revalidateTag("costcodes");
     revalidateTag("assets");

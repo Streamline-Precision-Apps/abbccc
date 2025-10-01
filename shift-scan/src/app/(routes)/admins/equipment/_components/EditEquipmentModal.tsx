@@ -244,9 +244,6 @@ export default function EditEquipmentModal({
         changedFields["creationReason"] = formData.creationReason;
       }
 
-      // Log the changed fields for debugging
-      console.log("Submitting changes:", changedFields);
-
       // Display changed fields in toast for debugging
       toast.info(`Updating ${Object.keys(changedFields).length - 1} fields`, {
         duration: 3000,

@@ -156,7 +156,6 @@ export default function TruckDriver() {
           ),
       ),
     });
-    console.log("Hauling Logs", isComplete.haulingLogsTab);
   };
 
   useEffect(() => {
@@ -174,11 +173,9 @@ export default function TruckDriver() {
   useEffect(() => {
     const fetchTruckingLog = async () => {
       try {
-        console.log("Fetching trucking log ID..."); // Debug log
         const res = await fetch(`/api/getTruckingLogs/truckingId`);
         if (!res.ok) throw new Error(t("FailedToFetchTruckingLogs"));
         const data = await res.json();
-        console.log("Received trucking log ID:", data); // Debug log
         setTimeSheetId(data);
       } catch (error) {
         console.error(t("ErrorFetchingTruckingLogs"), error);
@@ -203,8 +200,6 @@ export default function TruckDriver() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        console.log("Fetching data for timeSheetId:", timeSheetId); // Debug log
-
         const endpoints = [
           `/api/getTruckingLogs/endingMileage/${timeSheetId}`, // 0
           `/api/getTruckingLogs/notes/${timeSheetId}`, // 1
@@ -217,8 +212,6 @@ export default function TruckDriver() {
 
         const responses = await Promise.all(endpoints.map((url) => fetch(url)));
         const data = await Promise.all(responses.map((res) => res.json()));
-
-        console.log("Fetched data:", data); // Debug log
 
         // Map data in the same order as endpoints
         setEndMileage(data[0]?.endingMileage || null);

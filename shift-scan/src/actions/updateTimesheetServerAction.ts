@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma";
 import { revalidateTag } from "next/cache";
 
 export async function updateTimesheetServerAction(formData: FormData) {
-  console.log(formData);
   const id = Number(formData.get("id"));
   const editorId = formData.get("editorId") as string;
   const changesJson = formData.get("changes") as string;
