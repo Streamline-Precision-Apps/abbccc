@@ -1,17 +1,12 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { Labels } from "@/components/(reusable)/labels";
 import { FormEvent, useEffect, useState, useRef } from "react";
 import { setUserPassword } from "@/actions/userActions";
 import { hash } from "bcryptjs";
 // import { useRouter } from "next/navigation";
-import { Contents } from "@/components/(reusable)/contents";
 import { Texts } from "@/components/(reusable)/texts";
-import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
@@ -28,12 +23,26 @@ const ResetPassword = ({
   totalSteps: number;
   currentStep: number;
 }) => {
+  // Shared password scoring function (copied from changePassword)
+  function getPasswordScore(password: string) {
+    let score = 0;
+    if (password.length >= 8) score++; // Length
+    if (/[A-Z]/.test(password)) score++; // Uppercase letters
+    if (/[a-z]/.test(password)) score++; // Lowercase letters
+    if (/[0-9]/.test(password)) score++; // Number
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++; // Special character
+    return score;
+  }
+
   const t = useTranslations("SignUpPassword");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
+  const [score, setScore] = useState(0);
   const [eightChar, setEightChar] = useState(false);
   const [oneNumber, setOneNumber] = useState(false);
   const [oneSymbol, setOneSymbol] = useState(false);
+  const [oneCapital, setOneCapital] = useState(false);
+  const [oneLower, setOneLower] = useState(false);
 
   const [viewSecret1, setViewSecret1] = useState(false);
   const [viewSecret2, setViewSecret2] = useState(false);
@@ -116,49 +125,69 @@ const ResetPassword = ({
   };
 
   const validatePassword = (password: string) => {
-    const minLength = 8;
-    const hasNumber = /\d/;
-    const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/;
-
-    return (
-      password.length >= minLength &&
-      hasNumber.test(password) &&
-      hasSymbol.test(password)
-    );
+    // Updated to use password score like in changePassword
+    return getPasswordScore(password) >= 3;
   };
 
-  const handlePasswordChange = (password: string) => {
+  const handlePasswordChange = (
+    password: string,
+    confirmPasswordValue: string,
+  ) => {
+    // Updated to match changePassword validation criteria
     setEightChar(password.length >= 8);
     setOneNumber(/\d/.test(password));
     setOneSymbol(/[!@#$%^&*(),.?":{}|<>]/.test(password));
-  };
+    setOneCapital(/[A-Z]/.test(password));
+    setOneLower(/[a-z]/.test(password));
 
-  const PasswordCriteria = ({
-    passed,
-    label,
-  }: {
-    passed: boolean;
-    label: string;
-  }) => (
-    <Holds
-      background={passed ? "green" : "red"}
-      className="h-full first:mr-1 last:ml-1 border-black border-[3px] rounded-[10px] justify-center"
-    >
-      <Texts size="p5" className="p-2">
-        {label}
-      </Texts>
-    </Holds>
-  );
-
-  const handlePasswordValid = () => {
-    const passed = eightChar && oneNumber && oneSymbol;
-    if (!passed) {
+    // Ready to submit if score >= 3 and passwords match
+    if (getPasswordScore(password) >= 3 && password === confirmPasswordValue) {
+      setIsPasswordValid(true);
+    } else {
       setIsPasswordValid(false);
-      return;
     }
-
-    setIsPasswordValid(true);
   };
+
+  // PasswordStrengthBar component (copied from changePassword)
+  function PasswordStrengthBar({ password }: { password: string }) {
+    // Use shared scoring function
+    const score = getPasswordScore(password);
+    const colors = [
+      "bg-gray-400",
+      "bg-red-400",
+      "bg-orange-400",
+      "bg-yellow-400",
+      "bg-green-400",
+      "bg-green-600",
+    ];
+    const labels = [
+      "Strength",
+      "Very Weak",
+      "Weak",
+      "Fair",
+      "Strong",
+      "Very Strong",
+    ];
+
+    // Update parent score state using useEffect to avoid setState during render
+    useEffect(() => {
+      setScore(score);
+    }, [score]);
+
+    return (
+      <div className="w-full flex flex-col gap-1" aria-live="polite">
+        <div className="w-full h-2 rounded bg-gray-200 overflow-hidden">
+          <div
+            className={`h-2 rounded transition-all duration-300 ${colors[score]}`}
+            style={{ width: `${(score / 5) * 100}%` }}
+          ></div>
+        </div>
+        <span className={`text-xs font-medium text-right text-opacity-80`}>
+          {labels[score]}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
@@ -193,23 +222,76 @@ const ResetPassword = ({
                 id="new-password"
                 value={newPassword}
                 onChange={(e) => {
-                  handlePasswordChange(e.target.value);
                   setNewPassword(e.target.value);
-                  handlePasswordValid();
+                  handlePasswordChange(e.target.value, confirmPassword);
                 }}
                 autoCapitalize={"off"}
               />
-              {/* Password requirements message */}
-              {newPassword && (!eightChar || !oneNumber || !oneSymbol) && (
-                <div className="text-xs text-red-600 mt-1">
-                  {t("PasswordRequirements")}
-                  <ul className="list-disc ml-5">
-                    {!eightChar && <li>{t("LengthRequirement")}</li>}
-                    {!oneNumber && <li>{t("NumberRequirement")}</li>}
-                    {!oneSymbol && <li>{t("SymbolRequirement")}</li>}
-                  </ul>
-                </div>
-              )}
+
+              {/* Password Strength Bar */}
+              <div className="w-full pb-1 mt-2">
+                <PasswordStrengthBar password={newPassword} />
+              </div>
+
+              <ul className="list-disc list-inside">
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${oneCapital ? "text-green-600 " : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {oneCapital ? (
+                    <span aria-label="Has capital letter">✓</span>
+                  ) : (
+                    <span aria-label="Missing capital letter">✗</span>
+                  )}
+                  {t("CapitalCriteriaLabel") || "At least one capital letter"}
+                </li>
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${oneLower ? "text-green-600 " : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {oneLower ? (
+                    <span aria-label="Has lowercase letter">✓</span>
+                  ) : (
+                    <span aria-label="Missing lowercase letter">✗</span>
+                  )}
+                  {t("LowerCriteriaLabel") || "At least one lowercase letter"}
+                </li>
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${oneNumber ? "text-green-600 " : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {oneNumber ? (
+                    <span aria-label="Has number">✓</span>
+                  ) : (
+                    <span aria-label="Missing number">✗</span>
+                  )}
+                  {t("NumberCriteriaLabel") || "At least one number"}
+                </li>
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${oneSymbol ? "text-green-600 " : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {oneSymbol ? (
+                    <span aria-label="Has special character">✓</span>
+                  ) : (
+                    <span aria-label="Missing special character">✗</span>
+                  )}
+                  {t("SpecialCharacterCriteriaLabel") ||
+                    "At least one special character"}
+                </li>
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${eightChar ? "text-green-600 " : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {eightChar ? (
+                    <span aria-label="Has minimum length">✓</span>
+                  ) : (
+                    <span aria-label="Too short">✗</span>
+                  )}
+                  {t("LengthCriteriaLabel") || "At least 8 characters"}
+                </li>
+              </ul>
+
               <div className="my-4" />
               <Holds position="row" className="">
                 <Labels size={"p3"} htmlFor="confirm-password">
@@ -229,24 +311,33 @@ const ResetPassword = ({
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
-                  handlePasswordValid();
+                  handlePasswordChange(newPassword, e.target.value);
                 }}
                 autoCapitalize={"off"}
               />
-              {/* Confirm password match message */}
-              {confirmPassword && newPassword !== confirmPassword && (
-                <div className="text-xs text-red-600 mt-1">
-                  {t("PasswordMismatchError")}
-                </div>
-              )}
+              <ul className="list-disc list-inside mt-1">
+                <li
+                  className={`flex items-center gap-2 text-xs transition-colors duration-200 ${newPassword && confirmPassword && newPassword === confirmPassword ? "text-green-600" : "text-red-600"}`}
+                  aria-live="polite"
+                >
+                  {newPassword &&
+                  confirmPassword &&
+                  newPassword === confirmPassword ? (
+                    <span aria-label="Passwords match">✓</span>
+                  ) : (
+                    <span aria-label="Passwords do not match">✗</span>
+                  )}
+                  {t("PasswordsMatch")}
+                </li>
+              </ul>
             </Holds>
           </form>
 
           <div className="flex flex-col mb-4">
             <Button
-              className="bg-app-dark-blue"
+              className={isPasswordValid ? "bg-app-dark-blue" : "bg-gray-400"}
               onClick={handleSubmitPassword}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isPasswordValid}
             >
               <p className="text-white font-semibold text-base">
                 {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}

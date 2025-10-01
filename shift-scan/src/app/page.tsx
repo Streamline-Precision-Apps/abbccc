@@ -38,46 +38,8 @@ export default async function Home() {
       userId: session.user.id,
       endTime: null, // No end time means still clocked in
     },
-    include: {
-      Jobsite: {
-        select: {
-          id: true,
-          qrId: true,
-          name: true,
-        },
-      },
-      CostCode: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-      TascoLogs: {
-        select: {
-          shiftType: true,
-          laborType: true,
-          materialType: true,
-          Equipment: {
-            select: {
-              qrId: true,
-              name: true,
-            },
-          },
-        },
-      },
-      TruckingLogs: {
-        select: {
-          laborType: true,
-          truckNumber: true,
-          startingMileage: true,
-          Equipment: {
-            select: {
-              qrId: true,
-              name: true,
-            },
-          },
-        },
-      },
+    select: {
+      id: true,
     },
     orderBy: {
       startTime: "desc", // Get the most recent incomplete timesheet
@@ -86,8 +48,7 @@ export default async function Home() {
 
   // If there's an incomplete timesheet, redirect to continue-timesheet API route
   if (incompleteTimesheet) {
-    // Single redirect to API route that sets cookies and redirects to dashboard
-    redirect(`/api/continue-timesheet?id=${incompleteTimesheet.id}`);
+    await fetch(`/api/continue-timesheet?id=${incompleteTimesheet.id}`);
   }
 
   // Get the current language from cookies
