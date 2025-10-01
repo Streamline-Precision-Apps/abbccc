@@ -33,8 +33,6 @@ export default async function Dashboard() {
   const mechanicProjectID =
     (await cookies()).get("mechanicProjectID")?.value || "";
 
-  // Get the current timesheet ID for clock-out checking
-  const prevTimeSheetId = (await cookies()).get("timeSheetId")?.value || null;
 
   // const user = session.user;
   const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set
@@ -51,7 +49,7 @@ export default async function Dashboard() {
           </Suspense>
           <div className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <Suspense fallback={<BannerRotatingSkeleton />}>
-              <BannerRotating prevTimeSheetId={prevTimeSheetId} />
+              <BannerRotating/>
             </Suspense>
           </div>
           <Holds background={"white"} className="row-start-4 row-end-9 h-full">
