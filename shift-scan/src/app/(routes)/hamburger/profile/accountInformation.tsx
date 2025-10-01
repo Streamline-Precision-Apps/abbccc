@@ -3,7 +3,7 @@ import { Labels } from "@/components/(reusable)/labels";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { NModals } from "@/components/(reusable)/newmodals";
-import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
