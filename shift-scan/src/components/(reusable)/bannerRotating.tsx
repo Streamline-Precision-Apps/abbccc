@@ -12,6 +12,7 @@ import Spinner from "../(animations)/spinner";
 import { useTranslations } from "next-intl";
 import { formatDuration } from "@/utils/formatDuration";
 import { Images } from "./images";
+import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 // Type for Equipment
 interface Equipment {
   id: string;
@@ -65,15 +66,11 @@ interface BannerData {
   truckingLogs: TruckingLog[];
 }
 
-export default function BannerRotating({
-  prevTimeSheetId,
-}: {
-  prevTimeSheetId: string | null;
-}) {
+export default function BannerRotating() {
   const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [newDate, setNewDate] = useState(new Date());
-  const [error, setError] = useState<string | null>(null);
+  const { savedTimeSheetData, setTimeSheetData, refetchTimesheet } = useTimeSheetData();
 
   const settings = {
     className: "slick-track",
@@ -104,21 +101,37 @@ export default function BannerRotating({
     return formatDuration(bannerData?.startTime, newDate);
   };
 
-  // Fetch timeSheetId and banner data together
+  // Fetch timeSheetId and banner data together with retry logic
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Step 1: Fetch timeSheetId
+        let timeSheetId = savedTimeSheetData?.id;
+        if (!timeSheetId) {
+          await refetchTimesheet();
+          const ts = savedTimeSheetData?.id;
+          if (!ts) {
+            console.log("No active timesheet found for banner.");
+          return (timeSheetId = ts);
+        }}
 
-        // Step 2: Fetch banner data using the obtained timeSheetId
-        const bannerResponse = await fetch(
-          `/api/getBannerData?id=${prevTimeSheetId}`,
+        console.log(
+          `Fetching banner data for timesheet ID: ${timeSheetId}`,
         );
-        const bannerData = await bannerResponse.json();
-        setBannerData(bannerData);
+
+        // Fetch banner data using the obtained timeSheetId
+        const bannerResponse = await fetch(
+          `/api/getBannerData?id=${timeSheetId}`,
+        );
+
+        if (bannerResponse.ok) {
+          const bannerData = await bannerResponse.json();
+          console.log("Banner data loaded successfully:", bannerData);
+          setBannerData(bannerData);
+        } else {
+          console.error("Banner API error:", bannerResponse.status);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to fetch banner data.");
       }
     };
 
@@ -230,10 +243,6 @@ export default function BannerRotating({
             <p>{calculateDuration()}</p>
           </Holds>
         </Slider>
-      ) : error ? (
-        <Holds className="w-[80%] ">
-          <h3>{t("ErrorFetchingClockInDetails")} </h3>
-        </Holds>
       ) : (
         <Holds className="w-[80%] h-full mx-auto justify-center items-center">
           <Spinner size={40} color="white" />
