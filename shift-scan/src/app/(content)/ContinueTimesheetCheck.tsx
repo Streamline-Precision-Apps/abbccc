@@ -9,8 +9,10 @@ export default function ContinueTimesheetCheck({
 
   useEffect(() => {
     const continueTimesheet = async () => {
+      if (!id) return; // Don't make the request if ID is undefined
+      
       try {
-        await fetch(`/api/continue-timesheet?userId=${id}`);
+        await fetch(`/api/continue-timesheet?id=${id}`);
       } catch (error) {
         console.error("Error continuing timesheet:", error);
       }
