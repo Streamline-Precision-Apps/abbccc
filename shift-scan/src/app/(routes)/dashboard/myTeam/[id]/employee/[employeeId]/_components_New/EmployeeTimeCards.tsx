@@ -45,9 +45,9 @@ export default function EmployeeTimeCards() {
 
   return (
     <div className="h-full w-full bg-white rounded-b-2xl">
-      <div className="grid grid-rows-7 gap-2">
-        <div className="row-start-1 row-end-2 rounded-b-lg bg-app-dark-blue h-full w-full p-2">
-          <label htmlFor="date" className="text-xs text-white">
+      <div className="h-full w-full grid grid-rows-10">
+        <div className="row-start-1 row-end-2  bg-app-dark-blue h-full w-full p-2 px-4 flex flex-row  gap-4 justify-center items-center">
+          <label htmlFor="date" className="text-base text-white">
             {t("SelectDate")}
           </label>
           <Inputs
@@ -55,12 +55,12 @@ export default function EmployeeTimeCards() {
             name="date"
             id="date"
             value={date}
-            className="text-xs text-center w-full max-w-[250px] border-[3px] py-2 border-black"
+            className="text-xs text-center w-full max-w-[170px] border-[3px] py-2 border-black"
             onChange={handleDateChange}
           />
         </div>
         {/* PullToRefresh wraps the timesheet content */}
-        <div className="row-start-2 row-end-7 overflow-y-auto no-scrollbar p-2">
+        <div className="h-full row-start-2 row-end-11 rounded-b-xl overflow-y-auto no-scrollbar p-2 border-[4px] border-app-dark-blue">
           <PullToRefresh
             onRefresh={reset}
             refreshingText=""
@@ -88,7 +88,7 @@ export default function EmployeeTimeCards() {
                         setEditingId(ts.id);
                         setShowEditModal(true);
                       }}
-                      className="w-full h-full absolute top-0 left-0 z-10 bg-transparent"
+                      className="w-full h-full absolute top-0 left-0 right-0 bottom-0 z-10 bg-transparent p-0 m-0 rounded-[7px]"
                     ></Button>
                     <Grids cols={"8"} className="w-full h-full">
                       <Holds className="col-start-1 col-end-2 p-2">

@@ -143,7 +143,7 @@ export default function AppManagerEditTimesheetModal(
         <div
           className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-32 pt-4 transition-colors duration-300 no-scrollbar"
           style={{
-            background: editGeneral ? "rgba(255, 243, 207, 0.15)" : "white",
+            background: "white",
             maxWidth: "100vw",
             opacity: isSaving ? 0.5 : 1,
             pointerEvents: isSaving ? "none" : "auto",
@@ -234,23 +234,28 @@ export default function AppManagerEditTimesheetModal(
                   {editGeneral ? (
                     <div className="flex gap-4 justify-center">
                       <div className="flex flex-col">
-                        <Input
-                          type="date"
+                        <input
                           id="start-date-picker"
+                          type="date"
                           value={
-                            startDate ? format(startDate, "yyyy-MM-dd") : ""
+                            startDate
+                              ? format(new Date(startDate), "yyyy-MM-dd")
+                              : ""
                           }
                           onChange={(e) => {
-                            const selectedDate = e.target.value
-                              ? new Date(e.target.value)
-                              : null;
-                            setStartDate(selectedDate);
+                            if (e.target.value) {
+                              // Convert the date string to ISO format
+                              const selectedDate = new Date(e.target.value);
+                              setStartDate(selectedDate);
+                            } else {
+                              setStartDate(null);
+                            }
                           }}
-                          className="w-32 bg-background appearance-none"
+                          className="w-32 bg-white  appearance-none rounded-md"
                         />
                       </div>
                       <div className="flex flex-col">
-                        <Input
+                        <input
                           type="time"
                           id="start-time-picker"
                           step="60"
@@ -260,7 +265,7 @@ export default function AppManagerEditTimesheetModal(
                             // No need to call updateStartDateTime here,
                             // the useEffect with useCallback dependency will handle it
                           }}
-                          className="bg-background appearance-none"
+                          className="bg-white  appearance-none rounded-md"
                         />
                       </div>
                     </div>
@@ -296,21 +301,28 @@ export default function AppManagerEditTimesheetModal(
                   {editGeneral ? (
                     <div className="flex gap-4 justify-center">
                       <div className="flex flex-col">
-                        <Input
+                        <input
                           type="date"
                           id="end-date-picker"
-                          value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
+                          value={
+                            endDate
+                              ? format(new Date(endDate), "yyyy-MM-dd")
+                              : ""
+                          }
                           onChange={(e) => {
-                            const selectedDate = e.target.value
-                              ? new Date(e.target.value)
-                              : null;
-                            setEndDate(selectedDate);
+                            if (e.target.value) {
+                              // Convert the date string to ISO format
+                              const selectedDate = new Date(e.target.value);
+                              setEndDate(selectedDate);
+                            } else {
+                              setEndDate(null);
+                            }
                           }}
-                          className="w-32 bg-background appearance-none"
+                          className="w-32 bg-white appearance-none rounded-md"
                         />
                       </div>
                       <div className="flex flex-col">
-                        <Input
+                        <input
                           type="time"
                           id="end-time-picker"
                           step="60"
@@ -320,7 +332,7 @@ export default function AppManagerEditTimesheetModal(
                             // No need to call updateEndDateTime here,
                             // the useEffect with useCallback dependency will handle it
                           }}
-                          className="bg-background appearance-none"
+                          className="bg-white  appearance-none rounded-md"
                         />
                       </div>
                     </div>
@@ -444,7 +456,7 @@ export default function AppManagerEditTimesheetModal(
                       prev ? { ...prev, comment: val } : prev,
                     );
                   }}
-                  disabled={true}
+                  disabled={!editGeneral}
                   className={
                     editGeneral
                       ? "truncate border border-gray-300 bg-gray-50"
