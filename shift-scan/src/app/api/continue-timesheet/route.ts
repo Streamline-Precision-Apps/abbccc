@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     // Authentication
     const session = await auth();
@@ -22,10 +22,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
+    // Parse the ID to ensure it's a number
+    const parsedId = parseInt(timesheetId, 10);
+    
+    if (isNaN(parsedId)) {
+      console.error("Invalid timesheet ID format");
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
     // Fetch the timesheet data
     const incompleteTimesheet = await prisma.timeSheet.findFirst({
       where: {
-        id: parseInt(timesheetId),
+        id: parsedId,
         userId: session.user.id,
         endTime: null, // Ensure it's still incomplete
       },
