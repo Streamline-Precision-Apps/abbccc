@@ -5,6 +5,7 @@ import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
 
 type SignatureProps = {
@@ -17,7 +18,10 @@ export default function Signature({
   closeModal,
 }: SignatureProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const t = useTranslations("Hamburger-Profile");
+
   const [isDrawing, setIsDrawing] = useState(false);
+  const [hasStroke, setHasStroke] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -86,6 +90,7 @@ export default function Signature({
     if (ctx) {
       ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
       ctx.stroke();
+      setHasStroke(true); // Mark that a stroke has occurred
     }
   };
 
@@ -114,6 +119,7 @@ export default function Signature({
       const pos = getTouchPos(canvasRef.current, event.nativeEvent);
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
+      setHasStroke(true); // Mark that a stroke has occurred
     }
   };
 
@@ -129,7 +135,7 @@ export default function Signature({
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      setBase64String(null);
+      setHasStroke(false);
     }
   };
 
@@ -216,9 +222,15 @@ export default function Signature({
           position={"row"}
           className="row-span-1 gap-4 h-full justify-center flex"
         >
-          <Buttons onClick={handleSave}>Save</Buttons>
+          <Buttons
+            disabled={hasStroke === false}
+            onClick={handleSave}
+            className={`${hasStroke ? "bg-app-blue" : "bg-gray-400 "}`}
+          >
+            {t("Save")}
+          </Buttons>
           <Buttons background={"red"} onClick={handleClear}>
-            Clear
+            {t("Clear")}
           </Buttons>
         </Holds>
       </Grids>
