@@ -327,7 +327,9 @@
     "ValidGallons": "Please enter a valid number of gallons",
     "ClickFinishLogs": "Changes will be saved when you click Finish Logs",
     "scanError": "QR code does not exist. Please try again.",
-    "Notes": "Additional notes"
+    "Notes": "Additional notes",
+    "RefuelLogCleared": "Refuel log cleared",
+    "EnterGallonsRefueled": "Enter gallons refueled"
   },
   "CodeFinder": {
     "PullToRefresh": "Pull to refresh",
@@ -338,6 +340,9 @@
     "JobsiteDetails": "Jobsite Details",
     "OwnershipTypeLabel": "Ownership Type",
     "SelectOwnershipType": "Select Ownership Type",
+    "OWNED": "Owned",
+    "LEASED": "Leased",
+    "RENTAL": "Rental",
     "EquipmentDetails": "Equipment Details",
     "Street": "Street",
     "CityLabel": "City",
@@ -631,7 +636,20 @@
     "TascoLabor": "Tasco Labor",
     "UsageTime": "Usage Time",
     "NA": "N/A",
-    "PullToRefresh": "(Pull to refresh)"
+    "PullToRefresh": "(Pull to refresh)",
+    "Id": "Id",
+    "Duration": "Duration",
+    "Start": "Start",
+    "End": "End",
+    "Jobsite": "Jobsite",
+    "Costcode": "Costcode",
+    "Trailer": "Trailer",
+    "NoEquipmentDataAvailable": "No Equipment Data Available",
+    "Refuel": "Refuel",
+    "Operator": "Operator",
+    "Materials": "Materials",
+    "Edit": "Edit",
+    "Approved": "Approved"
   },
 
   "Clock": {

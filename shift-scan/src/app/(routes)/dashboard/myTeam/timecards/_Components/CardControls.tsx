@@ -4,6 +4,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
+import { useTranslations } from "next-intl";
 
 export const CardControls = ({
   handleEditClick,
@@ -14,6 +15,9 @@ export const CardControls = ({
   handleApproveClick: () => void;
   completed: boolean;
 }) => {
+  const t = useTranslations("TimeCardSwiper");
+
+
   return (
     <Holds
       background="white"
@@ -28,14 +32,14 @@ export const CardControls = ({
                 onClick={handleEditClick}
                 className=" w-full"
               >
-                <Titles size={"h4"}>Edit</Titles>
+                <Titles size={"h4"}>{t("Edit")}</Titles>
               </Buttons>
               <Buttons
                 background={"green"}
                 onClick={handleApproveClick}
                 className=" w-full"
               >
-                <Titles size={"h4"}>Approved</Titles>
+                <Titles size={"h4"}>{t("Approved")}</Titles>
               </Buttons>
             </>
           )}

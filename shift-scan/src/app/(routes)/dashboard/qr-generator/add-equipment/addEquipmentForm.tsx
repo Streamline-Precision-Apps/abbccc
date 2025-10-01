@@ -231,9 +231,9 @@ export default function AddEquipmentForm({}) {
                   <option value="" disabled>
                     {t("SelectOwnershipType") || "Select Ownership Type"}
                   </option>
-                  <option value="OWNED">OWNED</option>
-                  <option value="LEASED">LEASED</option>
-                  <option value="RENTAL">RENTAL</option>
+                  <option value="OWNED">{t("OWNED")}</option>
+                  <option value="LEASED">{t("LEASED")}</option>
+                  <option value="RENTAL">{t("RENTAL")}</option>
                 </Selects>
               </Holds>
               <Holds className="pb-3">

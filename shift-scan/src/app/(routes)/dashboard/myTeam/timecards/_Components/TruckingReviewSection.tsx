@@ -185,18 +185,18 @@ export default function TruckingReviewSection({
           <AccordionContent>
             <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
               <Texts className="text-sm">
-                Trailer: {log.Trailer?.name ?? "N/A"}
+                {t("Trailer")}: {log.Trailer?.name ?? "N/A"}
               </Texts>
               <Texts className="text-sm mb-1">
-                Mileage: {formatMileage(log)}
+                {t("Mileage")}: {formatMileage(log)}
               </Texts>
-              <Texts className="text-sm underline">Refuel: </Texts>
+              <Texts className="text-sm underline">{t("Refuel")}: </Texts>
               <Texts className="text-sm mb-1">{formatRefuel(log)}</Texts>
-              <Texts className="text-sm underline"> State Mileage: </Texts>
+              <Texts className="text-sm underline">{t("StateMileage")}: </Texts>
               <Texts className="text-sm mb-1">{formatStateMileage(log)}</Texts>
-              <Texts className="text-sm underline">Materials:</Texts>
+              <Texts className="text-sm underline">{t("Materials")}: </Texts>
               <Texts className="text-sm mb-1">{formatMaterials(log)}</Texts>
-              <Texts className="text-sm underline">Equipment Hauled:</Texts>
+              <Texts className="text-sm underline">{t("EquipmentHauled")}: </Texts>
               <Texts className="text-sm mb-1">
                 {formatEquipmentHauled(log)}
               </Texts>

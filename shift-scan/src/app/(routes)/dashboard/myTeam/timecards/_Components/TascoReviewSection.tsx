@@ -131,7 +131,7 @@ export default function TascoReviewSection({
 
   // Helper to format hauling info
   const formatHauling = (log: TascoLog) => {
-    return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType ? log.laborType : "Operator"}  |  Loads: ${log.LoadQuantity || "0"}`;
+    return `${log.shiftType?.split(" ")[0] || "-"} | ${log.laborType ? log.laborType : t("Operator")}  |  ${t("Loads")}: ${log.LoadQuantity || "0"}`;
   };
 
   // Helper to format refuel info
@@ -156,27 +156,27 @@ export default function TascoReviewSection({
           <AccordionContent>
             <Holds className="p-2 bg-white flex flex-col items-start relative border-t border-gray-200">
               <Texts size="sm" className="text-xs">
-                <strong>Shift:</strong> {log.shiftType?.split(" ")[0] || "-"}
+                <strong>{t("Shift")}:</strong> {log.shiftType?.split(" ")[0] || "-"}
               </Texts>
               <Texts size="sm" className="text-xs">
-                <strong>Labor:</strong>{" "}
+                <strong>{t("Labor")}:</strong>{" "}
                 {log.shiftType?.split(" ")[0] !== "E"
                   ? log.laborType
                   : "Mud Conditioning"}
               </Texts>
               <Texts size="sm" className="text-xs">
-                <strong>Equipment:</strong> {log.Equipment?.name || "N/A"}
+                <strong>{t("Equipment")}:</strong> {log.Equipment?.name || "N/A"}
               </Texts>
               {log.shiftType?.split(" ")[0] !== "E" && (
                 <Texts size="sm" className="text-xs">
-                  <strong>Material:</strong> {log.materialType || "N/A"}
+                  <strong>{t("Material")}:</strong> {log.materialType || "N/A"}
                 </Texts>
               )}
               <Texts size="sm" className="text-xs">
-                <strong>Loads:</strong> {log.LoadQuantity || "0"}
+                <strong>{t("Loads")}:</strong> {log.LoadQuantity || "0"}
               </Texts>
               <Texts size="sm" className="text-xs">
-                <strong>Refuel:</strong> {formatRefuel(log)}
+                <strong>{t("Refuel")}:</strong> {formatRefuel(log)}
               </Texts>
             </Holds>
           </AccordionContent>

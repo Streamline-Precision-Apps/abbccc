@@ -136,7 +136,7 @@ export default function UsageData({
             type="number"
             step="0.1"
             min="0"
-            placeholder="Enter gallons refueled"
+            placeholder={t("EnterGallonsRefueled")}
             value={refuelLog?.gallonsRefueled?.toString() || ""}
             onChange={(e) => {
               const gallons = parseFloat(e.target.value) || 0;
@@ -163,7 +163,7 @@ export default function UsageData({
                 // Clear the input and delete refuel log
                 setRefuelLog(null);
                 setNotification(
-                  t("RefuelLogRemoved") || "Refuel log cleared",
+                  t("RefuelLogRemoved") || t("RefuelLogCleared"),
                   "success",
                 );
               }}

@@ -153,7 +153,7 @@ export default function GeneralReviewSection({
                 <AccordionTrigger className="p-2 focus:outline-none hover:no-underline focus:underline-none focus:border-none ">
                   <p className="text-xs ">{`Id: #${timesheet.id}`}</p>
                   <p className="text-xs">
-                    {`Duration: ${getDuration(timesheet.startTime, timesheet.endTime)}`}
+                    {`${t("Duration")}: ${getDuration(timesheet.startTime, timesheet.endTime)}`}
                   </p>
                 </AccordionTrigger>
 
@@ -173,7 +173,7 @@ export default function GeneralReviewSection({
                       className="w-7 h-7 mb-1 absolute top-1 right-1"
                     />
                     <Texts size="sm" className="text-xs">
-                      <strong>Start:</strong>{" "}
+                      <strong>{t("Start")}:</strong>{" "}
                       {timesheet.startTime
                         ? new Date(timesheet.startTime).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -183,7 +183,7 @@ export default function GeneralReviewSection({
                         : "-"}
                     </Texts>
                     <Texts size="sm" className="text-xs">
-                      <strong>End:</strong>{" "}
+                      <strong>{t("End")}:</strong>{" "}
                       {timesheet.endTime
                         ? new Date(timesheet.endTime).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -196,10 +196,10 @@ export default function GeneralReviewSection({
                       size="sm"
                       className="text-xs text-left truncate max-w-[200px] "
                     >
-                      <strong>Jobsite:</strong> {timesheet.Jobsite.name}
+                      <strong>{t("Jobsite")}:</strong> {timesheet.Jobsite.name}
                     </Texts>
                     <Texts size="sm" className="text-xs truncate max-w-[200px]">
-                      <strong>Costcode:</strong>{" "}
+                      <strong>{t("Costcode")}:</strong>{" "}
                       {timesheet.CostCode.name.split(" ")[0]}
                     </Texts>
                   </Holds>
