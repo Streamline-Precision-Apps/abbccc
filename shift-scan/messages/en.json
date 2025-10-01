@@ -1160,10 +1160,11 @@
     "CropPhoto": "Crop Photo",
     "CaptureImage": "Capture Image",
     "Save": "Save",
+    "Clear": "Clear",
     "Retake": "Retake",
     "Cancel": "Cancel",
     "SignOutQuestion": "Are you sure you want to log out?",
-    "Logout": "Logout"
+    "Logout": "Log out"
   },
   "Hamburger-ChangePassword": {
     "ChangePassword": "Change Password",

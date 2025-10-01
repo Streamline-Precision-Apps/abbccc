@@ -328,6 +328,7 @@ export default function AccountInformation({
       >
         <Holds className="w-full h-full justify-center items-center">
           <Signature
+            previousSignature={signatureBase64String}
             setBase64String={setSignatureBase64String}
             closeModal={() => setEditSignatureModalOpen(false)}
           />
@@ -339,9 +340,9 @@ export default function AccountInformation({
           <DialogHeader className="mt-5">
             <DialogTitle>{t("SignOutQuestion")}</DialogTitle>
           </DialogHeader>
-          <DialogFooter className="flex flex-row  gap-3">
+          <DialogFooter className="flex flex-row items-end gap-3">
             <Button
-              className="w-1/2 bg-app-gray text-gray-600"
+              className="w-1/2  bg-app-gray text-gray-600"
               size={"lg"}
               variant="destructive"
               type="button"

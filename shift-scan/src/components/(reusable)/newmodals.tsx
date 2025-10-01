@@ -9,7 +9,7 @@ import { Bases } from "./bases";
 const NModalVariants = cva("", {
   variants: {
     background: {
-      default: "bg-white opacity-90 rounded-2xl p-1",
+      default: "bg-white rounded-2xl p-1",
       takeABreak:
         "bg-linear-to-b from-app-dark-blue to-app-blue pb-7 pt-7 px-4",
       white: "bg-white rounded-2xl p-1",
