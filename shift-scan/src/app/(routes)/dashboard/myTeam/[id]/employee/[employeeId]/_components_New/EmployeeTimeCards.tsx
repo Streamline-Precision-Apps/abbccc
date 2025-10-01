@@ -46,7 +46,7 @@ export default function EmployeeTimeCards() {
   return (
     <div className="h-full w-full bg-white rounded-b-2xl">
       <div className="grid grid-rows-7 gap-2">
-        <div className="row-span-1 rounded-b-lg bg-app-dark-blue h-full w-full p-2">
+        <div className="row-start-1 row-end-2 rounded-b-lg bg-app-dark-blue h-full w-full p-2">
           <label htmlFor="date" className="text-xs text-white">
             {t("SelectDate")}
           </label>
@@ -55,12 +55,12 @@ export default function EmployeeTimeCards() {
             name="date"
             id="date"
             value={date}
-            className="text-xs text-center border-[3px] py-2 border-black"
+            className="text-xs text-center w-full max-w-[250px] border-[3px] py-2 border-black"
             onChange={handleDateChange}
           />
         </div>
         {/* PullToRefresh wraps the timesheet content */}
-        <div className="row-span-6 overflow-y-auto no-scrollbar p-2">
+        <div className="row-start-2 row-end-7 overflow-y-auto no-scrollbar p-2">
           <PullToRefresh
             onRefresh={reset}
             refreshingText=""
