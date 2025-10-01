@@ -100,7 +100,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
       // Sign out the user and redirect to sign in page
       await signOut({
         redirect: true,
-        callbackUrl: "/signin",
+        redirectTo: "/signin",
       });
     } catch (error) {
       console.error("Error updating password:", error);

@@ -358,7 +358,7 @@ export default function AccountInformation({
                 setIsOpen2(false);
                 await signOut({
                   redirect: true,
-                  callbackUrl: "/signin",
+                  redirectTo: "/signin",
                 });
               }}
             >

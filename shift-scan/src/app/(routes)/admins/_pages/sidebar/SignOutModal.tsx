@@ -44,7 +44,7 @@ export default function SignOutModal({ open, setOpen }: Props) {
               setOpen(false);
               await signOut({
                 redirect: true,
-                callbackUrl: "/signin",
+                redirectTo: "/signin",
               });
             }}
           >
