@@ -1,5 +1,4 @@
 "use client";
-
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
@@ -206,7 +205,8 @@ export default function TruckDriverForm({
             {/* Validation Message Overlay */}
             {!isValidMileage &&
               lastMileageData?.lastMileage !== null &&
-              lastMileageData?.lastMileage !== undefined && (
+              lastMileageData?.lastMileage !== undefined &&
+              !isLoadingMileage && (
                 <Holds className="absolute -top-6 left-0 right-0 z-10 px-2">
                   <Texts size="p6" className="text-red-600 text-center text-xs">
                     Minimum required:{" "}
@@ -237,7 +237,9 @@ export default function TruckDriverForm({
               }}
               disabled={!truck.id || !selectedOpt}
               className={`text-center placeholder:text-sm ${
-                !isValidMileage ? "border-red-500 border-2" : ""
+                !isValidMileage && !isLoadingMileage
+                  ? "border-red-500 border-2"
+                  : ""
               } ${
                 !truck.id || !selectedOpt
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -250,6 +252,11 @@ export default function TruckDriverForm({
           <Holds className="row-start-2 row-end-13 h-full w-full">
             <TruckSelector
               onTruckSelect={(selectedTruck) => {
+                // Reset mileage and display value when selecting a new truck
+                setStartingMileage(0);
+                setDisplayValue("");
+
+                // ^^^^^Added to clear mileage input on truck change
                 if (selectedTruck) {
                   setTruck(selectedTruck); // Update the truck state with the full Option object
                 } else {
