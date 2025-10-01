@@ -104,6 +104,7 @@ export default function EquipmentList({
       const currentLog = equipmentHauled.find(
         (item) => item.id === selectedIndex,
       );
+
       const formData = new FormData();
       formData.append("id", selectedIndex);
       formData.append("truckingLogId", truckingLog);

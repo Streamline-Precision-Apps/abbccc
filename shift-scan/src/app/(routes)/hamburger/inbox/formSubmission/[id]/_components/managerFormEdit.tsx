@@ -183,6 +183,7 @@ export default function ManagerFormEditApproval({
                 formData={formData}
                 formValues={formValues}
                 setFormValues={() => {}}
+                useNativeInput={true}
                 readOnly={true}
               />
 
