@@ -77,18 +77,6 @@ export default function NewClockProcess({
   const router = useRouter();
   const [laborType, setLaborType] = useState<string>("");
 
-  useEffect(() => {
-    console.log("laborType:", laborType);
-  }, [laborType]);
-
-  useEffect(() => {
-    console.log("clockInRole:", clockInRole);
-  }, [clockInRole]);
-  
-  useEffect(() => {
-    console.log("clockInRoleTypes:", clockInRoleTypes);
-  }, [clockInRoleTypes]);
-
   // Truck states
   const [truck, setTruck] = useState<Option>({
     id: "",
@@ -134,12 +122,7 @@ export default function NewClockProcess({
   }, []);
 
   useEffect(() => {
-    console.log("step:", step);
-  }, [step]);
-
-  useEffect(() => {
     if (!session) {
-      console.log("Session not available yet");
       return;
     }
     // Build a list of available roles based on the view flags.
@@ -148,13 +131,11 @@ export default function NewClockProcess({
     if (laborView) availableRoles.push("general");
     if (truckView) availableRoles.push("truck");
     if (tascoView) availableRoles.push("tasco");
-    // console.log("Available roles:", availableRoles); // Debugging line to check available roles
     setNumberOfRoles(availableRoles.length);
 
     // Auto-select if exactly one role is available.
     if (availableRoles.length === 1) {
       const selectedRole = availableRoles[0];
-      // console.log("Auto-selecting role:", selectedRole); // Debugging line to check selected role
       const autoSelectRole = async () => {
         setClockInRole(selectedRole);
         await setWorkRole(selectedRole); // Ensure setWorkRole returns a promise
@@ -196,7 +177,6 @@ export default function NewClockProcess({
       formData.append("id", tId?.toString() || "");
       formData.append("userId", session?.user.id?.toString() || "");
       const response = await returnToPrevWork(formData);
-      console.log("response:", response);
 
       if (response) {
         // Set basic information from previous timesheet

@@ -61,7 +61,7 @@ export default function RefuelLayout({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.log(t("ErrorAddingStateMileage"), error);
+      console.error(t("ErrorAddingStateMileage"), error);
     }
   };
 

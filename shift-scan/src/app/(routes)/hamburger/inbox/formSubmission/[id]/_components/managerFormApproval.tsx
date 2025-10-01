@@ -127,7 +127,6 @@ export default function ManagerFormApproval({
           throw new Error("Failed to fetch signature");
         }
         const signature = await response.json();
-        console.log("Fetched Signature:", signature);
         setManagerSignature(signature.signature);
       } catch (error) {
         console.error("Error fetching signature:", error);

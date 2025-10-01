@@ -22,8 +22,6 @@ export async function deletePersonnel(id: string) {
 }
 export async function editPersonnelInfo(formData: FormData) {
   try {
-    console.log("Editing personnel info...");
-    console.log(formData);
     // Extract all form data
     const id = formData.get("id") as string;
     const firstName = formData.get("firstName") as string;
@@ -116,8 +114,6 @@ export async function editPersonnelInfo(formData: FormData) {
 
 export async function changeCrewLead(crewId: string, userId: string) {
   try {
-    console.log("Changing crew lead...");
-    console.log(crewId, userId);
     await prisma.crew.update({
       where: { id: crewId },
       data: {
@@ -135,10 +131,7 @@ export async function changeCrewLead(crewId: string, userId: string) {
 // Create jobsite admin
 export async function createJobsite(formData: FormData) {
   try {
-    console.log("Creating jobsite...");
-    console.log(formData);
-
-    const newJobsite = await prisma.jobsite.create({
+    await prisma.jobsite.create({
       data: {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
@@ -148,8 +141,6 @@ export async function createJobsite(formData: FormData) {
         updatedAt: new Date(),
       },
     });
-    // Removed creation of PendingApproval as the model does not exist in Prisma schema
-    console.log("Jobsite created successfully.");
 
     // Revalidate the path
     revalidatePath(`/admin/assets`);
@@ -176,8 +167,6 @@ export async function deleteCrew(crewId: string) {
 
 export async function RemoveUserProfilePicture(userId: string) {
   try {
-    console.log("Removing user profile picture...");
-    console.log("User ID:", userId);
     await prisma.user.update({
       where: { id: userId }, // Replace with actual user ID
       data: { image: null },

@@ -43,7 +43,6 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      console.log("Refreshing dashboard data...");
       const response = await fetch("/api/getDashboard");
       const json = await response.json();
       setData(json);
@@ -51,7 +50,6 @@ export const DashboardDataProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error refreshing dashboard data:", error);
     } finally {
       setLoading(false);
-      console.log("Dashboard data refreshed.");
     }
   }, []);
 

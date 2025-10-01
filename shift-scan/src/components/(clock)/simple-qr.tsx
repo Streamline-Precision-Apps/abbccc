@@ -44,7 +44,6 @@ export default function SimpleQr({
           setScanned(true);
 
           if (onScanComplete && hasScanned.current) {
-            console.log("Scanned data:", data);
             await onScanComplete(data);
           }
 
@@ -56,7 +55,7 @@ export default function SimpleQr({
         hasScanned.current = false; // Reset on error
       }
     },
-    [setScanned, setScannedId, onScanComplete]
+    [setScanned, setScannedId, onScanComplete],
   );
 
   useEffect(() => {

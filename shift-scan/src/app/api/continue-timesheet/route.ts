@@ -74,7 +74,6 @@ export async function POST(request: NextRequest) {
 
     // If timesheet doesn't exist or is completed, redirect to home
     if (!incompleteTimesheet) {
-      console.log("Timesheet not found or completed");
       return NextResponse.redirect(new URL("/", request.url));
     }
 
@@ -179,10 +178,6 @@ export async function POST(request: NextRequest) {
         maxAge: 60 * 60 * 24 * 7, // 1 week
       });
     }
-
-    console.log(
-      "Successfully set timesheet continuation cookies, redirecting to dashboard",
-    );
 
     // Redirect directly to dashboard - single redirect!
     return NextResponse.redirect(new URL("/dashboard", request.url));

@@ -73,9 +73,6 @@ export type TimesheetSubmission = {
 };
 
 export async function adminCreateTimesheet(data: TimesheetSubmission) {
-  // Create the main timesheet and all related logs in a transaction
-  console.log("Creating timesheet with data:", data);
-
   await prisma.$transaction(async (tx) => {
     // Create the main timesheet
 
@@ -233,11 +230,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Labor Logs (EmployeeEquipmentLog)
     for (const log of data.laborLogs) {
       const date = data.form.date;
-      console.log(
-        "Creating labor log for equipment:",
-        log.startTime,
-        log.endTime,
-      );
+
       if (!log.equipment.id) continue;
       await tx.employeeEquipmentLog.create({
         data: {
@@ -354,8 +347,6 @@ export async function adminUpdateTimesheetStatus(
  * @param formData FormData containing 'id' and 'data' (JSON string of TimesheetData)
  */
 export async function adminUpdateTimesheet(formData: FormData) {
-  console.log("FormData entries:", Array.from(formData.entries()));
-
   const id = Number(formData.get("id"));
   const dataJson = formData.get("data") as string;
   const editorId = formData.get("editorId") as string;
@@ -634,9 +625,6 @@ export async function adminSetNotificationToRead(
     });
 
     if (notifications.length === 0) {
-      console.log(
-        `No notifications found for timesheet ID ${timesheetId}. Skipping read/response update.`,
-      );
       return { success: false, message: "No notifications found" };
     }
 

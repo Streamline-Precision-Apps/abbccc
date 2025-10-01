@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -39,10 +39,6 @@ export async function GET(
         ? document.fileData
         : Buffer.from(document.fileData);
 
-    console.log("PDF Buffer Size:", pdfBuffer.length);
-    console.log("PDF Buffer Type:", typeof pdfBuffer);
-    console.log("document: ", document);
-
     return new Response(pdfBuffer, {
       status: 200,
       headers: new Headers({
@@ -50,7 +46,7 @@ export async function GET(
         "Content-Length": pdfBuffer.length.toString(),
         "Content-Disposition": `inline; filename="${document.fileName.replace(
           /[^a-zA-Z0-9-_.]/g,
-          "_"
+          "_",
         )}"`,
         "Cache-Control": "public, max-age=3600",
       }),
@@ -65,7 +61,7 @@ export async function GET(
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }

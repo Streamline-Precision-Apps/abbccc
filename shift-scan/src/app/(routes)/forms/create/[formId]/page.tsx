@@ -145,8 +145,6 @@ export default function FormCreationPage({ params }: FormCreationPageProps) {
       if (result && !draftId) {
         setDraftId(result.id);
       }
-
-      console.log("Draft saved automatically");
       return result?.id;
     } catch (error) {
       console.error("Error saving draft:", error);

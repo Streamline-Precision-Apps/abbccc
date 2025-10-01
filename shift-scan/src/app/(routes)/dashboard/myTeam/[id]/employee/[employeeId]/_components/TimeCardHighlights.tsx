@@ -137,7 +137,6 @@
 
 //               // Validate final date
 //               if (!isNaN(newDate.getTime())) {
-//                 console.log(`New valid date created: ${newDate.toISOString()}`);
 //                 newValue = newDate;
 //               } else {
 //                 console.warn(`Failed to create valid date from: ${timeString}`);
@@ -175,14 +174,7 @@
 //         return item;
 //       });
 
-//       // Comprehensive logging for debugging
-//       console.log(
-//         `Updating timesheet ${id} with jobsiteId: ${jobsiteId}, name: ${jobsiteName}`,
-//       );
-//       console.log(
-//         "Updated data sample:",
-//         updatedData.find((item) => item.id === id),
-//       );
+//
 
 //       onDataChange(updatedData);
 //     },
@@ -309,9 +301,7 @@
 //   ) => {
 //     if (currentEditingId && jobsite) {
 //       // Use the actual id (database primary key) instead of code (qrId)
-//       console.log(
-//         `JobsiteSelector returned id: ${jobsite.id}, code (qrId): ${jobsite.code}, label: ${jobsite.label}`,
-//       );
+//
 
 //       // Pass the database ID instead of the qrId (code)
 //       handleJobsiteChange(currentEditingId, jobsite.id, jobsite.label);
@@ -331,30 +321,18 @@
 //   const debugLogDate = useCallback(
 //     (context: string, dateValue: Date | string | number | null | undefined) => {
 //       if (!dateValue) {
-//         console.log(`${context}: undefined or null`);
+//
 //         return;
 //       }
 
 //       try {
 //         if (dateValue instanceof Date) {
-//           console.log(
-//             `${context}: Date object - ${dateValue.toISOString()} - Valid: ${!isNaN(
-//               dateValue.getTime(),
-//             )}`,
-//           );
+//
 //         } else if (typeof dateValue === "string") {
 //           const parsed = new Date(dateValue);
-//           console.log(
-//             `${context}: String - ${dateValue} - Parsed to: ${parsed.toISOString()} - Valid: ${!isNaN(
-//               parsed.getTime(),
-//             )}`,
-//           );
+//
 //         } else {
-//           console.log(
-//             `${context}: Unknown type - ${typeof dateValue} - ${String(
-//               dateValue,
-//             )}`,
-//           );
+//
 //         }
 //       } catch (error) {
 //         console.error(`${context}: Error logging date:`, error);

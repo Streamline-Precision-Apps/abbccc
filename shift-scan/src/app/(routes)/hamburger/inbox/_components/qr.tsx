@@ -104,7 +104,6 @@ export default function Qr({
         }
 
         setScanned(data);
-        console.log("Scanned Equipment ID:", data);
         qrScannerRef.current?.stop();
         setStartCamera(false);
         handleNextStep();

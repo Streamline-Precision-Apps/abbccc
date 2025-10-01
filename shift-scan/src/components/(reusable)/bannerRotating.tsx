@@ -70,7 +70,8 @@ export default function BannerRotating() {
   const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [newDate, setNewDate] = useState(new Date());
-  const { savedTimeSheetData, setTimeSheetData, refetchTimesheet } = useTimeSheetData();
+  const { savedTimeSheetData, setTimeSheetData, refetchTimesheet } =
+    useTimeSheetData();
 
   const settings = {
     className: "slick-track",
@@ -110,13 +111,10 @@ export default function BannerRotating() {
           await refetchTimesheet();
           const ts = savedTimeSheetData?.id;
           if (!ts) {
-            console.log("No active timesheet found for banner.");
-          return (timeSheetId = ts);
-        }}
-
-        console.log(
-          `Fetching banner data for timesheet ID: ${timeSheetId}`,
-        );
+            console.warn("No active timesheet found for banner.");
+            return (timeSheetId = ts);
+          }
+        }
 
         // Fetch banner data using the obtained timeSheetId
         const bannerResponse = await fetch(
@@ -125,7 +123,6 @@ export default function BannerRotating() {
 
         if (bannerResponse.ok) {
           const bannerData = await bannerResponse.json();
-          console.log("Banner data loaded successfully:", bannerData);
           setBannerData(bannerData);
         } else {
           console.error("Banner API error:", bannerResponse.status);

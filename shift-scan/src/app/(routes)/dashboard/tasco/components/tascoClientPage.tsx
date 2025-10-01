@@ -79,7 +79,6 @@ export default function TascoEQClientPage() {
       formData.append("tascoLogId", dataToSave.tascoLogId);
       formData.append("loadCount", dataToSave.loadCount.toString());
       await SetLoad(formData);
-      console.log("Draft saved successfully");
     } catch (error) {
       console.error("Error saving draft:", error);
     }

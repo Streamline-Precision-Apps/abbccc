@@ -72,7 +72,6 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
   const { data: session } = useSession();
   const adminUserId = session?.user?.id || null;
 
-  console.log("Form Template:", formTemplate);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<
     Record<string, string | number | boolean | null>

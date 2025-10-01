@@ -6,7 +6,7 @@ import { revalidateTag } from "next/cache";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ filter: string }> }
+  { params }: { params: Promise<{ filter: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -18,7 +18,7 @@ export async function GET(
   if (permission === "USER") {
     return NextResponse.json(
       { error: "Unauthorized User Permission" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -72,7 +72,6 @@ export async function GET(
           createdAt: "desc",
         },
       });
-      console.log(requests);
 
       revalidateTag("requests");
       return NextResponse.json(requests);
@@ -123,7 +122,6 @@ export async function GET(
           createdAt: "desc",
         },
       });
-      console.log(requests);
 
       revalidateTag("requests");
       return NextResponse.json(requests);
@@ -166,7 +164,6 @@ export async function GET(
           },
         },
       });
-      console.log(requests);
 
       revalidateTag("requests");
       return NextResponse.json(requests);
@@ -175,7 +172,7 @@ export async function GET(
     console.error("Error fetching employee requests:", error);
     return NextResponse.json(
       { error: "Error fetching employee requests" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

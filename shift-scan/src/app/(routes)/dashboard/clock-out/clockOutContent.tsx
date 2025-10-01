@@ -79,27 +79,6 @@
 //   const [wasInjured, setWasInjured] = useState<boolean>(false);
 //   const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
 
-//   useEffect(() => {
-//     console.log("currentStep: ", step);
-//   }, [step]);
-
-//   useEffect(() => {
-//     console.log("path: ", path);
-//   }, [path]);
-
-//   useEffect(() => {
-//     console.log("editFilter: ", editFilter);
-//   }, [editFilter]);
-//   useEffect(() => {
-//     console.log("editDate: ", editDate);
-//   }, [editDate]);
-//   useEffect(() => {
-//     console.log("focusIds: ", focusIds);
-//   }, [focusIds]);
-//   useEffect(() => {
-//     console.log("focus employeeId: ", employeeId);
-//   }, [employeeId]);
-
 //   const incrementStep = () => {
 //     setStep((prevStep) => prevStep + 1); // Increment function
 //   };

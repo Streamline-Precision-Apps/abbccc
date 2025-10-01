@@ -17,7 +17,6 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     }
 
     const userId = id;
-    console.log("userId:", userId);
 
     // Authenticate the user
     const session = await auth();

@@ -4,21 +4,6 @@ import prisma from "@/lib/prisma";
 import { reportError } from "./sentryErrorHandler";
 import { PasswordResetTokenByEmail } from "@/data/password-reset-token";
 
-const parseUTC = (timestamp: string): Date => {
-  try {
-    const date = new Date(timestamp);
-    if (isNaN(date.getTime())) {
-      throw new RangeError(`Invalid time value: ${timestamp}`);
-    }
-    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-    // eslint-disable-next-line no-console
-    console.log("Parse UTC date:", date);
-    return date;
-  } catch (error) {
-    reportError(error, { location: "tokens/parseUTC", timestamp });
-    throw error;
-  }
-};
 export const generatePasswordResetToken = async (email: string) => {
   try {
     const token = uuidv4();

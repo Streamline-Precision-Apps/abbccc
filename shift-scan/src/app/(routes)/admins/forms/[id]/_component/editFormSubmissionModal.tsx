@@ -94,7 +94,6 @@ export default function EditFormSubmissionModal({
     const fetchData = async () => {
       setLoading(true);
       const submission = await getFormSubmissionById(id);
-      console.log("Fetched submission:", submission);
       if (!submission) {
         console.error("Submission not found for ID:", id);
         return;

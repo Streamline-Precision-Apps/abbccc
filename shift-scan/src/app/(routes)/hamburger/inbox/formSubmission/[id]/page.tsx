@@ -496,8 +496,6 @@ export default function DynamicForm({
       // Use the current formValues directly (they're already in the correct format)
       const dataToSave = convertFormValuesToString(formValues);
 
-      console.log("Submitting form with data:", dataToSave);
-
       // Save data and wait for completion before navigating
       const result = await saveDraftToPending(
         dataToSave,

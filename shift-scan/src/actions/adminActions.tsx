@@ -23,8 +23,6 @@ export async function createUserAdmin(payload: {
     id: string;
   }[];
 }) {
-  console.log("Creating user admin...");
-  console.log(payload);
   const hashedPassword = await hash(payload.password, 10);
 
   // Use a transaction to ensure both operations succeed or fail together
@@ -94,9 +92,6 @@ export async function editUserAdmin(payload: {
     id: string;
   }[];
 }) {
-  console.log("Creating user admin...");
-  console.log(payload);
-
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
     // Create the user
@@ -145,7 +140,6 @@ export async function deleteUser(id: string) {
 //#TODO: Test Server Action
 export async function createCrew(formData: FormData) {
   try {
-    console.log("Creating new crew...");
     // Extract data from formData
     const crewName = formData.get("name") as string;
     const Users = formData.get("Users") as string;
@@ -195,7 +189,6 @@ export async function createCrew(formData: FormData) {
 
 export async function editCrew(formData: FormData) {
   try {
-    console.log("Editing crew...");
     // Extract data from formData
     const crewName = formData.get("name") as string;
     const Users = formData.get("Users") as string;

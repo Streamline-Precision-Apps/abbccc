@@ -24,7 +24,7 @@ export const Reset = async (formData: FormData) => {
   // passes email and token to send an email out
   await sendPasswordResetEmail(
     passwordResetToken.email,
-    passwordResetToken.token
+    passwordResetToken.token,
   );
 
   return { success: "Email sent" };
@@ -44,8 +44,6 @@ export async function resetUserPassword(formData: FormData) {
 
   // Ensure the token has not expired
   if (verify.expiration < new Date()) {
-    console.log("Token expired:", verify.expiration);
-    console.log("Current time:", new Date());
     throw new Error("Token expired");
   }
 

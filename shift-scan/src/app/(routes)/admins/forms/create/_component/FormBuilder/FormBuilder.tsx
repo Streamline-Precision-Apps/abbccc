@@ -273,13 +273,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
         fields: formFields,
         companyId: formSettings.companyId,
       };
-      console.log("Client side payload:", payload);
 
       const result = await saveFormTemplate(payload);
 
       if (result.success) {
         toast.success("Form saved successfully!", { duration: 3000 });
-        console.log("Saved form:", result);
         setFormSettings({
           id: "",
           companyId: "",

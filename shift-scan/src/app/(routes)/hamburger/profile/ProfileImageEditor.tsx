@@ -155,25 +155,19 @@ export default function ProfileImageEditor({
   };
 
   const saveImage = async () => {
-    console.log("[saveImage] Start saving image");
     setIsSaving(true);
     if (!canvasRef.current || !employee?.id) {
-      console.log(" Missing canvas or employee id");
+      console.error(" Missing canvas or employee id");
       return;
     }
     try {
-      // Convert canvas to Blob and upload
-      console.log("Converting canvas to Blob");
       canvasRef.current.toBlob(async (blob) => {
         if (!blob) {
-          console.log("Blob conversion failed");
           setIsSaving(false);
           return;
         }
 
-        console.log("[Begin Handle Upload]");
         await handleUpload(blob); // Pass Blob to handleUpload
-        console.log(" handleUpload completed");
 
         localStorage.setItem("userProfileImage", "Updating");
         resetState();
@@ -200,7 +194,7 @@ export default function ProfileImageEditor({
   const handleUpload = async (file: Blob) => {
     setUploading(true);
     if (!employee?.id) {
-      console.log("[handleUpload] No employee id");
+      console.warn("[handleUpload] No employee id");
       return;
     }
 
