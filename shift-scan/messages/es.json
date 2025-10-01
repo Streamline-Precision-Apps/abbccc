@@ -81,19 +81,26 @@
   "SignUpPassword": {
     "ChoosePasswordTitle": "Elija una nueva contraseña",
     "ChooseNewPassword": "¡Elija una nueva contraseña! ",
-    "PasswordRequirements": "La contraseña debe incluir:",
     "NumberRequirement": "1 número",
     "SymbolRequirement": "1 símbolo",
     "LengthRequirement": "Tiene una longitud de más de 8 caracteres",
-    "NewPassword": "Nueva contraseña",
-    "ConfirmPassword": "confirmar Contraseña",
     "Next": "Próximo",
     "Submitting": "Sumisión...",
     "NewPasswordEmptyError": "Intento inválido. ",
     "ConfirmPasswordEmptyError": "Intento inválido. ",
     "PasswordMismatchError": "Intento inválido. ",
     "PasswordLengthError": "Intento inválido. ",
-    "EyeImageAlt": "Imagen del globo ocular"
+    "EyeImageAlt": "Imagen del globo ocular",
+    "ChangePassword": "Cambiar la contraseña",
+    "PasswordRequirements": "Requisitos de contraseña",
+    "NumberCriteriaLabel": "Al menos un número (0-9)",
+    "SpecialCharacterCriteriaLabel": "Al menos un personaje especial",
+    "CapitalCriteriaLabel": "Al menos una letra mayúscula (A-Z)",
+    "LowerCriteriaLabel": "Al menos una letra minúscula (A-Z)",
+    "LengthCriteriaLabel": "Mínimo 8 caracteres",
+    "NewPassword": "Nueva contraseña",
+    "ConfirmPassword": "confirmar Contraseña",
+    "PasswordsMatch": "Las contraseñas son las mismas"
   },
   "SignUpPermissions": {
     "AcceptAllPermissions": "Aceptar todos los permisos",
@@ -136,7 +143,8 @@
     "Save": "Ahorrar",
     "Next": "Próximo",
     "Submitting": "Sumisión...",
-    "SignatureMissingError": "Intento inválido. "
+    "SignatureMissingError": "Intento inválido. ",
+    "Signature": "Firma"
   },
   "SignUpOutro": {
     "EnterYourInformation": "Ingrese su información",
