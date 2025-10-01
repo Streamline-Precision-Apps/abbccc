@@ -72,13 +72,17 @@ export default function TruckDriverForm({
         const response = await fetch(`/api/equipment/${truck.id}/lastMileage`);
         const data: LastMileageData = await response.json();
         setLastMileageData(data);
-        
+
         // Auto-set starting mileage to last ending mileage if available
-        if (data?.lastMileage !== null && data?.lastMileage !== undefined && startingMileage === 0) {
+        if (
+          data?.lastMileage !== null &&
+          data?.lastMileage !== undefined &&
+          startingMileage === 0
+        ) {
           setStartingMileage(data.lastMileage);
           setDisplayValue(`${data.lastMileage.toLocaleString()}`);
         }
-        
+
         // Always validate current starting mileage, even if it's empty
         validateMileageWithData(startingMileage, data);
       } catch (error) {
@@ -179,6 +183,10 @@ export default function TruckDriverForm({
 
   // Generate dynamic placeholder based on last mileage data
   const getPlaceholder = () => {
+    if (!truck.id || !selectedOpt) {
+      return "Select a truck first";
+    }
+
     if (isLoadingMileage) {
       return "Loading last mileage...";
     }
@@ -187,25 +195,26 @@ export default function TruckDriverForm({
   };
 
   const isFormValid =
-    truck.code !== "" && startingMileage > 0 && isValidMileage;
+    truck.code !== "" && selectedOpt && startingMileage > 0 && isValidMileage;
 
   return (
     <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
       <Holds className="row-start-1 row-end-7 h-full w-full ">
         <Grids rows={"12"}>
-          {/* Validation Message - only show when validation fails */}
-          {!isValidMileage && lastMileageData?.lastMileage !== null && lastMileageData?.lastMileage !== undefined && (
-            <Holds className={`h-full w-full px-4 row-start-1 row-end-2`}>
-              <Texts size="p6" className="text-red-600 text-center">
-                Minimum required: {lastMileageData.lastMileage.toLocaleString()}
-              </Texts>
-            </Holds>
-          )}
+          {/* Starting Mileage Input with overlay validation message */}
+          <Holds className="row-start-1 row-end-2 h-full w-full relative">
+            {/* Validation Message Overlay */}
+            {!isValidMileage &&
+              lastMileageData?.lastMileage !== null &&
+              lastMileageData?.lastMileage !== undefined && (
+                <Holds className="absolute -top-6 left-0 right-0 z-10 px-2">
+                  <Texts size="p6" className="text-red-600 text-center text-xs">
+                    Minimum required:{" "}
+                    {lastMileageData.lastMileage.toLocaleString()}
+                  </Texts>
+                </Holds>
+              )}
 
-          {/* Starting Mileage Input */}
-          <Holds className={`${
-            (!isValidMileage ? 'row-start-2 row-end-3' : 'row-start-1 row-end-2')
-          } h-full w-full`}>
             <Inputs
               type="text"
               name={"startingMileage"}
@@ -226,16 +235,19 @@ export default function TruckDriverForm({
                     : "",
                 );
               }}
+              disabled={!truck.id || !selectedOpt}
               className={`text-center placeholder:text-sm ${
                 !isValidMileage ? "border-red-500 border-2" : ""
+              } ${
+                !truck.id || !selectedOpt
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : ""
               }`}
             />
           </Holds>
 
-          {/* Truck Selector - dynamically adjust position */}
-          <Holds className={`${
-            (!isValidMileage ? 'row-start-3 row-end-13' : 'row-start-2 row-end-13')
-          } h-full w-full`}>
+          {/* Truck Selector - fixed position */}
+          <Holds className="row-start-2 row-end-13 h-full w-full">
             <TruckSelector
               onTruckSelect={(selectedTruck) => {
                 if (selectedTruck) {

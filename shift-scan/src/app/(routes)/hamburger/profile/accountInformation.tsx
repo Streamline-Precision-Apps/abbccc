@@ -3,12 +3,11 @@ import { Labels } from "@/components/(reusable)/labels";
 import { EditableFields } from "@/components/(reusable)/EditableField";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { NModals } from "@/components/(reusable)/newmodals";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useRef, useEffect } from "react";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 import { Images } from "@/components/(reusable)/images";
 import { useTranslations } from "next-intl";
-import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import { updateSettings } from "@/actions/hamburgerActions";
 import {
@@ -57,6 +56,7 @@ export default function AccountInformation({
   const [isOpen2, setIsOpen2] = useState(false);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
   const [editContactModalOpen, setEditContactModalOpen] = useState(false);
+  const [focusField, setFocusField] = useState<string | null>(null);
   const [formState, setFormState] = useState({
     phoneNumber: employee?.Contact?.phoneNumber || "",
     email: employee?.email || "",
@@ -65,16 +65,75 @@ export default function AccountInformation({
   });
   const [formLoading, setFormLoading] = useState(false);
 
-  // Handlers for opening modal
-  const openEditContactModal = () => {
+  // Focus effect when modal opens
+  useEffect(() => {
+    if (editContactModalOpen && focusField) {
+      // Small delay to ensure modal is fully rendered
+      const timeoutId = setTimeout(() => {
+        // Find the modal container and the specific input field
+        const modalContainer = document.querySelector(
+          '[data-modal="contact-edit"]',
+        );
+        if (modalContainer) {
+          let targetInput: HTMLInputElement | null = null;
+
+          switch (focusField) {
+            case "phoneNumber":
+              // Find the first input (phone number)
+              targetInput = modalContainer.querySelector(
+                'input[type="text"]',
+              ) as HTMLInputElement;
+              break;
+            case "email":
+              // Find the second input (email) - get all inputs and select the second one
+              const allInputs =
+                modalContainer.querySelectorAll('input[type="text"]');
+              targetInput = allInputs[1] as HTMLInputElement;
+              break;
+            case "emergencyContact":
+              // Find the third input (emergency contact)
+              const allInputs2 =
+                modalContainer.querySelectorAll('input[type="text"]');
+              targetInput = allInputs2[2] as HTMLInputElement;
+              break;
+            case "emergencyContactNumber":
+              // Find the fourth input (emergency contact number)
+              const allInputs3 =
+                modalContainer.querySelectorAll('input[type="text"]');
+              targetInput = allInputs3[3] as HTMLInputElement;
+              break;
+          }
+
+          if (targetInput) {
+            targetInput.focus();
+            targetInput.select(); // Also select the text for better UX
+          }
+        }
+      }, 150); // Slightly longer delay to ensure modal animation completes
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [editContactModalOpen, focusField]);
+
+  // Individual handlers for opening modal with specific focus
+  const openEditContactModal = (fieldToFocus?: string) => {
     setFormState({
       phoneNumber: employee?.Contact?.phoneNumber || "",
       email: employee?.email || "",
       emergencyContact: employee?.Contact?.emergencyContact || "",
       emergencyContactNumber: employee?.Contact?.emergencyContactNumber || "",
     });
+    setFocusField(fieldToFocus || null);
     setEditContactModalOpen(true);
   };
+
+  // Individual click handlers for each field
+  const handlePhoneNumberClick = () => openEditContactModal("phoneNumber");
+  const handleEmailClick = () => openEditContactModal("email");
+  const handleEmergencyContactClick = () =>
+    openEditContactModal("emergencyContact");
+  const handleEmergencyContactNumberClick = () =>
+    openEditContactModal("emergencyContactNumber");
 
   // Save handler
   const handleSaveContact = async () => {
@@ -119,7 +178,7 @@ export default function AccountInformation({
       <Holds className="h-full">
         <Contents width={"section"}>
           {/* Editable fields open modal on click */}
-          <Holds onClick={openEditContactModal} className="pb-3">
+          <Holds onClick={handlePhoneNumberClick} className="pb-3">
             <p className="text-xs">{t("PhoneNumber")}</p>
             <EditableFields
               value={formatPhoneNumber(employee?.Contact?.phoneNumber || "")}
@@ -127,7 +186,7 @@ export default function AccountInformation({
               onChange={() => {}}
             />
           </Holds>
-          <Holds onClick={openEditContactModal} className="pb-3">
+          <Holds onClick={handleEmailClick} className="pb-3">
             <p className="text-xs">{t("Email")}</p>
             <EditableFields
               value={employee?.email || ""}
@@ -135,7 +194,7 @@ export default function AccountInformation({
               onChange={() => {}}
             />
           </Holds>
-          <Holds onClick={openEditContactModal} className="pb-3">
+          <Holds onClick={handleEmergencyContactClick} className="pb-3">
             <p className="text-xs">{t("EmergencyContact")}</p>
             <EditableFields
               value={employee?.Contact?.emergencyContact || ""}
@@ -143,7 +202,7 @@ export default function AccountInformation({
               onChange={() => {}}
             />
           </Holds>
-          <Holds onClick={openEditContactModal} className="pb-3">
+          <Holds onClick={handleEmergencyContactNumberClick} className="pb-3">
             <p className="text-xs">{t("EmergencyContactNumber")}</p>
             <EditableFields
               value={formatPhoneNumber(
@@ -197,7 +256,7 @@ export default function AccountInformation({
         size={"xlWS1"}
         isOpen={editContactModalOpen}
       >
-        <Holds className="w-full h-full">
+        <Holds className="w-full h-full" data-modal="contact-edit">
           <Labels size={"sm"}>{t("PhoneNumber")}</Labels>
           <EditableFields
             value={formatPhoneNumber(formState.phoneNumber)}
