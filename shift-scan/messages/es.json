@@ -331,7 +331,9 @@
     "ValidGallons": "Ingrese un número válido de galones",
     "ClickFinishLogs": "Los cambios se guardarán cuando haga clic en los registros de finalización",
     "scanError": "El código QR no existe. ",
-    "Notes": "Notas adicionales"
+    "Notes": "Notas adicionales",
+    "RefuelLogCleared": "Registro de reabastecimiento borrado",
+    "EnterGallonsRefueled": "Ingrese galones reabastecidos"
   },
   "CodeFinder": {
     "PullToRefresh": "Tirar para actualizar",
@@ -342,6 +344,9 @@
     "JobsiteDetails": "Detalles del sitio ",
     "OwnershipTypeLabel": "Tipo de propiedad",
     "SelectOwnershipType": "Seleccione el tipo de propiedad",
+    "OWNED": "Propio",
+    "LEASED": "Arrendado",
+    "RENTAL": "Alquiler",
     "EquipmentDetails": "Detalles del equipo",
     "Street": "Calle",
     "CityLabel": "Ciudad",
@@ -358,6 +363,10 @@
     "CreationReasoning": "Ingrese la razón de la creación del sitio de trabajo aquí ...",
     "TemporaryJobsiteDescription": "Ingrese la descripción del sitio de trabajo aquí ...",
     "TemporaryJobsiteName": "Ingrese el nombre temporal del lugar de trabajo aquí ...",
+    "EquipmentTypeLabel": "Tipo de Equipo",
+    "TemporaryEquipmentNameLabel": "Nombre de Equipo Temporal",
+    "CurrentLocationLabel": "Ubicación Actual",
+    "ReasonForCreatingLabel": "Razón para Crear",
     "TemporaryEquipmentName": "Ingrese el nombre del equipo temporal aquí ...",
     "EQCreationReasoning": "Ingrese la razón de la creación de equipos aquí ...",
     "CreationDetails": "Detalles de la creación",
@@ -631,7 +640,20 @@
     "TascoLabor": "Tasco Labor",
     "UsageTime": "Tiempo de uso",
     "NA": "N / A",
-    "PullToRefresh": "(Tirar para actualizar)"
+    "PullToRefresh": "(Tirar para actualizar)",
+    "Id": "Id",
+    "Duration": "Duración",
+    "Start": "Inicio",
+    "End": "Fin",
+    "Jobsite": "Sitio de trabajo",
+    "Costcode": "Código de costo",
+    "Trailer": "Remolque",
+    "NoEquipmentDataAvailable": "No hay datos de equipo disponibles",
+    "Refuel": "Reabastecimiento",
+    "Operator": "Operador",
+    "Materials": "Materiales",
+    "Edit": "Editar",
+    "Approved": "Aprobado"
   },
   "Clock": {
     "NoResultsFound": "No se encontraron resultados",
@@ -1265,6 +1287,7 @@
     "NoMaterialSelected": "No material seleccionado",
     "BackToList": "Volver a la lista",
     "Comments": "Comentarios",
+    "StartRequiredMileageMustBe": "* Requerido y debe ser (>=)",
     "EndRequiredMileageMustBe": "* Requerido y debe ser (>=)",
     "EndMileageMustBe": "* Debe ser (>=)",
     "BeginningMileage": "Iniciando",
@@ -1419,6 +1442,7 @@
     "NoDelay": "Sin retraso",
     "DelayStatus": "Estado de retraso",
     "SubmitProject": "Proyecto de envío",
+    "EnterEquipmentName": "Ingrese el nombre del equipo...",
     "HoursWorked": "Horas trabajadas",
     "EnterHoursWorked": "Ingresar horas trabajadas...",
     "RepairDescription": "Descripción de la reparación",
@@ -1438,8 +1462,15 @@
     "DeleteProjectConfirmation": "¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.",
     "Deleting": "Eliminando..."
   },
+  "information": {
+    "offer": "USAR CÓDIGO\n",
+    "offerCode": "SHIFTSCAN",
+    "offerDetails": "\n ",
+    "welcome": "¡Bienvenido a Shift Scan!",
+    "welcomeMessage": "Esta es una herramienta para ayudarte a administrar tus turnos de trabajo, hacer seguimiento de tu tiempo y comunicarte con tu equipo a través de tecnología QR."
+  },
   "Animations": {
-    "Cancel": "Cancelar",
-    "Delete": "Eliminar"
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
   }
 }
