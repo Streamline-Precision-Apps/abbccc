@@ -12,7 +12,6 @@ import { signOut } from "next-auth/react";
 import { z } from "zod";
 import { finishUserSetup } from "@/actions/userActions";
 import { EnterAccountInfo } from "./EnterAccountInfo";
-import { Bases } from "../(reusable)/bases";
 
 // Define Zod schema for validating props
 const propsSchema = z.object({
