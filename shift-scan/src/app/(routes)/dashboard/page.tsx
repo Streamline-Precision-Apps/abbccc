@@ -33,7 +33,6 @@ export default async function Dashboard() {
   const mechanicProjectID =
     (await cookies()).get("mechanicProjectID")?.value || "";
 
-
   // const user = session.user;
   const view = (await cookies()).get("workRole")?.value || "general"; // Default to general view if not set
   const laborType = (await cookies()).get("laborType")?.value || "";
@@ -43,13 +42,15 @@ export default async function Dashboard() {
       <Contents>
         <Grids rows={"8"} gap={"5"}>
           {/* Active timesheet check component - runs on dashboard load */}
-          <ActiveTimesheetCheck userId={session.user.id} />
+          <Suspense fallback={null}>
+            <ActiveTimesheetCheck userId={session.user.id} />
+          </Suspense>
           <Suspense fallback={<LoadingHamburgerMenuNew />}>
             <HamburgerMenuNew isHome={false} />
           </Suspense>
           <div className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px]">
             <Suspense fallback={<BannerRotatingSkeleton />}>
-              <BannerRotating/>
+              <BannerRotating />
             </Suspense>
           </div>
           <Holds background={"white"} className="row-start-4 row-end-9 h-full">

@@ -10,6 +10,7 @@ import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { Holds } from "@/components/(reusable)/holds";
 import Spinner from "@/components/(animations)/spinner";
+import ContinueTimesheetCheck from "./(content)/ContinueTimesheetCheck";
 
 export default async function Home() {
   //------------------------------------------------------------------------
@@ -46,11 +47,6 @@ export default async function Home() {
     },
   });
 
-  // If there's an incomplete timesheet, redirect to continue-timesheet API route
-  if (incompleteTimesheet) {
-    await fetch(`/api/continue-timesheet?id=${incompleteTimesheet.id}`);
-  }
-
   // Get the current language from cookies
   const lang = (await cookies()).get("locale");
   const locale = lang ? lang.value : "en";
@@ -59,6 +55,9 @@ export default async function Home() {
     <Bases>
       <Contents>
         <Grids rows={"8"} gap={"5"}>
+          <Suspense fallback={null}>
+            <ContinueTimesheetCheck id={incompleteTimesheet?.id} />
+          </Suspense>
           <Suspense
             fallback={
               <Holds
