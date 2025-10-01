@@ -263,6 +263,7 @@ export default function SubmittedFormsApproval({
                   formData={formData}
                   formValues={formValues}
                   setFormValues={() => {}}
+                  useNativeInput={true}
                   readOnly={true}
                   disabled={true}
                 />

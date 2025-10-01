@@ -15,28 +15,15 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Create a cached function for fetching equipment
-    const getCachedEquipment = unstable_cache(
-      async () => {
-        return await prisma.equipment.findMany({
-          select: {
-            id: true,
-            code: true,
-            qrId: true,
-            name: true,
-            equipmentTag: true,
-          },
-        });
+    const equipment = await prisma.equipment.findMany({
+      select: {
+        id: true,
+        code: true,
+        qrId: true,
+        name: true,
+        equipmentTag: true,
       },
-      ["equipment-list"],
-      {
-        tags: ["equipment"],
-        revalidate: 3600, // Cache for 1 hour
-      }
-    );
-
-    // Fetch equipment details
-    const equipment = await getCachedEquipment();
+    });
 
     if (!equipment || equipment.length === 0) {
       return NextResponse.json(

@@ -135,9 +135,7 @@ export default function Content({
                 >
                   <Grids rows={"7"} gap={"5"} className="h-full w-full">
                     <Holds
-                      className={`row-start-1 ${
-                        crewType === "Mechanic" ? "row-end-7" : "row-end-8"
-                      } h-full w-full overflow-y-auto no-scrollbar`}
+                      className={`row-start-1 row-end-8 h-full w-full overflow-y-auto no-scrollbar`}
                     >
                       <Contents width={"section"}>
                         {crewMembers.map((member) => (
@@ -147,7 +145,10 @@ export default function Content({
                               background="lightBlue"
                               className="w-full h-full py-2 relative"
                             >
-                              <Holds position={"row"} className="w-full gap-x-4">
+                              <Holds
+                                position={"row"}
+                                className="w-full gap-x-4"
+                              >
                                 <Holds className="w-24 relative">
                                   <Images
                                     titleImg={
@@ -181,7 +182,7 @@ export default function Content({
                         ))}
                       </Contents>
                     </Holds>
-                    {crewType === "Mechanic" && (
+                    {/* {crewType === "Mechanic" && (
                       <Holds className="row-start-7 row-end-8 ">
                         <Contents width={"section"}>
                           <Buttons
@@ -193,7 +194,7 @@ export default function Content({
                           </Buttons>
                         </Contents>
                       </Holds>
-                    )}
+                    )} */}
                   </Grids>
                 </Holds>
               </>

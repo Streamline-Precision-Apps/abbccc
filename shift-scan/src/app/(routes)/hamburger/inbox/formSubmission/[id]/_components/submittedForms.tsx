@@ -188,6 +188,7 @@ export default function SubmittedForms({
                   formData={formData}
                   formValues={formValues}
                   setFormValues={updateFormValues}
+                  useNativeInput={true}
                   readOnly={true}
                   disabled={true}
                 />
