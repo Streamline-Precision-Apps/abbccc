@@ -370,9 +370,7 @@ export default function RenderFields({
                       handleFieldChange={
                         readOnly
                           ? () => {
-                              console.log(
-                                "ReadOnly mode - SEARCH_PERSON handleFieldChange blocked",
-                              );
+                              return;
                             }
                           : (
                               id: string,
@@ -385,10 +383,6 @@ export default function RenderFields({
                                 | number
                                 | null,
                             ) => {
-                              console.log(
-                                "RenderFields SEARCH_PERSON handleFieldChange wrapper called with:",
-                                { id, val },
-                              );
                               handleFieldChange(id, val);
                             }
                       }

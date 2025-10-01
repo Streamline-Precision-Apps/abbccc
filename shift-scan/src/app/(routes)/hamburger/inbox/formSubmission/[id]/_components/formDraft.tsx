@@ -125,7 +125,9 @@ export default function FormDraft({
   ): boolean => {
     // Check signature requirement separately
     if (formData.isSignatureRequired && !showSignature) {
-      console.log("Validation failed: Signature is required but not provided");
+      console.error(
+        "Validation failed: Signature is required but not provided",
+      );
       return false;
     }
 
@@ -135,9 +137,6 @@ export default function FormDraft({
           // Check both field ID and field label as keys
           const fieldValue = formValues[field.id] || formValues[field.label];
           if (!fieldValue || fieldValue.trim() === "") {
-            console.log(
-              `Validation failed for field: ${field.label} (${field.id})`,
-            );
             return false;
           }
 
@@ -150,23 +149,14 @@ export default function FormDraft({
             try {
               const parsed = JSON.parse(fieldValue);
               if (Array.isArray(parsed) && parsed.length === 0) {
-                console.log(
-                  `Validation failed for empty array field: ${field.label} (${field.id})`,
-                );
                 return false;
               }
               if (parsed === null || parsed === undefined) {
-                console.log(
-                  `Validation failed for null/undefined field: ${field.label} (${field.id})`,
-                );
                 return false;
               }
             } catch (e) {
               // If it's not valid JSON, treat as string validation
               if (!fieldValue || fieldValue.trim() === "") {
-                console.log(
-                  `Validation failed for non-JSON field: ${field.label} (${field.id})`,
-                );
                 return false;
               }
             }
@@ -192,15 +182,6 @@ export default function FormDraft({
       onSubmit={async (e) => {
         setIsSubmitting(true);
         try {
-          // Make sure signature value is up to date before submitting
-          if (formData.isSignatureRequired) {
-            console.log(
-              "Form submission with signature:",
-              showSignature,
-              formValues.signature,
-            );
-          }
-
           await handleSubmit(e);
         } finally {
           setIsSubmitting(false);

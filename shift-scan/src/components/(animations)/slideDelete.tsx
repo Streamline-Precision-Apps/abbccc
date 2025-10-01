@@ -57,13 +57,11 @@ export default function SlidingDiv({
 
     // Swipe Left Event
     if (info.offset.x < -threshold) {
-      console.log("Swiped Left");
       setShowConfirmation(true);
     }
 
     // Swipe Right Event (Optional)
     if (info.offset.x > 50) {
-      console.log("Swiped Right");
       if (onSwipeRight) {
         onSwipeRight();
       }

@@ -331,8 +331,7 @@ export function EmployeeTimeSheets({
           console.warn("No valid material logs to update.");
           return;
         }
-        const result = await updateTruckingMaterialLogs(updates);
-        console.log("Material log update result:", result);
+        await updateTruckingMaterialLogs(updates);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -351,8 +350,7 @@ export function EmployeeTimeSheets({
           console.warn("No valid refuel logs to update.");
           return;
         }
-        const result = await updateTruckingRefuelLogs(updates);
-        console.log("Refuel log update result:", result);
+        await updateTruckingRefuelLogs(updates);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -374,8 +372,8 @@ export function EmployeeTimeSheets({
           console.warn("No valid state mileage logs to update.");
           return;
         }
-        const result = await updateTruckingStateLogs(updates);
-        console.log("State mileage log update result:", result);
+        await updateTruckingStateLogs(updates);
+
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -409,8 +407,8 @@ export function EmployeeTimeSheets({
           console.warn("No valid tasco haul logs to update.");
           return;
         }
-        const result = await updateTascoHaulLogs(updates);
-        console.log("Tasco haul log update result:", result);
+        await updateTascoHaulLogs(updates);
+
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -444,8 +442,8 @@ export function EmployeeTimeSheets({
           console.warn("No valid tasco refuel logs to update.");
           return;
         }
-        const result = await updateTascoRefuelLogs(updates);
-        console.log("Tasco refuel log update result:", result);
+        await updateTascoRefuelLogs(updates);
+
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -467,9 +465,7 @@ export function EmployeeTimeSheets({
           console.warn("No valid equipment logs to update.");
           return;
         }
-
-        console.log("Saving equipment logs updates:", validUpdates);
-        const result = await parentOnSaveChanges(validUpdates);
+        await parentOnSaveChanges(validUpdates);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
@@ -486,22 +482,15 @@ export function EmployeeTimeSheets({
           return;
         }
 
-        console.log(
-          "Saving equipment refuel logs updates:",
-          equipmentRefuelUpdates,
-        );
-        const result = await updateEquipmentRefuelLogs(equipmentRefuelUpdates);
-        console.log("Equipment refuel log update result:", result);
+        await updateEquipmentRefuelLogs(equipmentRefuelUpdates);
         setOriginalData(JSON.parse(JSON.stringify(newData)));
         setChanges([]);
         setEdit(false);
         return;
       }
       if (!Array.isArray(changes) || changes.length === 0) {
-        console.log("No changes to save");
         return;
       }
-      console.log("Saving changes:", changes);
 
       // Check if all items have properties matching TimesheetHighlights
       const isTimesheetHighlights =
@@ -658,18 +647,15 @@ export function EmployeeTimeSheets({
     }
     if (timeSheetFilter === "equipmentRefuelLogs") {
       // Handle EquipmentRefuelLog[] - only keep id and gallonsRefueled for saving
-      console.log("handleDataChange equipmentRefuelLogs:", updatedData);
       const equipmentRefuelChanges = Array.isArray(updatedData)
         ? (updatedData as { id: string; gallonsRefueled?: number | null }[])
         : [];
-      console.log("equipmentRefuelChanges:", equipmentRefuelChanges);
       setChanges(equipmentRefuelChanges);
       setNewData(updatedData as typeof newData);
       return;
     }
     if (timeSheetFilter === "mechanicLogs") {
       // Handle MaintenanceLogData
-      console.log("handleDataChange mechanicLogs:", updatedData);
       setChanges(updatedData as MaintenanceLogData);
       setNewData(updatedData as typeof newData);
       return;

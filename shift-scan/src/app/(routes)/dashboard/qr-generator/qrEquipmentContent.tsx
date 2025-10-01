@@ -47,7 +47,7 @@ export default function QrEquipmentContent({
         console.error(err);
       }
     } else {
-      console.log("No equipment selected");
+      console.error("No equipment selected");
     }
   };
 

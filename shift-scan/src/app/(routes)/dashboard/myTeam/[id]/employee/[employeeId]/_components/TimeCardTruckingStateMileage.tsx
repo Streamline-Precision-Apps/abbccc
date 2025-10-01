@@ -55,7 +55,7 @@ export default function TimeCardTruckingStateMileageLogs({
     logId: string,
     mileageId: string,
     fieldName: string,
-    originalValue: string | number | null
+    originalValue: string | number | null,
   ) => {
     const key = getInputKey(logId, mileageId, fieldName);
     return key in inputValues ? inputValues[key] : originalValue;
@@ -66,7 +66,7 @@ export default function TimeCardTruckingStateMileageLogs({
     logId: string,
     mileageId: string,
     fieldName: string,
-    value: string | number | null
+    value: string | number | null,
   ) => {
     setInputValues((prev) => ({
       ...prev,
@@ -78,7 +78,7 @@ export default function TimeCardTruckingStateMileageLogs({
   const handleBlur = (
     logId: string,
     mileageId: string,
-    field: keyof ProcessedStateMileage
+    field: keyof ProcessedStateMileage,
   ) => {
     const key = getInputKey(logId, mileageId, field);
 
@@ -90,7 +90,7 @@ export default function TimeCardTruckingStateMileageLogs({
           mileageId,
           logId,
           field,
-          value as string | number
+          value as string | number,
         );
       }
 
@@ -110,7 +110,7 @@ export default function TimeCardTruckingStateMileageLogs({
       (log): log is TruckingStateLog =>
         log !== null &&
         log?.Equipment !== undefined &&
-        log?.StateMileages !== undefined
+        log?.StateMileages !== undefined,
     )
     .flatMap((log) =>
       log.StateMileages.map((mileage) => ({
@@ -120,13 +120,8 @@ export default function TimeCardTruckingStateMileageLogs({
         truckName: log.Equipment.name,
         equipmentId: log.Equipment.id,
         truckingLogId: log.id, // Use the actual trucking log ID
-      }))
+      })),
     );
-
-  useEffect(() => {
-    console.log("truckingStateLogs", truckingStateLogs);
-    console.log("allStateMileages", allStateMileages);
-  }, [allStateMileages]);
 
   const [editedStateMileages, setEditedStateMileages] =
     useState<ProcessedStateMileage[]>(allStateMileages);
@@ -143,7 +138,7 @@ export default function TimeCardTruckingStateMileageLogs({
       id: string,
       truckingLogId: string,
       field: keyof ProcessedStateMileage,
-      value: string | number
+      value: string | number,
     ) => {
       const updated = editedStateMileages.map((item) => {
         if (item.id === id && item.truckingLogId === truckingLogId) {
@@ -170,7 +165,7 @@ export default function TimeCardTruckingStateMileageLogs({
             ...log,
             StateMileages: (log.StateMileages ?? []).map((mileage) => {
               const found = updated.find(
-                (u) => u.id === mileage.id && u.truckingLogId === log.id
+                (u) => u.id === mileage.id && u.truckingLogId === log.id,
               );
               return found
                 ? {
@@ -185,7 +180,7 @@ export default function TimeCardTruckingStateMileageLogs({
       }));
       onDataChange(nested);
     },
-    [editedStateMileages, onDataChange, truckingStateLogs]
+    [editedStateMileages, onDataChange, truckingStateLogs],
   );
 
   const isEmptyData = editedStateMileages.length === 0;
@@ -218,7 +213,7 @@ export default function TimeCardTruckingStateMileageLogs({
                 const handleToggleFocus = () => {
                   if (isFocused) {
                     setFocusIds(
-                      focusIds.filter((id: string) => id !== mileage.id)
+                      focusIds.filter((id: string) => id !== mileage.id),
                     );
                   } else {
                     setFocusIds([...focusIds, mileage.id]);
@@ -266,7 +261,7 @@ export default function TimeCardTruckingStateMileageLogs({
                                   mileage.truckingLogId,
                                   mileage.id,
                                   "state",
-                                  mileage.state
+                                  mileage.state,
                                 ) ?? ""
                               }
                               onChange={(e) =>
@@ -274,14 +269,14 @@ export default function TimeCardTruckingStateMileageLogs({
                                   mileage.truckingLogId,
                                   mileage.id,
                                   "state",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               onBlur={() =>
                                 handleBlur(
                                   mileage.truckingLogId,
                                   mileage.id,
-                                  "state"
+                                  "state",
                                 )
                               }
                               className="w-full h-full border-none rounded-none text-center text-xs bg-white"
@@ -297,7 +292,7 @@ export default function TimeCardTruckingStateMileageLogs({
                             <Inputs
                               value={
                                 US_STATES.find(
-                                  (state) => state.code === mileage.state
+                                  (state) => state.code === mileage.state,
                                 )?.name || mileage.state
                               }
                               disabled={true}
@@ -315,7 +310,7 @@ export default function TimeCardTruckingStateMileageLogs({
                                 mileage.truckingLogId,
                                 mileage.id,
                                 "stateLineMileage",
-                                mileage.stateLineMileage?.toString() ?? ""
+                                mileage.stateLineMileage?.toString() ?? "",
                               ) ?? ""
                             }
                             background={isFocused ? "orange" : "white"}
@@ -324,7 +319,7 @@ export default function TimeCardTruckingStateMileageLogs({
                                 mileage.truckingLogId,
                                 mileage.id,
                                 "stateLineMileage",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             disabled={!edit}
@@ -333,7 +328,7 @@ export default function TimeCardTruckingStateMileageLogs({
                               handleBlur(
                                 mileage.truckingLogId,
                                 mileage.id,
-                                "stateLineMileage"
+                                "stateLineMileage",
                               )
                             }
                           />

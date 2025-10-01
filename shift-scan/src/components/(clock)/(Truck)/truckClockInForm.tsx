@@ -52,7 +52,7 @@ export default function TruckClockInForm({
   const t = useTranslations("Clock");
   const { equipmentId } = useOperator();
   const [displayValue, setDisplayValue] = useState(
-    startingMileage ? `${startingMileage.toLocaleString()} Miles` : ""
+    startingMileage ? `${startingMileage.toLocaleString()} Miles` : "",
   );
 
   const [selectedOpt, setSelectedOpt] = useState<boolean>(false);
@@ -65,7 +65,6 @@ export default function TruckClockInForm({
     setClockInTruckType(clockInRoleTypes);
     if (clockInTruckType === "truckLabor" && !hasTriggered) {
       handleNextStep();
-      console.log("triggered truck labor");
       setHasTriggered(true); // Set the flag to prevent future triggers
     }
   }, [clockInTruckType, hasTriggered]);

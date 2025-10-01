@@ -66,8 +66,6 @@ function mapFieldType(type: string): FieldType {
 export async function saveFormTemplate(data: SaveFormData) {
   try {
     const { settings, fields, companyId } = data;
-    console.log("Saving form template with data:", data);
-
     // Start a transaction
     await prisma.$transaction(async (tx) => {
       // Create new form
@@ -81,8 +79,6 @@ export async function saveFormTemplate(data: SaveFormData) {
           isSignatureRequired: settings.requireSignature,
         },
       });
-      console.log("Created form template");
-
       // Always create a grouping for this form
       const formGrouping = await tx.formGrouping.create({
         data: {
@@ -90,7 +86,6 @@ export async function saveFormTemplate(data: SaveFormData) {
           order: 0,
         },
       });
-      console.log("Created form grouping:");
       // Connect form template to grouping
       await tx.formTemplate.update({
         where: { id: formTemplate.id },
@@ -165,10 +160,8 @@ export async function updateFormTemplate(data: SaveFormData) {
     if (!formId) {
       return { success: false, error: "No formId provided for update" };
     }
-    console.log("Updating form template with data:", data);
-
     // Update the form template main settings
-    const updatedForm = await prisma.formTemplate.update({
+    await prisma.formTemplate.update({
       where: { id: formId },
       data: {
         name: settings.name,
@@ -201,7 +194,6 @@ export async function updateFormTemplate(data: SaveFormData) {
       where: { formGroupingId },
       include: { Options: true },
     });
-    console.log("Existing fields:", existingFields);
 
     // Build a map for quick lookup
     const existingFieldMap = new Map(existingFields.map((f) => [f.id, f]));

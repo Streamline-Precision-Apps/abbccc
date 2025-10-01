@@ -48,13 +48,6 @@ export default function UsageData({
 }: UsageDataProps) {
   const { setNotification } = useNotification();
 
-  // Debug logging
-  console.log("UsageData received refuelLog prop:", refuelLog);
-  console.log(
-    "UsageData refuelLog gallonsRefueled:",
-    refuelLog?.gallonsRefueled,
-  );
-
   return (
     <Holds className="row-start-1 row-end-8 w-full h-full overflow-y-auto no-scrollbar">
       <Holds className="w-full h-fit">

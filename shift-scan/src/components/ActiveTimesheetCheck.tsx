@@ -33,10 +33,6 @@ export default function ActiveTimesheetCheck({
 
         // If no active timesheet found, clear all cookies and redirect to home
         if (!data.hasActiveTimesheet) {
-          console.log(
-            "No active timesheet found, clearing cookies and redirecting to home...",
-          );
-
           // Clear all timesheet cookies
           await fetch("/api/clear-timesheet-cookies", {
             method: "POST",

@@ -193,8 +193,6 @@ export default function EmployeeTabs() {
     updateFilter: fetchTimesheetsForFilter,
   } = useTimesheetData(employeeId as string | undefined, date, timeSheetFilter);
 
-  console.log("EmployeeTabs - Timesheet Data:", timesheetData);
-
   const allEquipment = useAllEquipment();
 
   const loading = loadingEmployee || loadingTimesheets;
@@ -246,13 +244,6 @@ export default function EmployeeTabs() {
               : [timesheetChanges];
             const serializedChanges = changesArray.map((timesheet) => {
               // Debug: Log the type and value of time properties
-              console.log("Processing timesheet data:", {
-                id: timesheet.id,
-                startTimeType: typeof timesheet.startTime,
-                startTimeValue: timesheet.startTime,
-                endTimeType: typeof timesheet.endTime,
-                endTimeValue: timesheet.endTime,
-              });
 
               // Validate date values before conversion
               let startTimeISO = undefined;
@@ -546,7 +537,6 @@ export default function EmployeeTabs() {
               }),
             );
 
-            console.log("Saving maintenance logs updates:", maintenanceUpdates);
             const result = await updateMaintenanceLogs(maintenanceUpdates);
 
             if (result?.success) {

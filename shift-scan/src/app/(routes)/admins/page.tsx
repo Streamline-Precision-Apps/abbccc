@@ -54,7 +54,6 @@ export default function Admins() {
         initialLoad.current = false;
       }
       setIsRefreshing(true);
-      console.log("🔄 Manual data refresh triggered");
       const response = await fetch("/api/notification-center");
       const json = await response.json();
       // API returns { notifications: Notification[] }
@@ -62,7 +61,6 @@ export default function Admins() {
       setTotalCount(json.count);
       setResolved(json.resolved);
       setUnreadCount(json.unreadCount);
-      console.log("✅ Data refresh complete");
     } catch (error) {
       console.error("❌ Error refreshing data:", error);
     } finally {

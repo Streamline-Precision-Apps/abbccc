@@ -53,7 +53,6 @@ export default function Signature({ setBase64String }: SignatureProps) {
     if (canvas) {
       const base64string = canvas.toDataURL("image/png");
       setBase64String(base64string); // Set base64 string using the prop
-      console.log("Signature saved:");
     }
   };
 

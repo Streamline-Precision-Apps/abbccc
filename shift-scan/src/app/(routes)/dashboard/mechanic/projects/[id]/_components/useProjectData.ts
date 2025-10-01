@@ -72,7 +72,7 @@ export default function useProjectData(projectId: string) {
 
       // Find and set user's maintenance log
       const userMaintenanceLog = data.MaintenanceLogs.find(
-        (log) => log.userId === userId && log.endTime === null
+        (log) => log.userId === userId && log.endTime === null,
       );
 
       if (userMaintenanceLog) {
@@ -82,7 +82,7 @@ export default function useProjectData(projectId: string) {
 
       // Calculate total labor hours
       const totalMilliseconds = data.MaintenanceLogs.filter(
-        (log) => log.startTime
+        (log) => log.startTime,
       ).reduce((sum, log) => {
         const start = new Date(log.startTime!).getTime();
         const end = log.endTime
@@ -92,7 +92,7 @@ export default function useProjectData(projectId: string) {
       }, 0);
 
       const totalHours = parseFloat(
-        (totalMilliseconds / 1000 / 60 / 60).toFixed(2)
+        (totalMilliseconds / 1000 / 60 / 60).toFixed(2),
       );
       const hours = Math.floor(totalHours);
       const minutes = Math.round((totalHours - hours) * 60);
@@ -100,7 +100,7 @@ export default function useProjectData(projectId: string) {
 
       // Count active users
       const uniqueUserCount = data.MaintenanceLogs.filter(
-        (log) => log.userId && log.endTime === null
+        (log) => log.userId && log.endTime === null,
       ).length;
       setActiveUsers(uniqueUserCount || 0);
     } catch (error) {
@@ -143,35 +143,24 @@ export default function useProjectData(projectId: string) {
   };
 
   const handleFinishProject = async () => {
-    console.log("Starting handleFinishProject");
     if (!session.data) {
-      console.log("No session data");
       return;
     }
     if (!myMaintenanceLogs) {
-      console.log("No maintenance logs found for user");
       return;
     }
-  
+
     setLoading(true);
-    console.log("Attempting to finish project...");
-  
+
     try {
       // First leave the project (save comment)
       const leaveFormData = new FormData();
       leaveFormData.append("comment", myComment);
       leaveFormData.append("maintenanceId", myMaintenanceLogs.id);
       leaveFormData.append("userId", myMaintenanceLogs.userId);
-  
-      console.log("Leaving project with data:", {
-        comment: myComment,
-        maintenanceId: myMaintenanceLogs.id,
-        userId: myMaintenanceLogs.userId
-      });
-  
+
       const clockOut = await LeaveEngineerProject(leaveFormData);
-      console.log("Clock out result:", clockOut);
-  
+
       if (clockOut) {
         // Then submit the project solution
         const submitFormData = new FormData();
@@ -179,21 +168,12 @@ export default function useProjectData(projectId: string) {
         submitFormData.append("solution", solution);
         submitFormData.append("diagnosedProblem", diagnosedProblem);
         submitFormData.append("totalHoursLaboured", laborHours);
-  
-        console.log("Submitting project with data:", {
-          id: projectId,
-          solution,
-          diagnosedProblem,
-          laborHours
-        });
-  
+
         const res = await SubmitEngineerProject(submitFormData);
-        console.log("Submission result:", res);
-        
+
         await setMechanicProjectID("");
-        
+
         if (res) {
-          console.log("Successfully submitted, redirecting...");
           router.push("/dashboard/mechanic");
         }
       }

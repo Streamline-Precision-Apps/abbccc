@@ -188,7 +188,6 @@ export default function EditFormPage({
         formTitle,
       );
 
-      console.log("Draft saved automatically");
       setIsDirty(false);
       return result?.id;
     } catch (error) {

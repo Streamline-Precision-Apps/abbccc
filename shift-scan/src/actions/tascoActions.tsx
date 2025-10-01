@@ -29,8 +29,6 @@ export type RefuelLogType = "tasco" | "equipment";
 //------------------------------------------------------------------
 
 export async function SetLoad(formData: FormData) {
-  console.log("Setting Load...");
-  console.log(formData);
   const tascoLogId = formData.get("tascoLogId") as string;
   const loadCount = Number(formData.get("loadCount"));
 
@@ -42,7 +40,6 @@ export async function SetLoad(formData: FormData) {
       LoadQuantity: loadCount,
     },
   });
-  console.log("Load Quantity updated");
   revalidatePath("/dashboard/tasco");
   revalidateTag("load");
   return tascoLog;
@@ -102,7 +99,6 @@ export async function createRefuelLog(params: CreateRefuelLogParams) {
 export async function updateRefuelLog(params: UpdateRefuelLogParams) {
   try {
     return await prisma.$transaction(async (tx) => {
-      console.log("Updating refuel log...");
       const data = {
         gallonsRefueled: params.gallonsRefueled,
       };
@@ -113,7 +109,6 @@ export async function updateRefuelLog(params: UpdateRefuelLogParams) {
       });
 
       revalidatePaths();
-      console.log("Refuel Gallons updated: ", params.gallonsRefueled);
       return result;
     });
   } catch (error) {
@@ -128,13 +123,11 @@ export async function updateRefuelLog(params: UpdateRefuelLogParams) {
 export async function deleteRefuelLog(params: DeleteRefuelLogParams) {
   try {
     return await prisma.$transaction(async (tx) => {
-      console.log("Deleting refuel log...");
       const result = await tx.refuelLog.delete({
         where: { id: params.id },
       });
 
       revalidatePaths();
-      console.log("Refuel log deleted: ", params.id);
       return result;
     });
   } catch (error) {

@@ -113,14 +113,7 @@ export default function ControlComponent({
       ...d,
       date: new Date(d.date).toISOString().slice(0, 10),
     }));
-    // Debug: log the normalized dates and todayStr
-    // eslint-disable-next-line no-console
-    console.log(
-      "todayStr",
-      todayStr,
-      "normalizedDailyHours",
-      normalizedDailyHours.map((d) => d.date),
-    );
+
     // Find the index of today in the normalizedDailyHours
     const todayIndex = normalizedDailyHours.findIndex(
       (d) => d.date === todayStr,

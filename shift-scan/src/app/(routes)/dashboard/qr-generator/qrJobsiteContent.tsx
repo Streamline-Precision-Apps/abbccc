@@ -47,7 +47,7 @@ export default function QrJobsiteContent({
         console.error(err);
       }
     } else {
-      console.log("No job site selected");
+      console.error("No job site selected");
     }
   };
 

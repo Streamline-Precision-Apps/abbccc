@@ -79,15 +79,11 @@ export default function QR({
   // In your QR component (qr-handler.tsx), update the processGeneralScan function:
   const processGeneralScan = useCallback(
     (data: string) => {
-      console.log("Processing General Scan with data:", data);
-      console.log("Current jobsiteResults:", jobsiteResults);
-
       // Find the matching jobsite from the jobsiteResults (case-insensitive)
       const matchedJobsite = jobsiteResults?.find(
         (j) => j.qrId.toLowerCase() === data.toLowerCase(),
       );
       if (matchedJobsite) {
-        console.log("Matched jobsite:", matchedJobsite);
         setJobsite({
           id: matchedJobsite.id, // Add the id
           label: matchedJobsite.name, // Add the label
@@ -115,8 +111,6 @@ export default function QR({
         if (!data || typeof data !== "string" || data.trim() === "") {
           return;
         }
-        console.log("Scan result data:", data);
-        console.log("Current jobsiteResults:", jobsiteResults);
 
         if (
           !jobsiteResults?.some(

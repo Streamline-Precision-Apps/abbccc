@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 export async function getJobsiteForms() {
   try {
     const jobsiteForms = await prisma.jobsite.findMany();
-    console.log(jobsiteForms);
     return jobsiteForms;
   } catch (error) {
     Sentry.captureException(error);
@@ -31,9 +30,6 @@ export async function jobExists(id: string) {
 
 // Create jobsite
 export async function createJobsite(formData: FormData) {
-  console.log("Creating jobsite...");
-  console.log(formData);
-
   const name = formData.get("temporaryJobsiteName") as string;
   const code = formData.get("code") as string;
   const createdById = formData.get("createdById") as string;
@@ -113,7 +109,6 @@ export async function createJobsite(formData: FormData) {
       revalidatePath("/dashboard/qr-generator");
       return jobsite;
     });
-    console.log("Jobsite created successfully.");
     return { success: true, data };
   } catch (error) {
     console.error("Error creating jobsite:", error);
@@ -127,7 +122,6 @@ export async function deleteJobsite(id: string) {
     await prisma.jobsite.delete({
       where: { id: id },
     });
-    console.log("Jobsite deleted successfully.");
   } catch (error) {
     console.error("Error deleting jobsite:", error);
     throw error;

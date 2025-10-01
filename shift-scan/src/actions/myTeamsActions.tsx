@@ -23,7 +23,6 @@ export async function updateTimesheetHighlights(
   updatedTimesheets: TimesheetUpdate[],
 ) {
   try {
-    console.log("[SERVER] Updating timesheets:", updatedTimesheets);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -44,7 +43,6 @@ export async function updateTimesheetHighlights(
     );
 
     await Promise.all(updatePromises);
-    console.log("Successfully updated timesheets:", updatedTimesheets);
     // Aggressive revalidation
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -68,7 +66,6 @@ export async function updateTruckingMileage(
       }>,
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking mileage:", data);
     const session = await auth();
     if (!session) {
       console.error("[SERVER] Unauthorized attempt to update mileage");
@@ -129,7 +126,6 @@ export async function updateTruckingMileage(
     });
 
     const results = await Promise.all(updatePromises);
-    console.log("[SERVER] Successfully updated", results.length, "records");
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
     return {
@@ -149,7 +145,6 @@ export async function updateTruckingHaulLogs(
   updates: TruckingEquipmentHaulUpdate[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Received haul log updates:", updates);
     const session = await auth();
 
     if (!session) {
@@ -184,8 +179,6 @@ export async function updateTruckingHaulLogs(
       },
     });
 
-    console.log("[SERVER] Processing updates for:", validUpdates);
-
     // Start a transaction
     const result = await prisma.$transaction(async (tx) => {
       const updateResults = await Promise.all(
@@ -209,8 +202,6 @@ export async function updateTruckingHaulLogs(
 
       return updateResults;
     });
-
-    console.log("[SERVER] Successfully updated", result.length, "haul logs");
 
     // Revalidate affected paths
     revalidatePath("/dashboard/myTeam");
@@ -245,7 +236,6 @@ export async function updateTruckingMaterialLogs(
   }>,
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking material logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -276,11 +266,6 @@ export async function updateTruckingMaterialLogs(
       return await Promise.all(updatePromises);
     });
 
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "material logs",
-    );
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
     return {
@@ -305,7 +290,6 @@ export async function updateTruckingRefuelLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking refuel logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -322,8 +306,6 @@ export async function updateTruckingRefuelLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log("[SERVER] Successfully updated", result.length, "refuel logs");
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -350,7 +332,6 @@ export async function updateTruckingStateLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating trucking state logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -367,12 +348,6 @@ export async function updateTruckingStateLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "trucking state logs",
-    );
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -401,7 +376,6 @@ export async function updateTascoHaulLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating tasco haul logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -420,12 +394,6 @@ export async function updateTascoHaulLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "tasco haul logs",
-    );
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -451,7 +419,6 @@ export async function updateTascoRefuelLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating tasco refuel logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -467,8 +434,6 @@ export async function updateTascoRefuelLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log("[SERVER] Updated tasco refuel logs:", result);
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -495,8 +460,6 @@ export async function updateEquipmentLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating equipment logs:", updates);
-
     // Validate input
     if (
       !updates.every(
@@ -533,12 +496,6 @@ export async function updateEquipmentLogs(
       return await Promise.all(updatePromises);
     });
 
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "equipment logs",
-    );
-
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
 
@@ -563,7 +520,6 @@ export async function updateEquipmentRefuelLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating equipment refuel logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -579,8 +535,6 @@ export async function updateEquipmentRefuelLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log("[SERVER] Updated equipment refuel logs:", result);
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");
@@ -607,7 +561,6 @@ export async function updateMaintenanceLogs(
   }[],
 ): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
   try {
-    console.log("[SERVER] Updating maintenance logs:", updates);
     const session = await auth();
     if (!session) throw new Error("Unauthorized");
 
@@ -645,12 +598,6 @@ export async function updateMaintenanceLogs(
 
       return await Promise.all(updatePromises);
     });
-
-    console.log(
-      "[SERVER] Successfully updated",
-      result.length,
-      "maintenance logs",
-    );
 
     revalidatePath("/dashboard/myTeam");
     revalidatePath("/dashboard/myTeam/[id]/employee/[employeeId]", "page");

@@ -84,10 +84,8 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
-import { formatDuration } from "@/utils/formatDuration";
 import { formatDurationStrings } from "@/utils/formatDurationStrings";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
 export default function EquipmentLogsSection({
   currentTimeSheets,
@@ -95,13 +93,9 @@ export default function EquipmentLogsSection({
   currentTimeSheets: TimeSheet[];
 }) {
   const t = useTranslations("TimeCardSwiper");
-  const [tabs, setTabs] = useState(1);
   const allEquipmentLogs = currentTimeSheets.flatMap(
     (timesheet) => timesheet.EmployeeEquipmentLogs || [],
   );
-  useEffect(() => {
-    console.log(allEquipmentLogs);
-  }, [allEquipmentLogs]);
 
   const hasAnyEquipmentData = allEquipmentLogs.length > 0;
 

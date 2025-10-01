@@ -7,7 +7,10 @@ type ClockOutCheckProps = {
   timesheetId: string | null;
 };
 
-export default function ClockOutCheck({ userId, timesheetId }: ClockOutCheckProps) {
+export default function ClockOutCheck({
+  userId,
+  timesheetId,
+}: ClockOutCheckProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -38,8 +41,6 @@ export default function ClockOutCheck({ userId, timesheetId }: ClockOutCheckProp
 
         // If the timesheet has been clocked out (has endTime), clear cookies and redirect
         if (data.isClockedOut) {
-          console.log("User has been clocked out on another device, clearing cookies and redirecting...");
-          
           // Clear timesheet cookies
           await fetch("/api/clear-timesheet-cookies", {
             method: "POST",

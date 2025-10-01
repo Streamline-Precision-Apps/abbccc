@@ -89,9 +89,6 @@ export async function createEquipment(formData: FormData) {
 
 export async function CreateEmployeeEquipmentLog(formData: FormData) {
   try {
-    console.log("Creating EmployeeEquipmentLog...");
-    console.log(formData);
-
     const equipmentId = formData.get("equipmentId") as string;
     const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
     const result = await prisma.$transaction(async (tx) => {

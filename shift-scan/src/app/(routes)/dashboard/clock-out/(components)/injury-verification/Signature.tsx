@@ -145,13 +145,12 @@ export default function Signature({
     if (canvas) {
       canvas.toBlob(async (blob) => {
         if (!blob) {
-          console.log("Blob conversion failed");
+          console.error("Blob conversion failed");
 
           return;
         }
 
         await handleUpload(blob); // Pass Blob to handleUpload
-        console.log(" handleUpload completed");
       }, "image/png");
     }
     if (closeModal) {
@@ -161,7 +160,6 @@ export default function Signature({
 
   const handleUpload = async (file: Blob) => {
     if (!employee) {
-      console.log("[handleUpload] No employee id");
       return;
     }
 

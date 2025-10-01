@@ -94,7 +94,6 @@ export default function QRMultiRoles({
     if (laborView) count++;
 
     setNumberOfViews(count);
-    console.log(count);
   }, [tascoView, truckView, mechanicView, laborView]);
 
   useEffect(() => {

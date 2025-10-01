@@ -2,14 +2,10 @@
 import prisma from "@/lib/prisma";
 import { Priority } from "../../prisma/generated/prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ca } from "zod/v4/locales/index.cjs";
 
 // This Updates the selected staus of the project in the database
 export async function setProjectSelected(id: string, selected: boolean) {
   try {
-    console.log("Updating project status...");
-    console.log("Project ID:", id);
-    console.log("Selected:", selected);
     await prisma.maintenance.update({
       where: { id },
       data: { selected },
@@ -28,8 +24,6 @@ export async function setProjectSelected(id: string, selected: boolean) {
 
 export async function CreateMechanicProject(formData: FormData) {
   try {
-    console.log("Creating new project...");
-    console.log(formData);
     const equipmentId = formData.get("equipmentId") as string;
     const equipmentIssue = formData.get("equipmentIssue") as string;
     const additionalInfo = formData.get("additionalInfo") as string;
@@ -69,7 +63,7 @@ export async function CreateMechanicProject(formData: FormData) {
         createdBy,
       },
     });
-    console.log("Project created successfully.");
+
     revalidatePath("/dashboard/mechanic");
     revalidateTag("projects");
     return true;
@@ -81,7 +75,6 @@ export async function CreateMechanicProject(formData: FormData) {
 
 export async function RemoveDelayRepair(formData: FormData) {
   try {
-    console.log("id", formData);
     const id = formData.get("id") as string;
 
     const updatedRepair = await prisma.maintenance.update({
@@ -92,7 +85,6 @@ export async function RemoveDelayRepair(formData: FormData) {
         hasBeenDelayed: true,
       },
     });
-    console.log("update", updatedRepair);
     return updatedRepair;
   } catch (error) {
     console.error("Error removing delay:", error);
@@ -102,7 +94,6 @@ export async function RemoveDelayRepair(formData: FormData) {
 
 export async function setEditForProjectInfo(formData: FormData) {
   try {
-    console.log(formData);
     const location = formData.get("location") as string;
     const stringPriority = formData.get("priority") as string;
     const delay = formData.get("delay") as string;
@@ -182,18 +173,10 @@ export async function deleteMaintenanceProject(id: string) {
 
 export async function startEngineerProject(formData: FormData) {
   try {
-    console.log("Starting project...");
-    console.log(formData);
-
     const maintenanceId = formData.get("maintenanceId") as string;
     const timeSheetId = Number(formData.get("timeSheetId"));
     const userId = formData.get("userId") as string;
     const startTime = new Date().toISOString();
-
-    // ✅ Debug logs
-    console.log("Maintenance ID:", maintenanceId);
-    console.log("Time Sheet ID:", timeSheetId);
-    console.log("User ID:", userId);
 
     // ✅ Check if timeSheetId exists in TimeSheet model
     const existingTimeSheet = await prisma.timeSheet.findUnique({
@@ -226,9 +209,6 @@ export async function startEngineerProject(formData: FormData) {
 
 export async function LeaveEngineerProject(formData: FormData) {
   try {
-    console.log("Leaving project...");
-    console.log(formData);
-
     const comment = formData.get("comment") as string;
     const id = formData.get("maintenanceId") as string;
     const userId = formData.get("userId") as string;
@@ -253,8 +233,6 @@ export async function LeaveEngineerProject(formData: FormData) {
 
 export async function updateDelay(formData: FormData) {
   try {
-    console.log("Updating delay...");
-    console.log(formData);
     const id = formData.get("maintenanceId") as string;
     const delay = formData.get("delay") as string;
     const delayReasoning = formData.get("delayReasoning") as string;
@@ -293,9 +271,6 @@ export async function findUniqueUser(formData: FormData) {
 
 export async function SubmitEngineerProject(formData: FormData) {
   try {
-    console.log("Leaving project...");
-    console.log(formData);
-
     const id = formData.get("id") as string;
     const problemDiagnosis = formData.get("diagnosedProblem") as string;
     const solution = formData.get("solution") as string;

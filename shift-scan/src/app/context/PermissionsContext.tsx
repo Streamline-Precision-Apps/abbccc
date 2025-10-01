@@ -132,7 +132,6 @@ export function PermissionsProvider({
             storePermissions(updatedPermissions);
           });
         } catch (permError) {
-          console.log("Error with permissions API:", permError);
           // Fall back to localStorage if permissions API fails
           setPermissions(storedPermissions);
         }
@@ -203,8 +202,6 @@ export function PermissionsProvider({
       if (!response.ok) {
         throw new Error("Failed to sync permissions with server");
       }
-
-      console.log("Permissions synced with server successfully");
     } catch (error) {
       console.error("Error syncing permissions with server:", error);
       // Continue app execution even if sync fails

@@ -61,7 +61,7 @@ export default function StateLog({
         ...(prev ?? []),
       ]);
     } catch (error) {
-      console.log(t("ErrorAddingStateMileage"), error);
+      console.error(t("ErrorAddingStateMileage"), error);
     }
   };
 

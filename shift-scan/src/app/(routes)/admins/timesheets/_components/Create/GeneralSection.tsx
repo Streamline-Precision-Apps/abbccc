@@ -89,11 +89,6 @@ export default function GeneralSection({
   users: { id: string; firstName: string; lastName: string }[];
   jobsites: { id: string; name: string }[];
 }) {
-  useEffect(() => {
-    if (form.date) {
-      console.log("Selected date:", form.date);
-    }
-  }, [form.date]);
   return (
     <>
       {/* Creation Date (disabled) */}

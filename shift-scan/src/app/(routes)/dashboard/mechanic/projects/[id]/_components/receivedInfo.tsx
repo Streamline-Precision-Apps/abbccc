@@ -39,7 +39,6 @@ export default function ReceivedInfoTab({
       expectedArrival &&
       expectedArrival.length > 0;
 
-    console.log("Details: ", hasValidComment, hasNoDelay, hasValidDelayInfo);
     return hasValidComment && (hasNoDelay || hasValidDelayInfo);
   };
 

@@ -235,12 +235,6 @@ export default function CombinedForm({ id }: { id: string }) {
       setNotification("Failed to save refuel log", "error");
     }
   };
-  useEffect(() => {
-    console.log(
-      "fullyOperational state changed:",
-      state.formState.fullyOperational,
-    );
-  }, [state.formState.fullyOperational]);
 
   const handleChangeRefueled = () => {
     setState((prev) => ({
