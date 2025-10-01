@@ -12,14 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@radix-ui/react-popover";
 import { format } from "date-fns";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { ChevronDownIcon } from "lucide-react";
 type AppManagerEditTimesheetModalProps = {
   timesheetId: string;
   isOpen: boolean;
@@ -53,9 +46,7 @@ export default function AppManagerEditTimesheetModal(
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [endTime, setEndTime] = useState<string>("");
 
-  // State for popover controls
-  const [startDateOpen, setStartDateOpen] = useState(false);
-  const [endDateOpen, setEndDateOpen] = useState(false);
+  // We no longer need popover state variables since we're using native inputs
 
   // Initialize date/time state when entering edit mode or when data changes
   useEffect(() => {
@@ -243,37 +234,20 @@ export default function AppManagerEditTimesheetModal(
                   {editGeneral ? (
                     <div className="flex gap-4 justify-center">
                       <div className="flex flex-col">
-                        <Popover
-                          open={startDateOpen}
-                          onOpenChange={setStartDateOpen}
-                        >
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              id="start-date-picker"
-                              className="w-32 justify-between font-normal"
-                            >
-                              {startDate
-                                ? format(startDate, "MM/dd/yyyy")
-                                : "Select date"}
-                              <ChevronDownIcon className="ml-2 h-4 w-4" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto overflow-hidden p-0"
-                            align="start"
-                          >
-                            <CalendarComponent
-                              mode="single"
-                              selected={startDate || undefined}
-                              onSelect={(date) => {
-                                setStartDate(date || null);
-                                setStartDateOpen(false);
-                              }}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
+                        <Input
+                          type="date"
+                          id="start-date-picker"
+                          value={
+                            startDate ? format(startDate, "yyyy-MM-dd") : ""
+                          }
+                          onChange={(e) => {
+                            const selectedDate = e.target.value
+                              ? new Date(e.target.value)
+                              : null;
+                            setStartDate(selectedDate);
+                          }}
+                          className="w-32 bg-background appearance-none"
+                        />
                       </div>
                       <div className="flex flex-col">
                         <Input
@@ -322,37 +296,18 @@ export default function AppManagerEditTimesheetModal(
                   {editGeneral ? (
                     <div className="flex gap-4 justify-center">
                       <div className="flex flex-col">
-                        <Popover
-                          open={endDateOpen}
-                          onOpenChange={setEndDateOpen}
-                        >
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              id="end-date-picker"
-                              className="w-32 justify-between font-normal"
-                            >
-                              {endDate
-                                ? format(endDate, "MM/dd/yyyy")
-                                : "Select date"}
-                              <ChevronDownIcon className="ml-2 h-4 w-4" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto overflow-hidden p-0"
-                            align="start"
-                          >
-                            <CalendarComponent
-                              mode="single"
-                              selected={endDate || undefined}
-                              onSelect={(date) => {
-                                setEndDate(date || null);
-                                setEndDateOpen(false);
-                              }}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
+                        <Input
+                          type="date"
+                          id="end-date-picker"
+                          value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
+                          onChange={(e) => {
+                            const selectedDate = e.target.value
+                              ? new Date(e.target.value)
+                              : null;
+                            setEndDate(selectedDate);
+                          }}
+                          className="w-32 bg-background appearance-none"
+                        />
                       </div>
                       <div className="flex flex-col">
                         <Input
