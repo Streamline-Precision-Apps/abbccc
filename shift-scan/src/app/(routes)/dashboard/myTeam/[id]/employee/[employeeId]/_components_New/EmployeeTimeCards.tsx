@@ -157,21 +157,22 @@ export default function EmployeeTimeCards() {
                     </Grids>
                   </div>
                 ))}
-                {showEditModal && editingId && (
-                  <AppManagerEditTimesheetModal
-                    timesheetId={editingId}
-                    isOpen={showEditModal}
-                    onClose={() => {
-                      setShowEditModal(false);
-                      reset();
-                    }}
-                  />
-                )}
               </>
             )}
           </PullToRefresh>
         </div>
       </div>
+      {/* Modal rendered outside of PullToRefresh */}
+      {showEditModal && editingId && (
+        <AppManagerEditTimesheetModal
+          timesheetId={editingId}
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            reset();
+          }}
+        />
+      )}
     </div>
   );
 }
