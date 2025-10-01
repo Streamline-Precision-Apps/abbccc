@@ -7,12 +7,10 @@ import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/context/PermissionsContext";
 
 interface CameraComponentProps {
-  setBase64String: React.Dispatch<React.SetStateAction<string>>;
+  setImageBlob?: React.Dispatch<React.SetStateAction<Blob | null>>;
 }
 
-const CameraComponent: React.FC<CameraComponentProps> = ({
-  setBase64String,
-}) => {
+const CameraComponent: React.FC<CameraComponentProps> = ({ setImageBlob }) => {
   const t = useTranslations("SignUpProfilePicture");
   const [cameraActive, setCameraActive] = useState(false);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -78,17 +76,26 @@ const CameraComponent: React.FC<CameraComponentProps> = ({
       if (context) {
         context.drawImage(videoRef.current, 0, 0, 250, 250);
         const imageData = canvasRef.current.toDataURL("image/png");
+
         setImageSrc(imageData);
-        setBase64String(imageData);
+
+        // If the parent component wants the Blob version, provide it
+        if (setImageBlob) {
+          canvasRef.current.toBlob((blob) => {
+            if (blob) {
+              setImageBlob(blob);
+            }
+          }, "image/png");
+        }
       }
     }
     hideCamera();
-  };
-
-  // Clear the captured image
+  }; // Clear the captured image
   const clearPicture = () => {
     setImageSrc(null);
-    setBase64String("");
+    if (setImageBlob) {
+      setImageBlob(null);
+    }
   };
 
   // Cleanup camera on unmount
