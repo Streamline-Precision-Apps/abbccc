@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { uploadFirstImage } from "@/actions/userActions";
+import React, { useState } from "react";
+import { updateUserImage } from "@/actions/userActions";
 import CameraComponent from "../(camera)/camera";
 import { Texts } from "../(reusable)/texts";
 import { useTranslations } from "next-intl";
@@ -20,24 +20,59 @@ export default function ProfilePictureSetup({
   totalSteps,
   currentStep,
 }: prop) {
-  const [base64String, setBase64String] = useState<string>("");
+  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const t = useTranslations("SignUpProfilePicture");
 
-  const handleSubmitImage = async () => {
-    if (!base64String) {
+  const handleUpload = async (file: Blob) => {
+    if (!userId) {
+      console.warn("No user id");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("id", userId);
+    try {
+      const formData = new FormData();
+      formData.append("userId", userId);
+      formData.append("file", file, "profile.png");
+      formData.append("folder", "profileImages");
 
-    formData.append("image", base64String);
+      const res = await fetch("/api/uploadBlobs", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await res.json();
+      // Add cache-busting param to break browser cache
+      const cacheBustedUrl = `${url}?t=${Date.now()}`;
+
+      // Update user image URL in your database
+      const updatingDb = await updateUserImage(userId, cacheBustedUrl);
+
+      if (!updatingDb.success) {
+        throw new Error("Error updating url in DB");
+      }
+
+      return cacheBustedUrl;
+    } catch (err) {
+      console.error("[Error uploading new image or updating DB:", err);
+    }
+  };
+
+  const handleSubmitImage = async () => {
+    // Check that we have an image blob
+    if (!imageBlob) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await uploadFirstImage(formData);
+      await handleUpload(imageBlob);
+      localStorage.setItem("userProfileImage", "Updating");
       handleNextStep(); // Proceed to the next step only if the image upload is successful
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -58,7 +93,7 @@ export default function ProfilePictureSetup({
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
 
           <div className=" h-full max-h-[50vh] flex flex-col items-center">
-            <CameraComponent setBase64String={setBase64String} />
+            <CameraComponent setImageBlob={setImageBlob} />
           </div>
           <div className="flex flex-col mb-4">
             <Button
