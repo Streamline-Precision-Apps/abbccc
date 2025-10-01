@@ -173,22 +173,23 @@ export default function BannerRotating({
               </Holds>
             ))}
 
-          {bannerData.tascoLogs
-            .filter((log) => log.laborType !== "Manual Labor")
-            .map((log, index) => {
-              if (!log.equipment) return null;
-              return (
-                <Holds
-                  key={index}
-                  className="h-full justify-center items-center"
-                >
-                  <Holds className="h-full justify-center items-center space-y-1">
-                    <h3>{t("CurrentlyOperating")} </h3>
-                    <p>{log.equipment?.name}</p>
+          {bannerData.tascoLogs &&
+            bannerData.tascoLogs
+              .filter((log) => log.laborType !== "Manual Labor")
+              .map((log, index) => {
+                if (!log.equipment) return null;
+                return (
+                  <Holds
+                    key={index}
+                    className="h-full justify-center items-center"
+                  >
+                    <Holds className="h-full justify-center items-center space-y-1">
+                      <h3>{t("CurrentlyOperating")} </h3>
+                      <p>{log.equipment?.name}</p>
+                    </Holds>
                   </Holds>
-                </Holds>
-              );
-            })}
+                );
+              })}
 
           {/* Trucking Logs */}
           {bannerData.truckingLogs &&

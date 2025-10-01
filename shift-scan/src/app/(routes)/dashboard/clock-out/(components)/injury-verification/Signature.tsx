@@ -11,11 +11,9 @@ import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
 type SignatureProps = {
   setBase64String: Dispatch<SetStateAction<string | null>>;
   closeModal?: () => void;
-  previousSignature: string | null;
 };
 
 export default function Signature({
-  previousSignature,
   setBase64String,
   closeModal,
 }: SignatureProps) {

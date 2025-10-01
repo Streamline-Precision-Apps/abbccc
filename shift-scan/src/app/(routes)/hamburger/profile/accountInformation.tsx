@@ -328,7 +328,6 @@ export default function AccountInformation({
       >
         <Holds className="w-full h-full justify-center items-center">
           <Signature
-            previousSignature={signatureBase64String}
             setBase64String={setSignatureBase64String}
             closeModal={() => setEditSignatureModalOpen(false)}
           />
