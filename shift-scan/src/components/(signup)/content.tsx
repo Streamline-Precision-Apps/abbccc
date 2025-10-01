@@ -47,7 +47,7 @@ export default function Content({
       // mark accountSetup as true
       await finishUserSetup(userId);
       setAuthStep("");
-      signOut({ callbackUrl: "/signin" });
+      signOut({ redirect: true, redirectTo: "/signin" });
     } catch (error) {
       console.error(error);
     }

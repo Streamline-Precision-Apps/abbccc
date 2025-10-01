@@ -39,7 +39,7 @@ const ModalVariants = cva(
       position: "center",
       size: "default",
     },
-  }
+  },
 );
 
 interface ModalProps
@@ -85,7 +85,7 @@ const Modals: FC<ModalProps> = ({
           <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
           <div
             className={cn(
-              ModalVariants({ background, position, size, className })
+              ModalVariants({ background, position, size, className }),
             )}
             {...props}
           >
@@ -96,7 +96,7 @@ const Modals: FC<ModalProps> = ({
                   handleClose();
                   signOut({
                     redirect: true,
-                    callbackUrl: "/signin", // Specify the redirection URL
+                    redirectTo: "/signin", // Specify the redirection URL
                   });
                 }}
                 className="close-btn"
@@ -126,7 +126,7 @@ const Modals: FC<ModalProps> = ({
           <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
           <div
             className={cn(
-              ModalVariants({ background, position, size, className })
+              ModalVariants({ background, position, size, className }),
             )}
             {...props}
           >
@@ -158,7 +158,7 @@ const Modals: FC<ModalProps> = ({
       <ReactPortal wrapperId="react-portal-modal-container">
         <div
           className={cn(
-            ModalVariants({ background, position, size, className })
+            ModalVariants({ background, position, size, className }),
           )}
           {...props}
         >
@@ -168,7 +168,11 @@ const Modals: FC<ModalProps> = ({
             background={"red"}
             size={"full"}
           >
-            {step === 5 ? <></> : <Images titleImg="/statusDenied.svg" titleImgAlt="x" />}
+            {step === 5 ? (
+              <></>
+            ) : (
+              <Images titleImg="/statusDenied.svg" titleImgAlt="x" />
+            )}
           </Buttons>
           <Contents className="modal-content">{props.children}</Contents>
         </div>
@@ -194,7 +198,7 @@ const Modals: FC<ModalProps> = ({
         <div className="fixed top-0 left-0 w-screen h-screen bg-neutral-800 opacity-50" />
         <div
           className={cn(
-            ModalVariants({ background, position, size, className })
+            ModalVariants({ background, position, size, className }),
           )}
           {...props}
         >
@@ -204,7 +208,11 @@ const Modals: FC<ModalProps> = ({
             className="close-btn"
             size={"20"}
           >
-            <Images titleImg="/statusDenied.svg" titleImgAlt="x" className="mx-auto p-2" />
+            <Images
+              titleImg="/statusDenied.svg"
+              titleImgAlt="x"
+              className="mx-auto p-2"
+            />
           </Buttons>
           <div className="modal-content-wrapper max-h-[80vh] overflow-y-auto scrollbar-hide">
             {props.children}
@@ -246,7 +254,7 @@ const Modals: FC<ModalProps> = ({
         >
           <div
             className={cn(
-              ModalVariants({ background, position, size, className })
+              ModalVariants({ background, position, size, className }),
             )}
             {...props}
           >
@@ -281,7 +289,7 @@ const Modals: FC<ModalProps> = ({
         <Bases background={"modal"} position={"start"} size={"screen"}>
           <div
             className={cn(
-              ModalVariants({ background, position, size, className })
+              ModalVariants({ background, position, size, className }),
             )}
             {...props}
           >
