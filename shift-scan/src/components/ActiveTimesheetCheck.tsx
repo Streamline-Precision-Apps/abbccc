@@ -6,7 +6,9 @@ type ActiveTimesheetCheckProps = {
   userId: string;
 };
 
-export default function ActiveTimesheetCheck({ userId }: ActiveTimesheetCheckProps) {
+export default function ActiveTimesheetCheck({
+  userId,
+}: ActiveTimesheetCheckProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -31,8 +33,10 @@ export default function ActiveTimesheetCheck({ userId }: ActiveTimesheetCheckPro
 
         // If no active timesheet found, clear all cookies and redirect to home
         if (!data.hasActiveTimesheet) {
-          console.log("No active timesheet found, clearing cookies and redirecting to home...");
-          
+          console.log(
+            "No active timesheet found, clearing cookies and redirecting to home...",
+          );
+
           // Clear all timesheet cookies
           await fetch("/api/clear-timesheet-cookies", {
             method: "POST",
