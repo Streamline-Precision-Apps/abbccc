@@ -6,6 +6,9 @@ interface PermissionState {
   camera: boolean;
   location: boolean;
   lastUpdated?: string; // Timestamp for when permissions were last updated
+  // iOS specific flags to prevent repeated prompts
+  hasPromptedCamera?: boolean;
+  hasPromptedLocation?: boolean;
 }
 
 interface PermissionsContextType {
@@ -34,13 +37,22 @@ export function PermissionsProvider({
     location: false,
   });
 
+  const isIOSDevice = (): boolean => {
+    if (typeof navigator === "undefined") return false;
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as Window & { MSStream?: unknown }).MSStream
+    );
+  };
+
   const checkPermissions = async () => {
     try {
       // Detect mobile platforms
-      const isIOS =
-        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as Window & { MSStream?: unknown }).MSStream;
-      const isAndroid = /Android/.test(navigator.userAgent);
+      const isIOS = isIOSDevice();
+      const isAndroid =
+        typeof navigator !== "undefined"
+          ? /Android/.test(navigator.userAgent)
+          : false;
       const isMobile = isMobileDevice();
 
       // First try to get permissions from localStorage for consistency
@@ -74,7 +86,15 @@ export function PermissionsProvider({
         return;
       }
 
-      // On mobile devices, we prioritize stored permissions to avoid prompts
+      // For iOS, always use stored permissions to avoid prompts
+      // iOS doesn't support the Permissions API well and will prompt users repeatedly
+      if (isIOS) {
+        setPermissions(storedPermissions);
+        setInitialized(true);
+        return;
+      }
+
+      // On other mobile devices, prioritize stored permissions to avoid prompts
       if (
         isMobile &&
         (storedPermissions.camera || storedPermissions.location)
@@ -243,6 +263,12 @@ export function PermissionsProvider({
         return true;
       }
 
+      // For iOS: If we've already prompted, use the stored permission state
+      // to avoid prompting again, unless it's been explicitly requested
+      if (isIOSDevice() && permissions.hasPromptedCamera) {
+        return permissions.camera;
+      }
+
       // Request camera access
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -254,7 +280,12 @@ export function PermissionsProvider({
       stream.getTracks().forEach((track) => track.stop());
 
       // Update and store permissions
-      const newPermissions = { ...permissions, camera: true };
+      const newPermissions = {
+        ...permissions,
+        camera: true,
+        // Mark that we've prompted for camera permission (for iOS)
+        hasPromptedCamera: true,
+      };
       setPermissions(newPermissions);
       storePermissions(newPermissions);
 
@@ -279,7 +310,12 @@ export function PermissionsProvider({
 
       // Only update permissions if we have a clear denial
       if (isDenied) {
-        const newPermissions = { ...permissions, camera: false };
+        const newPermissions = {
+          ...permissions,
+          camera: false,
+          // Mark that we've prompted for camera permission (for iOS)
+          hasPromptedCamera: true,
+        };
         setPermissions(newPermissions);
         storePermissions(newPermissions);
 
@@ -302,6 +338,12 @@ export function PermissionsProvider({
       // Check if permission was already granted previously
       if (permissions.location) {
         return true;
+      }
+
+      // For iOS: If we've already prompted, use the stored permission state
+      // to avoid prompting again, unless it's been explicitly requested
+      if (isIOSDevice() && permissions.hasPromptedLocation) {
+        return permissions.location;
       }
 
       // Request location with a timeout to prevent long-hanging requests
@@ -328,7 +370,12 @@ export function PermissionsProvider({
       });
 
       // Update and store permissions
-      const newPermissions = { ...permissions, location: true };
+      const newPermissions = {
+        ...permissions,
+        location: true,
+        // Mark that we've prompted for location permission (for iOS)
+        hasPromptedLocation: true,
+      };
       setPermissions(newPermissions);
       storePermissions(newPermissions);
 
@@ -352,7 +399,12 @@ export function PermissionsProvider({
 
       // Only update stored permissions if we have a clear denial
       if (isDenied) {
-        const newPermissions = { ...permissions, location: false };
+        const newPermissions = {
+          ...permissions,
+          location: false,
+          // Mark that we've prompted for location permission (for iOS)
+          hasPromptedLocation: true,
+        };
         setPermissions(newPermissions);
         storePermissions(newPermissions);
 
@@ -384,7 +436,12 @@ export function PermissionsProvider({
   };
 
   const resetPermissions = () => {
-    const defaultPermissions = { camera: false, location: false };
+    const defaultPermissions = {
+      camera: false,
+      location: false,
+      hasPromptedCamera: false,
+      hasPromptedLocation: false,
+    };
     setPermissions(defaultPermissions);
     storePermissions(defaultPermissions);
 
@@ -399,7 +456,15 @@ export function PermissionsProvider({
   };
 
   useEffect(() => {
-    checkPermissions();
+    // For iOS, we initialize with stored values and avoid permission API calls
+    if (typeof window !== "undefined" && isIOSDevice()) {
+      const storedPermissions = getStoredPermissions();
+      setPermissions(storedPermissions);
+      setInitialized(true);
+    } else {
+      // For other platforms, proceed with normal permission checking
+      checkPermissions();
+    }
   }, []);
 
   return (
