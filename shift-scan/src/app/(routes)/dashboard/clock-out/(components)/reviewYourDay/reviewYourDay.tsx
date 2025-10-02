@@ -56,17 +56,17 @@ export default function ReviewYourDay({
     <Bases>
       <Contents>
         <Holds background={"white"} className="row-span-1 h-full ">
-          <Holds className="h-full w-full">
-            <TitleBoxes onClick={prevStep} className="h-24">
+          <Holds className="h-full w-full flex flex-col">
+            <TitleBoxes onClick={prevStep} className="h-24 flex-shrink-0">
               <Holds className="h-full justify-end">
                 <Titles size={"lg"}>{t("ReviewYourDay")}</Titles>
               </Holds>
             </TitleBoxes>
-            <Texts size={"sm"} className="p-2">
+            <Texts size={"sm"} className="p-2 flex-shrink-0">
               {t("ReviewYourDayDirections")}
             </Texts>
-            <Contents width={"section"} className="">
-              <Holds className="h-full overflow-y-scroll no-scrollbar border-[3px] rounded-[10px] border-black">
+            <Contents width={"section"} className="flex-1 min-h-0">
+              <Holds className="h-full max-h-[400px] overflow-y-scroll no-scrollbar border-[3px] rounded-[10px] border-black">
                 <Holds
                   position={"row"}
                   className="border-b-[3px] border-black py-1 px-2"
@@ -219,7 +219,7 @@ export default function ReviewYourDay({
                 )}
               </Holds>
             </Contents>
-            <Contents width={"section"} className="my-5 h-[70px]">
+            <Contents width={"section"} className="mt-5 h-[70px] flex-shrink-0">
               <Buttons
                 background={"orange"}
                 onClick={handleClick}
