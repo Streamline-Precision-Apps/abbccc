@@ -13,7 +13,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import SubmittedFormsApproval from "./_components/submittedApprovedForms";
+import SubmittedFormsApproval from "./_components/SubmittedFormsApproval";
 import { Titles } from "@/components/(reusable)/titles";
 import { useTranslations } from "next-intl";
 import type { FormIndividualTemplate } from "@/app/(routes)/admins/forms/[id]/_component/hooks/types";
@@ -257,20 +257,6 @@ export default function DynamicForm({
 
     fetchAllData();
   }, [id, submissionId, submissionStatus, submissionApprovingStatus]);
-
-  // Remove automatic refresh mechanism to prevent excessive reloads
-  useEffect(() => {
-    // Keeping empty useEffect to replace the removed refresh mechanism
-    // This helps maintain code structure without the automatic refreshes
-  }, []);
-
-  // Update form values for a single field
-  const updateFormValues = (fieldId: string, value: FormFieldValue) => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [fieldId]: value,
-    }));
-  };
 
   // Legacy method for backward compatibility with existing components
   const updateFormValuesLegacy = (newValues: Record<string, string>) => {
@@ -629,7 +615,7 @@ export default function DynamicForm({
               </div>
             </TitleBoxes>
 
-            <form className="h-full w-full overflow-y-auto no-scrollbar">
+            <form className="bg-slate-50 h-full w-full overflow-y-auto no-scrollbar rounded-b-lg">
               <Holds className="row-start-1 row-end-7 h-full w-full justify-center ">
                 <Spinner />
               </Holds>

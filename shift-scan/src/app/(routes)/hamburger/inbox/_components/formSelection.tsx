@@ -13,7 +13,8 @@ import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import InboxSkeleton from "./inboxSkeleton";
 
 type Form = {
   id: string;
@@ -156,28 +157,42 @@ export default function FormSelection({
         className="h-16 border-b-2  border-neutral-100  gap-2 px-2"
       >
         <Holds>
-          {loading ? (
-            <Selects
-              value={""}
-              disabled
-              className="text-center text-sm disabled:bg-white h-full p-2"
-            >
-              <option value={""}>{t("SelectAForm")}</option>
-            </Selects>
-          ) : (
-            <Selects
-              value={selectedForm}
-              onChange={(e) => setSelectedForm(e.target.value)}
-              className="text-center text-sm h-full p-2 "
-            >
-              <option value={""}>{t("SelectAForm")}</option>
-              {forms.map((form) => (
-                <option key={form.id} value={form.id}>
-                  {form.name}
-                </option>
-              ))}
-            </Selects>
-          )}
+          <Suspense
+            fallback={
+              <Selects
+                value={""}
+                disabled
+                className="text-center text-sm disabled:bg-white h-full p-2"
+              >
+                <option value={""}>{t("SelectAForm")}</option>
+              </Selects>
+            }
+          >
+            <>
+              {loading ? (
+                <Selects
+                  value={""}
+                  disabled
+                  className="text-center text-sm disabled:bg-white h-full p-2"
+                >
+                  <option value={""}>{t("SelectAForm")}</option>
+                </Selects>
+              ) : (
+                <Selects
+                  value={selectedForm}
+                  onChange={(e) => setSelectedForm(e.target.value)}
+                  className="text-center text-sm h-full p-2 "
+                >
+                  <option value={""}>{t("SelectAForm")}</option>
+                  {forms.map((form) => (
+                    <option key={form.id} value={form.id}>
+                      {form.name}
+                    </option>
+                  ))}
+                </Selects>
+              )}
+            </>
+          </Suspense>
         </Holds>
         <Holds className="w-fit ">
           <Buttons
@@ -223,111 +238,107 @@ export default function FormSelection({
         </Contents>
       </Holds>
       <div className="flex-1 overflow-y-auto no-scrollbar border-t-black border-opacity-5 border-t-2">
-        {isInitialLoading ? (
-          <Holds className="row-start-2 row-end-7 h-full w-full border-t-black border-opacity-5 border-t-2">
-            <Contents width={"section"}>
-              <Holds className="h-full justify-center items-center pt-10">
-                <Spinner size={20} />
-              </Holds>
-            </Contents>
-          </Holds>
-        ) : (
-          <PullToRefresh
-            onRefresh={handleRefresh}
-            pullText={t("PullToRefresh") || "Pull to refresh"}
-            releaseText={t("ReleaseToRefresh") || "Release to refresh"}
-            refreshingText={t("Loading") || "Loading..."}
-            contentClassName="h-full"
-            textColor="text-app-dark-blue"
-          >
-            <div className="h-full max-h-full overflow-y-auto no-scrollbar">
-              <Holds className="row-start-2 row-end-7 h-full w-full ">
-                <Contents width={"section"}>
-                  {!sentContent ||
-                    (sentContent.length === 0 && (
-                      <Holds className="h-full">
-                        <Texts size={"md"} className="italic text-gray-500">
-                          {selectedFilter === "denied"
-                            ? t("NoDeniedFormsSubmitted")
-                            : selectedFilter === "pending"
-                              ? t("NoPendingFormsSubmitted")
-                              : selectedFilter === "approved"
-                                ? t("NoApprovedFormsSubmitted")
-                                : t("NoFormsSubmitted")}
-                        </Texts>
-                        <Texts size={"sm"} className="italic text-gray-500">
-                          {t("GoToFormsSectionToCreateForms")}
-                        </Texts>
-                      </Holds>
-                    ))}
-                  <div className="pt-3 pb-5 h-full w-full">
-                    {Array.isArray(sentContent) &&
-                      sentContent.map((form, index) => {
-                        if (typeof form === "string") return null; // Defensive: skip invalid entries
+        <Suspense fallback={<InboxSkeleton />}>
+          {isInitialLoading ? (
+            <InboxSkeleton />
+          ) : (
+            <PullToRefresh
+              onRefresh={handleRefresh}
+              pullText={t("PullToRefresh") || "Pull to refresh"}
+              releaseText={t("ReleaseToRefresh") || "Release to refresh"}
+              refreshingText={t("Loading") || "Loading..."}
+              contentClassName="h-full"
+              textColor="text-app-dark-blue"
+            >
+              <div className="h-full max-h-full overflow-y-auto no-scrollbar">
+                <Holds className="row-start-2 row-end-7 h-full w-full ">
+                  <Contents width={"section"}>
+                    {!sentContent ||
+                      (sentContent.length === 0 && (
+                        <Holds className="h-full">
+                          <Texts size={"md"} className="italic text-gray-500">
+                            {selectedFilter === "denied"
+                              ? t("NoDeniedFormsSubmitted")
+                              : selectedFilter === "pending"
+                                ? t("NoPendingFormsSubmitted")
+                                : selectedFilter === "approved"
+                                  ? t("NoApprovedFormsSubmitted")
+                                  : t("NoFormsSubmitted")}
+                          </Texts>
+                          <Texts size={"sm"} className="italic text-gray-500">
+                            {t("GoToFormsSectionToCreateForms")}
+                          </Texts>
+                        </Holds>
+                      ))}
+                    <div className="pt-3 pb-5 h-full w-full">
+                      {Array.isArray(sentContent) &&
+                        sentContent.map((form, index) => {
+                          if (typeof form === "string") return null; // Defensive: skip invalid entries
 
-                        // Defensive: fallback to FormTemplate name if title is missing or empty
-                        const title =
-                          form.title && form.title.length > 0
-                            ? form.title.charAt(0).toUpperCase() +
-                              form.title.slice(1)
-                            : form.FormTemplate?.name || "";
+                          // Defensive: fallback to FormTemplate name if title is missing or empty
+                          const title =
+                            form.title && form.title.length > 0
+                              ? form.title.charAt(0).toUpperCase() +
+                                form.title.slice(1)
+                              : form.FormTemplate?.name || "";
 
-                        const isLastItem = index === sentContent.length - 1;
+                          const isLastItem = index === sentContent.length - 1;
 
-                        return (
-                          <Holds className="pb-3" key={form.id}>
-                            <Buttons
-                              ref={isLastItem ? lastItemRef : null}
-                              shadow={"none"}
-                              className="py-1.5 relative"
-                              background={
-                                form.status === "PENDING"
-                                  ? "orange"
-                                  : form.status === "APPROVED"
-                                    ? "green"
-                                    : form.status === "DENIED"
-                                      ? "red"
-                                      : "lightBlue"
-                              }
-                              onClick={() => {
-                                router.push(
-                                  `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`,
-                                );
-                              }}
-                              disabled={isLoading}
-                            >
-                              <Holds className="w-full h-full relative">
-                                <Titles size={"md"}>{title}</Titles>
+                          return (
+                            <Holds className="pb-3" key={form.id}>
+                              <Buttons
+                                ref={isLastItem ? lastItemRef : null}
+                                shadow={"none"}
+                                className="py-1.5 relative"
+                                background={
+                                  form.status === "PENDING"
+                                    ? "orange"
+                                    : form.status === "APPROVED"
+                                      ? "green"
+                                      : form.status === "DENIED"
+                                        ? "red"
+                                        : "lightBlue"
+                                }
+                                onClick={() => {
+                                  router.push(
+                                    `/hamburger/inbox/formSubmission/${form.formTemplateId}?submissionId=${form.id}&status=${form.status}`,
+                                  );
+                                }}
+                                disabled={isLoading}
+                              >
+                                <Holds className="w-full h-full relative">
+                                  <Titles size={"md"}>{title}</Titles>
 
-                                <Images
-                                  titleImgAlt={"form Status"}
-                                  titleImg={
-                                    form.status === "PENDING"
-                                      ? "/statusOngoingFilled.svg"
-                                      : form.status === "APPROVED"
-                                        ? "/statusApprovedFilled.svg"
-                                        : form.status === "DENIED"
-                                          ? "/statusDeniedFilled.svg"
-                                          : "/formSent.svg"
-                                  }
-                                  className="absolute max-w-8 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
-                                />
-                              </Holds>
-                            </Buttons>
-                          </Holds>
-                        );
-                      })}
-                    {isLoading && (
-                      <Holds className="flex justify-center py-4">
-                        <Spinner />
-                      </Holds>
-                    )}
-                  </div>
-                </Contents>
-              </Holds>
-            </div>
-          </PullToRefresh>
-        )}
+                                  <Images
+                                    titleImgAlt={"form Status"}
+                                    titleImg={
+                                      form.status === "PENDING"
+                                        ? "/statusOngoingFilled.svg"
+                                        : form.status === "APPROVED"
+                                          ? "/statusApprovedFilled.svg"
+                                          : form.status === "DENIED"
+                                            ? "/statusDeniedFilled.svg"
+                                            : "/formSent.svg"
+                                    }
+                                    className="absolute max-w-8 h-auto object-contain top-[50%] translate-y-[-50%] right-2"
+                                  />
+                                </Holds>
+                              </Buttons>
+                            </Holds>
+                          );
+                        })}
+                      {isLoading && (
+                        <Holds className="flex justify-center py-4">
+                          <Spinner />
+                        </Holds>
+                      )}
+                    </div>
+                  </Contents>
+                </Holds>
+              </div>
+            </PullToRefresh>
+          )}
+        </Suspense>
       </div>
     </>
   );
