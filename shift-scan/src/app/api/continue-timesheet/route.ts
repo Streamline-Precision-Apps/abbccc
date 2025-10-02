@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     // Parse the ID to ensure it's a number
     const parsedId = parseInt(timesheetId, 10);
-    
+
     if (isNaN(parsedId)) {
       console.error("Invalid timesheet ID format");
       return NextResponse.redirect(new URL("/", request.url));
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 
     // If timesheet doesn't exist or is completed, redirect to home
     if (!incompleteTimesheet) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.json({ status: 200 });
     }
 
     // Set cookies using server-side cookie manipulation
