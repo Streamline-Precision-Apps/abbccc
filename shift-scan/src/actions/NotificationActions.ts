@@ -1,7 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { s } from "framer-motion/dist/types.d-Cjd591yU";
 /**
  * Upserts (updates or inserts) an FCM token in the database
  * - If token exists for the same user, updates lastUsedAt
