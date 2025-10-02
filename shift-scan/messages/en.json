@@ -1350,7 +1350,9 @@
     "RefuelLogs": "Refuel Logs",
     "CommentPlaceholder": "Write your Comments here...",
     "DidYouRefuel?": "Did you Refuel?",
-    "TotalGallons": "Total Gallons"
+    "TotalGallons": "Total Gallons",
+    "NoRefuelLogsYet": "No Refuel Logs Recorded",
+    "ClickToAdd": "Click the + to add one!"
   },
 
   "MechanicWidget": {

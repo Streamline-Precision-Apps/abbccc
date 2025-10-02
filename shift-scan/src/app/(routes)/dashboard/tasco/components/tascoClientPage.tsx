@@ -8,12 +8,12 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import RefuelLayout from "./RefuelLayout";
-import RefuelLayoutSkeleton from "./RefuelLayoutSkeleton";
 import TascoComments from "./tascoComments";
 import TascoCommentsSkeleton from "./TascoCommentsSkeleton";
 import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
+import { Texts } from "@/components/(reusable)/texts";
 
 export type Refueled = {
   id: string;
@@ -87,7 +87,7 @@ export default function TascoEQClientPage() {
   // Use the auto-save hook with the FormValues type
   const autoSave = useAutoSave<{
     values: { tascoLogId: string; loadCount: number };
-  }>((data) => saveDraftData(data.values), 400);
+  }>((data) => saveDraftData(data.values), 1000); // Increased debounce time from 400ms to 1000ms
 
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
@@ -98,18 +98,18 @@ export default function TascoEQClientPage() {
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
     <>
-      <Grids
-        rows={"10"}
-        gap={"3"}
-        className={isLoading ? "animate-pulse h-full w-full" : "h-full w-full"}
-      >
+      <Grids rows={"10"} gap={"3"} className={"h-full w-full"}>
         <Holds
           className="w-full h-full items-center row-start-1 row-end-3 "
           background={"white"}
         >
           <Holds className="w-full h-full items-center py-2">
             <Titles size={"h5"}>{t("LoadCounter")}</Titles>
-            <Counter count={loadCount} setCount={setLoadCount} />
+            <Counter
+              count={loadCount}
+              setCount={setLoadCount}
+              isLoading={isLoading}
+            />
           </Holds>
         </Holds>
 
@@ -122,7 +122,7 @@ export default function TascoEQClientPage() {
               isActive={activeTab === 1}
               isComplete={comment.trim().length > 0}
             >
-              <Titles size={"h4"}>{t("Comments")}</Titles>
+              <Texts size={"lg"}>{t("Comments")}</Texts>
             </NewTab>
             <NewTab
               titleImage="/refuel.svg"
@@ -135,16 +135,16 @@ export default function TascoEQClientPage() {
                 refuelLogs.every((log) => log.gallonsRefueled > 0)
               }
             >
-              <Titles size={"h4"}>{t("RefuelLogs")}</Titles>
+              <Texts size={"lg"}>{t("RefuelLogs")}</Texts>
             </NewTab>
           </Holds>
 
           <Holds
             background={"white"}
-            className="rounded-t-none  h-full overflow-y-hidden no-scrollbar"
+            className="rounded-t-none h-full w-full overflow-hidden"
           >
-            <Contents width={"section"} className="py-5">
-              {activeTab === 1 && (
+            {activeTab === 1 && (
+              <Contents width={"section"} className="h-full">
                 <Holds className="h-full w-full relative pt-2">
                   <Suspense fallback={<TascoCommentsSkeleton />}>
                     <TascoComments
@@ -154,17 +154,15 @@ export default function TascoEQClientPage() {
                     />
                   </Suspense>
                 </Holds>
-              )}
-              {activeTab === 2 && (
-                <Suspense fallback={<RefuelLayoutSkeleton />}>
-                  <RefuelLayout
-                    tascoLog={tascoLogId}
-                    refuelLogs={refuelLogs}
-                    setRefuelLogs={setRefuelLogs}
-                  />
-                </Suspense>
-              )}
-            </Contents>
+              </Contents>
+            )}
+            {activeTab === 2 && (
+              <RefuelLayout
+                tascoLog={tascoLogId}
+                refuelLogs={refuelLogs}
+                setRefuelLogs={setRefuelLogs}
+              />
+            )}
           </Holds>
         </Holds>
       </Grids>
