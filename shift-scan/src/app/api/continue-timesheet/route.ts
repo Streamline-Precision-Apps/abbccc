@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Redirect directly to dashboard - single redirect!
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, id: incompleteTimesheet.id });
   } catch (error) {
     console.error("Failed to continue timesheet:", error);
     return NextResponse.json({ success: false });
