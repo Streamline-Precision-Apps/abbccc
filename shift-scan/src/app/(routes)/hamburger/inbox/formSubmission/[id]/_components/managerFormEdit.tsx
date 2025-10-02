@@ -1,23 +1,15 @@
 "use client";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { updateFormApproval } from "@/actions/hamburgerActions";
 import { useRouter } from "next/navigation";
-import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import { Images } from "@/components/(reusable)/images";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { format } from "date-fns";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
-import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
 
 interface FormField {

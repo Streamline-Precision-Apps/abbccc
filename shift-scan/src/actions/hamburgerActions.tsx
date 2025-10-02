@@ -323,11 +323,11 @@ export async function savePending(
       });
 
       if (!existingSubmission) {
-        throw new Error("Submission not found");
+        return null;
       }
 
       if (existingSubmission.data === null) {
-        throw new Error("Submission data is null");
+        return null;
       }
 
       // Type-cast data to a Record<string, string>

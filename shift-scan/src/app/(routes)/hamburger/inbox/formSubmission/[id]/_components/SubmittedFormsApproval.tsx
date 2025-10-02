@@ -2,7 +2,6 @@
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
-import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
@@ -150,9 +149,9 @@ export default function SubmittedFormsApproval({
       </TitleBoxes>
 
       {/* Scrollable Middle Content */}
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <Contents width={"section"}>
-          <div className="h-full py-4 px-1">
+      <div className="bg-slate-50 flex-1 overflow-y-auto no-scrollbar flex flex-col justify-start items-center rounded-b-lg">
+        <Contents width={"section"} className="pb-24 w-full max-w-md mx-auto">
+          <div className="py-4 px-1 flex flex-col">
             {/* Summary Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
               {/* Approval Details Section */}
@@ -238,8 +237,8 @@ export default function SubmittedFormsApproval({
             </div>
 
             {/* Submission Details Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-              <div className="flex justify-between items-center ">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-40">
+              <div className="flex justify-between items-center mb-3">
                 <h3 className="text-blue-600 font-semibold text-sm">
                   Submission Details
                 </h3>

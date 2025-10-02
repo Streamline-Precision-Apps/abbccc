@@ -59,26 +59,11 @@ export default function InboxContent({ isManager }: { isManager: boolean }) {
         )}
       </div>
 
-      {/* Dynamic content - wrapped in Suspense */}
-      <Suspense
-        fallback={
-          <div className="p-4 space-y-4">
-            {Array(3)
-              .fill(0)
-              .map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-12 bg-gray-200 rounded-md w-full"></div>
-                </div>
-              ))}
-          </div>
-        }
-      >
-        <DynamicInboxContent
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isManager={isManager}
-        />
-      </Suspense>
+      <DynamicInboxContent
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isManager={isManager}
+      />
     </div>
   );
 }

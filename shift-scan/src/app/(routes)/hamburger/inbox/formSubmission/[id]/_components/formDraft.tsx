@@ -10,6 +10,15 @@ import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface FormField {
   id: string;
@@ -66,6 +75,7 @@ export default function FormDraft({
   const [showSignature, setShowSignature] = useState(false);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteRequestModal, setDeleteRequestModal] = useState(false);
 
   useEffect(() => {
     const fetchSignature = async () => {
@@ -125,9 +135,6 @@ export default function FormDraft({
   ): boolean => {
     // Check signature requirement separately
     if (formData.isSignatureRequired && !showSignature) {
-      console.error(
-        "Validation failed: Signature is required but not provided",
-      );
       return false;
     }
 
@@ -178,132 +185,161 @@ export default function FormDraft({
   };
 
   return (
-    <form
-      onSubmit={async (e) => {
-        setIsSubmitting(true);
-        try {
-          await handleSubmit(e);
-        } finally {
-          setIsSubmitting(false);
-        }
-      }}
-      className="h-full w-full bg-white flex flex-col rounded-lg "
-    >
-      <TitleBoxes
-        className="h-16 border-b-2 pb-2 rounded-lg border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white"
-        onClick={async () => {
-          // Save draft before navigating back
-          await saveFormData();
-          router.push("/hamburger/inbox");
+    <>
+      <form
+        onSubmit={async (e) => {
+          setIsSubmitting(true);
+          try {
+            await handleSubmit(e);
+          } finally {
+            setIsSubmitting(false);
+          }
         }}
+        className="h-full w-full bg-white flex flex-col rounded-lg "
       >
-        <div className="w-full h-full flex items-end  justify-center">
-          <Titles size={"md"} className="truncate max-w-[200px]">
-            {formData.name}
-          </Titles>
-        </div>
-      </TitleBoxes>
-
-      <div className="flex-1 overflow-y-auto py-3 no-scrollbar">
-        <Contents width={"section"}>
-          {/* Title input section */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-            <div className="mb-2">
-              <span className="text-sm font-medium text-gray-700">
-                {t("TitleOptional")}
-              </span>
-            </div>
-            <Inputs
-              type="text"
-              placeholder={t("EnterATitleHere")}
-              name="title"
-              value={formTitle}
-              className="text-center text-base border border-gray-200 rounded-md p-2 w-full"
-              onChange={(e) => setFormTitle(e.target.value)}
-            />
+        <TitleBoxes
+          className="h-16 border-b-2 pb-2 rounded-lg border-neutral-100 flex-shrink-0 sticky top-0 z-10 bg-white"
+          onClick={async () => {
+            // Save draft before navigating back
+            await saveFormData();
+            router.push("/hamburger/inbox");
+          }}
+        >
+          <div className="w-full h-full flex items-end  justify-center">
+            <Titles size={"md"} className="truncate max-w-[200px]">
+              {formData.name}
+            </Titles>
           </div>
+        </TitleBoxes>
 
-          {/* Form fields section */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-            <div className="mb-3">
-              <h3 className="text-blue-600 font-semibold text-sm">
-                Form Details
-              </h3>
-            </div>
-            <FormFieldRenderer
-              formData={formData}
-              formValues={formValues}
-              setFormValues={updateFormValues}
-              readOnly={false}
-              useNativeInput={true}
-            />
-          </div>
-
-          {/* Signature section - only shown if required */}
-          {formData.isSignatureRequired && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
-              <div className="mb-2">
-                <span className="text-sm font-medium text-gray-700">
-                  {t("Signature")}
-                </span>
+        <div className="bg-slate-50 flex-1 overflow-y-auto no-scrollbar flex flex-col justify-start items-center">
+          <Contents width={"section"} className="pb-24 w-full max-w-md mx-auto">
+            <div className="py-4 px-1 flex flex-col">
+              {/* Title input section */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("TitleOptional")}
+                  </span>
+                </div>
+                <Inputs
+                  type="text"
+                  placeholder={t("EnterATitleHere")}
+                  name="title"
+                  value={formTitle}
+                  className="text-center text-base border border-gray-200 rounded-md p-2 w-full"
+                  onChange={(e) => setFormTitle(e.target.value)}
+                />
               </div>
-              {showSignature ? (
-                <div
-                  onClick={() => setSignatureData(false)}
-                  className="w-full border-2 rounded-md border-gray-300 cursor-pointer p-2 flex justify-center"
-                >
-                  {signature && (
-                    <img
-                      src={signature}
-                      alt="signature"
-                      className="h-20 w-full object-contain"
-                    />
+
+              {/* Form fields section */}
+              <div
+                className={`bg-white rounded-lg shadow-sm border border-gray-100 p-4 ${formData.isSignatureRequired ? "mb-4" : "mb-40"}`}
+              >
+                <div className="mb-3">
+                  <h3 className="text-blue-600 font-semibold text-sm">
+                    Form Details
+                  </h3>
+                </div>
+                <FormFieldRenderer
+                  formData={formData}
+                  formValues={formValues}
+                  setFormValues={updateFormValues}
+                  readOnly={false}
+                  useNativeInput={true}
+                />
+              </div>
+
+              {/* Signature section - only shown if required */}
+              {formData.isSignatureRequired && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-40">
+                  <div className="mb-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {t("Signature")}
+                    </span>
+                  </div>
+                  {showSignature ? (
+                    <div
+                      onClick={() => setSignatureData(false)}
+                      className="w-full border-2 rounded-md border-gray-300 cursor-pointer p-2 flex justify-center"
+                    >
+                      {signature && (
+                        <img
+                          src={signature}
+                          alt="signature"
+                          className="h-20 w-full object-contain"
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <Buttons
+                      onClick={() => setSignatureData(true)}
+                      type="button"
+                      className="w-full h-16 rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 border border-gray-300 transition-colors"
+                    >
+                      <span className="text-gray-700 font-medium">
+                        {t("TapToSign")}
+                      </span>
+                    </Buttons>
                   )}
                 </div>
-              ) : (
-                <Buttons
-                  onClick={() => setSignatureData(true)}
-                  type="button"
-                  className="w-full h-16 rounded-md shadow-sm bg-gray-50 hover:bg-gray-100 border border-gray-300 transition-colors"
-                >
-                  <span className="text-gray-700 font-medium">
-                    {t("TapToSign")}
-                  </span>
-                </Buttons>
               )}
             </div>
-          )}
-        </Contents>
-      </div>
+          </Contents>
+        </div>
 
-      {/* Action buttons */}
+        {/* Action buttons */}
 
-      <div className="w-full h-20 flex px-2 gap-x-4 flex-shrink-0 sticky bottom-0 z-10 bg-white border-t rounded-lg">
-        <Buttons
-          type="button"
-          background={"red"}
-          onClick={async () => {
-            // Save any last changes before deleting
-            await saveFormData();
-            await handleDeleteForm(submissionId);
-          }}
-          className="w-full h-12 rounded-md shadow-sm"
-        >
-          <Titles size={"sm"}>{t("DeleteDraft")}</Titles>
-        </Buttons>
-        <Buttons
-          type="submit"
-          background={
-            !validateForm(formValues, formData) ? "darkGray" : "green"
-          }
-          disabled={!validateForm(formValues, formData) || isSubmitting}
-          className="w-full h-12 rounded-md shadow-sm"
-        >
-          <Titles size={"sm"}>
-            {isSubmitting ? t("Submitting") : t("SubmitRequest")}
-          </Titles>
-        </Buttons>
-      </div>
-    </form>
+        <div className="w-full h-20 flex px-2 gap-x-4 flex-shrink-0 sticky bottom-0 z-10 bg-white border-t rounded-lg">
+          <Buttons
+            type="button"
+            background={"red"}
+            onClick={() => setDeleteRequestModal(true)}
+            className="w-full h-12 rounded-md shadow-sm"
+          >
+            <Titles size={"sm"}>{t("DeleteDraft")}</Titles>
+          </Buttons>
+          <Buttons
+            type="submit"
+            background={
+              !validateForm(formValues, formData) ? "darkGray" : "green"
+            }
+            disabled={!validateForm(formValues, formData) || isSubmitting}
+            className="w-full h-12 rounded-md shadow-sm"
+          >
+            <Titles size={"sm"}>
+              {isSubmitting ? t("Submitting") : t("SubmitRequest")}
+            </Titles>
+          </Buttons>
+        </div>
+      </form>
+      <AlertDialog
+        open={deleteRequestModal}
+        onOpenChange={setDeleteRequestModal}
+      >
+        <AlertDialogContent className="w-[90%] bg-white rounded-xl max-w-md mx-auto">
+          <AlertDialogHeader className="flex-grow flex justify-center items-center">
+            <AlertDialogTitle className="text-lg font-medium text-gray-700 text-center">
+              {t("AreYouSureYouWantToDeleteThisRequest")}
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex flex-row gap-4 mt-4 ">
+            <AlertDialogCancel className="w-full h-10 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 sm:w-auto border-0 mt-0">
+              <span className="font-medium">{t("Cancel")}</span>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                setDeleteRequestModal(false);
+
+                await handleDeleteForm(submissionId);
+              }}
+              className="w-full h-10 rounded-md bg-app-red text-white hover:bg-app-red/90 "
+            >
+              <span className="font-medium">{t("Yes")}</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

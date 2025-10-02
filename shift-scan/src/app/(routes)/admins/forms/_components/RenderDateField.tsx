@@ -47,9 +47,14 @@ export default function RenderDateField({
           value={value ? format(new Date(value), "yyyy-MM-dd") : ""}
           onChange={(e) => {
             if (e.target.value) {
-              // Convert the date string to ISO format
-              const selectedDate = new Date(e.target.value);
-              handleFieldChange(field.id, selectedDate.toISOString());
+              // Parse the date parts to create a UTC date at noon
+              const [year, month, day] = e.target.value.split("-").map(Number);
+              // Create date at noon UTC to avoid timezone shifts
+              const utcDate = new Date(
+                Date.UTC(year, month - 1, day, 12, 0, 0),
+              );
+              // Use the ISO string from our UTC date
+              handleFieldChange(field.id, utcDate.toISOString());
             } else {
               handleFieldChange(field.id, "");
             }
@@ -83,7 +88,18 @@ export default function RenderDateField({
               selected={value ? new Date(value) : undefined}
               onSelect={(date) => {
                 if (date) {
-                  handleFieldChange(field.id, date.toISOString());
+                  // Extract year, month, day from the local date
+                  const year = date.getFullYear();
+                  const month = date.getMonth(); // 0-indexed
+                  const day = date.getDate();
+
+                  // Create date at noon UTC to avoid timezone shifts
+                  const utcDate = new Date(
+                    Date.UTC(year, month, day, 12, 0, 0),
+                  );
+
+                  // Use the ISO string from our UTC date
+                  handleFieldChange(field.id, utcDate.toISOString());
                 }
               }}
             />

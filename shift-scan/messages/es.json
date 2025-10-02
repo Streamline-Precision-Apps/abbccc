@@ -1355,7 +1355,9 @@
     "RefuelLogs": "Registros de reabastecimiento de combustible",
     "CommentPlaceholder": "Escribe tus comentarios aquí ...",
     "DidYouRefuel?": "¿Reabasteciste?",
-    "TotalGallons": "Total de galones"
+    "TotalGallons": "Total de galones",
+    "NoRefuelLogsYet": "No se registraron registros de combustible",
+    "ClickToAdd": "Haga clic en el + para añadir uno!"
   },
   "MechanicWidget": {
     "DeleteProjectPrompt": "¿Está seguro de que desea eliminar este registro?",

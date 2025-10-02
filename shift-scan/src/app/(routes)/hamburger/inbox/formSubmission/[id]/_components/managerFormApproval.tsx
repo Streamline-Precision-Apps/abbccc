@@ -1,16 +1,11 @@
 "use client";
-import { FormInput } from "./formInput";
 import { FormFieldRenderer } from "@/app/(routes)/hamburger/inbox/_components/FormFieldRenderer";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { createFormApproval } from "@/actions/hamburgerActions";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Buttons } from "@/components/(reusable)/buttons";
-import { Grids } from "@/components/(reusable)/grids";
-import { Holds } from "@/components/(reusable)/holds";
-import { Labels } from "@/components/(reusable)/labels";
 import { TextAreas } from "@/components/(reusable)/textareas";
-import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { format } from "date-fns";
@@ -184,9 +179,9 @@ export default function ManagerFormApproval({
         </div>
       </TitleBoxes>
 
-      <div className="flex-grow flex flex-col overflow-y-auto no-scrollbar">
-        <Contents width={"section"}>
-          <div className="h-full overflow-y-auto no-scrollbar py-4 px-1">
+      <div className="bg-slate-50 flex-1 overflow-y-auto no-scrollbar flex flex-col justify-start items-center rounded-b-lg">
+        <Contents width={"section"} className="pb-24 w-full max-w-md mx-auto">
+          <div className="py-4 px-1 flex flex-col">
             {/* Form Details Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
               <div className="mb-3">
@@ -199,6 +194,8 @@ export default function ManagerFormApproval({
                 formValues={formValues}
                 setFormValues={() => {}}
                 readOnly={true}
+                disabled={true}
+                useNativeInput={true}
               />
 
               <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-200">
@@ -220,7 +217,7 @@ export default function ManagerFormApproval({
             </div>
 
             {/* Manager Approval Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-40">
               <div className="mb-3">
                 <h3 className="text-blue-600 font-semibold text-sm">
                   Manager Approval

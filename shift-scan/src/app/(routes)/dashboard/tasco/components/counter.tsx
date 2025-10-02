@@ -1,3 +1,4 @@
+import Spinner from "@/components/(animations)/spinner";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
@@ -11,14 +12,14 @@ type LoadCounterProps = {
   addAction?: () => void;
   removeAction?: () => void;
   allowRemove?: boolean;
+  isLoading: boolean;
 };
 
 export default function Counter({
   count,
   setCount,
-  addAction,
-  removeAction,
   allowRemove,
+  isLoading,
 }: LoadCounterProps) {
   const AddLoad = () => {
     const newCount = count + 1;
@@ -43,7 +44,7 @@ export default function Counter({
               count === 0 || count === undefined ? "darkGray" : "orange"
             }`}
             onClick={RemoveLoad}
-            disabled={count === 0 && !allowRemove}
+            disabled={(count === 0 && !allowRemove) || isLoading}
             className={`p-2  border-[3px] border-black justify-center items-center rounded-[10px]`}
             size={"60"}
             shadow={"none"}
@@ -55,7 +56,13 @@ export default function Counter({
           background={"white"}
           className="items-center justify-center border-2 border-black rounded-[10px] py-2"
         >
-          <Titles>{count}</Titles>
+          {isLoading && count === 0 ? (
+            <div className="h-full w-full p-1">
+              <Spinner size={24} />
+            </div>
+          ) : (
+            <Titles> {count}</Titles>
+          )}
         </Holds>
         <Holds>
           <Buttons
@@ -63,6 +70,7 @@ export default function Counter({
             background={"green"}
             size={"60"}
             shadow={"none"}
+            disabled={isLoading}
             className="p-2  border-[3px] border-black justify-center items-center rounded-[10px]"
           >
             <Images
