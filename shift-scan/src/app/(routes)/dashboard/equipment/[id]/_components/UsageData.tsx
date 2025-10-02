@@ -66,8 +66,10 @@ export default function UsageData({
                 const newTime = e.target.value;
                 const currentDate = new Date(formState.startTime || new Date());
                 const [newHours, newMinutes] = newTime.split(":").map(Number);
-                currentDate.setHours(newHours, newMinutes, 0, 0);
-                handleFieldChange("startTime", currentDate.toISOString());
+                
+                // Create a new date preserving the original date but with new time in local timezone
+                const updatedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), newHours, newMinutes, 0, 0);
+                handleFieldChange("startTime", updatedDate.toISOString());
               }}
             />
           </Holds>
@@ -77,7 +79,7 @@ export default function UsageData({
               type="time"
               value={
                 formState.endTime
-                  ? format(new Date(parseISO(formState.endTime)), "HH:mm")
+                  ? format(new Date(formState.endTime), "HH:mm")
                   : ""
               }
               className="w-full border-[3px] border-black p-1 rounded-[10px]"
@@ -85,8 +87,10 @@ export default function UsageData({
                 const newTime = e.target.value;
                 const currentDate = new Date(formState.endTime || new Date());
                 const [newHours, newMinutes] = newTime.split(":").map(Number);
-                currentDate.setHours(newHours, newMinutes, 0, 0);
-                handleFieldChange("endTime", currentDate.toISOString());
+                
+                // Create a new date preserving the original date but with new time in local timezone
+                const updatedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), newHours, newMinutes, 0, 0);
+                handleFieldChange("endTime", updatedDate.toISOString());
               }}
             />
           </Holds>

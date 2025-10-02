@@ -279,13 +279,12 @@ export default function AccountInformation({
           <EditableFields
             value={formState.emergencyContact}
             isChanged={false}
-            onChange={(e) => {
-              const formatted = formatPhoneNumberSetter(e.target.value);
+            onChange={(e) =>
               setFormState((s) => ({
                 ...s,
-                emergencyContact: formatted,
-              }));
-            }}
+                emergencyContact: e.target.value,
+              }))
+            }
           />
           <Labels size={"sm"}>{t("EmergencyContactNumber")}</Labels>
           <EditableFields
