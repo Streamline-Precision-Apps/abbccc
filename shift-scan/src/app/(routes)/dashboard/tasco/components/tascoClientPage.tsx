@@ -1,5 +1,4 @@
 "use client";
-
 import { Holds } from "@/components/(reusable)/holds";
 import { useEffect, useState, Suspense } from "react";
 import Counter from "./counter";

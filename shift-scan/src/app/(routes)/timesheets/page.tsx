@@ -9,7 +9,6 @@ import { Suspense } from "react";
 import { Holds } from "@/components/(reusable)/holds";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { Titles } from "@/components/(reusable)/titles";
-import { Images } from "lucide-react";
 import { Forms } from "@/components/(reusable)/forms";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -53,7 +52,7 @@ export default async function Timesheets() {
             className={`px-4 h-20 row-start-1 row-end-2 rounded-b-none`}
           >
             <Forms className=" h-full">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-full justify-center items-center">
                 <Label htmlFor="date" className="text-white">
                   {t("EnterDate")}
                 </Label>
@@ -61,7 +60,7 @@ export default async function Timesheets() {
                   id="date"
                   type="date"
                   name="date"
-                  className="text-center w-full bg-white"
+                  className="text-center w-full max-w-[220px] bg-white"
                 />
               </div>
             </Forms>

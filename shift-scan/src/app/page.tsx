@@ -55,9 +55,8 @@ export default async function Home() {
     <Bases>
       <Contents>
         <Grids rows={"8"} gap={"5"}>
-          <Suspense fallback={null}>
-            <ContinueTimesheetCheck id={incompleteTimesheet?.id} />
-          </Suspense>
+          <ContinueTimesheetCheck id={incompleteTimesheet?.id} />
+
           <Suspense
             fallback={
               <Holds

@@ -49,7 +49,7 @@ export default function ActiveTimesheetCheck({
 
     // Check immediately on mount
     checkActiveTimesheet();
-  }, [userId, router]);
+  }, [userId]);
 
   // This component doesn't render anything visible
   return null;

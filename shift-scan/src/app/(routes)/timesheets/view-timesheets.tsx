@@ -153,11 +153,11 @@ export default function ViewTimesheets({ user }: Props) {
       <Holds className="row-start-2 row-end-8 h-full bg-app-dark-blue rounded-[10px]">
         <Holds
           background={"darkBlue"}
-          className={`px-4 h-20 row-start-1 row-end-2 rounded-b-none`}
+          className={`px-4 w-full h-20 row-start-1 row-end-2 rounded-b-none`}
         >
           <Forms onSubmit={handleSubmit} className=" h-full w-full">
             <Inputs type="hidden" name="id" value={user} readOnly />
-            <div className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col gap-2 w-full justify-center items-center">
               <Label htmlFor="date" className="text-white">
                 {t("EnterDate")}
               </Label>
@@ -166,7 +166,7 @@ export default function ViewTimesheets({ user }: Props) {
                 type="date"
                 name="date"
                 defaultValue={currentDate}
-                className="text-center flex-col w-full bg-white w-[240px] items-center"
+                className="text-center flex-col w-full bg-white max-w-[220px] justify-center items-center"
                 onChange={(e) => fetchTimesheets(e.target.value)}
               />
             </div>
