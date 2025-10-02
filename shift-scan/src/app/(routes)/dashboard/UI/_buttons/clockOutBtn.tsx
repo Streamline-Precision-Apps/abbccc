@@ -12,6 +12,7 @@ import { Grids } from "@/components/(reusable)/grids";
 import { Images } from "@/components/(reusable)/images";
 import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
+import { useEffect } from "react";
 export default function ClockOutBtn({
   permission,
   View,
@@ -28,6 +29,26 @@ export default function ClockOutBtn({
   const t = useTranslations("Widgets");
   const modalState = useModalState();
   const router = useRouter();
+
+  // Disable background interactions when modal is open
+  useEffect(() => {
+    if (modalState.isModalOpen) {
+      // Add a style to disable pointer events on the body
+      document.body.style.pointerEvents = "none";
+      // Also add a class to make sure
+      document.body.classList.add("modal-open");
+    } else {
+      // Re-enable pointer events
+      document.body.style.pointerEvents = "auto";
+      document.body.classList.remove("modal-open");
+    }
+
+    // Cleanup
+    return () => {
+      document.body.style.pointerEvents = "auto";
+      document.body.classList.remove("modal-open");
+    };
+  }, [modalState.isModalOpen]);
 
   return (
     <>
@@ -223,19 +244,44 @@ export default function ClockOutBtn({
       )}
       <NModals
         isOpen={modalState.isModalOpen}
-        handleClose={modalState.handleCloseModal}
+        handleClose={() => {
+          modalState.handleCloseModal();
+        }}
         size="screen"
         background="takeABreak"
+        className="z-[9999] pointer-events-auto"
+        style={{ pointerEvents: "auto" }}
       >
-        <Holds background="white" className="h-full">
+        <Holds
+          background="white"
+          className="h-full relative z-[9999] pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            pointerEvents: "auto",
+            position: "relative",
+            zIndex: 10000,
+          }}
+        >
           <Holds className="h-full p-4">
             <Grids rows="7" gap="5">
               <Holds className="row-start-1 row-end-2 h-full w-full justify-center">
                 <Grids rows="2" cols="5" gap="3" className="h-full w-full">
-                  <Holds
-                    className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-                    onClick={() => {
+                  <button
+                    type="button"
+                    className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full flex justify-center items-center z-[10000] cursor-pointer relative bg-transparent border-none p-0 m-0"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
                       modalState.handleCloseModal();
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                     }}
                   >
                     <Images
@@ -243,7 +289,7 @@ export default function ClockOutBtn({
                       titleImgAlt="back"
                       position="left"
                     />
-                  </Holds>
+                  </button>
                   <Holds className="row-start-2 row-end-3 col-start-1 col-end-6 h-full w-full justify-center">
                     <Titles size="h1">{t("Whoops")}</Titles>
                   </Holds>
