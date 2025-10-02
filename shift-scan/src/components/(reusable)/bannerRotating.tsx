@@ -112,8 +112,8 @@ export default function BannerRotating() {
           const ts = savedTimeSheetData?.id;
           if (!ts) {
             console.warn("No active timesheet found for banner.");
-            return (timeSheetId = ts);
           }
+          return (timeSheetId = ts);
         }
 
         // Fetch banner data using the obtained timeSheetId
@@ -133,7 +133,7 @@ export default function BannerRotating() {
     };
 
     fetchData();
-  }, []);
+  }, [savedTimeSheetData]);
 
   return (
     <div className="w-[80%] h-full mx-auto">

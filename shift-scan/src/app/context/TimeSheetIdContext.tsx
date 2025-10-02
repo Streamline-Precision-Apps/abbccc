@@ -1,5 +1,5 @@
 "use client";
-import { setPrevTimeSheet } from "@/actions/cookieActions";
+import { getCookie, setPrevTimeSheet } from "@/actions/cookieActions";
 import React, {
   createContext,
   useState,
@@ -31,15 +31,28 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
 
   // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem("timesheetId");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed && typeof parsed.id === "number") {
-          setTimeSheetData(parsed);
-        }
-      } catch {}
-    }
+    const loadTimesheetData = async () => {
+      const stored = localStorage.getItem("timesheetId");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed.id === "number") {
+            setTimeSheetData(parsed);
+          }
+        } catch {}
+      } else if (!stored) {
+        try {
+          const timesheetId = await getCookie("timeSheetId");
+          if (timesheetId) {
+            setTimeSheetData({ id: parseInt(timesheetId, 10) });
+          }
+        } catch {}
+      } else {
+        refetchTimesheet();
+      }
+    };
+
+    loadTimesheetData();
   }, []);
 
   // Save to localStorage whenever timesheet changes
