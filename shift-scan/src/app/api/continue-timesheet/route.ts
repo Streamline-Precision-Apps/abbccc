@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // Authentication
     const session = await auth();
     if (!session) {
-      return NextResponse.redirect(new URL("/signin", request.url));
+      throw new Error("User not authenticated");
     }
 
     // Get timesheet ID from URL parameters
@@ -18,17 +18,11 @@ export async function GET(request: NextRequest) {
     const timesheetId = searchParams.get("id");
 
     if (!timesheetId) {
-      console.error("No timesheet ID provided");
-      return NextResponse.redirect(new URL("/", request.url));
+      throw new Error("No timesheet ID provided");
     }
 
     // Parse the ID to ensure it's a number
     const parsedId = parseInt(timesheetId, 10);
-    
-    if (isNaN(parsedId)) {
-      console.error("Invalid timesheet ID format");
-      return NextResponse.redirect(new URL("/", request.url));
-    }
 
     // Fetch the timesheet data
     const incompleteTimesheet = await prisma.timeSheet.findFirst({
@@ -82,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     // If timesheet doesn't exist or is completed, redirect to home
     if (!incompleteTimesheet) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.json({ success: false });
     }
 
     // Set cookies using server-side cookie manipulation
@@ -188,9 +182,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Redirect directly to dashboard - single redirect!
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.json({ success: true, id: incompleteTimesheet.id });
   } catch (error) {
     console.error("Failed to continue timesheet:", error);
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.json({ success: false });
   }
 }

@@ -70,8 +70,7 @@ export default function BannerRotating() {
   const t = useTranslations("BannerRotating");
   const [bannerData, setBannerData] = useState<BannerData | null>(null);
   const [newDate, setNewDate] = useState(new Date());
-  const { savedTimeSheetData, setTimeSheetData, refetchTimesheet } =
-    useTimeSheetData();
+  const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
 
   const settings = {
     className: "slick-track",
@@ -108,6 +107,7 @@ export default function BannerRotating() {
       try {
         let timeSheetId = savedTimeSheetData?.id;
         if (!timeSheetId) {
+          console.log("No active timesheet in context, refetching...");
           await refetchTimesheet();
           const ts = savedTimeSheetData?.id;
           if (!ts) {
