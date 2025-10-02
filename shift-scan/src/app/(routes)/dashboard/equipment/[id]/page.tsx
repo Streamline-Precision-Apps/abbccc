@@ -121,8 +121,8 @@ export default function CombinedForm({
         const apiData = (await response.json()) as EmployeeEquipmentLogData;
         const formState = transformApiToFormState(apiData);
 
-        // If the log isn't finished, set the end time to now when opening the form
-        if (!apiData.isFinished) {
+        // If the log isn't finished AND there's no end time, set the end time to now when opening the form
+        if (!apiData.isFinished && !apiData.endTime) {
           formState.endTime = new Date().toISOString();
         }
 
