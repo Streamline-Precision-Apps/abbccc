@@ -40,7 +40,16 @@ export async function GET() {
       },
     });
 
-    const count = await prisma.notification.count();
+    const count = await prisma.notification.count({
+      where: {
+        Response: {
+          isNot: null,
+        },
+        topic: {
+          in: subscribedNotifications.map((notification) => notification.topic),
+        },
+      },
+    });
 
     const resolved = await prisma.notification.findMany({
       where: {

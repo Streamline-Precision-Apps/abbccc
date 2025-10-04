@@ -92,7 +92,7 @@ export default function NotificationActionsList({
           </div>
         </div>
         {/* Show responses */}
-        <div className="flex flex-col px-3 h-full overflow-auto no-scrollbar bg-neutral-100  ">
+        <div className="flex flex-col px-3 h-full overflow-auto  bg-neutral-100  ">
           {(() => {
             // Filter and sort notifications
             const filtered = (resolved || [])
@@ -145,6 +145,7 @@ export default function NotificationActionsList({
                     <div className="text-sm font-semibold text-gray-500 ">
                       Unread Notifications
                     </div>
+
                     <Button
                       variant={"ghost"}
                       size="sm"
@@ -519,7 +520,7 @@ export default function NotificationActionsList({
                               <div className="flex flex-row items-start ml-2">
                                 {!isRead ? (
                                   <Tooltip>
-                                    <TooltipTrigger>
+                                    <TooltipTrigger asChild>
                                       <Button
                                         className="w-4 h-4"
                                         size="icon"

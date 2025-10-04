@@ -16,12 +16,14 @@ import {
 import { MaterialType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 
+import { X, Plus } from "lucide-react";
+
 interface EditTascoLogsProps {
   logs: TascoLog[];
   onLogChange: (
     idx: number,
     field: keyof TascoLog,
-    value: string | number | null | { id: string; name: string }
+    value: string | number | null | { id: string; name: string },
   ) => void;
   handleNestedLogChange: <T extends TruckingNestedType>(
     logType: keyof TimesheetData,
@@ -29,7 +31,7 @@ interface EditTascoLogsProps {
     nestedType: T,
     nestedIndex: number,
     field: keyof TruckingNestedTypeMap[T],
-    value: string | number | null
+    value: string | number | null,
   ) => void;
   originalLogs?: TascoLog[];
   onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
@@ -55,25 +57,21 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
 }) => {
   // Helper function to check completeness of a Tasco RefuelLog
   const isTascoRefuelLogComplete = (
-    ref: TimesheetData["TascoLogs"][number]["RefuelLogs"][number]
+    ref: TimesheetData["TascoLogs"][number]["RefuelLogs"][number],
   ) => !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
 
   return (
-    <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
-      <div className="mb-4">
-        <h3 className="font-semibold text-xl mb-1">Tasco Logs</h3>
+    <div className="col-span-2 mt-4 ">
+      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
+        Tasco Summary
+      </h3>
 
-        <div className="col-span-1 max-w-[350px] flex flex-row flex-wrap items-end">
-          <p className="text-xs break-words text-gray-600">
-            Fill out the additional details for this timesheet to report more
-            accurate Tasco logs.
-            <br />
-          </p>
-        </div>
-      </div>
       {logs.map((log, idx) => (
-        <div key={log.id} className="flex flex-col gap-6 border-b relative">
-          <div className="flex flex-col gap-4 pb-4 border-b">
+        <div
+          key={log.id}
+          className="flex flex-col gap-6 relative  p-2  mb-2 border-b "
+        >
+          <div className="flex flex-col gap-4 pb-4 border bg-slate-50 rounded p-2">
             {/* Equipment Combobox */}
             <div className="flex flex-col gap-4">
               <div className="flex flex-row gap-4">
@@ -86,18 +84,18 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                     value={log.Equipment?.id || ""}
                     onValueChange={(val) => {
                       const selected = equipmentOptions.find(
-                        (eq) => eq.value === val
+                        (eq) => eq.value === val,
                       );
                       onLogChange(
                         idx,
                         "Equipment",
                         selected
                           ? { id: selected.value, name: selected.label }
-                          : null
+                          : null,
                       );
                     }}
                   >
-                    <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                    <SelectTrigger className="bg-white w-[350px] text-xs">
                       <SelectValue placeholder="Select Equipment" />
                     </SelectTrigger>
                     <SelectContent>
@@ -139,7 +137,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                     value={log.shiftType || ""}
                     onValueChange={(val) => onLogChange(idx, "shiftType", val)}
                   >
-                    <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                    <SelectTrigger className="bg-white w-[350px] text-xs">
                       <SelectValue placeholder="Select Shift Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -175,7 +173,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                     value={log.laborType || ""}
                     onValueChange={(val) => onLogChange(idx, "laborType", val)}
                   >
-                    <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                    <SelectTrigger className="bg-white w-[350px] text-xs">
                       <SelectValue placeholder="Select Labor Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -211,12 +209,12 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   value={log.materialType || ""}
                   onValueChange={(val) => onLogChange(idx, "materialType", val)}
                 >
-                  <SelectTrigger className="border rounded px-2 py-1 w-full text-xs">
+                  <SelectTrigger className="bg-white w-[350px] text-xs">
                     <SelectValue placeholder="Select Material" />
                   </SelectTrigger>
                   <SelectContent>
-                    {materialTypes.map((type) => (
-                      <SelectItem key={type.id} value={type.name}>
+                    {materialTypes.map((type, index) => (
+                      <SelectItem key={index} value={type.name}>
                         {type.name}
                       </SelectItem>
                     ))}
@@ -248,7 +246,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   onChange={(e) =>
                     onLogChange(idx, "LoadQuantity", Number(e.target.value))
                   }
-                  className="border rounded px-2 py-1 w-full text-xs"
+                  className="bg-white border rounded px-2 py-1 w-full text-xs"
                 />
               </div>
               {originalLogs[idx] &&
@@ -268,7 +266,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
             </div>
           </div>
           {/* Refuel Logs Section */}
-          <div className="mb-2">
+          <div className="mb-2 border-t pt-4">
             <div className="flex flex-row justify-between ">
               <p className="text-base font-semibold">Refuel Logs</p>
               <Button
@@ -279,14 +277,14 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   log.RefuelLogs &&
                   log.RefuelLogs.length > 0 &&
                   !isTascoRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
                 }
                 className={
                   log.RefuelLogs &&
                   log.RefuelLogs.length > 0 &&
                   !isTascoRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
                     ? "opacity-50 cursor-not-allowed"
                     : ""
@@ -295,13 +293,13 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   log.RefuelLogs &&
                   log.RefuelLogs.length > 0 &&
                   !isTascoRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
                     ? "Please complete the previous Refuel Log entry before adding another."
                     : ""
                 }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-8 w-8" color="white" />
               </Button>
             </div>
             {log.RefuelLogs && log.RefuelLogs.length > 0
@@ -316,8 +314,10 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                     onUndoLogField;
                   return (
                     <div
-                      key={ref.id || refIdx}
-                      className="flex gap-2 my-2 items-end border p-4 rounded relative"
+                      key={
+                        ref.id ? ref.id.toString() : `refuel-${idx}-${refIdx}`
+                      }
+                      className="bg-slate-50 flex gap-2 my-2 items-end border p-2 rounded relative"
                     >
                       <div>
                         <label className="block text-xs ">
@@ -336,10 +336,10 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                               "RefuelLogs", // nestedType
                               refIdx, // nestedIndex
                               "gallonsRefueled", // field
-                              Number(e.target.value)
+                              Number(e.target.value),
                             )
                           }
-                          className="w-[350px] text-xs"
+                          className="bg-white w-[350px] text-xs"
                         />
                       </div>
                       {showUndo && (
@@ -357,15 +357,11 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                       <Button
                         type="button"
                         size="icon"
-                        variant="destructive"
+                        variant="ghost"
                         onClick={() => deleteTascoRefuelLog(idx, refIdx)}
-                        className="absolute top-2 right-2"
+                        className="absolute top-0 right-0"
                       >
-                        <img
-                          src="/trash.svg"
-                          alt="remove"
-                          className="w-4 h-4"
-                        />
+                        <X className="w-4 h-4" color="red" />
                       </Button>
                     </div>
                   );

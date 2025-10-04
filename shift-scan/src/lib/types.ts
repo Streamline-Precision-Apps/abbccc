@@ -295,7 +295,6 @@ export type TruckingMileageData = {
 }[];
 
 export type MaterialType = {
-  id: number;
   name: string;
 };
 

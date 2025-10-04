@@ -1,5 +1,6 @@
-import { Input } from "@/components/ui/input";
+import React from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { StateOptions } from "@/data/stateValues";
 import {
   Select,
@@ -8,8 +9,9 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
 import { SingleCombobox } from "@/components/ui/single-combobox";
+import { Label } from "@/components/ui/label";
+import { X, Plus } from "lucide-react";
 
 export type TruckingMaterialDraft = {
   location: string;
@@ -54,78 +56,122 @@ export function TruckingSection({
   equipmentOptions,
   jobsiteOptions,
 }: Props) {
-  // ...existing code for rendering trucking logs UI, using the props above...
-  // Copy the JSX and logic for the Trucking section from the main modal, replacing state/handlers with props
+  // Helper functions to check completeness of each nested log type
+  const isEquipmentHauledComplete = (
+    eq: TruckingLogDraft["equipmentHauled"][0],
+  ) => !!eq.equipment.id;
+
+  const isMaterialComplete = (mat: TruckingMaterialDraft) =>
+    !!(mat.location && mat.name && mat.quantity && mat.unit && mat.loadType);
+
+  const isRefuelLogComplete = (ref: TruckingLogDraft["refuelLogs"][0]) =>
+    !!(ref.gallonsRefueled && ref.milesAtFueling);
+
+  const isStateMileageComplete = (sm: TruckingLogDraft["stateMileages"][0]) =>
+    !!(sm.state && sm.stateLineMileage);
+
   return (
-    <div className="col-span-2 border-t-2 border-black pt-4 pb-2">
-      <div className="mb-4">
-        <h3 className="font-semibold text-xl mb-1">
-          Additional Trucking Details
-        </h3>
-        <p className="text-sm text-gray-600">
-          Fill out the additional details for this timesheet to report more
-          accurate trucking logs.
-        </p>
-      </div>
+    <div className="col-span-2 mt-4">
+      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
+        Trucking Summary
+      </h3>
       {truckingLogs.map((log, idx) => (
-        <div key={idx} className="flex flex-col gap-6 mb-4 border-b pb-4">
-          <div className="flex flex-col gap-4 py-2">
-            <div className="w-[350px]">
-              <SingleCombobox
-                options={truckOptions}
-                value={log.truckNumber}
-                onChange={(val, option) => {
-                  const updated = [...truckingLogs];
-                  updated[idx].truckNumber = val;
-                  setTruckingLogs(updated);
-                }}
-                placeholder={`Select Truck*`}
-                filterKeys={["label", "value"]}
-              />
+        <div key={idx} className="rounded p-2 mb-4">
+          <div className="bg-slate-50 flex flex-col gap-3 mb-2 border rounded-sm p-2">
+            <div className="flex flex-row items-end gap-x-2">
+              <div className="min-w-[350px]">
+                <label className="block text-xs">Truck</label>
+                <SingleCombobox
+                  font={"font-normal"}
+                  options={truckOptions}
+                  value={log.truckNumber}
+                  onChange={(val) => {
+                    const updated = [...truckingLogs];
+                    updated[idx].truckNumber = val;
+                    setTruckingLogs(updated);
+                  }}
+                  placeholder="Select Truck*"
+                  filterKeys={["label", "value"]}
+                />
+              </div>
             </div>
-            <div className="w-[350px]">
-              <SingleCombobox
-                options={trailerOptions}
-                value={log.trailerNumber || ""}
-                onChange={(val, option) => {
-                  const updated = [...truckingLogs];
-                  updated[idx].trailerNumber = val;
-                  setTruckingLogs(updated);
-                }}
-                placeholder={`Select Trailer`}
-                filterKeys={["label", "value"]}
-              />
+            <div className="flex flex-row items-end gap-x-2">
+              <div className="flex flex-row items-end gap-x-2">
+                <div className="flex-1">
+                  <label className="block text-xs">Starting Mileage</label>
+                  <Input
+                    type="number"
+                    value={log.startingMileage || ""}
+                    onChange={(e) => {
+                      const updated = [...truckingLogs];
+                      updated[idx].startingMileage = e.target.value;
+                      setTruckingLogs(updated);
+                    }}
+                    className="bg-white w-[160px] text-xs"
+                    onBlur={(e) => {
+                      let value = e.target.value;
+                      if (/^0+\d+/.test(value)) {
+                        value = String(Number(value));
+                        const updated = [...truckingLogs];
+                        updated[idx].startingMileage = value;
+                        setTruckingLogs(updated);
+                        e.target.value = value;
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-row items-end gap-x-2">
+                <div className="flex-1">
+                  <label className="block text-xs">Ending Mileage</label>
+                  <Input
+                    type="number"
+                    value={log.endingMileage || ""}
+                    onChange={(e) => {
+                      const updated = [...truckingLogs];
+                      updated[idx].endingMileage = e.target.value;
+                      setTruckingLogs(updated);
+                    }}
+                    className="bg-white text-xs w-[160px]"
+                    onBlur={(e) => {
+                      let value = e.target.value;
+                      if (/^0+\d+/.test(value)) {
+                        value = String(Number(value));
+                        const updated = [...truckingLogs];
+                        updated[idx].endingMileage = value;
+                        setTruckingLogs(updated);
+                        e.target.value = value;
+                      }
+                      if (Number(value) < Number(log.startingMileage)) {
+                        e.target.setCustomValidity(
+                          "Ending mileage cannot be less than starting mileage",
+                        );
+                      } else {
+                        e.target.setCustomValidity("");
+                      }
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <Input
-              type="number"
-              placeholder="Beginning Mileage*"
-              value={log.startingMileage}
-              onChange={(e) => {
-                const updated = [...truckingLogs];
-                updated[idx].startingMileage = e.target.value;
-                setTruckingLogs(updated);
-              }}
-              className="w-[300px]"
-            />
-            <Input
-              type="number"
-              placeholder="End Mileage*"
-              value={log.endingMileage}
-              onChange={(e) => {
-                const updated = [...truckingLogs];
-                updated[idx].endingMileage = e.target.value;
-                setTruckingLogs(updated);
-              }}
-              className="w-[300px]"
-            />
           </div>
-          {/* Equipment Hauled */}
-          <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <label className="block font-semibold text-md">
-                Equipment Hauled
-              </label>
-              <div className="flex justify-end">
+          {Number(log.startingMileage) > Number(log.endingMileage) && (
+            <p className="text-xs text-red-500 mt-1">
+              Starting Mileage cannot be greater than Ending Mileage.
+            </p>
+          )}
+          {/* Equipment Hauled Header and Add Button */}
+          <div className="flex flex-row justify-between items-center my-2">
+            <div className="flex-1">
+              <p className="block font-semibold text-base">Equipment Hauled</p>
+              <p className="text-xs text-gray-500 pt-1">
+                This section logs the equipment hauled and the destination it
+                was delivered to.
+              </p>
+            </div>
+            <div className="flex justify-end">
+              {log.equipmentHauled.length === 0 && (
                 <Button
                   size="icon"
                   type="button"
@@ -140,102 +186,209 @@ export function TruckingSection({
                     });
                     setTruckingLogs(updated);
                   }}
+                  disabled={
+                    log.equipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.equipmentHauled[log.equipmentHauled.length - 1],
+                    )
+                  }
+                  className={
+                    log.equipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.equipmentHauled[log.equipmentHauled.length - 1],
+                    )
+                      ? "opacity-50"
+                      : ""
+                  }
+                  title={
+                    log.equipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.equipmentHauled[log.equipmentHauled.length - 1],
+                    )
+                      ? "Please complete the previous Equipment Hauled entry before adding another."
+                      : ""
+                  }
                 >
                   <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
                 </Button>
-              </div>
+              )}
             </div>
+          </div>
+          {/* Equipment Hauled Entries */}
+          <div className="border-b py-2">
             {log.equipmentHauled.map((eq, eqIdx) => (
               <div
                 key={eqIdx}
-                className="flex flex-col gap-4 mb-2 rounded p-4 border relative"
+                className="bg-slate-50 flex flex-col gap-4 mb-3 border p-2 rounded relative"
               >
-                <div className="w-[350px]">
-                  <SingleCombobox
-                    options={equipmentOptions}
-                    value={eq.equipment.id}
-                    onChange={(val, option) => {
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="min-w-[350px] w-fit items-end">
+                    <Label className="block text-xs">Equipment ID</Label>
+                    <SingleCombobox
+                      font={"font-normal"}
+                      options={equipmentOptions}
+                      value={eq.equipment.id}
+                      onChange={(val, option) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].equipmentHauled[eqIdx].equipment = option
+                          ? { id: option.value, name: option.label }
+                          : { id: "", name: "" };
+                        setTruckingLogs(updated);
+                      }}
+                      placeholder="Select equipment"
+                      filterKeys={["label", "value"]}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="flex flex-col">
+                    <Label className="block text-xs">Origin</Label>
+                    <Input
+                      type="text"
+                      value={eq.source || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].equipmentHauled[eqIdx].source =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[350px] text-xs"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          const updated = [...truckingLogs];
+                          updated[idx].equipmentHauled[eqIdx].source = value;
+                          setTruckingLogs(updated);
+                          e.target.value = value;
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="flex flex-col">
+                    <Label className="block text-xs">Destination</Label>
+                    <Input
+                      type="text"
+                      value={eq.destination || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].equipmentHauled[eqIdx].destination =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[350px] text-xs"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          const updated = [...truckingLogs];
+                          updated[idx].equipmentHauled[eqIdx].destination =
+                            value;
+                          setTruckingLogs(updated);
+                          e.target.value = value;
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="flex flex-col">
+                    <Label className="block text-xs">OW Starting Mileage</Label>
+                    <Input
+                      type="number"
+                      value={eq.startMileage || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].equipmentHauled[eqIdx].startMileage =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[200px] text-xs"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          const updated = [...truckingLogs];
+                          updated[idx].equipmentHauled[eqIdx].startMileage =
+                            value;
+                          setTruckingLogs(updated);
+                          e.target.value = value;
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-end gap-x-2">
+                  <div className="flex flex-col">
+                    <Label className="block text-xs">OW Ending Mileage</Label>
+                    <Input
+                      type="number"
+                      value={eq.endMileage || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].equipmentHauled[eqIdx].endMileage =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white text-xs w-[200px]"
+                      onBlur={(e) => {
+                        let value = e.target.value;
+                        if (/^0+\d+/.test(value)) {
+                          value = String(Number(value));
+                          const updated = [...truckingLogs];
+                          updated[idx].equipmentHauled[eqIdx].endMileage =
+                            value;
+                          setTruckingLogs(updated);
+                          e.target.value = value;
+                        }
+                        if (Number(value) < Number(eq.startMileage)) {
+                          e.target.setCustomValidity(
+                            "Ending mileage cannot be less than starting mileage",
+                          );
+                        } else {
+                          e.target.setCustomValidity("");
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-end absolute right-0 top-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
                       const updated = [...truckingLogs];
-                      updated[idx].equipmentHauled[eqIdx].equipment = option
-                        ? { id: option.value, name: option.label }
-                        : { id: "", name: "" };
+                      updated[idx].equipmentHauled = updated[
+                        idx
+                      ].equipmentHauled.filter((_, i) => i !== eqIdx);
                       setTruckingLogs(updated);
                     }}
-                    placeholder="Select equipment"
-                    filterKeys={["label", "value"]}
-                  />
+                  >
+                    <X className="h-4 w-4" color="red" />
+                  </Button>
                 </div>
-                <Input
-                  type="text"
-                  placeholder="Source Location"
-                  value={eq.source || ""}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].source = e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-
-                <Input
-                  type="text"
-                  placeholder="Destination Location"
-                  value={eq.destination || ""}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].destination =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-
-                <Input
-                  type="number"
-                  placeholder="Starting Overweight Mileage*"
-                  value={eq.startMileage}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].startMileage =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-                <Input
-                  type="number"
-                  placeholder="Ending Overweight Mileage*"
-                  value={eq.endMileage}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled[eqIdx].endMileage =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    const updated = [...truckingLogs];
-                    updated[idx].equipmentHauled = updated[
-                      idx
-                    ].equipmentHauled.filter((_, i) => i !== eqIdx);
-                    setTruckingLogs(updated);
-                  }}
-                >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                </Button>
               </div>
             ))}
           </div>
+
           {/* Materials */}
-          <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <label className="block font-semibold text-md ">Materials</label>
+          <div className="flex flex-row justify-between items-center my-2">
+            <div className="flex-1">
+              <p className="block font-semibold text-sm">Materials Hauled</p>
+              <p className="text-xs text-gray-500 pt-1">
+                This section logs the materials hauled and where they were taken
+                from.
+              </p>
+            </div>
+            <div className="flex justify-end">
               <Button
                 size="icon"
                 type="button"
@@ -250,116 +403,176 @@ export function TruckingSection({
                   });
                   setTruckingLogs(updated);
                 }}
+                disabled={
+                  log.materials.length > 0 &&
+                  !isMaterialComplete(log.materials[log.materials.length - 1])
+                }
+                className={
+                  log.materials.length > 0 &&
+                  !isMaterialComplete(log.materials[log.materials.length - 1])
+                    ? "opacity-50 "
+                    : ""
+                }
+                title={
+                  log.materials.length > 0 &&
+                  !isMaterialComplete(log.materials[log.materials.length - 1])
+                    ? "Please complete the previous Material entry before adding another."
+                    : ""
+                }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-4 w-4" color="white" />
               </Button>
             </div>
-            {log.materials.map((mat, matIdx) => (
-              <div key={matIdx} className="mt-2 rounded p-4 border relative">
-                <div className="flex flex-col gap-4 mb-2">
-                  <Input
-                    type="text"
-                    placeholder="Material Name"
-                    value={mat.name}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].name = e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Source of Material"
-                    value={mat.location}
-                    onChange={(e) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].location = e.target.value;
-                      setTruckingLogs(updated);
-                    }}
-                    className="w-[350px]"
-                  />
+          </div>
 
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      type="number"
-                      placeholder="Quantity"
-                      value={mat.quantity}
-                      onChange={(e) => {
+          {/* Materials Hauled Entries */}
+          <div className="border-b py-2">
+            {log.materials.map((mat, matIdx) => (
+              <div
+                key={matIdx}
+                className="bg-slate-50 mt-2 border p-2 rounded relative"
+              >
+                <div className="flex flex-col gap-4 mb-2">
+                  <div className="flex flex-row gap-1 items-end">
+                    <div className="flex flex-col">
+                      <Label className="text-xs">Material Name</Label>
+                      <Input
+                        type="text"
+                        placeholder="Enter Name"
+                        value={mat.name}
+                        onChange={(e) => {
+                          const updated = [...truckingLogs];
+                          updated[idx].materials[matIdx].name = e.target.value;
+                          setTruckingLogs(updated);
+                        }}
+                        className="bg-white w-[350px] text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row gap-1 items-end">
+                    <div className="flex flex-col">
+                      <Label className="text-xs">Source of Material</Label>
+                      <Input
+                        type="text"
+                        placeholder="Enter name of location"
+                        value={mat.location}
+                        onChange={(e) => {
+                          const updated = [...truckingLogs];
+                          updated[idx].materials[matIdx].location =
+                            e.target.value;
+                          setTruckingLogs(updated);
+                        }}
+                        className="bg-white w-[350px] text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-end right-2 top-2 absolute">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
                         const updated = [...truckingLogs];
-                        updated[idx].materials[matIdx].quantity =
-                          e.target.value;
-                        setTruckingLogs(updated);
-                      }}
-                      className="w-[120px]"
-                    />
-                    <Select
-                      value={mat.unit}
-                      onValueChange={(val) => {
-                        const updated = [...truckingLogs];
-                        updated[idx].materials[matIdx].unit = val as
-                          | "TONS"
-                          | "YARDS"
-                          | "";
+                        updated[idx].materials = updated[idx].materials.filter(
+                          (_, i) => i !== matIdx,
+                        );
                         setTruckingLogs(updated);
                       }}
                     >
-                      <SelectTrigger className="w-[130px]">
-                        <SelectValue placeholder="Unit" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="TONS">Tons</SelectItem>
-                        <SelectItem value="YARDS">Yards</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <X className="w-4 h-4" color="red" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4 mb-2">
+                  <div className="flex flex-row max-w-[600px] gap-2 items-end">
+                    <div className="flex flex-row gap-1 items-end">
+                      <div className="flex flex-col">
+                        <Label className="text-xs">Quantity</Label>
+                        <Input
+                          type="number"
+                          placeholder="Enter Quantity"
+                          value={mat.quantity || ""}
+                          onChange={(e) => {
+                            const updated = [...truckingLogs];
+                            updated[idx].materials[matIdx].quantity =
+                              e.target.value;
+                            setTruckingLogs(updated);
+                          }}
+                          className="bg-white w-[150px] text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row gap-1 items-end">
+                      <div>
+                        <Label className="text-xs">Unit</Label>
+                        <Select
+                          value={mat.unit}
+                          onValueChange={(val) => {
+                            const updated = [...truckingLogs];
+                            updated[idx].materials[matIdx].unit = val as
+                              | "TONS"
+                              | "YARDS"
+                              | "";
+                            setTruckingLogs(updated);
+                          }}
+                        >
+                          <SelectTrigger className="bg-white w-[150px] text-xs">
+                            <SelectValue placeholder="Enter Unit Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="TONS">TONS</SelectItem>
+                            <SelectItem value="YARDS">YARDS</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
                   </div>
 
-                  <Select
-                    value={mat.loadType}
-                    onValueChange={(val) => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials[matIdx].loadType = val as
-                        | "SCREENED"
-                        | "UNSCREENED"
-                        | "";
-                      setTruckingLogs(updated);
-                    }}
-                  >
-                    <SelectTrigger className="w-[300px]">
-                      <SelectValue placeholder="Load Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SCREENED">Screened</SelectItem>
-                      <SelectItem value="UNSCREENED">Unscreened</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    className="absolute top-2 right-2"
-                    onClick={() => {
-                      const updated = [...truckingLogs];
-                      updated[idx].materials = updated[idx].materials.filter(
-                        (_, i) => i !== matIdx,
-                      );
-                      setTruckingLogs(updated);
-                    }}
-                  >
-                    <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                  </Button>
+                  <div className="flex flex-row gap-1 items-end">
+                    <div>
+                      <Label className="text-xs">Load Type</Label>
+                      <Select
+                        value={mat.loadType}
+                        onValueChange={(val) => {
+                          const updated = [...truckingLogs];
+                          updated[idx].materials[matIdx].loadType = val as
+                            | "SCREENED"
+                            | "UNSCREENED"
+                            | "";
+                          setTruckingLogs(updated);
+                        }}
+                      >
+                        <SelectTrigger className="bg-white w-[350px] text-xs">
+                          <SelectValue placeholder="Load Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="SCREENED">Screened</SelectItem>
+                          <SelectItem value="UNSCREENED">Unscreened</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
           {/* Refuel Logs */}
-          <div className="py-4 border-b mb-2">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <label className="block font-semibold text-md">Refuel Logs</label>
+          <div className="flex flex-row justify-between items-center my-2">
+            <div className="flex-1">
+              <p className="block font-semibold text-sm">Refuel Logs</p>
+              <p className="text-xs text-gray-500 pt-1">
+                This section logs the refueling events and the associated
+                mileage.
+              </p>
+            </div>
+            <div className="flex justify-end">
               <Button
-                type="button"
                 size="icon"
+                type="button"
                 onClick={() => {
                   const updated = [...truckingLogs];
                   updated[idx].refuelLogs.push({
@@ -368,66 +581,110 @@ export function TruckingSection({
                   });
                   setTruckingLogs(updated);
                 }}
+                disabled={
+                  log.refuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.refuelLogs[log.refuelLogs.length - 1],
+                  )
+                }
+                className={
+                  log.refuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.refuelLogs[log.refuelLogs.length - 1],
+                  )
+                    ? "opacity-50"
+                    : ""
+                }
+                title={
+                  log.refuelLogs.length > 0 &&
+                  !isRefuelLogComplete(
+                    log.refuelLogs[log.refuelLogs.length - 1],
+                  )
+                    ? "Please complete the previous Refuel Log entry before adding another."
+                    : ""
+                }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-4 w-4" color="white" />
               </Button>
             </div>
+          </div>
+
+          {/* Refuel Log Entries */}
+          <div className="border-b py-2">
             {log.refuelLogs.map((ref, refIdx) => (
               <div
                 key={refIdx}
-                className="flex flex-col gap-4 mb-2 border p-4 relative"
+                className="bg-slate-50 flex flex-col gap-4 mb-2 border p-2 rounded relative"
               >
-                <Input
-                  type="number"
-                  placeholder="Total Gallons"
-                  value={ref.gallonsRefueled}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].refuelLogs[refIdx].gallonsRefueled =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-                <Input
-                  type="number"
-                  placeholder="Current Mileage"
-                  value={ref.milesAtFueling}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].refuelLogs[refIdx].milesAtFueling =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    const updated = [...truckingLogs];
-                    updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
-                      (_, i) => i !== refIdx,
-                    );
-                    setTruckingLogs(updated);
-                  }}
-                >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                </Button>
+                <div className="flex flex-row gap-1 items-end">
+                  <div className="flex flex-col">
+                    <Label className="text-xs">Total Gallons Refueled</Label>
+                    <Input
+                      type="number"
+                      placeholder="Total Gallons"
+                      value={ref.gallonsRefueled || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].refuelLogs[refIdx].gallonsRefueled =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[350px] text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-1 items-end">
+                  <div className="flex flex-col">
+                    <Label className="text-xs">Mileage at Refueling</Label>
+                    <Input
+                      type="number"
+                      placeholder="Current Mileage"
+                      value={ref.milesAtFueling || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].refuelLogs[refIdx].milesAtFueling =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[350px] text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-end absolute right-0 top-0">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const updated = [...truckingLogs];
+                      updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
+                        (_, i) => i !== refIdx,
+                      );
+                      setTruckingLogs(updated);
+                    }}
+                  >
+                    <X className="h-4 w-4" color="red" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
+
           {/* State Line Mileage */}
-          <div className="py-4  mb-2">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <label className="block font-semibold text-md">
-                State Line Mileage
-              </label>
+          <div className="flex flex-row justify-between items-center my-2">
+            <div className="flex-1">
+              <p className="block font-semibold text-sm">State Line Mileage</p>
+              <p className="text-xs text-gray-500 pt-1">
+                This section logs the mileage at state borders for IFTA
+                reporting.
+              </p>
+            </div>
+            <div className="flex justify-end">
               <Button
-                type="button"
                 size="icon"
+                type="button"
                 onClick={() => {
                   const updated = [...truckingLogs];
                   updated[idx].stateMileages.push({
@@ -436,50 +693,91 @@ export function TruckingSection({
                   });
                   setTruckingLogs(updated);
                 }}
-                className="ml-2"
+                disabled={
+                  log.stateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.stateMileages[log.stateMileages.length - 1],
+                  )
+                }
+                className={
+                  log.stateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.stateMileages[log.stateMileages.length - 1],
+                  )
+                    ? "opacity-50"
+                    : ""
+                }
+                title={
+                  log.stateMileages.length > 0 &&
+                  !isStateMileageComplete(
+                    log.stateMileages[log.stateMileages.length - 1],
+                  )
+                    ? "Please complete the previous State Mileage entry before adding another."
+                    : ""
+                }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-8 w-8" color="white" />
               </Button>
             </div>
+          </div>
+
+          {/* State Line Mileage Entries */}
+          <div className="pt-2">
             {log.stateMileages.map((sm, smIdx) => (
               <div
                 key={smIdx}
-                className="flex flex-col gap-4 mb-2 relative border p-4 rounded"
+                className="bg-slate-50 flex flex-col gap-4 mb-2 border p-2 rounded relative"
               >
-                <Select
-                  value={sm.state}
-                  onValueChange={(val) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].stateMileages[smIdx].state = val;
-                    setTruckingLogs(updated);
-                  }}
-                >
-                  <SelectTrigger className="w-[350px]">
-                    <SelectValue placeholder="State" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {StateOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="number"
-                  placeholder="State Line Mileage"
-                  value={sm.stateLineMileage}
-                  onChange={(e) => {
-                    const updated = [...truckingLogs];
-                    updated[idx].stateMileages[smIdx].stateLineMileage =
-                      e.target.value;
-                    setTruckingLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
+                <div className="flex flex-row gap-1 items-end">
+                  <div className="flex flex-col">
+                    <Label htmlFor="state" className="text-xs">
+                      State
+                    </Label>
+                    <Select
+                      name="state"
+                      value={sm.state}
+                      onValueChange={(val) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].stateMileages[smIdx].state = val;
+                        setTruckingLogs(updated);
+                      }}
+                    >
+                      <SelectTrigger className="bg-white w-[350px] text-xs">
+                        <SelectValue placeholder="State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {StateOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-1 items-end">
+                  <div className="flex flex-col">
+                    <Label htmlFor="stateLineMileage" className="text-xs">
+                      State Line Mileage
+                    </Label>
+                    <Input
+                      name="stateLineMileage"
+                      type="number"
+                      placeholder="State Line Mileage"
+                      value={sm.stateLineMileage || ""}
+                      onChange={(e) => {
+                        const updated = [...truckingLogs];
+                        updated[idx].stateMileages[smIdx].stateLineMileage =
+                          e.target.value;
+                        setTruckingLogs(updated);
+                      }}
+                      className="bg-white w-[350px] text-xs"
+                    />
+                  </div>
+                </div>
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="ghost"
                   size="icon"
                   onClick={() => {
                     const updated = [...truckingLogs];
@@ -488,9 +786,9 @@ export function TruckingSection({
                     ].stateMileages.filter((_, i) => i !== smIdx);
                     setTruckingLogs(updated);
                   }}
-                  className="absolute top-2 right-2"
+                  className="absolute top-0 right-0"
                 >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                  <X className="w-4 h-4" color="red" />
                 </Button>
               </div>
             ))}

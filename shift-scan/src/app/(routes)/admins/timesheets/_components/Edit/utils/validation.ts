@@ -5,7 +5,6 @@
  * @module utils/validation
  */
 import {
-  MaintenanceLog,
   TruckingLog,
   TascoLog,
   EmployeeEquipmentLog,
@@ -14,10 +13,19 @@ import {
   RefuelLog,
   StateMileage,
 } from "../types";
+import { MechanicProject } from "../EditMechanicProjects";
 
-/** Checks if a maintenance log is complete. */
-export function isMaintenanceLogComplete(log: MaintenanceLog): boolean {
-  return !!(log.maintenanceId && log.startTime && log.endTime);
+// Type definition for legacy MaintenanceLog structure
+interface MaintenanceLog {
+  id: string;
+  startTime: string;
+  endTime: string;
+  maintenanceId: string;
+}
+
+/** Checks if a mechanic project is complete. */
+export function isMechanicProjectComplete(project: MechanicProject): boolean {
+  return !!(project.equipmentId && project.hours && project.hours > 0);
 }
 
 /** Checks if a trucking log is complete. */
@@ -42,7 +50,7 @@ export function isTascoLogComplete(log: TascoLog): boolean {
 
 /** Checks if an employee equipment log is complete. */
 export function isEmployeeEquipmentLogComplete(
-  log: EmployeeEquipmentLog
+  log: EmployeeEquipmentLog,
 ): boolean {
   return !!(log.equipmentId && log.startTime && log.endTime);
 }

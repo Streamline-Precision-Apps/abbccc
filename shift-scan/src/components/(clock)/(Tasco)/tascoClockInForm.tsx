@@ -124,7 +124,7 @@ export default function TascoClockInForm({
                       >
                         <option value="">{t("SelectMaterialHere")}</option>
                         {materialTypes.map((option) => (
-                          <option key={option.id} value={option.name}>
+                          <option key={option.name} value={option.name}>
                             {option.name}
                           </option>
                         ))}
@@ -155,7 +155,7 @@ export default function TascoClockInForm({
                   >
                     <option value="">{t("SelectMaterialType")}</option>
                     {materialTypes.map((option) => (
-                      <option key={option.id} value={option.name}>
+                      <option key={option.name} value={option.name}>
                         {option.name}
                       </option>
                     ))}

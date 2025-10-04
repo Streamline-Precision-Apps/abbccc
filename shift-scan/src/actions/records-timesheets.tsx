@@ -293,12 +293,24 @@ export async function adminUpdateTimesheetStatus(
         },
       });
       if (notifications.length > 0) {
-        await tx.notificationRead.createMany({
-          data: notifications.map((notification) => ({
-            notificationId: notification.id,
-            userId: changedBy,
-          })),
-        });
+        // Use Promise.all with upsert to handle potential duplicate read records
+        await Promise.all(
+          notifications.map((notification) =>
+            tx.notificationRead.upsert({
+              where: {
+                notificationId_userId: {
+                  notificationId: notification.id,
+                  userId: changedBy,
+                },
+              },
+              create: {
+                notificationId: notification.id,
+                userId: changedBy,
+              },
+              update: {}, // Nothing to update if it already exists
+            }),
+          ),
+        );
         await tx.notificationResponse.createMany({
           data: notifications.map((notification) => ({
             notificationId: notification.id,
@@ -459,22 +471,24 @@ export async function adminUpdateTimesheet(formData: FormData) {
 
     // Delete all existing logs
     await Promise.all([
+      //remove maintenance logs for after first test to clear them in db.
       tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.mechanicProjects.deleteMany({ where: { timeSheetId: id } }),
       tx.truckingLog.deleteMany({ where: { timeSheetId: id } }),
       tx.tascoLog.deleteMany({ where: { timeSheetId: id } }),
       tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } }),
     ]);
 
     // Maintenance Logs
-    for (const log of data.MaintenanceLogs || []) {
-      if (!log.maintenanceId) continue;
-      await tx.maintenanceLog.create({
+    for (const log of data.Maintenance || []) {
+      if (!log) continue;
+      await tx.mechanicProjects.create({
         data: {
+          id: log.id,
           timeSheetId: id,
-          maintenanceId: log.maintenanceId,
-          userId: data.User?.id ?? undefined,
-          startTime: log.startTime ?? undefined,
-          endTime: log.endTime ?? undefined,
+          equipmentId: log.equipmentId,
+          hours: log.hours,
+          description: log.description,
         },
       });
     }
