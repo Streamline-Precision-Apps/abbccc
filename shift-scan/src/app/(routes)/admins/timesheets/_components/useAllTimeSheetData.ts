@@ -365,7 +365,8 @@ export default function useAllTimeSheetData({
         old: "PENDING",
         new: action,
       };
-
+      console.log("Updating timesheet status...", id, action);
+      console.log("Changes:", changes);
       const res = await adminUpdateTimesheetStatus(id, action, changes);
       if (!res || res.success !== true)
         throw new Error("Failed to update timesheet status");

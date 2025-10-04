@@ -7,13 +7,6 @@ export interface EditTimesheetModalProps {
   onUpdated?: () => void; // Optional callback for parent to refetch
 }
 
-// Types for nested logs
-export interface MaintenanceLog {
-  id: string;
-  startTime: string;
-  endTime: string;
-  maintenanceId: string;
-}
 export interface EquipmentHauled {
   id: string;
   equipmentId: string;
@@ -110,8 +103,16 @@ export interface TimesheetData {
   status: ApprovalStatus;
   createdAt: string;
   updatedAt: string;
-  MaintenanceLogs: MaintenanceLog[];
+  Maintenance: mechanicProjects[];
   TruckingLogs: TruckingLog[];
   TascoLogs: TascoLog[];
   EmployeeEquipmentLogs: EmployeeEquipmentLog[];
 }
+
+type mechanicProjects = {
+  id: number;
+  timeSheetId: number;
+  hours: number | null;
+  equipmentId: string;
+  description: string | null;
+};

@@ -303,7 +303,10 @@ export default function TimeCardTascoHaulLogs({
                             >
                               <option value="">{t("SelectMaterial")}</option>
                               {materialTypes.map((material) => (
-                                <option key={material.id} value={material.name}>
+                                <option
+                                  key={material.name}
+                                  value={material.name}
+                                >
                                   {material.name}
                                 </option>
                               ))}

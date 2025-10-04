@@ -16,20 +16,22 @@ import {
 } from "./types";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 import { Label } from "@/components/ui/label";
+import { Plus, X } from "lucide-react";
+import { P } from "framer-motion/dist/types.d-Cjd591yU";
 
 interface EditTruckingLogsProps {
   logs: TruckingLog[];
   onLogChange: (
     idx: number,
     field: keyof TruckingLog,
-    value: string | number | null
+    value: string | number | null,
   ) => void;
   handleNestedLogChange: <T extends TruckingNestedType>(
     logIndex: number,
     nestedType: T,
     nestedIndex: number,
     field: keyof TruckingNestedTypeMap[T],
-    value: string | number | null
+    value: string | number | null,
   ) => void;
   originalLogs?: TruckingLog[];
   onUndoLogField?: (idx: number, field: keyof TruckingLog) => void;
@@ -59,12 +61,12 @@ interface EditTruckingLogsProps {
   deleteStateMileage: (logIdx: number, stateIdx: number) => void;
   onUndoNestedLogField: <
     T extends TruckingNestedType,
-    K extends keyof TruckingNestedTypeMap[T]
+    K extends keyof TruckingNestedTypeMap[T],
   >(
     logIdx: number,
     nestedType: T,
     nestedIdx: number,
-    field: K
+    field: K,
   ) => void;
 }
 
@@ -89,7 +91,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
 }) => {
   // Helper functions to check completeness of each nested log type
   const isEquipmentHauledComplete = (
-    eq: TruckingNestedTypeMap["EquipmentHauled"]
+    eq: TruckingNestedTypeMap["EquipmentHauled"],
   ) => !!eq.equipmentId;
   const isMaterialComplete = (mat: TruckingNestedTypeMap["Materials"]) =>
     !!(
@@ -105,11 +107,13 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
     !!(sm.state && sm.stateLineMileage);
 
   return (
-    <div className="col-span-2 mt-4">
-      <h3 className="font-semibold text-md mb-2">Trucking Logs</h3>
+    <div className="col-span-2 mt-4 ">
+      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
+        Trucking Summary
+      </h3>
       {logs.map((log, idx) => (
-        <div key={log.id} className=" rounded p-2 mb-6 ">
-          <div className="flex flex-col gap-3 mb-2 border-b pb-3">
+        <div key={log.id} className="rounded p-2 mb-4 ">
+          <div className="bg-slate-50 flex flex-col gap-3 mb-2 border rounded-sm p-2">
             <div className="flex flex-row items-end gap-x-2">
               <div className="min-w-[350px]">
                 <label className="block text-xs">Truck</label>
@@ -126,19 +130,17 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               {originalLogs[idx] &&
                 log.truckNumber !== originalLogs[idx].truckNumber &&
                 onUndoLogField && (
-                  <div className="w-fit mr-4">
-                    <Button
-                      type="button"
-                      size="default"
-                      className="w-fit "
-                      onClick={() => onUndoLogField(idx, "truckNumber")}
-                    >
-                      <p className="text-xs">Undo</p>
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    size="default"
+                    className="w-[50px]"
+                    onClick={() => onUndoLogField(idx, "truckNumber")}
+                  >
+                    <p className="text-xs">Undo</p>
+                  </Button>
                 )}
             </div>
-            <div className="flex flex-row items-end gap-x-2">
+            {/* <div className="flex flex-row items-end gap-x-2">
               <div className="min-w-[350px]">
                 <label className="block text-xs">Trailer</label>
                 <SingleCombobox
@@ -172,7 +174,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     </Button>
                   </div>
                 )}
-            </div>
+            </div> */}
             <div className="flex flex-row items-end gap-x-2">
               <div className="flex flex-row items-end gap-x-2 ">
                 <div className="flex-1">
@@ -184,10 +186,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       onLogChange(
                         idx,
                         "startingMileage",
-                        Number(e.target.value)
+                        Number(e.target.value),
                       )
                     }
-                    className="w-[160px] text-xs"
+                    className="bg-white w-[160px] text-xs"
                     onBlur={(e) => {
                       let value = e.target.value;
                       if (/^0+\d+/.test(value)) {
@@ -201,16 +203,14 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 {originalLogs[idx] &&
                   log.startingMileage !== originalLogs[idx].startingMileage &&
                   onUndoLogField && (
-                    <div className="w-fit mr-4">
-                      <Button
-                        type="button"
-                        size="sm"
-                        className="w-fit"
-                        onClick={() => onUndoLogField(idx, "startingMileage")}
-                      >
-                        <p className="text-xs">Undo</p>
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="w-[50px]"
+                      onClick={() => onUndoLogField(idx, "startingMileage")}
+                    >
+                      <p className="text-xs">Undo</p>
+                    </Button>
                   )}
               </div>
 
@@ -223,7 +223,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     onChange={(e) =>
                       onLogChange(idx, "endingMileage", Number(e.target.value))
                     }
-                    className="w-[160px]"
+                    className="bg-white text-xs w-[160px]"
                     onBlur={(e) => {
                       let value = e.target.value;
                       if (/^0+\d+/.test(value)) {
@@ -233,7 +233,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       }
                       if (Number(value) < log.startingMileage) {
                         e.target.setCustomValidity(
-                          "Ending mileage cannot be less than starting mileage"
+                          "Ending mileage cannot be less than starting mileage",
                         );
                       } else {
                         e.target.setCustomValidity("");
@@ -244,15 +244,14 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 {originalLogs[idx] &&
                   log.endingMileage !== originalLogs[idx].endingMileage &&
                   onUndoLogField && (
-                    <div className="w-fit ">
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => onUndoLogField(idx, "endingMileage")}
-                      >
-                        <p className="text-xs">Undo</p>
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => onUndoLogField(idx, "endingMileage")}
+                      className="w-[50px]"
+                    >
+                      <p className="text-xs">Undo</p>
+                    </Button>
                   )}
               </div>
             </div>
@@ -262,7 +261,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               Starting Mileage cannot be greater than Ending Mileage.
             </p>
           )}
-          {/* Equipment Hauled */}
+          {/* Equipment Hauled Header and Add Button */}
           <div className="flex flex-row justify-between items-center my-2">
             <div className="flex-1">
               <p className="block font-semibold text-base">Equipment Hauled</p>
@@ -272,48 +271,51 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
               </p>
             </div>
             <div className="flex justify-end">
-              <Button
-                size="icon"
-                type="button"
-                onClick={() => addEquipmentHauled(idx)}
-                disabled={
-                  log.EquipmentHauled.length > 0 &&
-                  !isEquipmentHauledComplete(
-                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
-                  )
-                }
-                className={
-                  log.EquipmentHauled.length > 0 &&
-                  !isEquipmentHauledComplete(
-                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
-                  )
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }
-                title={
-                  log.EquipmentHauled.length > 0 &&
-                  !isEquipmentHauledComplete(
-                    log.EquipmentHauled[log.EquipmentHauled.length - 1]
-                  )
-                    ? "Please complete the previous Equipment Hauled entry before adding another."
-                    : ""
-                }
-              >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
-              </Button>
+              {log.EquipmentHauled.length === 0 && (
+                <Button
+                  size="icon"
+                  type="button"
+                  onClick={() => addEquipmentHauled(idx)}
+                  disabled={
+                    log.EquipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.EquipmentHauled[log.EquipmentHauled.length - 1],
+                    )
+                  }
+                  className={
+                    log.EquipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.EquipmentHauled[log.EquipmentHauled.length - 1],
+                    )
+                      ? "opacity-50 "
+                      : ""
+                  }
+                  title={
+                    log.EquipmentHauled.length > 0 &&
+                    !isEquipmentHauledComplete(
+                      log.EquipmentHauled[log.EquipmentHauled.length - 1],
+                    )
+                      ? "Please complete the previous Equipment Hauled entry before adding another."
+                      : ""
+                  }
+                >
+                  <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </div>
+          {/* Equipment Hauled Entries */}
           <div className="border-b py-2">
             {log.EquipmentHauled.map((eq, eqIdx) => (
               <div
-                key={eq.id || eqIdx}
-                className="flex flex-col gap-4 mb-3 border p-2 rounded relative"
+                key={eq.id ? eq.id.toString() : `equipment-${idx}-${eqIdx}`}
+                className="bg-slate-50 flex flex-col gap-4 mb-3 border p-2 rounded relative"
               >
                 <div className="flex flex-row items-end gap-x-2">
                   <div className="min-w-[350px] w-fit items-end">
                     <SingleCombobox
                       font={"font-normal"}
-                      label="Equipment ID"
+                      label="Equipment Hauled"
                       options={equipmentOptions}
                       value={eq.equipmentId}
                       onChange={(val) =>
@@ -322,7 +324,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "EquipmentHauled",
                           eqIdx,
                           "equipmentId",
-                          val
+                          val,
                         )
                       }
                       placeholder="Select equipment"
@@ -335,31 +337,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     eq.equipmentId !==
                       originalLogs[idx].EquipmentHauled[eqIdx].equipmentId &&
                     onUndoNestedLogField && (
-                      <div className="w-fit mr-4">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit"
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "EquipmentHauled",
-                              eqIdx,
-                              "equipmentId"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px]"
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "equipmentId",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
 
                 <div className="flex flex-row items-end gap-x-2 ">
-                  <div className="flex-1">
-                    <label className="block text-xs">Source</label>
+                  <div className="flex flex-col">
+                    <label className="block text-xs">Origin</label>
                     <Input
                       type="text"
+                      placeholder="Enter pickup location"
                       value={eq.source || ""}
                       onChange={(e) =>
                         handleNestedLogChange(
@@ -367,10 +368,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "EquipmentHauled",
                           eqIdx,
                           "source",
-                          e.target.value
+                          e.target.value,
                         )
                       }
-                      className="w-[350px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                       onBlur={(e) => {
                         let value = e.target.value;
                         if (/^0+\d+/.test(value)) {
@@ -380,7 +381,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "EquipmentHauled",
                             eqIdx,
                             "source",
-                            e.target.value
+                            e.target.value,
                           );
                           e.target.value = value;
                         }
@@ -393,31 +394,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     eq.source !==
                       originalLogs[idx].EquipmentHauled[eqIdx].source &&
                     onUndoNestedLogField && (
-                      <div className="w-fit mr-4">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit"
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "EquipmentHauled",
-                              eqIdx,
-                              "source"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px]"
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "source",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
-
+                {/* Destination */}
                 <div className="flex flex-row items-end gap-x-2 ">
-                  <div className="flex-1">
+                  <div className="flex flex-col">
                     <label className="block text-xs">Destination</label>
                     <Input
                       type="text"
+                      placeholder="Enter delivery location"
                       value={eq.destination || ""}
                       onChange={(e) =>
                         handleNestedLogChange(
@@ -425,10 +425,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "EquipmentHauled",
                           eqIdx,
                           "destination",
-                          e.target.value
+                          e.target.value,
                         )
                       }
-                      className="w-[350px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                       onBlur={(e) => {
                         let value = e.target.value;
                         if (/^0+\d+/.test(value)) {
@@ -438,7 +438,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "EquipmentHauled",
                             eqIdx,
                             "destination",
-                            e.target.value
+                            e.target.value,
                           );
                           e.target.value = value;
                         }
@@ -451,31 +451,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     eq.destination !==
                       originalLogs[idx].EquipmentHauled[eqIdx].destination &&
                     onUndoNestedLogField && (
-                      <div className="w-fit mr-4">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit"
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "EquipmentHauled",
-                              eqIdx,
-                              "destination"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px]"
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "destination",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
-
+                {/* Start OW Mileage */}
                 <div className="flex flex-row items-end gap-x-2 ">
-                  <div className="flex-1">
+                  <div className="flex flex-col">
                     <label className="block text-xs">OW Starting Mileage</label>
                     <Input
                       type="number"
+                      placeholder="Enter overweight starting mileage"
                       value={Number(eq.startMileage) || ""}
                       onChange={(e) =>
                         handleNestedLogChange(
@@ -483,10 +482,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "EquipmentHauled",
                           eqIdx,
                           "startMileage",
-                          Number(e.target.value)
+                          Number(e.target.value),
                         )
                       }
-                      className="w-[160px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                       onBlur={(e) => {
                         let value = e.target.value;
                         if (/^0+\d+/.test(value)) {
@@ -496,7 +495,7 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "EquipmentHauled",
                             eqIdx,
                             "startMileage",
-                            Number(value)
+                            Number(value),
                           );
                           e.target.value = value;
                         }
@@ -509,31 +508,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     eq.startMileage !==
                       originalLogs[idx].EquipmentHauled[eqIdx].startMileage &&
                     onUndoNestedLogField && (
-                      <div className="w-fit mr-4">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit"
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "EquipmentHauled",
-                              eqIdx,
-                              "equipmentId"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px]"
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "startMileage",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
-
+                {/* End OW Mileage */}
                 <div className="flex flex-row items-end gap-x-2">
-                  <div className="flex-1">
+                  <div className="flex flex-col">
                     <label className="block text-xs">OW Ending Mileage</label>
                     <Input
                       type="number"
+                      placeholder="Enter overweight ending mileage"
                       value={eq.endMileage ? Number(eq.endMileage) : ""}
                       onChange={(e) =>
                         handleNestedLogChange(
@@ -541,10 +539,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "EquipmentHauled",
                           eqIdx,
                           "endMileage",
-                          Number(e.target.value)
+                          Number(e.target.value),
                         )
                       }
-                      className="w-[160px]"
+                      className="bg-white text-xs w-[350px]"
                       onBlur={(e) => {
                         let value = e.target.value;
                         if (/^0+\d+/.test(value)) {
@@ -554,13 +552,13 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "EquipmentHauled",
                             eqIdx,
                             "endMileage",
-                            Number(value)
+                            Number(value),
                           );
                           e.target.value = value;
                         }
                         if (Number(value) < log.startingMileage) {
                           e.target.setCustomValidity(
-                            "Ending mileage cannot be less than starting mileage"
+                            "Ending mileage cannot be less than starting mileage",
                           );
                         } else {
                           e.target.setCustomValidity("");
@@ -570,39 +568,37 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                   </div>
 
                   {originalLogs[idx] &&
-                    originalLogs[idx].EquipmentHauled?.[eqIdx]?.startMileage !==
+                    originalLogs[idx].EquipmentHauled?.[eqIdx]?.endMileage !==
                       undefined &&
-                    eq.startMileage !==
+                    eq.endMileage !==
                       originalLogs[idx].EquipmentHauled[eqIdx].endMileage &&
                     onUndoNestedLogField && (
-                      <div className="w-fit mr-4">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit"
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "EquipmentHauled",
-                              eqIdx,
-                              "endMileage"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px]"
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "EquipmentHauled",
+                            eqIdx,
+                            "endMileage",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
 
-                <div className="flex items-end absolute right-2 top-2">
+                <div className="flex items-end absolute right-0 top-0">
                   <Button
                     type="button"
-                    variant="destructive"
+                    variant="ghost"
                     size="icon"
                     onClick={() => deleteEquipmentHauled(idx, eqIdx)}
                   >
-                    <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                    <X className="h-4 w-4" color="red" />
                   </Button>
                 </div>
               </div>
@@ -640,23 +636,25 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     : ""
                 }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-4 w-4" color="white" />
               </Button>
             </div>
           </div>
+          {/* Materials Hauled Entries */}
           <div className="border-b py-2">
             {log.Materials.map((mat, matIdx) => (
               <div
-                key={mat.id || matIdx}
-                className="mt-2 border p-2 rounded relative"
+                key={mat.id ? mat.id.toString() : `material-${idx}-${matIdx}`}
+                className="bg-slate-50 mt-2 border p-2 rounded relative"
               >
                 <div className="flex flex-col gap-4 mb-2">
                   <div className="flex flex-row gap-1 items-end">
-                    <div>
+                    <div className="flex flex-col">
                       <label htmlFor="lightWeight" className="text-xs ">
                         Material Name
                       </label>
                       <Input
+                        id="lightWeight"
                         type="text"
                         placeholder="Enter Name"
                         value={mat.name}
@@ -666,10 +664,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "Materials",
                             matIdx,
                             "name",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-[350px] text-xs"
+                        className="bg-white w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -677,31 +675,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         undefined &&
                       mat.name !== originalLogs[idx].Materials[matIdx].name &&
                       onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "name"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-[50px] "
+                          onClick={() =>
+                            onUndoNestedLogField(
+                              idx,
+                              "Materials",
+                              matIdx,
+                              "name",
+                            )
+                          }
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
                       )}
                   </div>
                   <div className="flex flex-row gap-1 items-end">
-                    <div>
-                      <label htmlFor="LocationOfMaterial" className="text-xs ">
+                    <div className="flex flex-col">
+                      <Label htmlFor="LocationOfMaterial" className="text-xs ">
                         Source of Material
-                      </label>
+                      </Label>
                       <Input
+                        id="LocationOfMaterial"
                         name="LocationOfMaterial"
                         type="text"
                         placeholder="Enter name of location"
@@ -712,10 +709,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "Materials",
                             matIdx,
                             "LocationOfMaterial",
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        className="w-[350px] text-xs"
+                        className="bg-white w-[350px] text-xs"
                       />
                     </div>
                     {originalLogs[idx] &&
@@ -725,23 +722,21 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                         originalLogs[idx].Materials[matIdx]
                           .LocationOfMaterial &&
                       onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "LocationOfMaterial"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-[50px]"
+                          onClick={() =>
+                            onUndoNestedLogField(
+                              idx,
+                              "Materials",
+                              matIdx,
+                              "LocationOfMaterial",
+                            )
+                          }
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
                       )}
                   </div>
 
@@ -749,18 +744,18 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     <Button
                       type="button"
                       size="icon"
-                      variant="destructive"
+                      variant="ghost"
                       onClick={() => deleteMaterial(idx, matIdx)}
                     >
-                      <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                      <X className="w-4 h-4" color="red" />
                     </Button>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-4 mb-2">
-                  <div className="flex flex-row gap-2 items-end">
-                    <div className="flex flex-row gap-2 items-end">
-                      <div>
+                  <div className="flex flex-row max-w-[600px] gap-2 items-end">
+                    <div className=" flex flex-row gap-1 items-end">
+                      <div className="flex flex-col">
                         <Label htmlFor="Quantity" className="text-xs ">
                           Quantity
                         </Label>
@@ -775,40 +770,39 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                               "Materials",
                               matIdx,
                               "quantity",
-                              e.target.value
+                              e.target.value,
                             )
                           }
-                          className="w-[120px] text-xs"
+                          className="bg-white w-[150px] text-xs"
                         />
                       </div>
+
                       {originalLogs[idx] &&
                         originalLogs[idx].Materials?.[matIdx]?.quantity !==
                           undefined &&
                         mat.quantity !==
                           originalLogs[idx].Materials[matIdx].quantity &&
                         onUndoNestedLogField && (
-                          <div className="w-fit ">
-                            <Button
-                              type="button"
-                              size="default"
-                              className="w-fit "
-                              onClick={() =>
-                                onUndoNestedLogField(
-                                  idx,
-                                  "Materials",
-                                  matIdx,
-                                  "quantity"
-                                )
-                              }
-                            >
-                              <p className="text-xs">Undo</p>
-                            </Button>
-                          </div>
+                          <Button
+                            type="button"
+                            size="default"
+                            className="w-[50px]"
+                            onClick={() =>
+                              onUndoNestedLogField(
+                                idx,
+                                "Materials",
+                                matIdx,
+                                "quantity",
+                              )
+                            }
+                          >
+                            <p className="text-xs">Undo</p>
+                          </Button>
                         )}
                     </div>
                     <div className="flex flex-row gap-1 items-end">
                       <div>
-                        <Label htmlFor="unit" className="text-xs ">
+                        <Label htmlFor="unit" className="text-xs">
                           Unit
                         </Label>
                         <Select
@@ -819,11 +813,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                               "Materials",
                               matIdx,
                               "unit",
-                              val
+                              val,
                             )
                           }
                         >
-                          <SelectTrigger className="w-[120px] text-xs">
+                          <SelectTrigger className="bg-white w-[150px] text-xs">
                             <SelectValue placeholder="Enter Unit Type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -832,29 +826,30 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           </SelectContent>
                         </Select>
                       </div>
-                      {originalLogs[idx] &&
-                        originalLogs[idx].Materials?.[matIdx]?.unit !==
-                          undefined &&
-                        mat.unit !== originalLogs[idx].Materials[matIdx].unit &&
-                        onUndoNestedLogField && (
-                          <div className="w-fit ">
+                      <div className="w-[50px] ">
+                        {originalLogs[idx] &&
+                          originalLogs[idx].Materials?.[matIdx]?.unit !==
+                            undefined &&
+                          mat.unit !==
+                            originalLogs[idx].Materials[matIdx].unit &&
+                          onUndoNestedLogField && (
                             <Button
                               type="button"
                               size="default"
-                              className="w-fit "
+                              className="w-[50px]"
                               onClick={() =>
                                 onUndoNestedLogField(
                                   idx,
                                   "Materials",
                                   matIdx,
-                                  "unit"
+                                  "unit",
                                 )
                               }
                             >
                               <p className="text-xs">Undo</p>
                             </Button>
-                          </div>
-                        )}
+                          )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-row gap-1 items-end">
@@ -871,11 +866,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                             "Materials",
                             matIdx,
                             "loadType",
-                            val
+                            val,
                           )
                         }
                       >
-                        <SelectTrigger className="w-[350px] text-xs">
+                        <SelectTrigger className="bg-white w-[350px] text-xs">
                           <SelectValue placeholder="Load Type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -890,23 +885,21 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       mat.loadType !==
                         originalLogs[idx].Materials[matIdx].loadType &&
                       onUndoNestedLogField && (
-                        <div className="w-fit ">
-                          <Button
-                            type="button"
-                            size="default"
-                            className="w-fit "
-                            onClick={() =>
-                              onUndoNestedLogField(
-                                idx,
-                                "Materials",
-                                matIdx,
-                                "loadType"
-                              )
-                            }
-                          >
-                            <p className="text-xs">Undo</p>
-                          </Button>
-                        </div>
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-[50px] "
+                          onClick={() =>
+                            onUndoNestedLogField(
+                              idx,
+                              "Materials",
+                              matIdx,
+                              "loadType",
+                            )
+                          }
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
                       )}
                   </div>
                 </div>
@@ -931,41 +924,42 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 disabled={
                   log.RefuelLogs.length > 0 &&
                   !isRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
                 }
                 className={
                   log.RefuelLogs.length > 0 &&
                   !isRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
-                    ? "opacity-50 cursor-not-allowed"
+                    ? "opacity-50 "
                     : ""
                 }
                 title={
                   log.RefuelLogs.length > 0 &&
                   !isRefuelLogComplete(
-                    log.RefuelLogs[log.RefuelLogs.length - 1]
+                    log.RefuelLogs[log.RefuelLogs.length - 1],
                   )
                     ? "Please complete the previous Refuel Log entry before adding another."
                     : ""
                 }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="h-4 w-4" color="white" />
               </Button>
             </div>
           </div>
+          {/* Refuel Log Entries */}
           <div className="border-b py-2">
             {log.RefuelLogs.map((ref, refIdx) => (
               <div
-                key={ref.id || refIdx}
-                className="flex flex-col gap-4 mb-2  border p-2 rounded relative"
+                key={ref.id ? ref.id.toString() : `refuel-${idx}-${refIdx}`}
+                className="bg-slate-50 flex flex-col gap-4 mb-2  border p-2 rounded relative"
               >
                 <div className="flex flex-row gap-1 items-end">
-                  <div>
-                    <label htmlFor="gallonsRefueled" className="text-xs ">
+                  <div className="flex flex-col">
+                    <Label htmlFor="gallonsRefueled" className="text-xs ">
                       Total Gallons Refueled
-                    </label>
+                    </Label>
                     <Input
                       name="gallonsRefueled"
                       type="number"
@@ -977,10 +971,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "RefuelLogs",
                           refIdx,
                           "gallonsRefueled",
-                          e.target.value
+                          e.target.value,
                         )
                       }
-                      className="w-[350px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -989,30 +983,28 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     ref.gallonsRefueled !==
                       originalLogs[idx].RefuelLogs[refIdx].gallonsRefueled &&
                     onUndoNestedLogField && (
-                      <div className="w-fit ">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit "
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "RefuelLogs",
-                              refIdx,
-                              "gallonsRefueled"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px] "
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "RefuelLogs",
+                            refIdx,
+                            "gallonsRefueled",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
                 <div className="flex flex-row gap-1 items-end">
-                  <div>
-                    <label htmlFor="milesAtFueling" className="text-xs ">
+                  <div className="flex flex-col">
+                    <Label htmlFor="milesAtFueling" className="text-xs ">
                       Mileage at Refuel
-                    </label>
+                    </Label>
                     <Input
                       type="number"
                       placeholder="Current Mileage"
@@ -1023,10 +1015,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "RefuelLogs",
                           refIdx,
                           "milesAtFueling",
-                          e.target.value
+                          e.target.value,
                         )
                       }
-                      className="w-[350px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -1035,33 +1027,31 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     ref.milesAtFueling !==
                       originalLogs[idx].RefuelLogs[refIdx].milesAtFueling &&
                     onUndoNestedLogField && (
-                      <div className="w-fit ">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit "
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "RefuelLogs",
-                              refIdx,
-                              "milesAtFueling"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px] "
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "RefuelLogs",
+                            refIdx,
+                            "milesAtFueling",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="ghost"
                   size="icon"
                   onClick={() => deleteRefuelLog(idx, refIdx)}
                   className="absolute top-2 right-2"
                 >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                  <X className="w-4 h-4" color="red" />
                 </Button>
               </div>
             ))}
@@ -1084,41 +1074,42 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                 disabled={
                   log.StateMileages.length > 0 &&
                   !isStateMileageComplete(
-                    log.StateMileages[log.StateMileages.length - 1]
+                    log.StateMileages[log.StateMileages.length - 1],
                   )
                 }
                 className={
                   log.StateMileages.length > 0 &&
                   !isStateMileageComplete(
-                    log.StateMileages[log.StateMileages.length - 1]
+                    log.StateMileages[log.StateMileages.length - 1],
                   )
-                    ? "opacity-50 cursor-not-allowed"
+                    ? "opacity-50"
                     : ""
                 }
                 title={
                   log.StateMileages.length > 0 &&
                   !isStateMileageComplete(
-                    log.StateMileages[log.StateMileages.length - 1]
+                    log.StateMileages[log.StateMileages.length - 1],
                   )
                     ? "Please complete the previous State Line Mileage entry before adding another."
                     : ""
                 }
               >
-                <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
+                <Plus className="w-8 h-8" color="white" />
               </Button>
             </div>
           </div>
+          {/* State Line Mileage Entries */}
           <div className="pt-2">
             {log.StateMileages.map((sm, smIdx) => (
               <div
-                key={sm.id || smIdx}
-                className="flex flex-col gap-4 mb-2 border p-2 rounded relative"
+                key={sm.id ? sm.id.toString() : `state-${idx}-${smIdx}`}
+                className="bg-slate-50 flex flex-col gap-4 mb-2 border p-2 rounded relative"
               >
                 <div className="flex flex-row gap-1 items-end">
-                  <div>
-                    <label htmlFor="state" className="text-xs ">
+                  <div className="flex flex-col">
+                    <Label htmlFor="state" className="text-xs ">
                       State
-                    </label>
+                    </Label>
                     <Select
                       name="state"
                       value={sm.state}
@@ -1128,11 +1119,11 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "StateMileages",
                           smIdx,
                           "state",
-                          val
+                          val,
                         )
                       }
                     >
-                      <SelectTrigger className="w-[350px] text-xs">
+                      <SelectTrigger className="bg-white w-[350px] text-xs">
                         <SelectValue placeholder="State" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1149,30 +1140,28 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                       undefined &&
                     sm.state !== originalLogs[idx].StateMileages[smIdx].state &&
                     onUndoNestedLogField && (
-                      <div className="w-fit ">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit "
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "StateMileages",
-                              smIdx,
-                              "state"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px] "
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "StateMileages",
+                            smIdx,
+                            "state",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
                 <div className="flex flex-row gap-1 items-end">
-                  <div>
-                    <label htmlFor="stateLineMileage" className="text-xs ">
+                  <div className="flex flex-col">
+                    <Label htmlFor="stateLineMileage" className="text-xs ">
                       State Line Mileage
-                    </label>
+                    </Label>
                     <Input
                       name="stateLineMileage"
                       type="number"
@@ -1184,10 +1173,10 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                           "StateMileages",
                           smIdx,
                           "stateLineMileage",
-                          e.target.value
+                          e.target.value,
                         )
                       }
-                      className="w-[350px] text-xs"
+                      className="bg-white w-[350px] text-xs"
                     />
                   </div>
                   {originalLogs[idx] &&
@@ -1196,33 +1185,31 @@ export const EditTruckingLogs: React.FC<EditTruckingLogsProps> = ({
                     sm.stateLineMileage !==
                       originalLogs[idx].StateMileages[smIdx].stateLineMileage &&
                     onUndoNestedLogField && (
-                      <div className="w-fit ">
-                        <Button
-                          type="button"
-                          size="default"
-                          className="w-fit "
-                          onClick={() =>
-                            onUndoNestedLogField(
-                              idx,
-                              "StateMileages",
-                              smIdx,
-                              "stateLineMileage"
-                            )
-                          }
-                        >
-                          <p className="text-xs">Undo</p>
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-[50px] "
+                        onClick={() =>
+                          onUndoNestedLogField(
+                            idx,
+                            "StateMileages",
+                            smIdx,
+                            "stateLineMileage",
+                          )
+                        }
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
                     )}
                 </div>
                 <Button
                   type="button"
-                  variant="destructive"
+                  variant="ghost"
                   size="icon"
                   onClick={() => deleteStateMileage(idx, smIdx)}
-                  className="absolute top-2 right-2"
+                  className="absolute top-0 right-0"
                 >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
+                  <X className="w-4 h-4" color="red" />
                 </Button>
               </div>
             ))}

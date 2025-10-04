@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { Combobox } from "@/components/ui/combobox";
 import { SingleCombobox } from "@/components/ui/single-combobox";
+import { X, Plus } from "lucide-react";
 
 interface MaintenanceLog {
   id: string;
@@ -46,7 +47,7 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
     {logs.map((log, idx) => (
       <div
         key={log.id}
-        className="border rounded p-4 mb-2 flex flex-col gap-2 relative "
+        className="bg-slate-50 border rounded p-2 mb-2 flex flex-col gap-4 relative"
       >
         <div className="flex items-end">
           <div className="min-w-[200px]">
@@ -119,11 +120,11 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
         <Button
           size={"icon"}
           type="button"
-          variant="destructive"
+          variant="ghost"
           onClick={() => onRemoveLog(idx)}
-          className="absolute top-2 right-2"
+          className="absolute top-0 right-0"
         >
-          <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
+          <X className="w-4 h-4" color="red" />
         </Button>
       </div>
     ))}
@@ -133,7 +134,7 @@ export const EditMaintenanceLogs: React.FC<EditMaintenanceLogsProps> = ({
       onClick={onAddLog}
       disabled={disableAdd}
     >
-      <img src="/plus-white.svg" alt="Add" className="w-4 h-4 mr-2" />
+      <Plus className="w-4 h-4 mr-2" color="white" />
       Add New Log
     </Button>
   </div>

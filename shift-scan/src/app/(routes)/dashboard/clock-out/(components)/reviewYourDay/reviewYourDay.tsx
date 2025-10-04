@@ -14,7 +14,6 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { time } from "console";
 import { now } from "lodash";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
@@ -66,7 +65,7 @@ export default function ReviewYourDay({
               {t("ReviewYourDayDirections")}
             </Texts>
             <Contents width={"section"} className="flex-1 min-h-0">
-              <Holds className="h-full max-h-[400px] overflow-y-scroll no-scrollbar border-[3px] rounded-[10px] border-black">
+              <Holds className="h-full w-full border-[3px] rounded-[10px] border-black">
                 <Holds
                   position={"row"}
                   className="border-b-[3px] border-black py-1 px-2"
@@ -89,133 +88,138 @@ export default function ReviewYourDay({
                     <Spinner />
                   </Holds>
                 ) : (
-                  <Accordion type="single" collapsible>
-                    {timesheets
-                      .slice()
-                      .sort((a, b) => {
-                        const startTimeA = new Date(a.startTime).getTime();
-                        const startTimeB = new Date(b.startTime).getTime();
-                        return startTimeA - startTimeB;
-                      })
-                      .map((timesheet, index) => (
-                        <AccordionItem value={timesheet.id} key={timesheet.id}>
-                          <AccordionTrigger className="w-full px-2 py-2 border-b border-gray-200">
-                            <div className="w-full flex flex-row">
-                              <Grids cols={"3"} gap={"3"} className="w-full">
-                                <div className="flex flex-col items-left ">
-                                  <Texts size="sm" className="text-xs">
-                                    {timesheet.startTime
-                                      ? new Date(
-                                          timesheet.startTime,
-                                        ).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                          hour12: true,
-                                        })
-                                      : "-"}
-                                  </Texts>
-
-                                  <Texts size="sm" className="text-xs">
-                                    {"-"}{" "}
-                                    {timesheet.endTime
-                                      ? new Date(
-                                          timesheet.endTime,
-                                        ).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                          hour12: true,
-                                        })
-                                      : !timesheet.endTime &&
-                                          currentTimesheetId ===
-                                            Number(timesheet.id)
-                                        ? `(${t("Now")})`
+                  <div className="h-full flex flex-col overflow-y-auto no-scrollbar  pb-4">
+                    <Accordion type="single" collapsible>
+                      {timesheets
+                        .slice()
+                        .sort((a, b) => {
+                          const startTimeA = new Date(a.startTime).getTime();
+                          const startTimeB = new Date(b.startTime).getTime();
+                          return startTimeA - startTimeB;
+                        })
+                        .map((timesheet, index) => (
+                          <AccordionItem
+                            value={timesheet.id}
+                            key={timesheet.id}
+                          >
+                            <AccordionTrigger className="w-full px-2 py-2 border-b border-gray-200">
+                              <div className="w-full flex flex-row">
+                                <Grids cols={"3"} gap={"3"} className="w-full">
+                                  <div className="flex flex-col items-left ">
+                                    <Texts size="sm" className="text-xs">
+                                      {timesheet.startTime
+                                        ? new Date(
+                                            timesheet.startTime,
+                                          ).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })
                                         : "-"}
+                                    </Texts>
+
+                                    <Texts size="sm" className="text-xs">
+                                      {"-"}{" "}
+                                      {timesheet.endTime
+                                        ? new Date(
+                                            timesheet.endTime,
+                                          ).toLocaleTimeString([], {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          })
+                                        : !timesheet.endTime &&
+                                            currentTimesheetId ===
+                                              Number(timesheet.id)
+                                          ? `(${t("Now")})`
+                                          : "-"}
+                                    </Texts>
+                                  </div>
+                                  <Texts
+                                    size="sm"
+                                    className="text-xs text-center truncate max-w-[80px] "
+                                  >
+                                    {timesheet.Jobsite.name}
                                   </Texts>
-                                </div>
+                                  <Texts
+                                    size="sm"
+                                    className="text-xs truncate max-w-[60px] "
+                                  >
+                                    {timesheet.costcode.split(" ")[0]}
+                                  </Texts>
+                                </Grids>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <Holds className="p-2 rounded-lg bg-white flex flex-col items-start relative">
+                                <Images
+                                  titleImg={
+                                    timesheet.workType === "TRUCK_DRIVER"
+                                      ? "/trucking.svg"
+                                      : timesheet.workType === "MECHANIC"
+                                        ? "/mechanic.svg"
+                                        : timesheet.workType === "TASCO"
+                                          ? "/tasco.svg"
+                                          : "/equipment.svg"
+                                  }
+                                  titleImgAlt="WorkType Icon"
+                                  className="w-7 h-7 mb-1 absolute top-1 right-1"
+                                />
+                                <Texts size="sm" className="text-xs">
+                                  <strong>Start:</strong>{" "}
+                                  {timesheet.startTime
+                                    ? new Date(
+                                        timesheet.startTime,
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })
+                                    : "-"}
+                                </Texts>
+                                <Texts size="sm" className="text-xs">
+                                  <strong>End:</strong>{" "}
+                                  {timesheet.endTime
+                                    ? new Date(
+                                        timesheet.endTime,
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      })
+                                    : !timesheet.endTime &&
+                                        currentTimesheetId ===
+                                          Number(timesheet.id)
+                                      ? `${new Date(now()).toLocaleTimeString(
+                                          [],
+                                          {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                          },
+                                        )} (${t("Now")})`
+                                      : "-"}
+                                </Texts>
                                 <Texts
                                   size="sm"
-                                  className="text-xs text-center truncate max-w-[80px] "
+                                  className="text-xs text-left truncate max-w-[200px] "
                                 >
+                                  <strong>Jobsite:</strong>{" "}
                                   {timesheet.Jobsite.name}
                                 </Texts>
                                 <Texts
                                   size="sm"
-                                  className="text-xs truncate max-w-[60px] "
+                                  className="text-xs truncate max-w-[200px]"
                                 >
+                                  <strong>Costcode:</strong>{" "}
                                   {timesheet.costcode.split(" ")[0]}
                                 </Texts>
-                              </Grids>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <Holds className="p-2 rounded-lg bg-white flex flex-col items-start relative">
-                              <Images
-                                titleImg={
-                                  timesheet.workType === "TRUCK_DRIVER"
-                                    ? "/trucking.svg"
-                                    : timesheet.workType === "MECHANIC"
-                                      ? "/mechanic.svg"
-                                      : timesheet.workType === "TASCO"
-                                        ? "/tasco.svg"
-                                        : "/equipment.svg"
-                                }
-                                titleImgAlt="WorkType Icon"
-                                className="w-7 h-7 mb-1 absolute top-1 right-1"
-                              />
-                              <Texts size="sm" className="text-xs">
-                                <strong>Start:</strong>{" "}
-                                {timesheet.startTime
-                                  ? new Date(
-                                      timesheet.startTime,
-                                    ).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    })
-                                  : "-"}
-                              </Texts>
-                              <Texts size="sm" className="text-xs">
-                                <strong>End:</strong>{" "}
-                                {timesheet.endTime
-                                  ? new Date(
-                                      timesheet.endTime,
-                                    ).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                      hour12: true,
-                                    })
-                                  : !timesheet.endTime &&
-                                      currentTimesheetId ===
-                                        Number(timesheet.id)
-                                    ? `${new Date(now()).toLocaleTimeString(
-                                        [],
-                                        {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                          hour12: true,
-                                        },
-                                      )} (${t("Now")})`
-                                    : "-"}
-                              </Texts>
-                              <Texts
-                                size="sm"
-                                className="text-xs text-left truncate max-w-[200px] "
-                              >
-                                <strong>Jobsite:</strong>{" "}
-                                {timesheet.Jobsite.name}
-                              </Texts>
-                              <Texts
-                                size="sm"
-                                className="text-xs truncate max-w-[200px]"
-                              >
-                                <strong>Costcode:</strong>{" "}
-                                {timesheet.costcode.split(" ")[0]}
-                              </Texts>
-                            </Holds>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                  </Accordion>
+                              </Holds>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                    </Accordion>
+                  </div>
                 )}
               </Holds>
             </Contents>

@@ -16,6 +16,7 @@ import {
 import { Notification } from "../../../../../prisma/generated/prisma/client";
 import { notificationTableColumns } from "./notificationTableColumns";
 import { Bell, BellDot, BellElectric, BellPlus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface NotificationTableProps {
   data: Notification[];
@@ -41,9 +42,18 @@ export function NotificationTable({
   return (
     <div className="h-[90vh] w-full flex flex-col bg-neutral-100 pb-2 rounded-lg">
       <div className="p-3 h-[5vh] flex flex-col bg-white rounded-lg border-b border-gray-200">
-        <div className="flex flex-row items-center gap-2 ">
+        <div className="flex flex-row items-center gap-2 w-full">
           <BellPlus className="h-4 w-4 text-blue-500" />
           <h2 className="text-md">Needs Attention</h2>
+          <div className="ml-auto flex flex-row items-center gap-2">
+            <Badge
+              variant="secondary"
+              className="py-1 px-2 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+            >
+              {totalCount}
+            </Badge>
+            <span className="text-xs text-gray-500">Unresolved</span>
+          </div>
         </div>
       </div>
 
