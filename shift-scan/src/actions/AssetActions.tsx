@@ -530,6 +530,7 @@ export async function createJobsiteAdmin({
     Client?: {
       id: string;
     } | null;
+    CCTags?: Array<{ id: string }>;
     CreatedVia: string;
     createdById: string;
   };
@@ -562,6 +563,12 @@ export async function createJobsiteAdmin({
                 connect: { id: payload.Client.id },
               },
             }),
+            ...(payload.CCTags &&
+              payload.CCTags.length > 0 && {
+                CCTags: {
+                  connect: payload.CCTags.map((tag) => ({ id: tag.id })),
+                },
+              }),
             createdBy: {
               connect: { id: payload.createdById.trim() },
             },
@@ -589,6 +596,12 @@ export async function createJobsiteAdmin({
                 connect: { id: payload.Client.id },
               },
             }),
+            ...(payload.CCTags &&
+              payload.CCTags.length > 0 && {
+                CCTags: {
+                  connect: payload.CCTags.map((tag) => ({ id: tag.id })),
+                },
+              }),
             createdBy: {
               connect: { id: payload.createdById.trim() },
             },
