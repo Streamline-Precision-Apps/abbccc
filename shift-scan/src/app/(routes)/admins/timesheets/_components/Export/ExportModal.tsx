@@ -87,35 +87,35 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px]  max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-        <div className="flex flex-col gap-4 w-full items-center">
-          <div className="w-full flex flex-col  mb-2">
-            <div className="flex flex-col mb-6 relative">
-              <Button
-                type="button"
-                variant={"ghost"}
-                size={"icon"}
-                onClick={onClose}
-                className="absolute top-0 right-0 cursor-pointer"
-              >
-                <X width={20} height={20} />
-              </Button>
-              <div className="flex flex-row gap-2">
+      <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
+        <div className="px-6 py-4 flex flex-col gap-4 items-center w-full relative">
+          <div className="relative w-full">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <div className="flex flex-col">
+              <div className="flex flex-row gap-2 mb-2 items-center">
                 <Download className="h-5 w-5" />
-                <h2 className="text-base font-bold">Export Timesheet Data</h2>
+                <h2 className="text-xl font-bold">Export Timesheet Data</h2>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-gray-600">
                 Select a date range, apply filters, and choose your preferred
                 export format
               </p>
-              <p className="text-xs text-muted-foreground italic mb-2">
-                Exporting only includes timesheets APPROVED!
+              <p className="text-xs text-blue-600 italic">
+                Exporting only includes timesheets that have been approved!
               </p>
             </div>
+          </div>
+          <div className="border rounded-lg p-4 bg-gray-50 w-full">
+            <h3 className="font-semibold text-sm mb-2">Date Range</h3>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="date" className="text-base font-semibold">
-                Date Range
-              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -124,10 +124,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                     className="w-full justify-between font-normal"
                   >
                     {dateRange.from && dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(
-                          dateRange.to,
-                          "PPP",
-                        )}`
+                      ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
                       : "Select date range"}
                     <ChevronDownIcon />
                   </Button>
@@ -186,15 +183,15 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="mb-4 flex items-center gap-2">
+                  <div className="w-full mb-4 flex items-center gap-2">
                     <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
                       Customize
                     </span>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       Select the fields you want to export.
                     </p>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 w-full max-w-xs bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <div className="grid grid-cols-2 gap-2 w-full bg-slate-50 rounded-lg p-3 border border-gray-200">
                     <label className="flex items-center gap-2 cursor-pointer col-span-2 hover:bg-blue-50 rounded px-2 py-1 transition">
                       <input
                         type="checkbox"
@@ -206,7 +203,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                         className="accent-blue-600"
                       />
                       <span className="font-medium text-blue-700">
-                        Select All
+                        {allChecked ? "Unselect All" : "Select All"}
                       </span>
                     </label>
                     {EXPORT_FIELDS.map((field) => (
@@ -220,7 +217,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                           onChange={() => handleFieldChange(field.key)}
                           className="accent-blue-600"
                         />
-                        <span className="text-sm">{field.label}</span>
+                        <span className="text-xs">{field.label}</span>
                       </label>
                     ))}
                   </div>
@@ -228,8 +225,8 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
               </AccordionItem>
             </Accordion>
           </div>
-          <div className="w-full flex flex-col">
-            <p className="text-base font-semibold mb-4 ">Export format</p>
+          <div className="border rounded-lg p-4 bg-gray-50 mt-4 w-full">
+            <h3 className="font-semibold text-sm mb-2">Export Format</h3>
             <div className="flex flex-row gap-4 mb-2">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -240,7 +237,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                   onChange={() => setExportFormat("csv")}
                   className="accent-blue-600"
                 />
-                <span className="text-sm">CSV</span>
+                <span className="text-xs">CSV</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -251,14 +248,14 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                   onChange={() => setExportFormat("xlsx")}
                   className="accent-green-600"
                 />
-                <span className="text-sm">Excel (XLSX)</span>
+                <span className="text-xs">Excel (XLSX)</span>
               </label>
             </div>
           </div>
-          <div className="flex flex-row gap-3 w-full mb-2">
+          <div className="flex flex-row gap-3 w-full mb-2 mt-4">
             <Button
-              size={"sm"}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition disabled:opacity-50"
+              size="sm"
+              className="flex-1 bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded disabled:opacity-50"
               onClick={() =>
                 exportFormat &&
                 onExport(exportFormat, dateRange, selectedFields)
@@ -268,8 +265,9 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
               Export
             </Button>
             <Button
-              size={"sm"}
-              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded transition"
+              size="sm"
+              variant="outline"
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
               onClick={onClose}
             >
               Cancel
