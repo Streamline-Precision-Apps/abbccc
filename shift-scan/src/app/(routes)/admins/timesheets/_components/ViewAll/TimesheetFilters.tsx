@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 export interface FilterOptions {
   jobsiteId: string[];
   costCode: string[];
+  equipmentId: string[];
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
@@ -32,6 +33,7 @@ interface FilterPopoverProps {
   onUseFiltersChange?: (useFilters: boolean) => void;
   jobsites?: { code: string; name: string }[];
   costCodes?: { code: string; name: string }[];
+  equipment?: { id: string; name: string }[];
   filters: FilterOptions; // Add filters prop for controlled state
   handleClearFilters: () => Promise<void>;
   setFilters: Dispatch<SetStateAction<FilterOptions>>;
@@ -42,6 +44,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
   onUseFiltersChange,
   jobsites = [],
   costCodes = [],
+  equipment = [],
   filters,
   setFilters,
   handleClearFilters,
@@ -53,6 +56,10 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
   >([]);
 
   const [jobsiteOptions, setJobsiteOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const [equipmentOptions, setEquipmentOptions] = useState<
     { value: string; label: string }[]
   >([]);
 
@@ -71,12 +78,19 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       label: js.name,
     }));
     setJobsiteOptions(formattedJobsites);
-  }, [costCodes, jobsites]);
+
+    const formattedEquipment = equipment.map((eq) => ({
+      value: eq.id,
+      label: eq.name,
+    }));
+    setEquipmentOptions(formattedEquipment);
+  }, [costCodes, jobsites, equipment]);
 
   const handleApplyFilters = () => {
     const hasActiveFilters =
       filters.jobsiteId.length > 0 ||
       filters.costCode.length > 0 ||
+      filters.equipmentId.length > 0 ||
       filters.dateRange.from ||
       filters.dateRange.to ||
       filters.status.length > 0 ||
@@ -94,6 +108,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
     return (
       filters.jobsiteId.length +
       filters.costCode.length +
+      filters.equipmentId.length +
       (filters.dateRange.from || filters.dateRange.to ? 1 : 0) +
       filters.status.length +
       filters.id.length +
@@ -166,6 +181,18 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                       setFilters((f) => ({ ...f, costCode: vals }))
                     }
                     placeholder="Select cost code"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2 text-sm">Equipment</h3>
+                  <Combobox
+                    options={equipmentOptions}
+                    value={filters.equipmentId}
+                    onChange={(vals: string[]) =>
+                      setFilters((f) => ({ ...f, equipmentId: vals }))
+                    }
+                    placeholder="Select equipment"
                   />
                 </div>
 

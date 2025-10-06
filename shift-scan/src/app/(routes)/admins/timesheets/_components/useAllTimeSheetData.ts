@@ -75,6 +75,7 @@ export type Timesheet = {
 export interface FilterOptions {
   jobsiteId: string[];
   costCode: string[];
+  equipmentId: string[];
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
@@ -131,6 +132,7 @@ export default function useAllTimeSheetData({
   const [filters, setFilters] = useState<FilterOptions>({
     jobsiteId: [],
     costCode: [],
+    equipmentId: [],
     dateRange: {},
     status: [],
     changes: [],
@@ -141,6 +143,9 @@ export default function useAllTimeSheetData({
     [],
   );
   const [jobsites, setJobsites] = useState<{ code: string; name: string }[]>(
+    [],
+  );
+  const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
     [],
   );
 
@@ -178,6 +183,10 @@ export default function useAllTimeSheetData({
       filters.costCode.forEach((code) => params.append("costCode", code));
     } else if (costCode) {
       params.append("costCode", costCode);
+    }
+    // Equipment (array)
+    if (filters.equipmentId && filters.equipmentId.length > 0) {
+      filters.equipmentId.forEach((equipmentId) => params.append("equipmentId", equipmentId));
     }
     // Status (array)
     if (filters.status && filters.status.length > 0) {
@@ -249,6 +258,21 @@ export default function useAllTimeSheetData({
       setJobsites(filteredJobsites || []);
     };
     fetchJobsites();
+  }, []);
+
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      // Replace with your API call
+      const res = await fetch("/api/equipmentIdNameQrIdAndCode");
+      const data = await res.json();
+      const filteredEquipment = data
+        .map((equipment: { id: string; name: string }) => ({
+          id: equipment.id,
+          name: equipment.name,
+        }));
+      setEquipment(filteredEquipment || []);
+    };
+    fetchEquipment();
   }, []);
 
   // On mount, apply jobsiteId/costCode from props to filters before first fetch
@@ -587,6 +611,7 @@ export default function useAllTimeSheetData({
     const emptyFilters: FilterOptions = {
       jobsiteId: [],
       costCode: [],
+      equipmentId: [],
       dateRange: {},
       status: [],
       changes: [],
@@ -652,6 +677,7 @@ export default function useAllTimeSheetData({
     reFilterPage,
     costCodes,
     jobsites,
+    equipment,
     notificationIds,
     setNotificationIds,
     handleClearFilters,

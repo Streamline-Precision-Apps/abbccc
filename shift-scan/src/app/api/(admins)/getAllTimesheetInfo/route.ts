@@ -38,6 +38,7 @@ export async function GET(req: Request) {
   const idParams = searchParams.getAll("id");
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
+  const equipmentIdParams = searchParams.getAll("equipmentId");
   const userIdFilter = searchParams.get("userId");
   const dateFromParam = searchParams.get("dateFrom");
   const dateToParam = searchParams.get("dateTo");
@@ -66,6 +67,45 @@ export async function GET(req: Request) {
     if (jobsiteId) filter.Jobsite = { code: jobsiteId };
     if (costCode) filter.CostCode = { code: costCode };
     if (userIdFilter) filter.User = { id: userIdFilter };
+    
+    // Equipment filter - check if any equipment logs are connected to the selected equipment
+    if (equipmentIdParams.length > 0) {
+      filter.OR = [
+        {
+          EmployeeEquipmentLogs: {
+            some: {
+              equipmentId: { in: equipmentIdParams },
+            },
+          },
+        },
+        {
+          TruckingLogs: {
+            some: {
+              OR: [
+                {
+                  equipmentId: { in: equipmentIdParams },
+                },
+                {
+                  EquipmentHauled: {
+                    some: {
+                      equipmentId: { in: equipmentIdParams },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        },
+        {
+          TascoLogs: {
+            some: {
+              equipmentId: { in: equipmentIdParams },
+            },
+          },
+        },
+      ];
+    }
+    
     // Date range filter
     if (dateFromParam || dateToParam) {
       const dateFilter: Record<string, Date> = {};

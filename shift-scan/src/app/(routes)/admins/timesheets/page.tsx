@@ -71,6 +71,7 @@ export default function AdminTimesheets() {
     reFilterPage,
     costCodes,
     jobsites,
+    equipment,
     filters,
     notificationIds,
     setNotificationIds,
@@ -110,6 +111,7 @@ export default function AdminTimesheets() {
               onUseFiltersChange={reFilterPage}
               jobsites={jobsites}
               costCodes={costCodes}
+              equipment={equipment}
               handleClearFilters={handleClearFilters}
             />
           </div>
