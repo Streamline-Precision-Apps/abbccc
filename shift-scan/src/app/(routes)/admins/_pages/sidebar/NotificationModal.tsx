@@ -168,17 +168,20 @@ export default function NotificationModal({ open, setOpen }: Props) {
   // Save preferences to server
   const handleSave = async () => {
     if (!token) {
+      console.log("Saving failed, no token available");
+
       toast.error("You need to allow notifications to save preferences");
       return;
     }
 
     try {
       setIsLoading(true);
-
+      console.log("Saving notification preferences1");
       // Get topics to subscribe to (enabled preferences)
       const topicsToSubscribe = Object.entries(preferences)
         .filter(([_, enabled]) => enabled)
         .map(([topic]) => topic);
+      console.log("Saving notification preferences2");
 
       // Get topics to unsubscribe from (disabled preferences)
       const userPrefs = await getUserTopicPreferences();
@@ -201,7 +204,7 @@ export default function NotificationModal({ open, setOpen }: Props) {
             action: "subscribe",
             topics: topicsToSubscribe,
             token,
-            userId: "session-user", // The API will get the actual userId from the session
+            // userId: "session-user", // The API will get the actual userId from the session
           }),
         });
 
@@ -221,7 +224,7 @@ export default function NotificationModal({ open, setOpen }: Props) {
             action: "unsubscribe",
             topics: topicsToUnsubscribe,
             token,
-            userId: "session-user", // The API will get the actual userId from the session
+            // userId: "session-user", // The API will get the actual userId from the session
           }),
         });
 

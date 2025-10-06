@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     const userId = session?.user?.id;
 
+    console.log("Session debug:", { userId, userEmail: session?.user?.email });
+
     if (!userId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
