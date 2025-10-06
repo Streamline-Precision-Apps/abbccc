@@ -76,6 +76,7 @@ export interface FilterOptions {
   jobsiteId: string[];
   costCode: string[];
   equipmentId: string[];
+  equipmentLogTypes: string[];
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
@@ -133,6 +134,7 @@ export default function useAllTimeSheetData({
     jobsiteId: [],
     costCode: [],
     equipmentId: [],
+    equipmentLogTypes: [],
     dateRange: {},
     status: [],
     changes: [],
@@ -187,6 +189,10 @@ export default function useAllTimeSheetData({
     // Equipment (array)
     if (filters.equipmentId && filters.equipmentId.length > 0) {
       filters.equipmentId.forEach((equipmentId) => params.append("equipmentId", equipmentId));
+    }
+    // Equipment Log Types (array)
+    if (filters.equipmentLogTypes && filters.equipmentLogTypes.length > 0) {
+      filters.equipmentLogTypes.forEach((logType) => params.append("equipmentLogTypes", logType));
     }
     // Status (array)
     if (filters.status && filters.status.length > 0) {
@@ -323,6 +329,11 @@ export default function useAllTimeSheetData({
 
   // Filter timesheets based on searchTerm and date range
   const filteredTimesheets = useMemo(() => {
+    // Guard against undefined allTimesheets
+    if (!allTimesheets || !Array.isArray(allTimesheets)) {
+      return [];
+    }
+    
     return allTimesheets.filter((ts) => {
       const id = ts.id || "";
       const firstName = ts?.User?.firstName || "";
@@ -370,6 +381,11 @@ export default function useAllTimeSheetData({
 
   // Use filteredTimesheets, sorted by date descending
   const sortedTimesheets = useMemo(() => {
+    // Guard against undefined filteredTimesheets (though it should now always be an array)
+    if (!filteredTimesheets || !Array.isArray(filteredTimesheets)) {
+      return [];
+    }
+    
     return [...filteredTimesheets].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
@@ -612,6 +628,7 @@ export default function useAllTimeSheetData({
       jobsiteId: [],
       costCode: [],
       equipmentId: [],
+      equipmentLogTypes: [],
       dateRange: {},
       status: [],
       changes: [],

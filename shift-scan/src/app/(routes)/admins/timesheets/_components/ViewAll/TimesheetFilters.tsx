@@ -16,11 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export interface FilterOptions {
   jobsiteId: string[];
   costCode: string[];
   equipmentId: string[];
+  equipmentLogTypes: string[]; // New field for equipment log type filters
   dateRange: { from?: Date; to?: Date };
   status: string[];
   changes: string[];
@@ -91,6 +94,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       filters.jobsiteId.length > 0 ||
       filters.costCode.length > 0 ||
       filters.equipmentId.length > 0 ||
+      (filters.equipmentLogTypes?.length || 0) > 0 ||
       filters.dateRange.from ||
       filters.dateRange.to ||
       filters.status.length > 0 ||
@@ -109,6 +113,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
       filters.jobsiteId.length +
       filters.costCode.length +
       filters.equipmentId.length +
+      (filters.equipmentLogTypes?.length || 0) +
       (filters.dateRange.from || filters.dateRange.to ? 1 : 0) +
       filters.status.length +
       filters.id.length +
@@ -159,10 +164,10 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
           sideOffset={5}
         >
           <div className="space-t-4">
-            <div className="flex flex-row gap-8">
-              <div className="flex flex-col space-y-4 w-1/2">
+            <div className="flex flex-row gap-6">
+              <div className="flex flex-col space-y-3 w-1/2">
                 <div>
-                  <h3 className="font-medium mb-2 text-sm">Jobsite</h3>
+                  <h3 className="font-medium mb-1 text-xs">Jobsite</h3>
                   <Combobox
                     options={jobsiteOptions}
                     value={filters.jobsiteId}
@@ -173,7 +178,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                   />
                 </div>
                 <div>
-                  <h3 className="font-medium mb-2 text-sm">Cost Code</h3>
+                  <h3 className="font-medium mb-1 text-xs">Cost Code</h3>
                   <Combobox
                     options={costCodeOptions}
                     value={filters.costCode}
@@ -185,19 +190,173 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-2 text-sm">Equipment</h3>
+                  <h3 className="font-medium mb-1 text-xs">Equipment</h3>
                   <Combobox
                     options={equipmentOptions}
                     value={filters.equipmentId}
-                    onChange={(vals: string[]) =>
-                      setFilters((f) => ({ ...f, equipmentId: vals }))
-                    }
+                    onChange={(vals: string[]) => {
+                      setFilters((f) => ({
+                        ...f,
+                        equipmentId: vals,
+                        // Reset equipment log types when equipment selection changes
+                        equipmentLogTypes:
+                          vals.length > 0
+                            ? [
+                                "employeeEquipmentLogs",
+                                "truckingLogs",
+                                "tascoLogs",
+                                "mechanicProjects",
+                              ]
+                            : [],
+                      }));
+                    }}
                     placeholder="Select equipment"
                   />
+
+                  {/* Equipment Log Type Checkboxes - only show when equipment is selected */}
+                  {filters.equipmentId.length > 0 && (
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={
+                            filters.equipmentLogTypes?.includes(
+                              "employeeEquipmentLogs",
+                            ) || false
+                          }
+                          onCheckedChange={(checked) => {
+                            setFilters((f) => {
+                              const currentTypes = f.equipmentLogTypes || [];
+                              const newTypes = checked
+                                ? [
+                                    ...currentTypes.filter(
+                                      (type) =>
+                                        type !== "employeeEquipmentLogs",
+                                    ),
+                                    "employeeEquipmentLogs",
+                                  ]
+                                : currentTypes.filter(
+                                    (type) => type !== "employeeEquipmentLogs",
+                                  );
+
+                              return {
+                                ...f,
+                                equipmentLogTypes: newTypes,
+                              };
+                            });
+                          }}
+                          id="equipment-logs"
+                        />
+                        <Label htmlFor="equipment-logs" className="text-xs">
+                          Equipment Logs
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={
+                            filters.equipmentLogTypes?.includes(
+                              "truckingLogs",
+                            ) || false
+                          }
+                          onCheckedChange={(checked) => {
+                            setFilters((f) => {
+                              const currentTypes = f.equipmentLogTypes || [];
+                              const newTypes = checked
+                                ? [
+                                    ...currentTypes.filter(
+                                      (type) => type !== "truckingLogs",
+                                    ),
+                                    "truckingLogs",
+                                  ]
+                                : currentTypes.filter(
+                                    (type) => type !== "truckingLogs",
+                                  );
+
+                              return {
+                                ...f,
+                                equipmentLogTypes: newTypes,
+                              };
+                            });
+                          }}
+                          id="trucking-logs"
+                        />
+                        <Label htmlFor="trucking-logs" className="text-xs">
+                          Trucking Logs
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={
+                            filters.equipmentLogTypes?.includes("tascoLogs") ||
+                            false
+                          }
+                          onCheckedChange={(checked) => {
+                            setFilters((f) => {
+                              const currentTypes = f.equipmentLogTypes || [];
+                              const newTypes = checked
+                                ? [
+                                    ...currentTypes.filter(
+                                      (type) => type !== "tascoLogs",
+                                    ),
+                                    "tascoLogs",
+                                  ]
+                                : currentTypes.filter(
+                                    (type) => type !== "tascoLogs",
+                                  );
+
+                              return {
+                                ...f,
+                                equipmentLogTypes: newTypes,
+                              };
+                            });
+                          }}
+                          id="tasco-logs"
+                        />
+                        <Label htmlFor="tasco-logs" className="text-xs">
+                          Tasco Logs
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          checked={
+                            filters.equipmentLogTypes?.includes(
+                              "mechanicProjects",
+                            ) || false
+                          }
+                          onCheckedChange={(checked) => {
+                            setFilters((f) => {
+                              const currentTypes = f.equipmentLogTypes || [];
+                              const newTypes = checked
+                                ? [
+                                    ...currentTypes.filter(
+                                      (type) => type !== "mechanicProjects",
+                                    ),
+                                    "mechanicProjects",
+                                  ]
+                                : currentTypes.filter(
+                                    (type) => type !== "mechanicProjects",
+                                  );
+
+                              return {
+                                ...f,
+                                equipmentLogTypes: newTypes,
+                              };
+                            });
+                          }}
+                          id="mechanic-projects"
+                        />
+                        <Label htmlFor="mechanic-projects" className="text-xs">
+                          Mechanic Projects
+                        </Label>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-2 text-sm">Status</h3>
+                  <h3 className="font-medium mb-1 text-xs">Status</h3>
                   <Combobox
                     options={[
                       { value: "PENDING", label: "Pending" },
@@ -212,10 +371,10 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                     placeholder="Select status"
                   />
                 </div>
-                <div className="flex items-center justify-between pt-2 ">
+                <div className="flex items-center justify-between pt-1 ">
                   <label
                     htmlFor="has-changes-toggle"
-                    className="font-medium text-sm select-none"
+                    className="font-medium text-xs select-none"
                   >
                     Has Changes
                   </label>
@@ -236,7 +395,7 @@ const TimesheetFilters: React.FC<FilterPopoverProps> = ({
                 </div>
               </div>
               <div className="flex flex-col border-l border-slate-200 pl-4  w-1/2">
-                <h3 className="font-medium mb-2 text-sm">Date Range</h3>
+                <h3 className="font-medium mb-1 text-xs">Date Range</h3>
                 <Calendar
                   mode="range"
                   selected={
