@@ -341,6 +341,7 @@ export async function archiveFormTemplate(formId: string) {
     return { success: false, error: "Failed to archive form template" };
   }
 }
+
 export async function publishFormTemplate(formId: string) {
   try {
     await prisma.formTemplate.update({

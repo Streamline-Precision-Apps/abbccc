@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import {
+  archiveFormTemplate,
   deleteFormTemplate,
   getFormSubmissions,
   getFormTemplate,
+  publishFormTemplate,
 } from "@/actions/records-forms";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -42,6 +44,7 @@ import {
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import { FormsDataTable } from "./_components/List/FormsDataTable";
+import tr from "zod/v4/locales/tr.cjs";
 
 // Form field definition
 interface FormField {
@@ -90,6 +93,12 @@ export default function Forms() {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingArchiveId, setPendingArchiveId] = useState<string | null>(null);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showUnarchiveDialog, setShowUnarchiveDialog] = useState(false);
+  const [pendingUnarchiveId, setPendingUnarchiveId] = useState<string | null>(
+    null,
+  );
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportingFormId, setExportingFormId] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange>({
@@ -110,14 +119,100 @@ export default function Forms() {
     setPageSize,
     filteredForms,
     refetch,
+    setForms,
   } = useFormsList();
 
   // Helper to get enum values as array
   const formTemplateCategoryValues = Object.values(FormTemplateCategory);
+
+  //------------------------------------------------------------------------------
+  // Helper function to unarchive modal
+  //------------------------------------------------------------------------------
+  const handleUnarchiveForm = (formId: string) => {
+    setPendingUnarchiveId(formId);
+    setShowUnarchiveDialog(true);
+  };
+
+  const handleUnarchive = async (formId: string) => {
+    try {
+      await publishFormTemplate(formId);
+      setForms((prevForms) =>
+        prevForms.map((form) =>
+          form.id === formId ? { ...form, isActive: "ACTIVE" } : form,
+        ),
+      );
+      toast.success("Form template unarchived successfully", {
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error unarchiving form template:", error);
+      toast.error("Failed to unarchive form template", { duration: 3000 });
+    }
+  };
+
+  const confirmUnarchive = async () => {
+    if (pendingUnarchiveId) {
+      await handleUnarchive(pendingUnarchiveId);
+      setShowUnarchiveDialog(false);
+      setPendingUnarchiveId(null);
+    }
+  };
+
+  const cancelUnarchive = () => {
+    setShowUnarchiveDialog(false);
+    setPendingUnarchiveId(null);
+  };
+
+  //------------------------------------------------------------------------------
+  // Helper function to show archive modal
+  //------------------------------------------------------------------------------
+
+  const handleArchive = async (formId: string) => {
+    try {
+      await archiveFormTemplate(formId);
+      setForms((prevForms) =>
+        prevForms.map((form) =>
+          form.id === formId ? { ...form, isActive: "ARCHIVED" } : form,
+        ),
+      );
+      toast.success("Form template archived successfully", { duration: 3000 });
+    } catch (error) {
+      console.error("Error archiving form template:", error);
+      toast.error("Failed to archive form template", { duration: 3000 });
+    }
+  };
+
+  const handleArchiveForm = (formId: string) => {
+    setPendingArchiveId(formId);
+    setShowArchiveDialog(true);
+  };
+
+  const confirmArchive = async () => {
+    if (pendingArchiveId) {
+      await handleArchive(pendingArchiveId);
+      setShowArchiveDialog(false);
+      setPendingArchiveId(null);
+    }
+  };
+
+  const cancelArchive = () => {
+    setShowArchiveDialog(false);
+    setPendingArchiveId(null);
+  };
+
+  //------------------------------------------------------------------------------
+  // Helper function to show delete modal
+  //------------------------------------------------------------------------------
+
   const handleDelete = async (submissionId: string) => {
     try {
       const isDeleted = await deleteFormTemplate(submissionId);
       if (isDeleted) {
+        setForms((prevForms) =>
+          prevForms.map((form) =>
+            form.id === submissionId ? { ...form, isActive: "ACTIVE" } : form,
+          ),
+        );
         // Optionally, you can show a success message or update the UI
         toast.success("Form template deleted successfully", { duration: 3000 });
         router.push("/admins/forms");
@@ -138,7 +233,6 @@ export default function Forms() {
       await handleDelete(pendingDeleteId);
       setShowDeleteDialog(false);
       setPendingDeleteId(null);
-      refetch();
     }
   };
 
@@ -147,7 +241,9 @@ export default function Forms() {
     setPendingDeleteId(null);
   };
 
+  //------------------------------------------------------------------------------
   // Helper function to show export modal and set exportingFormId
+  //------------------------------------------------------------------------------
   const handleShowExportModal = (id: string) => {
     setExportingFormId(id);
     setShowExportModal(true);
@@ -369,6 +465,8 @@ export default function Forms() {
             setPageSize={setPageSize}
             openHandleDelete={openHandleDelete}
             handleShowExportModal={handleShowExportModal}
+            openHandleArchive={handleArchiveForm}
+            openHandleUnarchive={handleUnarchiveForm}
           />
           {loading && (
             <div className="absolute inset-0 z-20 flex flex-row items-center gap-2 justify-center bg-white bg-opacity-70 rounded-lg">
@@ -388,7 +486,7 @@ export default function Forms() {
           </div>
         </div>
       </div>
-
+      {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
@@ -404,6 +502,47 @@ export default function Forms() {
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Archive Confirmation Dialog */}
+      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Form Template?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive this form template? All form data
+              will be preserved, but the template will be hidden from the main
+              view.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelArchive}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmArchive}>
+              Archive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Unarchive Confirmation Dialog */}
+      <Dialog open={showUnarchiveDialog} onOpenChange={setShowUnarchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unarchive Form Template?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to unarchive this form template? It will be
+              restored to active status and visible in the main view.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelUnarchive}>
+              Cancel
+            </Button>
+            <Button variant="default" onClick={confirmUnarchive}>
+              Unarchive
             </Button>
           </DialogFooter>
         </DialogContent>

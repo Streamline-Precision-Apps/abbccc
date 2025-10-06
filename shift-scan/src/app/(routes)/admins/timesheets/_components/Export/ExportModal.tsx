@@ -94,7 +94,11 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={onClose}
+              onClick={() => {
+                setDateRange({ from: undefined, to: undefined });
+                setExportFormat("");
+                onClose();
+              }}
               className="absolute top-0 right-0 cursor-pointer"
             >
               <X width={20} height={20} />

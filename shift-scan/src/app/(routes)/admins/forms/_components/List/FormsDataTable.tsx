@@ -1,5 +1,4 @@
 "use client";
-
 import {
   flexRender,
   getCoreRowModel,
@@ -14,17 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { FormItem } from "./hooks/types";
-import { formsTableColumns } from "./formsTableColumns";
-import Link from "next/link";
+import { getFormsTableColumns } from "./formsTableColumns";
 import LoadingFormsTableState from "./loadingFormsTableState";
 
 interface FormsDataTableProps {
@@ -38,6 +29,8 @@ interface FormsDataTableProps {
   setPage: Dispatch<SetStateAction<number>>;
   setPageSize: Dispatch<SetStateAction<number>>;
   openHandleDelete: (id: string) => void;
+  openHandleArchive: (id: string) => void;
+  openHandleUnarchive: (id: string) => void;
   handleShowExportModal: (id: string) => void;
 }
 
@@ -52,98 +45,34 @@ export function FormsDataTable({
   setPage,
   setPageSize,
   openHandleDelete,
+  openHandleArchive,
+  openHandleUnarchive,
   handleShowExportModal,
 }: FormsDataTableProps) {
-  // Create column definitions with the action handlers
-  const columns = useMemo(() => {
-    // Copy the base columns
-    const cols = [...formsTableColumns];
-
-    // Find and update the actions column
-    const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
-    if (actionsColumnIndex >= 0) {
-      // Replace with a new definition that includes our handlers
-      cols[actionsColumnIndex] = {
-        ...cols[actionsColumnIndex],
-        cell: ({ row }) => {
-          const form = row.original;
-          return (
-            <div className="flex flex-row justify-center">
-              <Link href={`/admins/forms/${form.id}`}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size={"icon"}>
-                      <img
-                        src="/eye.svg"
-                        alt="View Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>View Submissions</TooltipContent>
-                </Tooltip>
-              </Link>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => handleShowExportModal(form.id)}
-                  >
-                    <img
-                      src="/export.svg"
-                      alt="Export Form"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Export Submissions</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href={`/admins/forms/edit/${form.id}`}>
-                    <Button variant="ghost" size={"icon"}>
-                      <img
-                        src="/formEdit.svg"
-                        alt="Edit Form"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>Edit Form Template</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => openHandleDelete(form.id)}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete Form"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete Form Template</TooltipContent>
-              </Tooltip>
-            </div>
-          );
-        },
-      };
-    }
-
-    return cols;
-  }, [openHandleDelete, handleShowExportModal]);
+  const columns = useMemo(
+    () =>
+      getFormsTableColumns({
+        openHandleArchive,
+        openHandleUnarchive,
+        openHandleDelete,
+        handleShowExportModal,
+      }),
+    [
+      openHandleArchive,
+      openHandleUnarchive,
+      openHandleDelete,
+      handleShowExportModal,
+    ],
+  );
 
   const table = useReactTable({
     data,
-    columns,
+    columns: getFormsTableColumns({
+      openHandleArchive,
+      openHandleUnarchive,
+      openHandleDelete,
+      handleShowExportModal,
+    }),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
@@ -179,7 +108,7 @@ export function FormsDataTable({
                     return (
                       <TableHead
                         key={header.id}
-                        className="whitespace-nowrap font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs sticky top-0"
+                        className="whitespace-nowrap font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200  last:border-r-0 text-xs sticky top-0"
                       >
                         {header.isPlaceholder
                           ? null
@@ -220,7 +149,7 @@ export function FormsDataTable({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={formsTableColumns.length}
+                      colSpan={columns.length}
                       className="h-24 text-center"
                     >
                       No results.

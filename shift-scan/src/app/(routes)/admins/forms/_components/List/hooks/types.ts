@@ -34,7 +34,7 @@ export interface FormTemplate {
   id: string;
   name: string;
   formType?: string;
-  isActive?: boolean;
+  isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
   isSignatureRequired?: boolean;
   groupings: FormGrouping[];
   createdAt?: string;

@@ -79,7 +79,7 @@ export function useFormsList() {
         description: null, // Add description to match FormItem interface
         formType: form.formType || "UNKNOWN",
         _count: form._count,
-        isActive: form.isActive ? "ACTIVE" : "DRAFT",
+        isActive: form.isActive,
         createdAt: form.createdAt || new Date().toISOString(),
         updatedAt: form.updatedAt || new Date().toISOString(),
       }));
@@ -102,5 +102,6 @@ export function useFormsList() {
     totalPages,
     total,
     refetch: fetchForms,
+    setForms,
   };
 }

@@ -38,7 +38,7 @@ export function DateTimePicker({
   const handleDateChange = (selectedDate: Date | undefined) => {
     if (!selectedDate) return;
     // If time is set, combine date and time
-    let newDate = new Date(selectedDate);
+    const newDate = new Date(selectedDate);
     if (time) {
       const [hours, minutes] = time.split(":");
       newDate.setHours(Number(hours));
@@ -49,7 +49,7 @@ export function DateTimePicker({
   };
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
-    let newDate = date ? new Date(date) : new Date();
+    const newDate = date ? new Date(date) : new Date();
     const [hours, minutes] = newTime.split(":");
     newDate.setHours(Number(hours));
     newDate.setMinutes(Number(minutes));
