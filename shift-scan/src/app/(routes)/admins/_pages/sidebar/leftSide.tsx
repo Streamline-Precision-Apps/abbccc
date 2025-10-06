@@ -17,10 +17,13 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, LogOut, BellPlus } from "lucide-react";
 import NotificationModal from "./NotificationModal";
 import { useDashboardData } from "./DashboardDataContext";
-import { useUserProfile, UserImage, UserName, UserRole } from "./UserImageContext";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useUserProfile,
+  UserImage,
+  UserName,
+  UserRole,
+} from "./UserImageContext";
 import Link from "next/link";
-import useFcmToken from "@/hooks/useFcmToken";
 
 export default function LeftSidebar() {
   const pathname = usePathname();
@@ -29,7 +32,6 @@ export default function LeftSidebar() {
   const [isProfileOpened, setIsProfileOpened] = useState(false);
   const { data } = useDashboardData();
   const { refresh } = useUserProfile(); // Only need refresh function now
-  const { token, notificationPermissionStatus } = useFcmToken();
   const Page = [
     {
       id: 1,

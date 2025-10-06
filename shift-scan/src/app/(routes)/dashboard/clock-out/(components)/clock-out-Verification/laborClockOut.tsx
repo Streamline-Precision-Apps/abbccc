@@ -50,7 +50,6 @@ export const LaborClockOut = ({
   timeSheetId: number | undefined;
   refetchTimesheet: () => Promise<void>;
 }) => {
-  // const { token, notificationPermissionStatus } = useFcmToken();
   const t = useTranslations("ClockOut");
   const [date] = useState(new Date());
   const [loading, setLoading] = useState<boolean>(false);
