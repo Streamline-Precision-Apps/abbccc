@@ -130,10 +130,10 @@ const useFcmToken = () => {
         // Step 10: Handle notification click event to navigate to a link if present.
         n.onclick = (event) => {
           event.preventDefault();
-          const link = (event.target as any)?.data?.url;
+          const notification = event.target as Notification;
+          const link = (notification.data as { url?: string } | undefined)?.url;
           if (link) {
             router.push(link);
-          } else {
           }
         };
         // --------------------------------------------
