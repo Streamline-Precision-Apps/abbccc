@@ -40,11 +40,9 @@ const useFcmToken = () => {
   const loadToken = async () => {
     // Step 4: Prevent multiple fetches if already fetched or in progress.
     if (isLoading.current) return;
+    isLoading.current = true;
 
-    isLoading.current = true; // Mark loading as in progress.
-    const token = await getNotificationPermissionAndToken(); // Fetch the token.
-
-    // Step 5: Handle the case where permission is denied.
+    const Token = await getNotificationPermissionAndToken();
     if (Notification.permission === "denied") {
       setNotificationPermissionStatus("denied");
       console.info(
@@ -54,10 +52,7 @@ const useFcmToken = () => {
       isLoading.current = false;
       return;
     }
-
-    // Step 6: Retry fetching the token if necessary. (up to 3 times)
-    // This step is typical initially as the service worker may not be ready/installed yet.
-    if (!token) {
+    if (!Token) {
       if (retryLoadToken.current >= 3) {
         alert("Unable to load token, refresh the browser");
         console.info(
@@ -67,22 +62,18 @@ const useFcmToken = () => {
         isLoading.current = false;
         return;
       }
-
       retryLoadToken.current += 1;
       console.error("An error occurred while retrieving token. Retrying...");
       isLoading.current = false;
       await loadToken();
       return;
     }
-
-    // Step 7: Set the fetched token and mark as fetched.
     setNotificationPermissionStatus(Notification.permission);
-    setToken(token);
+    setToken(Token);
     isLoading.current = false;
   };
 
   useEffect(() => {
-    // Step 8: Initialize token loading when the component mounts.
     if ("Notification" in window) {
       loadToken();
     }
@@ -128,24 +119,23 @@ const useFcmToken = () => {
 
         // --------------------------------------------
         // Disable this if you only want toast notifications.
-        // const n = new Notification(
-        //   payload.notification?.title || "New message",
-        //   {
-        //     body: payload.notification?.body || "This is a new message",
-        //     data: link ? { url: link } : undefined,
-        //   },
-        // );
+        const n = new Notification(
+          payload.notification?.title || "New message",
+          {
+            body: payload.notification?.body || "This is a new message",
+            data: link ? { url: link } : undefined,
+          },
+        );
 
-        // // Step 10: Handle notification click event to navigate to a link if present.
-        // n.onclick = (event) => {
-        //   event.preventDefault();
-        //   const link = (event.target as any)?.data?.url;
-        //   if (link) {
-        //     router.push(link);
-        //   } else {
-        //
-        //   }
-        // };
+        // Step 10: Handle notification click event to navigate to a link if present.
+        n.onclick = (event) => {
+          event.preventDefault();
+          const link = (event.target as any)?.data?.url;
+          if (link) {
+            router.push(link);
+          } else {
+          }
+        };
         // --------------------------------------------
       });
 
@@ -164,7 +154,7 @@ const useFcmToken = () => {
     return () => unsubscribe?.();
   }, [token, router, toast]);
 
-  return { token, notificationPermissionStatus }; // Return the token and permission status.
+  return { token, notificationPermissionStatus };
 };
 
 export default useFcmToken;
