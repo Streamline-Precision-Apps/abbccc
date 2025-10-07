@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getMessaging, getToken, isSupported } from "firebase/messaging";
-import { upsertFCMToken } from "./actions/NotificationActions";
+import { setFCMToken } from "./actions/NotificationActions";
 import { getStorage } from "firebase/storage";
 
 // Firebase project configuration
@@ -32,7 +32,7 @@ export const fetchToken = async () => {
       });
       // Add FCM token to the user's profile
       if (token) {
-        await upsertFCMToken({ token });
+        await setFCMToken({ token });
       }
       return token;
     }

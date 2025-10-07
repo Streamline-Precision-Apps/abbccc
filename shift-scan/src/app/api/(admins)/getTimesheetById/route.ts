@@ -58,13 +58,18 @@ export async function GET(req: Request) {
         updatedAt: true,
         workType: true,
         // Maintenance logs
-        MaintenanceLogs: {
+        Maintenance: {
           select: {
             id: true,
-            startTime: true,
-            endTime: true,
-            maintenanceId: true,
-            // Add more fields as needed
+            hours: true,
+            equipmentId: true,
+            description: true,
+            Equipment: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
         // Trucking logs

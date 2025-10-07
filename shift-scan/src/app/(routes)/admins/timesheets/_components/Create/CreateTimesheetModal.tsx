@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-// import { MaintenanceSection } from "./MaintenanceSection";
 import { TruckingSection } from "./TruckingSection";
 import { TascoSection } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
@@ -10,6 +9,7 @@ import { adminCreateTimesheet } from "@/actions/records-timesheets";
 import { toast } from "sonner";
 import Spinner from "@/components/(animations)/spinner";
 import { X } from "lucide-react";
+import { MechanicProject } from "./MechanicProject";
 
 // Type for mechanic project summary (expand as needed)
 // type MechanicProjectSummary = { id: string };
@@ -43,36 +43,43 @@ export function CreateTimesheetModal({
     [],
   );
   const [trucks, setTrucks] = useState<{ id: string; name: string }[]>([]);
-  const [trailers, setTrailers] = useState<{ id: string; name: string }[]>([]);
 
   const [materialTypes, setMaterialTypes] = useState<
     { id: string; name: string }[]
   >([]);
+
   const [submitting, setSubmitting] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
-  // New states for logs
-  // type MaintenanceLogDraft = {
-  //   startTime: string;
-  //   endTime: string;
-  //   maintenanceId: string;
-  // };
-  // const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLogDraft[]>(
-  //   [{ maintenanceId: "", startTime: "", endTime: "" }],
-  // );
+  // Mechanic project logs state
+  type Maintenance = {
+    id: number;
+    hours: number | null;
+    equipmentId: string;
+    description: string | null;
+    Equipment?: { id: string; name: string } | null;
+  };
+  const [mechanicProjects, setMechanicProjects] = useState<Maintenance[]>([
+    {
+      id: Date.now(),
+      hours: null,
+      equipmentId: "",
+      description: "",
+      Equipment: null,
+    },
+  ]);
+
   // Trucking log type
   type TruckingMaterialDraft = {
     location: string;
     name: string;
     quantity: string;
     unit: "TONS" | "YARDS" | "";
-    // materialWeight: string;
     loadType: "SCREENED" | "UNSCREENED" | "";
   };
   type TruckingLogDraft = {
     equipmentId: string;
-    trailerNumber: string | null;
-    truckNumber: string;
+    truckNumber: string; // Stores truck equipment ID
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: {
@@ -90,7 +97,6 @@ export function CreateTimesheetModal({
     {
       equipmentId: "",
       truckNumber: "",
-      trailerNumber: null,
       startingMileage: "",
       endingMileage: "",
       equipmentHauled: [
@@ -145,28 +151,6 @@ export function CreateTimesheetModal({
   const [laborLogs, setLaborLogs] = useState<LaborLogDraft[]>([
     { equipment: { id: "", name: "" }, startTime: "", endTime: "" },
   ]);
-  // Equipment/project options for maintenance logs
-  // const [maintenanceEquipmentOptions, setMaintenanceEquipmentOptions] =
-  //   useState<{ value: string; label: string }[]>([]);
-
-  // useEffect(() => {
-  //   async function fetchEquipment() {
-  //     try {
-  //       const res = await fetch("/api/getMechanicProjectSummary");
-  //       if (!res.ok) return setMaintenanceEquipmentOptions([]);
-  //       const data = await res.json();
-  //       // Flatten to [{ value: id, label: Equipment.name }]
-  //       const options = (data as MechanicProjectSummary[]).map((m) => ({
-  //         value: m.id,
-  //         label: `#${m.id}`,
-  //       }));
-  //       setMaintenanceEquipmentOptions(options);
-  //     } catch {
-  //       setMaintenanceEquipmentOptions([]);
-  //     }
-  //   }
-  //   fetchEquipment();
-  // }, []);
 
   // Helper to map users/jobsites to combobox options
   const userOptions = users.map((u) => ({
@@ -188,11 +172,6 @@ export function CreateTimesheetModal({
   }));
 
   const truckOptions = trucks.map((e) => ({
-    value: e.id,
-    label: e.name,
-  }));
-
-  const trailerOptions = trailers.map((e) => ({
     value: e.id,
     label: e.name,
   }));
@@ -232,12 +211,8 @@ export function CreateTimesheetModal({
           const filteredTrucks = equipment.filter(
             (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
           );
-          const filteredTrailers = equipment.filter(
-            (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER",
-          );
 
           setTrucks(filteredTrucks);
-          setTrailers(filteredTrailers);
         }
         setEquipment(equipment);
         setUsers(users);
@@ -310,6 +285,7 @@ export function CreateTimesheetModal({
     if (e.target.name === "costcode") {
       setForm({ ...form, costcode: { id: "", name: e.target.value } });
     } else {
+      console.log(`Setting ${e.target.name} to ${e.target.value}`);
       setForm({ ...form, [e.target.name]: e.target.value });
     }
   };
@@ -333,24 +309,36 @@ export function CreateTimesheetModal({
       }));
 
       // Map trucking logs to convert loadType to lowercase for API compatibility
-      const mappedTruckingLogs = truckingLogs.map((log) => ({
-        ...log,
-        materials: log.materials.map((mat) => {
-          // Define the converted loadType
-          let convertedLoadType: "" | "screened" | "unscreened" = "";
-          if (mat.loadType === "SCREENED") convertedLoadType = "screened";
-          else if (mat.loadType === "UNSCREENED")
-            convertedLoadType = "unscreened";
+      const mappedTruckingLogs = truckingLogs
+        .filter((log) => log.truckNumber && log.equipmentId) // Both should have the same value (truck equipment ID)
+        .map((log) => ({
+          ...log,
+          materials: log.materials.map((mat) => {
+            // Define the converted loadType
+            let convertedLoadType: "" | "screened" | "unscreened" = "";
+            if (mat.loadType === "SCREENED") convertedLoadType = "screened";
+            else if (mat.loadType === "UNSCREENED")
+              convertedLoadType = "unscreened";
 
-          return {
-            location: mat.location,
-            name: mat.name,
-            quantity: mat.quantity,
-            unit: mat.unit as string, // Cast to string
-            loadType: convertedLoadType,
-          };
-        }),
-      }));
+            return {
+              location: mat.location,
+              name: mat.name,
+              quantity: mat.quantity,
+              unit: mat.unit as string, // Cast to string
+              loadType: convertedLoadType,
+            };
+          }),
+        }));
+
+      // Format mechanic projects for API
+      const mappedMechanicProjects = mechanicProjects
+        .filter((project) => project.equipmentId && project.hours !== null && project.hours !== undefined)
+        .map((project) => ({
+          id: project.id,
+          equipmentId: project.equipmentId,
+          hours: project.hours as number, // Safe cast because of filter
+          description: project.description || "",
+        }));
 
       const data = {
         form: {
@@ -358,7 +346,7 @@ export function CreateTimesheetModal({
           startTime: form.startTime ? form.startTime.toISOString() : null,
           endTime: form.endTime ? form.endTime.toISOString() : null,
         },
-        // maintenanceLogs,
+        mechanicProjects: mappedMechanicProjects, // Changed from maintenanceLogs
         truckingLogs: mappedTruckingLogs,
         tascoLogs: mappedTascoLogs,
         laborLogs,
@@ -375,7 +363,9 @@ export function CreateTimesheetModal({
     }
   };
 
-  // Fetch material types and equipment when TASCO is selected
+  // Mechanic projects are now managed directly in the MechanicProject component
+
+  // Fetch material types and equipment based on work type
   useEffect(() => {
     if (form.workType === "TASCO") {
       fetchMaterialTypes();
@@ -386,26 +376,38 @@ export function CreateTimesheetModal({
         });
       }
     }
+
+    // Make sure equipment data is loaded for Mechanic work type
+    if (form.workType === "MECHANIC") {
+      console.log("Mechanic work type selected");
+      // Always ensure we have equipment data for mechanic projects
+      fetch("/api/getAllEquipment").then(async (res) => {
+        if (res.ok) setEquipment(await res.json());
+      });
+    }
   }, [form.workType]);
 
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto no-scrollbar">
-          <div className="mb-4 relative">
-            <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
-            <Button
-              type="button"
-              variant={"ghost"}
-              size={"icon"}
-              onClick={onClose}
-              className="absolute top-0 right-0 cursor-pointer"
-            >
-              <X width={20} height={20} />
-            </Button>
-
-            <div className="w-full justify-center items-center mt-4">
-              <Spinner />
+        <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
+          <div className="px-6 py-4">
+            <div className="mb-6 relative">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="absolute top-0 right-0 cursor-pointer"
+              >
+                <X width={20} height={20} />
+              </Button>
+              <div className="gap-2 flex flex-col">
+                <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+              </div>
+              <div className="w-full flex justify-center items-center mt-4">
+                <Spinner />
+              </div>
             </div>
           </div>
         </div>
@@ -415,92 +417,109 @@ export function CreateTimesheetModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto no-scrollbar">
-        <div className="mb-4 relative">
-          <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
-          <Button
-            type="button"
-            variant={"ghost"}
-            size={"icon"}
-            onClick={onClose}
-            className="absolute top-0 right-0 cursor-pointer"
-          >
-            <X width={20} height={20} />
-          </Button>
-          <p className="text-sm mb-1 text-gray-600">
-            Use the form below to enter and submit a new timesheet on behalf of
-            an employee.
-            <br /> Ensure all required fields are accurates.
-          </p>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <GeneralSection
-            form={form}
-            setForm={setForm}
-            handleChange={handleChange}
-            userOptions={userOptions}
-            jobsiteOptions={jobsiteOptions}
-            costCodeOptions={costCodeOptions}
-            workTypeOptions={workTypeOptions}
-            datePickerOpen={datePickerOpen}
-            setDatePickerOpen={setDatePickerOpen}
-            users={users}
-            jobsites={jobsites}
-          />
-
-          {/* Conditional log sections */}
-          {/* {form.workType === "MECHANIC" && (
-            <MaintenanceSection
-              maintenanceLogs={maintenanceLogs}
-              setMaintenanceLogs={setMaintenanceLogs}
-              maintenanceEquipmentOptions={maintenanceEquipmentOptions}
-            />
-          )} */}
-          {form.workType === "TRUCK_DRIVER" && (
-            <TruckingSection
-              truckingLogs={truckingLogs}
-              setTruckingLogs={setTruckingLogs}
-              equipmentOptions={equipmentOptions}
-              jobsiteOptions={jobsiteOptions}
-              truckOptions={truckOptions}
-              trailerOptions={trailerOptions}
-            />
-          )}
-          {form.workType === "TASCO" && (
-            <TascoSection
-              tascoLogs={tascoLogs}
-              setTascoLogs={setTascoLogs}
-              materialTypes={materialTypes}
-              equipmentOptions={equipmentOptions}
-            />
-          )}
-          {form.workType === "LABOR" && (
-            <LaborSection
-              laborLogs={laborLogs}
-              setLaborLogs={setLaborLogs}
-              equipmentOptions={equipmentOptions}
-            />
-          )}
-
-          <div className="col-span-2 flex justify-end gap-2 mt-4">
+      <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
+        <div className="px-6 py-4">
+          <div className="mb-6 relative">
             <Button
               type="button"
-              variant="outline"
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              disabled={submitting}
+              className="absolute top-0 right-0 cursor-pointer"
             >
-              Cancel
+              <X width={20} height={20} />
             </Button>
-            <Button
-              type="submit"
-              className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
-              disabled={submitting}
-            >
-              Submit
-            </Button>
+            <div className="gap-2 flex flex-col">
+              <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+              <p className="text-xs text-gray-600">
+                Use the form below to enter and submit a new timesheet on behalf
+                of an employee.
+                <br /> Ensure all required fields are accurates.
+              </p>
+            </div>
           </div>
-        </form>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <GeneralSection
+              form={form}
+              setForm={setForm}
+              handleChange={handleChange}
+              userOptions={userOptions}
+              jobsiteOptions={jobsiteOptions}
+              costCodeOptions={costCodeOptions}
+              workTypeOptions={workTypeOptions}
+              datePickerOpen={datePickerOpen}
+              setDatePickerOpen={setDatePickerOpen}
+              users={users}
+              jobsites={jobsites}
+            />
+
+            {/* Conditional log sections */}
+            {form.workType === "MECHANIC" && (
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">
+                  Mechanic Project Details
+                </h3>
+                <MechanicProject
+                  mechanicProjects={mechanicProjects}
+                  setMechanicProjects={setMechanicProjects}
+                  equipmentOptions={equipmentOptions}
+                />
+              </div>
+            )}
+            {form.workType === "TRUCK_DRIVER" && (
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">Trucking Details</h3>
+                <TruckingSection
+                  truckingLogs={truckingLogs}
+                  setTruckingLogs={setTruckingLogs}
+                  equipmentOptions={equipmentOptions}
+                  jobsiteOptions={jobsiteOptions}
+                  truckOptions={truckOptions}
+                />
+              </div>
+            )}
+            {form.workType === "TASCO" && (
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">Tasco Details</h3>
+                <TascoSection
+                  tascoLogs={tascoLogs}
+                  setTascoLogs={setTascoLogs}
+                  materialTypes={materialTypes}
+                  equipmentOptions={equipmentOptions}
+                />
+              </div>
+            )}
+            {form.workType === "LABOR" && (
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">Labor Details</h3>
+                <LaborSection
+                  laborLogs={laborLogs}
+                  setLaborLogs={setLaborLogs}
+                  equipmentOptions={equipmentOptions}
+                />
+              </div>
+            )}
+
+            <div className="col-span-2 flex justify-end gap-2 mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                onClick={onClose}
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+                disabled={submitting}
+              >
+                Submit
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

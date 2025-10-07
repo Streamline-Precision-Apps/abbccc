@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserTopicPreferences } from "@/actions/NotificationActions";
-import useFcmToken from "@/hooks/useFcmToken";
+import { useFcmContext } from "./FcmContext";
 
 type Props = {
   open: boolean;
@@ -66,8 +66,7 @@ export default function NotificationModal({ open, setOpen }: Props) {
   const [preferences, setPreferences] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(true);
-  const { token, notificationPermissionStatus } = useFcmToken();
-  const [sendingTest, setSendingTest] = useState<string | null>(null);
+  const { token, notificationPermissionStatus } = useFcmContext();
   // Simplified state - either we're showing settings or we have a permission issue
   const [showPermissionOverlay, setShowPermissionOverlay] = useState(false);
   const [permissionType, setPermissionType] = useState<"blocked" | "needed">(
@@ -169,25 +168,31 @@ export default function NotificationModal({ open, setOpen }: Props) {
   // Save preferences to server
   const handleSave = async () => {
     if (!token) {
+      console.log("Saving failed, no token available");
+
       toast.error("You need to allow notifications to save preferences");
       return;
     }
 
     try {
       setIsLoading(true);
-
+      console.log("Saving notification preferences1");
       // Get topics to subscribe to (enabled preferences)
       const topicsToSubscribe = Object.entries(preferences)
         .filter(([_, enabled]) => enabled)
         .map(([topic]) => topic);
+      console.log("Saving notification preferences2");
 
       // Get topics to unsubscribe from (disabled preferences)
       const userPrefs = await getUserTopicPreferences();
+
+      console.log("Current user prefs:", userPrefs); // Debug log
+      console.log("Topics to subscribe:", topicsToSubscribe); // Debug log
+
       const currentTopics = userPrefs.map((pref) => pref.topic);
       const topicsToUnsubscribe = currentTopics.filter(
         (topic) => !topicsToSubscribe.includes(topic),
       );
-
       // First, handle subscriptions if there are any
       if (topicsToSubscribe.length > 0) {
         const subscribeResponse = await fetch("/api/notifications/topics", {
@@ -199,12 +204,12 @@ export default function NotificationModal({ open, setOpen }: Props) {
             action: "subscribe",
             topics: topicsToSubscribe,
             token,
-            userId: "session-user", // The API will get the actual userId from the session
+            // userId: "session-user", // The API will get the actual userId from the session
           }),
         });
 
         if (!subscribeResponse.ok) {
-          throw new Error("Failed to subscribe to topics");
+          throw new Error(`Error: ${subscribeResponse.statusText}`);
         }
       }
 
@@ -219,12 +224,12 @@ export default function NotificationModal({ open, setOpen }: Props) {
             action: "unsubscribe",
             topics: topicsToUnsubscribe,
             token,
-            userId: "session-user", // The API will get the actual userId from the session
+            // userId: "session-user", // The API will get the actual userId from the session
           }),
         });
 
         if (!unsubscribeResponse.ok) {
-          throw new Error("Failed to unsubscribe from topics");
+          throw new Error(`Error: ${unsubscribeResponse.statusText}`);
         }
       }
 
@@ -394,20 +399,6 @@ export default function NotificationModal({ open, setOpen }: Props) {
                 </div>
               </div>
               <div className="flex items-center gap-2 w-16">
-                {/* <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={sendingTest === topic.id || isDataLoading || !token}
-                  onClick={() => handleTestNotification(topic.id)}
-                  className="flex items-center gap-1"
-                >
-                  {sendingTest === topic.id ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Bell className="h-3 w-3" />
-                  )}
-                  Test
-                </Button> */}
                 {isDataLoading ? (
                   <Skeleton className="h-5 w-10" />
                 ) : (

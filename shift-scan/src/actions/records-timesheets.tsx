@@ -23,14 +23,15 @@ export type TimesheetSubmission = {
     workType: string;
     comments: string;
   };
-  // maintenanceLogs: Array<{
-  //   startTime: string;
-  //   endTime: string;
-  //   maintenanceId: string;
-  // }>;
+  mechanicProjects: Array<{
+    id: number;
+    equipmentId: string;
+    hours: number;
+    description: string;
+  }>;
   truckingLogs: Array<{
-    truckNumber: string;
-    trailerNumber: string | null;
+    equipmentId: string;
+    truckNumber: string; // This is actually the truck equipment ID
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: Array<{
@@ -95,30 +96,28 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       data: timesheetData,
     });
 
-    // Maintenance Logs no need for now
-    // for (const log of data.maintenanceLogs) {
-    //   if (!log.maintenanceId) continue;
-    //   const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
-    //     TimeSheet: { connect: { id: timesheet.id } },
-    //     User: { connect: { id: data.form.user.id } },
-    //     Maintenance: { connect: { id: log.maintenanceId } },
-    //     startTime: log.startTime ? new Date(log.startTime) : new Date(),
-    //     endTime: log.endTime ? new Date(log.endTime) : new Date(),
-    //   };
-    //   await tx.maintenanceLog.create({
-    //     data: maintenanceLogData,
-    //   });
-    // }
+    // Mechanic Projects
+    for (const project of data.mechanicProjects) {
+      if (!project.equipmentId || project.hours === null) continue;
+      await tx.mechanicProjects.create({
+        data: {
+          timeSheetId: timesheet.id,
+          equipmentId: project.equipmentId,
+          hours: project.hours,
+          description: project.description || null,
+        },
+      });
+    }
 
     // Trucking Logs
     for (const tlog of data.truckingLogs) {
-      if (!tlog.truckNumber) continue;
+      if (!tlog.truckNumber || !tlog.equipmentId) continue; // Check both fields
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: timesheet.id,
           laborType: "truckDriver",
-          truckNumber: tlog.truckNumber, // Assuming equipmentId is the truck number
-          trailerNumber: tlog.trailerNumber,
+          equipmentId: tlog.equipmentId, // Equipment being hauled
+          truckNumber: tlog.truckNumber, // Truck equipment ID (foreign key)
           startingMileage: tlog.startingMileage
             ? parseInt(tlog.startingMileage)
             : null,
@@ -293,12 +292,24 @@ export async function adminUpdateTimesheetStatus(
         },
       });
       if (notifications.length > 0) {
-        await tx.notificationRead.createMany({
-          data: notifications.map((notification) => ({
-            notificationId: notification.id,
-            userId: changedBy,
-          })),
-        });
+        // Use Promise.all with upsert to handle potential duplicate read records
+        await Promise.all(
+          notifications.map((notification) =>
+            tx.notificationRead.upsert({
+              where: {
+                notificationId_userId: {
+                  notificationId: notification.id,
+                  userId: changedBy,
+                },
+              },
+              create: {
+                notificationId: notification.id,
+                userId: changedBy,
+              },
+              update: {}, // Nothing to update if it already exists
+            }),
+          ),
+        );
         await tx.notificationResponse.createMany({
           data: notifications.map((notification) => ({
             notificationId: notification.id,
@@ -459,22 +470,24 @@ export async function adminUpdateTimesheet(formData: FormData) {
 
     // Delete all existing logs
     await Promise.all([
+      //remove maintenance logs for after first test to clear them in db.
       tx.maintenanceLog.deleteMany({ where: { timeSheetId: id } }),
+      tx.mechanicProjects.deleteMany({ where: { timeSheetId: id } }),
       tx.truckingLog.deleteMany({ where: { timeSheetId: id } }),
       tx.tascoLog.deleteMany({ where: { timeSheetId: id } }),
       tx.employeeEquipmentLog.deleteMany({ where: { timeSheetId: id } }),
     ]);
 
     // Maintenance Logs
-    for (const log of data.MaintenanceLogs || []) {
-      if (!log.maintenanceId) continue;
-      await tx.maintenanceLog.create({
+    for (const log of data.Maintenance || []) {
+      if (!log) continue;
+      await tx.mechanicProjects.create({
         data: {
+          id: log.id,
           timeSheetId: id,
-          maintenanceId: log.maintenanceId,
-          userId: data.User?.id ?? undefined,
-          startTime: log.startTime ?? undefined,
-          endTime: log.endTime ?? undefined,
+          equipmentId: log.equipmentId,
+          hours: log.hours,
+          description: log.description,
         },
       });
     }

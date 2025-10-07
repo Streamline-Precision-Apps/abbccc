@@ -40,6 +40,15 @@ export default function AppManagerEditTimesheetModal(
   const [editGeneral, setEditGeneral] = useState(false);
   const [changeReason, setLocalChangeReason] = useState("");
 
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState<{
+    startTime?: string;
+    endTime?: string;
+    jobsite?: string;
+    costCode?: string;
+  }>({});
+  const [showValidation, setShowValidation] = useState(false);
+
   // State for date and time pickers
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<string>("");
@@ -97,6 +106,45 @@ export default function AppManagerEditTimesheetModal(
     }
   }, [endDate, endTime, editGeneral, setEdited]);
 
+  // Validation function
+  const validateForm = () => {
+    const errors: typeof validationErrors = {};
+
+    if (!data) return errors;
+
+    // Check if start time is missing
+    if (!data.startTime && !startDate) {
+      errors.startTime = "Start time is required";
+    }
+
+    // Check if end time is missing
+    if (!data.endTime && !endDate) {
+      errors.endTime = "End time is required";
+    }
+
+    // Check if jobsite is missing
+    if (!data.Jobsite?.id) {
+      errors.jobsite = "Jobsite is required";
+    }
+
+    // Check if cost code is missing
+    if (!data.CostCode?.id) {
+      errors.costCode = "Cost code is required";
+    }
+
+    // Check if end time is before start time
+    if (data.startTime && data.endTime) {
+      const startDateTime = new Date(data.startTime);
+      const endDateTime = new Date(data.endTime);
+
+      if (endDateTime <= startDateTime) {
+        errors.endTime = "End time must be after start time";
+      }
+    }
+
+    return errors;
+  };
+
   // Only run the updates when start/end time or date changes
   useEffect(() => {
     updateStartDateTime();
@@ -109,13 +157,25 @@ export default function AppManagerEditTimesheetModal(
   if (!isOpen) return null;
 
   const onSave = async () => {
-    // Save edited start/end time if changed
+    // Validate form before saving
+    const errors = validateForm();
+    setValidationErrors(errors);
+    setShowValidation(true);
+
+    // If there are validation errors, don't proceed with save
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    // Save edited start/end time if validation passes
     setIsSaving(true);
     await save();
     // Add a short delay for a smoother transition
     setTimeout(() => {
       setEditGeneral(false);
       setIsSaving(false);
+      setShowValidation(false);
+      setValidationErrors({});
     }, 1000); // 1s delay for smoothness
   };
 
@@ -286,6 +346,11 @@ export default function AppManagerEditTimesheetModal(
                     </div>
                   )}
                 </div>
+                {showValidation && validationErrors.startTime && (
+                  <div className="text-red-500 text-xs mt-1 px-1">
+                    {validationErrors.startTime}
+                  </div>
+                )}
               </div>
               {/* End Time */}
               <div className="flex flex-col py-3 border-b">
@@ -353,6 +418,11 @@ export default function AppManagerEditTimesheetModal(
                     </div>
                   )}
                 </div>
+                {showValidation && validationErrors.endTime && (
+                  <div className="text-red-500 text-xs mt-1 px-1">
+                    {validationErrors.endTime}
+                  </div>
+                )}
               </div>
               {/* Jobsite */}
               {/* Jobsite */}
@@ -394,6 +464,11 @@ export default function AppManagerEditTimesheetModal(
                     </SelectContent>
                   </Select>
                 </div>
+                {showValidation && validationErrors.jobsite && (
+                  <div className="text-red-500 text-xs mt-1 px-1">
+                    {validationErrors.jobsite}
+                  </div>
+                )}
               </div>
               {/* Cost Code */}
               <div className="flex flex-col py-3 border-b">
@@ -433,6 +508,11 @@ export default function AppManagerEditTimesheetModal(
                     </SelectContent>
                   </Select>
                 </div>
+                {showValidation && validationErrors.costCode && (
+                  <div className="text-red-500 text-xs mt-1 px-1">
+                    {validationErrors.costCode}
+                  </div>
+                )}
               </div>
               {/* Comment */}
               <div className="py-3">
@@ -527,6 +607,8 @@ export default function AppManagerEditTimesheetModal(
               className="flex-1 flex items-center justify-center gap-2 min-h-[48px] rounded-lg text-base font-medium bg-white hover:bg-gray-100 transition-colors"
               onClick={() => {
                 setEditGeneral(false);
+                setShowValidation(false);
+                setValidationErrors({});
                 reset();
               }}
             >

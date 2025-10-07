@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EditMaintenanceLogs } from "./EditMaintenanceLogs";
+import { EditMechanicProjects } from "./EditMechanicProjects";
 import { EditTruckingLogs } from "./EditTruckingLogs";
 import { EditTascoLogs } from "./EditTascoLogs";
 import { EditEmployeeEquipmentLogs } from "./EditEmployeeEquipmentLogs";
-import {
-  adminSetNotificationToRead,
-  adminUpdateTimesheet,
-} from "@/actions/records-timesheets";
+import { adminSetNotificationToRead } from "@/actions/records-timesheets";
+import { adminUpdateTimesheetOptimized } from "@/actions/optimized-timesheet-updates";
 import EditGeneralSection from "./EditGeneralSection";
 import { SquareCheck, SquareXIcon, X, ClockIcon } from "lucide-react";
-import { isMaintenanceLogComplete } from "./utils/validation";
+import { isMechanicProjectComplete } from "./utils/validation";
 import {
   EditTimesheetModalProps,
   TimesheetData,
   useTimesheetData,
 } from "./hooks/useTimesheetData";
+import { useTimesheetChanges } from "./hooks/useTimesheetChanges";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
 import { toast } from "sonner";
 import { TimeSheetHistory } from "./TimeSheetHistory";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
 import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
-import { parse } from "path";
-import { set } from "lodash";
 
 // Define types for change logs
 interface ChangeLogEntry {
@@ -116,6 +113,9 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const showTasco = form?.workType === "TASCO";
   const showEquipment = form?.workType === "LABOR";
 
+  // Initialize change detection hook
+  const { detectChanges } = useTimesheetChanges();
+
   // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,84 +133,18 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       setLoading(true);
       setError(null);
 
-      // Generate changes record by comparing original form with current form
-      const changes: Record<string, { old: unknown; new: unknown }> = {};
-      let wasStatusChanged = false;
-      let numberOfChanges = 0;
+      // Use the hook to detect changes between original and current form
+      const { changes, wasStatusChanged, numberOfChanges } = detectChanges(
+        originalForm,
+        form,
+      );
 
-      // Check basic fields
-      if (form.startTime !== originalForm.startTime) {
-        changes["startTime"] = {
-          old: originalForm.startTime,
-          new: form.startTime,
-        };
-        numberOfChanges++;
-      }
+      // Deep comparison check for any changes in the form
+      const hasAnyChanges =
+        JSON.stringify(originalForm) !== JSON.stringify(form);
 
-      if (form.endTime !== originalForm.endTime) {
-        changes["endTime"] = {
-          old: originalForm.endTime,
-          new: form.endTime,
-        };
-        numberOfChanges++;
-      }
-
-      if (JSON.stringify(form.date) !== JSON.stringify(originalForm.date)) {
-        changes["date"] = {
-          old: originalForm.date,
-          new: form.date,
-        };
-        numberOfChanges++;
-      }
-
-      if (form.workType !== originalForm.workType) {
-        changes["workType"] = {
-          old: originalForm.workType,
-          new: form.workType,
-        };
-        numberOfChanges++;
-      }
-
-      if (form.status !== originalForm.status) {
-        changes["status"] = {
-          old: originalForm.status,
-          new: form.status,
-        };
-        wasStatusChanged = true;
-        numberOfChanges++;
-      }
-
-      // Check relations
-      if (form.User?.id !== originalForm.User?.id) {
-        changes["User"] = {
-          old: originalForm.User
-            ? `${originalForm.User.firstName} ${originalForm.User.lastName}`
-            : null,
-          new: form.User
-            ? `${form.User.firstName} ${form.User.lastName}`
-            : null,
-        };
-        numberOfChanges++;
-      }
-
-      if (form.Jobsite?.id !== originalForm.Jobsite?.id) {
-        changes["Jobsite"] = {
-          old: originalForm.Jobsite?.name,
-          new: form.Jobsite?.name,
-        };
-        numberOfChanges++;
-      }
-
-      if (form.CostCode?.name !== originalForm.CostCode?.name) {
-        changes["CostCode"] = {
-          old: originalForm.CostCode?.name,
-          new: form.CostCode?.name,
-        };
-        numberOfChanges++;
-      }
-
-      // If no changes were made, inform the user
-      if (Object.keys(changes).length === 0) {
+      // If no changes were made at any level, inform the user
+      if (!hasAnyChanges) {
         toast.info("No changes were made to the timesheet", { duration: 3000 });
         setLoading(false);
         return;
@@ -219,36 +153,40 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       const formData = new FormData();
       formData.append("id", timesheetId.toString());
       formData.append("data", JSON.stringify(form));
+      formData.append("originalData", JSON.stringify(originalForm)); // Include original data for diffing
       formData.append("changes", JSON.stringify(changes));
       formData.append("editorId", editor || "");
       formData.append("changeReason", changeReason);
       formData.append("wasStatusChanged", wasStatusChanged.toString());
       formData.append("numberOfChanges", numberOfChanges.toString());
 
-      const result = await adminUpdateTimesheet(formData);
-      if (result.success && !result.onlyStatusUpdated) {
-        await fetch("/api/notifications/send-multicast", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            topic: "timecards-changes",
-            title: "Timecard Modified ",
-            message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${timesheetId}.`,
-            link: `/admins/timesheets?id=${timesheetId}`,
-            referenceId: timesheetId,
-          }),
-        });
-      }
+      const result = await adminUpdateTimesheetOptimized(formData); // Use the optimized function
+      if (result.success) {
+        //after a successful update, refresh the dashboard data and close the modal the notification will be sent in the background
+        if (onUpdated) onUpdated();
+        onClose();
+        toast.success("Timesheet updated successfully", { duration: 3000 });
+        setLoading(false);
 
-      if (onUpdated) onUpdated();
-      onClose();
-      toast.success("Timesheet updated successfully", { duration: 3000 });
+        if (!result.onlyStatusUpdated && numberOfChanges > 0) {
+          await fetch("/api/notifications/send-multicast", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              topic: "timecards-changes",
+              title: "Timecard Modified ",
+              message: `${result.editorFullName} made ${numberOfChanges} changes to ${result.userFullname}'s timesheet #${timesheetId}.`,
+              link: `/admins/timesheets?id=${timesheetId}`,
+              referenceId: timesheetId,
+            }),
+          });
+        }
+      }
     } catch (error) {
       toast.error(`Failed to update timesheet ${form.id}`, { duration: 3000 });
       setError("Failed to update timesheet in admin records.");
-    } finally {
       setLoading(false);
     }
   };
@@ -338,11 +276,6 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
   const trailerOptions = trailers.map((e) => ({
     value: e.id,
     label: e.name,
-  }));
-  // If materialTypes come as string ids, map to number if needed
-  const mappedMaterialTypes = materialTypes.map((m) => ({
-    ...m,
-    id: Number(m.id),
   }));
 
   const setNotificationToRead = async () => {
@@ -451,19 +384,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               {/* Related logs - conditional rendering by workType */}
 
               {showMaintenance && (
-                <EditMaintenanceLogs
-                  maintenanceOptions={equipmentOptions}
-                  logs={form.MaintenanceLogs}
-                  onLogChange={(idx, field, value) =>
-                    logs.handleLogChange("MaintenanceLogs", idx, field, value)
+                <EditMechanicProjects
+                  equipmentOptions={equipmentOptions}
+                  projects={form.Maintenance}
+                  onProjectChange={(idx, field, value) =>
+                    logs.handleLogChange("Maintenance", idx, field, value)
                   }
-                  onAddLog={logs.addMaintenanceLog}
-                  onRemoveLog={logs.removeMaintenanceLog}
-                  originalLogs={originalForm?.MaintenanceLogs || []}
+                  onAddProject={logs.addMechanicProject}
+                  onRemoveProject={logs.removeMechanicProject}
+                  originalProjects={originalForm?.Maintenance || []}
+                  onUndoProjectField={logs.handleUndoMechanicProjectField}
                   disableAdd={
-                    form.MaintenanceLogs.length > 0 &&
-                    !isMaintenanceLogComplete(
-                      form.MaintenanceLogs[form.MaintenanceLogs.length - 1],
+                    form.Maintenance.length > 0 &&
+                    !isMechanicProjectComplete(
+                      form.Maintenance[form.Maintenance.length - 1],
                     )
                   }
                 />
@@ -511,7 +445,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
               {showTasco && (
                 <EditTascoLogs
                   equipmentOptions={equipmentOptions}
-                  materialTypes={mappedMaterialTypes}
+                  materialTypes={materialTypes}
                   logs={form.TascoLogs}
                   onLogChange={(idx, field, value) =>
                     logs.handleLogChange("TascoLogs", idx, field, value)
@@ -554,7 +488,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                   value={changeReason}
                   onChange={(e) => setChangeReason(e.target.value)}
                   placeholder="Enter change reason (required)"
-                  className={`w-full ${!changeReason.trim() ? "border-red-300 focus:ring-red-500 focus:border-red-500" : ""}`}
+                  className={`w-full bg-white ${!changeReason.trim() ? "border-red-300 focus:ring-red-500 focus:border-red-500" : ""}`}
                   required
                 />
                 {!changeReason.trim() && (

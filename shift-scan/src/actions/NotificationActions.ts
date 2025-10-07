@@ -8,9 +8,8 @@ import { auth } from "@/auth";
  * - If token doesn't exist, creates a new record
  */
 
-export async function upsertFCMToken({ token }: { token: string }) {
+export async function setFCMToken({ token }: { token: string }) {
   // Get the current user session
-
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -20,51 +19,22 @@ export async function upsertFCMToken({ token }: { token: string }) {
   }
 
   try {
-    // Check if token already exists for any user
-    const existingToken = await prisma.fCMToken.findUnique({
-      where: {
+    await prisma.fCMToken.deleteMany({
+      where: { userId: userId },
+    });
+    // Create a new token record
+
+    await prisma.fCMToken.create({
+      data: {
         token: token,
+        userId: userId,
+        platform: "web",
+        lastUsedAt: new Date(),
+        isValid: true,
       },
     });
 
-    if (existingToken) {
-      // Update the token if it exists but belongs to a different user or is marked invalid
-      if (existingToken.userId !== userId || !existingToken.isValid) {
-        await prisma.fCMToken.update({
-          where: {
-            id: existingToken.id,
-          },
-          data: {
-            userId: userId,
-            isValid: true,
-            lastUsedAt: new Date(),
-            platform: "web", // You can modify this based on the platform
-          },
-        });
-      } else {
-        // Just update the lastUsedAt timestamp
-        await prisma.fCMToken.update({
-          where: {
-            id: existingToken.id,
-          },
-          data: {
-            lastUsedAt: new Date(),
-          },
-        });
-      }
-      return true;
-    } else {
-      // Create new token record
-      await prisma.fCMToken.create({
-        data: {
-          token: token,
-          userId: userId,
-          platform: "web", // You can modify this based on the platform
-          lastUsedAt: new Date(),
-        },
-      });
-      return true;
-    }
+    return true;
   } catch (error) {
     console.error("Error saving FCM token:", error);
     return false;

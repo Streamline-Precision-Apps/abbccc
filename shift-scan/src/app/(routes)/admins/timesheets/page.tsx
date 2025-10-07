@@ -33,6 +33,7 @@ export default function AdminTimesheets() {
   const costCode = searchParams.get("costCode");
   const id = searchParams.get("id");
   const notificationId = searchParams.get("notificationId");
+  const equipmentId = searchParams.get("equipmentId");
   const {
     inputValue,
     setInputValue,
@@ -71,6 +72,7 @@ export default function AdminTimesheets() {
     reFilterPage,
     costCodes,
     jobsites,
+    equipment,
     filters,
     notificationIds,
     setNotificationIds,
@@ -80,6 +82,7 @@ export default function AdminTimesheets() {
     costCode,
     id,
     notificationId,
+    equipmentId,
   });
 
   return (
@@ -110,6 +113,7 @@ export default function AdminTimesheets() {
               onUseFiltersChange={reFilterPage}
               jobsites={jobsites}
               costCodes={costCodes}
+              equipment={equipment}
               handleClearFilters={handleClearFilters}
             />
           </div>

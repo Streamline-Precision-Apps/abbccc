@@ -38,10 +38,13 @@ export async function GET(req: Request) {
   const idParams = searchParams.getAll("id");
   const jobsiteId = searchParams.get("jobsiteId");
   const costCode = searchParams.get("costCode");
+  const equipmentIdParams = searchParams.getAll("equipmentId");
+  const equipmentLogTypesParams = searchParams.getAll("equipmentLogTypes");
   const userIdFilter = searchParams.get("userId");
   const dateFromParam = searchParams.get("dateFrom");
   const dateToParam = searchParams.get("dateTo");
   const changes = searchParams.get("changes");
+
 
   let timesheets, total, pageSize, page, skip, totalPages;
 
@@ -66,6 +69,74 @@ export async function GET(req: Request) {
     if (jobsiteId) filter.Jobsite = { code: jobsiteId };
     if (costCode) filter.CostCode = { code: costCode };
     if (userIdFilter) filter.User = { id: userIdFilter };
+    
+    // Equipment filter - check if any equipment logs are connected to the selected equipment
+    if (equipmentIdParams.length > 0) {
+      const equipmentOrConditions = [];
+      
+      // If no specific log types are specified, include all types
+      const logTypesToInclude = equipmentLogTypesParams.length > 0 
+        ? equipmentLogTypesParams 
+        : ['employeeEquipmentLogs', 'truckingLogs', 'tascoLogs', 'mechanicProjects'];
+      
+      // Add conditions based on selected log types
+      if (logTypesToInclude.includes('employeeEquipmentLogs')) {
+        equipmentOrConditions.push({
+          EmployeeEquipmentLogs: {
+            some: {
+              equipmentId: { in: equipmentIdParams },
+            },
+          },
+        });
+      }
+      
+      if (logTypesToInclude.includes('truckingLogs')) {
+        equipmentOrConditions.push({
+          TruckingLogs: {
+            some: {
+              OR: [
+                {
+                  equipmentId: { in: equipmentIdParams },
+                },
+                {
+                  EquipmentHauled: {
+                    some: {
+                      equipmentId: { in: equipmentIdParams },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        });
+      }
+      
+      if (logTypesToInclude.includes('tascoLogs')) {
+        equipmentOrConditions.push({
+          TascoLogs: {
+            some: {
+              equipmentId: { in: equipmentIdParams },
+            },
+          },
+        });
+      }
+      
+      if (logTypesToInclude.includes('mechanicProjects')) {
+        equipmentOrConditions.push({
+          Maintenance: {
+            some: {
+              equipmentId: { in: equipmentIdParams },
+            },
+          },
+        });
+      }
+      
+      // Only add the filter if there are conditions to include
+      if (equipmentOrConditions.length > 0) {
+        filter.OR = equipmentOrConditions;
+      }
+    }
+    
     // Date range filter
     if (dateFromParam || dateToParam) {
       const dateFilter: Record<string, Date> = {};
@@ -172,6 +243,20 @@ export async function GET(req: Request) {
               LoadQuantity: true,
             },
           },
+          Maintenance: {
+            select: {
+              id: true,
+              equipmentId: true,
+              hours: true,
+              description: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
           _count: {
             select: {
               ChangeLogs: {
@@ -264,6 +349,20 @@ export async function GET(req: Request) {
             select: {
               shiftType: true,
               LoadQuantity: true,
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              equipmentId: true,
+              hours: true,
+              description: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
           _count: {
@@ -360,6 +459,20 @@ export async function GET(req: Request) {
             select: {
               shiftType: true,
               LoadQuantity: true,
+            },
+          },
+          Maintenance: {
+            select: {
+              id: true,
+              equipmentId: true,
+              hours: true,
+              description: true,
+              Equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
           _count: {

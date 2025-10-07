@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combobox";
 import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { SingleCombobox } from "@/components/ui/single-combobox";
+import { X, Plus } from "lucide-react";
 
 interface EmployeeEquipmentLog {
   id: string;
@@ -52,7 +52,7 @@ export const EditEmployeeEquipmentLogs: React.FC<
       {logs.map((log, idx) => (
         <div
           key={log.id}
-          className="border rounded p-4 mb-2 flex flex-col gap-2 relative "
+          className="bg-slate-50 border rounded p-2 mb-2 flex flex-col gap-4 relative"
         >
           <div className="flex flex-row row-start-1 row-end-2 col-span-2 items-end">
             <div className="w-[350px]">
@@ -86,11 +86,11 @@ export const EditEmployeeEquipmentLogs: React.FC<
           <Button
             type="button"
             size={"icon"}
-            variant="destructive"
+            variant="ghost"
             onClick={() => onRemoveLog(idx)}
-            className="absolute top-2 right-2"
+            className="absolute top-0 right-0"
           >
-            <img src="/trash.svg" alt="Delete" className="w-4 h-4" />
+            <X className="w-4 h-4" color="red" />
           </Button>
 
           <div className="flex flex-row items-end">
@@ -149,6 +149,7 @@ export const EditEmployeeEquipmentLogs: React.FC<
         onClick={onAddLog}
         disabled={!canAdd}
       >
+        <Plus className="w-4 h-4 mr-2" color="white" />
         Add Equipment Log
       </Button>
     </div>

@@ -56,6 +56,27 @@ export default function CreateJobsiteModal({
     createdById: "",
   });
 
+  // Fetch tag summaries on component mount
+  useEffect(() => {
+    const fetchTagSummaries = async () => {
+      try {
+        const response = await fetch("/api/getTagSummary");
+        const data = await response.json();
+        const filteredTags = data.tags.map(
+          (tag: { id: string; name: string }) => ({
+            id: tag.id,
+            name: tag.name,
+          }),
+        );
+        setTagSummaries(filteredTags);
+      } catch (error) {
+        console.error("Failed to fetch tag summaries:", error);
+      }
+    };
+
+    fetchTagSummaries();
+  }, []);
+
   // Handles both input and select changes for address fields
   const handleAddressChange = (
     e:
@@ -109,7 +130,7 @@ export default function CreateJobsiteModal({
         Client: {
           id: formData.Client.id,
         },
-        CCTags: formData.CCTags ? [formData.CCTags] : [],
+        CCTags: formData.CCTags.map((tag) => ({ id: tag.id })),
         CreatedVia: formData.CreatedVia,
         createdById: session?.user.id ? session.user.id : "",
       };

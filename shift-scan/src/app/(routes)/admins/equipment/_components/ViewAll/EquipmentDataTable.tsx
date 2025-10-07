@@ -21,7 +21,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import React, { Dispatch, SetStateAction, useMemo, useState, Suspense } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useMemo,
+  useState,
+  Suspense,
+} from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EquipmentSummary } from "../useEquipmentData";
 import { equipmentTableColumns } from "./equipmentTableColumns";
@@ -110,22 +116,56 @@ export function EquipmentDataTable({
               </Tooltip>
 
               {/* Delete button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => onDeleteClick?.(item.id)}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
+              {(() => {
+                const totalTimesheetLogs =
+                  (item._count?.EmployeeEquipmentLogs || 0) +
+                  (item._count?.TascoLogs || 0) +
+                  (item._count?.HauledInLogs || 0) +
+                  (item._count?.UsedAsTrailer || 0) +
+                  (item._count?.UsedAsTruck || 0) +
+                  (item._count?.Maintenance || 0);
+
+                return totalTimesheetLogs === 0 ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size={"icon"}
+                        onClick={() => onDeleteClick?.(item.id)}
+                      >
+                        <img
+                          src="/trash-red.svg"
+                          alt="Delete"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="opacity-50"
+                        variant="ghost"
+                        size={"icon"}
+                        onClick={() => {}}
+                      >
+                        <img
+                          src="/trash-red.svg"
+                          alt="Delete"
+                          className="h-4 w-4 cursor-pointer"
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white text-red-500 border border-red-300">
+                      <span className="">Cannot delete:</span>
+                      <br />
+                      <span className="">linked timesheets</span>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })()}
             </div>
           );
         },
@@ -200,41 +240,43 @@ export function EquipmentDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              <Suspense fallback={<LoadingEquipmentTableState columns={columns} />}>
-              {loading ? (
-                <LoadingEquipmentTableState columns={columns} />
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+              <Suspense
+                fallback={<LoadingEquipmentTableState columns={columns} />}
+              >
+                {loading ? (
+                  <LoadingEquipmentTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {showPendingOnly
+                        ? "No pending equipment found"
+                        : "No equipment found"}
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {showPendingOnly
-                      ? "No pending equipment found"
-                      : "No equipment found"}
-                  </TableCell>
-                </TableRow>
-              )}
+                )}
               </Suspense>
             </TableBody>
           </Table>
