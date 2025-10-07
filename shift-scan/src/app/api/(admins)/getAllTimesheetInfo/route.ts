@@ -45,14 +45,6 @@ export async function GET(req: Request) {
   const dateToParam = searchParams.get("dateTo");
   const changes = searchParams.get("changes");
 
-  // Debug logging for equipment filters
-  if (equipmentIdParams.length > 0 || equipmentLogTypesParams.length > 0) {
-    console.log('Equipment filter debug:', {
-      equipmentIdParams,
-      equipmentLogTypesParams,
-      url: req.url
-    });
-  }
 
   let timesheets, total, pageSize, page, skip, totalPages;
 

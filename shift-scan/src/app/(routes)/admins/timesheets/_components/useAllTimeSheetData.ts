@@ -89,11 +89,13 @@ export default function useAllTimeSheetData({
   costCode,
   id,
   notificationId,
+  equipmentId,
 }: {
   jobsiteId: string | null;
   costCode: string | null;
   id: string | null;
   notificationId: string | null;
+  equipmentId: string | null;
 }) {
   const router = useRouter();
   const { refresh } = useDashboardData();
@@ -281,20 +283,34 @@ export default function useAllTimeSheetData({
     fetchEquipment();
   }, []);
 
+  // Track if URL params have been processed to avoid initial fetch without filters
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
+
   // On mount, apply jobsiteId/costCode from props to filters before first fetch
+  const urlParams = useMemo(() => ({
+    jobsiteId,
+    costCode,
+    id,
+    notificationId,
+    equipmentId,
+  }), [jobsiteId, costCode, id, notificationId, equipmentId]);
+
   useEffect(() => {
-    if (jobsiteId || costCode || id || notificationId) {
-      setNotificationIds(notificationId || null);
+    if (urlParams.jobsiteId || urlParams.costCode || urlParams.id || urlParams.notificationId || urlParams.equipmentId) {
+      setNotificationIds(urlParams.notificationId || null);
       setFilters((prev) => ({
         ...prev,
-        jobsiteId: jobsiteId ? [jobsiteId] : prev.jobsiteId,
-        costCode: costCode ? [costCode] : prev.costCode,
-        id: id ? [id] : prev.id,
-        notificationId: notificationId ? [notificationId] : prev.notificationId,
+        jobsiteId: urlParams.jobsiteId ? [urlParams.jobsiteId] : prev.jobsiteId,
+        costCode: urlParams.costCode ? [urlParams.costCode] : prev.costCode,
+        id: urlParams.id ? [urlParams.id] : prev.id,
+        notificationId: urlParams.notificationId ? [urlParams.notificationId] : prev.notificationId,
+        equipmentId: urlParams.equipmentId ? [urlParams.equipmentId] : prev.equipmentId,
       }));
     }
+    // Mark URL params as processed (even if none were present)
+    setUrlParamsProcessed(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobsiteId, costCode, id, notificationId]);
+  }, [urlParams]);
 
   // Fetch all timesheets (paginated) or all pending timesheets (no pagination)
   const fetchTimesheets = async () => {
@@ -322,10 +338,41 @@ export default function useAllTimeSheetData({
     }
   };
 
-  // Fetch timesheets when page/pageSize, filters, or useFilters change
+  // Track if we have URL params to determine if we should auto-apply filters
+  const hasUrlParams = useMemo(() => {
+    return !!(urlParams.jobsiteId || urlParams.costCode || urlParams.id || urlParams.notificationId || urlParams.equipmentId);
+  }, [urlParams]);
+
+  // Create stable filter strings for dependency tracking
+  const filterDependencies = useMemo(() => ({
+    jobsiteId: filters.jobsiteId.join(','),
+    costCode: filters.costCode.join(','),
+    equipmentId: filters.equipmentId.join(','),
+    id: filters.id.join(','),
+    notificationId: filters.notificationId.join(',')
+  }), [filters.jobsiteId, filters.costCode, filters.equipmentId, filters.id, filters.notificationId]);
+
+  // Fetch timesheets when page/pageSize, search, or explicit refilter triggers change
   useEffect(() => {
-    fetchTimesheets();
-  }, [page, pageSize, showPendingOnly, searchTerm, refreshKey, refilterKey]);
+    // Only fetch after URL params have been processed to avoid initial fetch without filters
+    if (urlParamsProcessed) {
+      fetchTimesheets();
+    }
+  }, [
+    urlParamsProcessed,
+    page, 
+    pageSize, 
+    showPendingOnly, 
+    searchTerm, 
+    refreshKey, 
+    refilterKey,
+    // Include filter dependencies only when we have URL params (to auto-apply them)
+    hasUrlParams ? filterDependencies.jobsiteId : '',
+    hasUrlParams ? filterDependencies.costCode : '',
+    hasUrlParams ? filterDependencies.equipmentId : '',
+    hasUrlParams ? filterDependencies.id : '',
+    hasUrlParams ? filterDependencies.notificationId : ''
+  ]);
 
   // Filter timesheets based on searchTerm and date range
   const filteredTimesheets = useMemo(() => {

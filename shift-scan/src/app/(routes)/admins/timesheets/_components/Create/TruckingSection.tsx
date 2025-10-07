@@ -23,8 +23,7 @@ export type TruckingMaterialDraft = {
 };
 export type TruckingLogDraft = {
   equipmentId: string;
-  truckNumber: string;
-  trailerNumber: string | null;
+  truckNumber: string; // This stores the truck equipment ID (not the name)
   startingMileage: string;
   endingMileage: string;
   equipmentHauled: {
@@ -44,13 +43,11 @@ type Props = {
   setTruckingLogs: React.Dispatch<React.SetStateAction<TruckingLogDraft[]>>;
   equipmentOptions: { value: string; label: string }[];
   truckOptions: { value: string; label: string }[];
-  trailerOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
 };
 
 export function TruckingSection({
   truckOptions,
-  trailerOptions,
   truckingLogs,
   setTruckingLogs,
   equipmentOptions,
@@ -84,10 +81,11 @@ export function TruckingSection({
                 <SingleCombobox
                   font={"font-normal"}
                   options={truckOptions}
-                  value={log.truckNumber}
+                  value={log.truckNumber} // truckNumber now stores the equipment ID
                   onChange={(val) => {
                     const updated = [...truckingLogs];
-                    updated[idx].truckNumber = val;
+                    updated[idx].truckNumber = val; // Store the equipment ID in truckNumber
+                    updated[idx].equipmentId = val; // Also store it in equipmentId for consistency
                     setTruckingLogs(updated);
                   }}
                   placeholder="Select Truck*"

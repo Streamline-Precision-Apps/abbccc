@@ -33,6 +33,7 @@ export default function AdminTimesheets() {
   const costCode = searchParams.get("costCode");
   const id = searchParams.get("id");
   const notificationId = searchParams.get("notificationId");
+  const equipmentId = searchParams.get("equipmentId");
   const {
     inputValue,
     setInputValue,
@@ -81,6 +82,7 @@ export default function AdminTimesheets() {
     costCode,
     id,
     notificationId,
+    equipmentId,
   });
 
   return (
