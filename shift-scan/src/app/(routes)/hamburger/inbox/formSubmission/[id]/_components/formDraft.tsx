@@ -46,6 +46,7 @@ interface FormTemplate {
   name: string;
   formType: string;
   isActive: boolean;
+  isApprovalRequired: boolean;
   isSignatureRequired: boolean;
   groupings: FormGrouping[];
 }
@@ -107,17 +108,17 @@ export default function FormDraft({
         const dataToSave = { ...values };
         // Convert boolean values to strings for the API
         const stringValues: Record<string, string> = {};
-        
+
         for (const [key, value] of Object.entries(dataToSave)) {
-          if (typeof value === 'boolean') {
+          if (typeof value === "boolean") {
             stringValues[key] = value.toString();
           } else if (value !== null && value !== undefined) {
             stringValues[key] = String(value);
           } else {
-            stringValues[key] = '';
+            stringValues[key] = "";
           }
         }
-        
+
         await saveDraft(
           stringValues,
           formData.id,
@@ -156,7 +157,7 @@ export default function FormDraft({
         if (field.required) {
           // Check both field ID and field label as keys
           const fieldValue = formValues[field.id] || formValues[field.label];
-          
+
           // Handle CHECKBOX field type specially
           if (field.type === "CHECKBOX") {
             // For checkboxes, any defined value is valid (true or false)
@@ -166,15 +167,15 @@ export default function FormDraft({
             // All other validation is skipped for checkboxes
             continue;
           }
-          
+
           // For string values
-          if (typeof fieldValue === 'string') {
+          if (typeof fieldValue === "string") {
             if (!fieldValue || fieldValue.trim() === "") {
               return false;
             }
           }
           // For boolean values (other than checkboxes)
-          else if (typeof fieldValue === 'boolean') {
+          else if (typeof fieldValue === "boolean") {
             // Booleans are considered valid
             continue;
           }
@@ -185,10 +186,10 @@ export default function FormDraft({
 
           // For JSON fields, check if they contain meaningful data
           if (
-            typeof fieldValue === 'string' &&
+            typeof fieldValue === "string" &&
             (field.type === "SEARCH_PERSON" ||
-            field.type === "SEARCH_ASSET" ||
-            field.type === "MULTISELECT")
+              field.type === "SEARCH_ASSET" ||
+              field.type === "MULTISELECT")
           ) {
             try {
               const parsed = JSON.parse(fieldValue);

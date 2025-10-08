@@ -338,36 +338,38 @@ export default function EditFormSubmissionModal({
             </div>
           </div>
           <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
-            <div className="w-full flex flex-col ">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border border-gray-200 rounded-md bg-gray-50 mt-3 cursor-default w-fit px-3 py-2 hover:no-underline"
-                disabled
-              >
-                <div className="w-full flex flex-row ">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-emerald-600 mr-1"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="font-semibold text-xs text-gray-700 ">
-                    Approval History
-                  </span>
-                  <div className="flex-grow">
-                    <ChevronDown className="w-4 h-4 ml-auto" />
+            {formTemplate?.isApprovalRequired && (
+              <div className="w-full flex flex-col ">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border border-gray-200 rounded-md bg-gray-50 mt-3 cursor-default w-fit px-3 py-2 hover:no-underline"
+                  disabled
+                >
+                  <div className="w-full flex flex-row ">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-emerald-600 mr-1"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="font-semibold text-xs text-gray-700 ">
+                      Approval History
+                    </span>
+                    <div className="flex-grow">
+                      <ChevronDown className="w-4 h-4 ml-auto" />
+                    </div>
                   </div>
-                </div>
-              </Button>
-            </div>
+                </Button>
+              </div>
+            )}
             {/* Simulated form fields skeleton */}
             {/* Simulated form fields skeleton - Including submitted for field */}
             <div className="w-full h-full space-y-6 mt-4">
@@ -722,14 +724,108 @@ export default function EditFormSubmissionModal({
         </div>
         <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
           {/* Show approval information if available */}
-          {formSubmission?.Approvals && formSubmission.Approvals.length > 0 ? (
-            <Accordion type="single" collapsible className="mt-3">
-              <AccordionItem
-                value="approvals"
-                className="border border-gray-200 rounded-md bg-gray-50"
-              >
-                <AccordionTrigger className="px-3 py-2 hover:no-underline">
-                  <div className="flex items-center">
+          {formTemplate?.isApprovalRequired && (
+            <>
+              {formSubmission?.Approvals &&
+              formSubmission.Approvals.length > 0 ? (
+                <Accordion type="single" collapsible className="mt-3">
+                  <AccordionItem
+                    value="approvals"
+                    className="border border-gray-200 rounded-md bg-gray-50"
+                  >
+                    <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                      <div className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 text-emerald-600 mr-1"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                          <path
+                            fillRule="evenodd"
+                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="font-semibold text-xs text-gray-700">
+                          Approval History
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-3">
+                      <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 pr-1">
+                        {/* Sort approvals by date (newest first) */}
+                        {[...formSubmission.Approvals]
+                          .sort(
+                            (a, b) =>
+                              new Date(b.updatedAt).getTime() -
+                              new Date(a.updatedAt).getTime(),
+                          )
+                          .map((approval, index) => (
+                            <div
+                              key={approval.id}
+                              className={`py-1.5 ${index !== 0 ? "border-t border-gray-100" : ""}`}
+                            >
+                              <div className="flex items-center text-xs">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-3 w-3 text-emerald-500 mr-1 flex-shrink-0"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                                <div>
+                                  {approval.Approver ? (
+                                    <span className="font-medium">
+                                      {approval.Approver.firstName}{" "}
+                                      {approval.Approver.lastName}
+                                    </span>
+                                  ) : (
+                                    <span className="font-medium">
+                                      System Approval
+                                    </span>
+                                  )}
+                                  <span className="text-xs ml-1 text-gray-500">
+                                    (
+                                    {new Date(
+                                      approval.updatedAt,
+                                    ).toLocaleDateString()}{" "}
+                                    at{" "}
+                                    {new Date(
+                                      approval.updatedAt,
+                                    ).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                    )
+                                  </span>
+                                </div>
+                              </div>
+                              {approval.comment && (
+                                <p className="text-xs mt-1 italic text-gray-600 bg-white px-2 py-1 rounded border border-gray-100">
+                                  {approval.comment}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border border-gray-200 rounded-md bg-gray-50 mt-3   py-2 hover:no-underline"
+                  disabled
+                >
+                  <div className="w-full flex flex-row ">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 text-emerald-600 mr-1"
@@ -746,163 +842,75 @@ export default function EditFormSubmissionModal({
                     <span className="font-semibold text-xs text-gray-700">
                       Approval History
                     </span>
+                    <div className="flex-grow">
+                      <ChevronDown className="w-4 h-4 ml-auto" />
+                    </div>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-3">
-                  <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 pr-1">
-                    {/* Sort approvals by date (newest first) */}
-                    {[...formSubmission.Approvals]
-                      .sort(
-                        (a, b) =>
-                          new Date(b.updatedAt).getTime() -
-                          new Date(a.updatedAt).getTime(),
-                      )
-                      .map((approval, index) => (
-                        <div
-                          key={approval.id}
-                          className={`py-1.5 ${index !== 0 ? "border-t border-gray-100" : ""}`}
-                        >
-                          <div className="flex items-center text-xs">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3 text-emerald-500 mr-1 flex-shrink-0"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <div>
-                              {approval.Approver ? (
-                                <span className="font-medium">
-                                  {approval.Approver.firstName}{" "}
-                                  {approval.Approver.lastName}
-                                </span>
-                              ) : (
-                                <span className="font-medium">
-                                  System Approval
-                                </span>
-                              )}
-                              <span className="text-xs ml-1 text-gray-500">
-                                (
-                                {new Date(
-                                  approval.updatedAt,
-                                ).toLocaleDateString()}{" "}
-                                at{" "}
-                                {new Date(
-                                  approval.updatedAt,
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                                )
-                              </span>
-                            </div>
-                          </div>
-                          {approval.comment && (
-                            <p className="text-xs mt-1 italic text-gray-600 bg-white px-2 py-1 rounded border border-gray-100">
-                              {approval.comment}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border border-gray-200 rounded-md bg-gray-50 mt-3   py-2 hover:no-underline"
-              disabled
-            >
-              <div className="w-full flex flex-row ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-emerald-600 mr-1"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="font-semibold text-xs text-gray-700">
-                  Approval History
-                </span>
-                <div className="flex-grow">
-                  <ChevronDown className="w-4 h-4 ml-auto" />
-                </div>
-              </div>
-            </Button>
+                </Button>
+              )}
+            </>
           )}
 
           <div className="w-full mt-4">{renderFields()}</div>
           {/* Manager Approval Section - Only show when status is PENDING */}
-          {formSubmission?.status === "PENDING" && (
-            <div className="w-full border-t border-gray-200 pt-4 mt-4">
-              <div className="flex items-center mb-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-blue-600 mr-2"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <h3 className="text-md font-semibold">Manager Approval</h3>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
-                <div className="mb-4">
-                  <Label
-                    htmlFor="manager-comment"
-                    className="text-sm font-medium mb-1 block"
+          {formTemplate?.isApprovalRequired &&
+            formSubmission?.status === "PENDING" && (
+              <div className="w-full border-t border-gray-200 pt-4 mt-4">
+                <div className="flex items-center mb-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-blue-600 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
-                    Comment (Optional)
-                  </Label>
-                  <Textarea
-                    id="manager-comment"
-                    placeholder="Add any comments about this submission..."
-                    value={managerComment}
-                    onChange={(e) => setManagerComment(e.target.value)}
-                    className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                    <path
+                      fillRule="evenodd"
+                      d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <h3 className="text-md font-semibold">Manager Approval</h3>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="manager-signature"
-                    checked={managerSignature}
-                    onChange={(e) => setManagerSignature(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="manager-signature"
-                    className="text-sm text-gray-700 select-none cursor-pointer"
-                  >
-                    I,{" "}
-                    <span className="font-semibold">
-                      {session?.user.firstName} {session?.user.lastName}
-                    </span>
-                    , electronically sign and approve this submission.
-                  </label>
+                <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
+                  <div className="mb-4">
+                    <Label
+                      htmlFor="manager-comment"
+                      className="text-sm font-medium mb-1 block"
+                    >
+                      Comment (Optional)
+                    </Label>
+                    <Textarea
+                      id="manager-comment"
+                      placeholder="Add any comments about this submission..."
+                      value={managerComment}
+                      onChange={(e) => setManagerComment(e.target.value)}
+                      className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="manager-signature"
+                      checked={managerSignature}
+                      onChange={(e) => setManagerSignature(e.target.checked)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label
+                      htmlFor="manager-signature"
+                      className="text-sm text-gray-700 select-none cursor-pointer"
+                    >
+                      I,{" "}
+                      <span className="font-semibold">
+                        {session?.user.firstName} {session?.user.lastName}
+                      </span>
+                      , electronically sign and approve this submission.
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
 
         <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
@@ -919,7 +927,11 @@ export default function EditFormSubmissionModal({
             onClick={saveChanges}
             variant="outline"
             className={`${formSubmission?.status === "PENDING" ? "bg-sky-500 text-white hover:bg-sky-400 hover:text-white" : "bg-sky-500 text-white hover:bg-sky-400 hover:text-white"}`}
-            disabled={formSubmission?.status === "PENDING" && !managerSignature}
+            disabled={
+              formSubmission?.status === "PENDING" &&
+              !managerSignature &&
+              formTemplate?.isApprovalRequired
+            }
           >
             {formSubmission?.status === "PENDING"
               ? "Approve Submission"

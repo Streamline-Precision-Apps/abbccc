@@ -222,6 +222,7 @@ export async function saveDraft(
 
 export async function saveDraftToPending(
   formData: Record<string, string>,
+  isApprovalRequired: boolean,
   formTemplateId: string,
   userId: string,
   formType?: string,
@@ -264,7 +265,7 @@ export async function saveDraftToPending(
             ...changedFields, // Overwrite with changed fields
           },
           submittedAt: new Date().toISOString(),
-          status: "PENDING", // Change status to PENDING
+          status: isApprovalRequired ? "PENDING" : "APPROVED", // Change status to PENDING
         },
         include: {
           User: {
@@ -286,7 +287,7 @@ export async function saveDraftToPending(
           userId,
           formType,
           data: formData,
-          status: "PENDING",
+          status: isApprovalRequired ? "PENDING" : "APPROVED",
           submittedAt: new Date().toISOString(),
         },
         include: {

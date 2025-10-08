@@ -141,7 +141,7 @@ export function useFormsList() {
       .map((form) => ({
         id: form.id,
         name: form.name,
-        description: form.description, // Add description to match FormItem interface
+        description: form.description,
         formType: form.formType || "UNKNOWN",
         _count: form._count,
         isActive: form.isActive,

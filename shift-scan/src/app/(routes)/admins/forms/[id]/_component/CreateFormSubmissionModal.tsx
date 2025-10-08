@@ -214,7 +214,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
       });
       return;
     }
-    if (!managerSignature) {
+    if (formTemplate.isApprovalRequired && !managerSignature) {
       toast.error("You must sign the submission as a manager to approve it.", {
         duration: 3000,
       });
@@ -290,7 +290,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
             </div>
           </div>
         </div>
-        <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
+        <div className="flex-1 w-full px-2 pb-10 overflow-y-auto no-scrollbar">
           <div className="w-full mt-3">
             <RenderFields
               formTemplate={formTemplate}
@@ -308,7 +308,9 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
           </div>
 
           {/* Manager Approval Section */}
-          {adminUserId && (
+          {adminUserId &&
+          formTemplate.isApprovalRequired &&
+          formTemplate.isSignatureRequired ? (
             <div className="w-full border-t border-gray-200 pt-4 mt-4">
               <div className="flex items-center mb-3">
                 <svg
@@ -367,7 +369,111 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
                 </div>
               </div>
             </div>
-          )}
+          ) : adminUserId &&
+            formTemplate.isApprovalRequired &&
+            !formTemplate.isSignatureRequired ? (
+            <div className="w-full border-t border-gray-200 pt-4 mt-4">
+              <div className="flex items-center mb-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h3 className="text-md font-semibold">Manager Approval</h3>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
+                <div className="mb-4">
+                  <Label
+                    htmlFor="manager-comment"
+                    className="text-sm font-medium mb-1 block"
+                  >
+                    Comment (Optional)
+                  </Label>
+                  <Textarea
+                    id="manager-comment"
+                    placeholder="Add any comments about this submission..."
+                    value={managerComment}
+                    onChange={(e) => setManagerComment(e.target.value)}
+                    className="w-full border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="manager-signature"
+                    checked={managerSignature}
+                    onChange={(e) => {
+                      setManagerSignature(e.target.checked);
+                    }}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="manager-signature"
+                    className="text-sm text-gray-700 select-none cursor-pointer"
+                  >
+                    I,{" "}
+                    <span className="font-semibold">
+                      {session?.user.firstName} {session?.user.lastName}
+                    </span>
+                    , electronically sign and approve this submission.
+                  </label>
+                </div>
+              </div>
+            </div>
+          ) : adminUserId &&
+            !formTemplate.isApprovalRequired &&
+            formTemplate.isSignatureRequired ? (
+            <div className="w-full border-t border-gray-200 pt-4 mt-4">
+              <div className="flex items-center mb-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-blue-600 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <h3 className="text-md font-semibold">Electronic Signature </h3>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="signature"
+                    checked={signatureChecked}
+                    onChange={(e) => {
+                      setSignatureChecked(e.target.checked);
+                    }}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="signature"
+                    className="text-sm text-gray-700 select-none cursor-pointer"
+                  >
+                    I,{" "}
+                    <span className="font-semibold">
+                      {session?.user.firstName} {session?.user.lastName}
+                    </span>
+                    , electronically sign and approve this submission.
+                  </label>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
@@ -385,7 +491,11 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
             onClick={handleSubmit}
             variant="outline"
             className={`bg-sky-500 text-white hover:bg-sky-400 hover:text-white`}
-            disabled={loading || !managerSignature}
+            disabled={
+              loading ||
+              (!managerSignature && formTemplate.isApprovalRequired) ||
+              (!signatureChecked && formTemplate.isSignatureRequired)
+            }
           >
             {loading ? <Spinner size={20} /> : "Create & Approve"}
           </Button>

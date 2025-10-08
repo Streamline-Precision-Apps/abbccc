@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import { saveFormTemplate } from "@/actions/records-forms";
 import Spinner from "@/components/(animations)/spinner";
 import SortableItem from "./sortableItem";
-import { set } from "lodash";
 import {
   Dialog,
   DialogContent,
@@ -62,6 +61,7 @@ export interface FormSettings {
   description: string;
   status: string;
   requireSignature: boolean;
+  isApprovalRequired: boolean;
   createdAt: string;
   updatedAt: string;
   isActive: string;
@@ -166,6 +166,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     updatedAt: "",
     isActive: "",
     isSignatureRequired: false,
+    isApprovalRequired: false,
     FormGrouping: [],
   });
 
@@ -279,6 +280,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           updatedAt: formSettings.updatedAt,
           isActive: formSettings.isActive,
           isSignatureRequired: formSettings.isSignatureRequired,
+          isApprovalRequired: formSettings.isApprovalRequired,
         },
         fields: formFields,
         companyId: formSettings.companyId,
@@ -300,6 +302,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           updatedAt: "",
           isActive: "",
           isSignatureRequired: false,
+          isApprovalRequired: false,
           FormGrouping: [],
         });
         setFormFields([]);
@@ -1241,6 +1244,23 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
               </SortableContext>
             </DndContext>
           )}
+          {formSettings && formSettings.isApprovalRequired && (
+            <div className="w-full flex flex-col  px-4 mt-2">
+              <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
+                <div className="flex items-center w-8 h-8 rounded-lg bg-sky-300 justify-center">
+                  <img src="/team.svg" alt="Signature" className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">
+                    Submission Requires Approval
+                  </p>
+                  <p className="text-xs">
+                    Form must be reviewed and approved before completion.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {formSettings && formSettings.requireSignature && (
             <div className="w-full flex flex-col  px-4 mt-2">
               <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
@@ -1252,9 +1272,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Digital Signature</p>
+                  <p className="text-sm font-semibold">
+                    Requires Digital Signature
+                  </p>
                   <p className="text-xs">
-                    Automatically added at the end of the form
+                    A digital signature is needed to complete the submission.
                   </p>
                 </div>
               </div>

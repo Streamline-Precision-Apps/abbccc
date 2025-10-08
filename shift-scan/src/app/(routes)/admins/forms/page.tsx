@@ -27,8 +27,6 @@ import * as XLSX from "xlsx";
 import { format } from "date-fns";
 import Spinner from "@/components/(animations)/spinner";
 import SearchBarPopover from "../_pages/searchBarPopover";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -37,7 +35,6 @@ import {
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import { FormsDataTable } from "./_components/List/FormsDataTable";
-import tr from "zod/v4/locales/tr.cjs";
 import FormsFilters from "./_components/List/FormsFilters";
 
 // Form field definition

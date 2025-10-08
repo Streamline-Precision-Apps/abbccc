@@ -15250,6 +15250,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isSignatureRequired: boolean | null
+    isApprovalRequired: boolean | null
     description: string | null
     isActive: $Enums.FormTemplateStatus | null
     formType: $Enums.FormTemplateCategory | null
@@ -15262,6 +15263,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     isSignatureRequired: boolean | null
+    isApprovalRequired: boolean | null
     description: string | null
     isActive: $Enums.FormTemplateStatus | null
     formType: $Enums.FormTemplateCategory | null
@@ -15274,6 +15276,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     isSignatureRequired: number
+    isApprovalRequired: number
     description: number
     isActive: number
     formType: number
@@ -15288,6 +15291,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSignatureRequired?: true
+    isApprovalRequired?: true
     description?: true
     isActive?: true
     formType?: true
@@ -15300,6 +15304,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSignatureRequired?: true
+    isApprovalRequired?: true
     description?: true
     isActive?: true
     formType?: true
@@ -15312,6 +15317,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     isSignatureRequired?: true
+    isApprovalRequired?: true
     description?: true
     isActive?: true
     formType?: true
@@ -15397,6 +15403,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     isSignatureRequired: boolean
+    isApprovalRequired: boolean
     description: string | null
     isActive: $Enums.FormTemplateStatus
     formType: $Enums.FormTemplateCategory
@@ -15426,6 +15433,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: boolean
     isActive?: boolean
     formType?: boolean
@@ -15442,6 +15450,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: boolean
     isActive?: boolean
     formType?: boolean
@@ -15455,6 +15464,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: boolean
     isActive?: boolean
     formType?: boolean
@@ -15468,12 +15478,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: boolean
     isActive?: boolean
     formType?: boolean
   }
 
-  export type FormTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "name" | "createdAt" | "updatedAt" | "isSignatureRequired" | "description" | "isActive" | "formType", ExtArgs["result"]["formTemplate"]>
+  export type FormTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "companyId" | "name" | "createdAt" | "updatedAt" | "isSignatureRequired" | "isApprovalRequired" | "description" | "isActive" | "formType", ExtArgs["result"]["formTemplate"]>
   export type FormTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Submissions?: boolean | FormTemplate$SubmissionsArgs<ExtArgs>
     Company?: boolean | CompanyDefaultArgs<ExtArgs>
@@ -15501,6 +15512,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       isSignatureRequired: boolean
+      isApprovalRequired: boolean
       description: string | null
       isActive: $Enums.FormTemplateStatus
       formType: $Enums.FormTemplateCategory
@@ -15936,6 +15948,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"FormTemplate", 'DateTime'>
     readonly updatedAt: FieldRef<"FormTemplate", 'DateTime'>
     readonly isSignatureRequired: FieldRef<"FormTemplate", 'Boolean'>
+    readonly isApprovalRequired: FieldRef<"FormTemplate", 'Boolean'>
     readonly description: FieldRef<"FormTemplate", 'String'>
     readonly isActive: FieldRef<"FormTemplate", 'FormTemplateStatus'>
     readonly formType: FieldRef<"FormTemplate", 'FormTemplateCategory'>
@@ -53105,6 +53118,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isSignatureRequired: 'isSignatureRequired',
+    isApprovalRequired: 'isApprovalRequired',
     description: 'description',
     isActive: 'isActive',
     formType: 'formType'
@@ -54611,6 +54625,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FormTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"FormTemplate"> | Date | string
     isSignatureRequired?: BoolFilter<"FormTemplate"> | boolean
+    isApprovalRequired?: BoolFilter<"FormTemplate"> | boolean
     description?: StringNullableFilter<"FormTemplate"> | string | null
     isActive?: EnumFormTemplateStatusFilter<"FormTemplate"> | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFilter<"FormTemplate"> | $Enums.FormTemplateCategory
@@ -54626,6 +54641,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSignatureRequired?: SortOrder
+    isApprovalRequired?: SortOrder
     description?: SortOrderInput | SortOrder
     isActive?: SortOrder
     formType?: SortOrder
@@ -54644,6 +54660,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FormTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"FormTemplate"> | Date | string
     isSignatureRequired?: BoolFilter<"FormTemplate"> | boolean
+    isApprovalRequired?: BoolFilter<"FormTemplate"> | boolean
     description?: StringNullableFilter<"FormTemplate"> | string | null
     isActive?: EnumFormTemplateStatusFilter<"FormTemplate"> | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFilter<"FormTemplate"> | $Enums.FormTemplateCategory
@@ -54659,6 +54676,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSignatureRequired?: SortOrder
+    isApprovalRequired?: SortOrder
     description?: SortOrderInput | SortOrder
     isActive?: SortOrder
     formType?: SortOrder
@@ -54677,6 +54695,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"FormTemplate"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FormTemplate"> | Date | string
     isSignatureRequired?: BoolWithAggregatesFilter<"FormTemplate"> | boolean
+    isApprovalRequired?: BoolWithAggregatesFilter<"FormTemplate"> | boolean
     description?: StringNullableWithAggregatesFilter<"FormTemplate"> | string | null
     isActive?: EnumFormTemplateStatusWithAggregatesFilter<"FormTemplate"> | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryWithAggregatesFilter<"FormTemplate"> | $Enums.FormTemplateCategory
@@ -57923,6 +57942,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -57938,6 +57958,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -57951,6 +57972,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -57966,6 +57988,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -57980,6 +58003,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -57991,6 +58015,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -58003,6 +58028,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -61539,6 +61565,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSignatureRequired?: SortOrder
+    isApprovalRequired?: SortOrder
     description?: SortOrder
     isActive?: SortOrder
     formType?: SortOrder
@@ -61551,6 +61578,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSignatureRequired?: SortOrder
+    isApprovalRequired?: SortOrder
     description?: SortOrder
     isActive?: SortOrder
     formType?: SortOrder
@@ -61563,6 +61591,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isSignatureRequired?: SortOrder
+    isApprovalRequired?: SortOrder
     description?: SortOrder
     isActive?: SortOrder
     formType?: SortOrder
@@ -67537,6 +67566,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -67550,6 +67580,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -67754,6 +67785,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FormTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"FormTemplate"> | Date | string
     isSignatureRequired?: BoolFilter<"FormTemplate"> | boolean
+    isApprovalRequired?: BoolFilter<"FormTemplate"> | boolean
     description?: StringNullableFilter<"FormTemplate"> | string | null
     isActive?: EnumFormTemplateStatusFilter<"FormTemplate"> | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFilter<"FormTemplate"> | $Enums.FormTemplateCategory
@@ -69909,6 +69941,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -69923,6 +69956,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -70183,6 +70217,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -70197,6 +70232,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -70343,6 +70379,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -70357,6 +70394,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -78029,6 +78067,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     isSignatureRequired?: boolean
+    isApprovalRequired?: boolean
     description?: string | null
     isActive?: $Enums.FormTemplateStatus
     formType?: $Enums.FormTemplateCategory
@@ -78078,6 +78117,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -78091,6 +78131,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -78104,6 +78145,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -79319,6 +79361,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -79333,6 +79376,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory
@@ -79346,6 +79390,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isSignatureRequired?: BoolFieldUpdateOperationsInput | boolean
+    isApprovalRequired?: BoolFieldUpdateOperationsInput | boolean
     description?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     formType?: EnumFormTemplateCategoryFieldUpdateOperationsInput | $Enums.FormTemplateCategory

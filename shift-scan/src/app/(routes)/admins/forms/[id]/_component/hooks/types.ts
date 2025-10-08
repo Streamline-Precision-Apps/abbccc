@@ -26,6 +26,7 @@ export interface FormIndividualTemplate {
   isActive: string;
   description: string | null;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   FormGrouping: Grouping[];
   Submissions: Submission[];
   total: number;
@@ -103,6 +104,7 @@ export interface FormSubmissionWithTemplate {
     updatedAt: Date;
     isActive: string;
     isSignatureRequired: boolean;
+    isApprovalRequired: boolean;
     FormGrouping: Array<{
       id: string;
       title: string | null;

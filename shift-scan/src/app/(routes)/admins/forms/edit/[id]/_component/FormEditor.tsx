@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { updateFormTemplate } from "@/actions/records-forms";
 import { FormEditorPanelLeft } from "./FormEditorPanelLeft";
 import Spinner from "@/components/(animations)/spinner";
+import is from "zod/v4/locales/is.cjs";
 
 // Types for form building
 export interface FormField {
@@ -52,6 +53,7 @@ export interface FormSettings {
   formType: string;
   description: string;
   requireSignature: boolean;
+  isApprovalRequired: boolean;
   createdAt: string;
   updatedAt: string;
   isActive: string;
@@ -202,6 +204,7 @@ export default function FormEditor({
     formType: "",
     description: "",
     requireSignature: false,
+    isApprovalRequired: false,
     createdAt: "",
     updatedAt: "",
     isActive: "",
@@ -249,6 +252,7 @@ export default function FormEditor({
           formType: data.formType,
           description: data.description || "",
           requireSignature: data.isSignatureRequired,
+          isApprovalRequired: data.isApprovalRequired,
           createdAt: data.createdAt,
           updatedAt: data.updatedAt,
           isActive: data.isActive,
@@ -354,6 +358,7 @@ export default function FormEditor({
           formType: formSettings.formType, // status isActive is used for status
           isActive: formSettings.isActive,
           requireSignature: formSettings.requireSignature,
+          isApprovalRequired: formSettings.isApprovalRequired,
         },
         fields: formFields.map((field) => ({
           id: field.id,
@@ -1307,6 +1312,23 @@ export default function FormEditor({
             </DndContext>
           )}
 
+          {formSettings && formSettings.isApprovalRequired && (
+            <div className="w-full flex flex-col  px-4 mt-2">
+              <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
+                <div className="flex items-center w-8 h-8 rounded-lg bg-sky-300 justify-center">
+                  <img src="/team.svg" alt="Signature" className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">
+                    Submission Requires Approval
+                  </p>
+                  <p className="text-xs">
+                    Form must be reviewed and approved before completion.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {formSettings && formSettings.requireSignature && (
             <div className="w-full flex flex-col  px-4 mt-2">
               <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
@@ -1318,9 +1340,11 @@ export default function FormEditor({
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Digital Signature</p>
+                  <p className="text-sm font-semibold">
+                    Requires Digital Signature
+                  </p>
                   <p className="text-xs">
-                    Automatically added at the end of the form
+                    A digital signature is needed to complete the submission.
                   </p>
                 </div>
               </div>

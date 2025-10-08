@@ -35,6 +35,7 @@ interface FormTemplate {
   formType: string;
   isActive: boolean;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   groupings: FormGrouping[];
 }
 
@@ -404,6 +405,7 @@ export default function DynamicForm({
       formType: typedTemplate.formType,
       isActive: typedTemplate.isActive === "ACTIVE",
       isSignatureRequired: typedTemplate.isSignatureRequired,
+      isApprovalRequired: typedTemplate.isApprovalRequired,
       groupings:
         typedTemplate.FormGrouping?.map(
           (group): FormGrouping => ({
@@ -499,6 +501,7 @@ export default function DynamicForm({
       // Save data and wait for completion before navigating
       const result = await saveDraftToPending(
         dataToSaveAPI,
+        formData.isApprovalRequired,
         formData.id,
         userId,
         formData.formType,
@@ -506,7 +509,7 @@ export default function DynamicForm({
         formTitle,
       );
 
-      if (result) {
+      if (result && formData.isApprovalRequired) {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {

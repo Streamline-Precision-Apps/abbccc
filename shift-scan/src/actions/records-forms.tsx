@@ -32,6 +32,7 @@ export interface FormSettingsData {
   description: string;
   formType: string;
   requireSignature: boolean;
+  isApprovalRequired: boolean;
   isActive: string;
 }
 
@@ -77,6 +78,7 @@ export async function saveFormTemplate(data: SaveFormData) {
           formType: settings.formType as FormTemplateCategory,
           isActive: settings.isActive as FormTemplateStatus,
           isSignatureRequired: settings.requireSignature,
+          isApprovalRequired: settings.isApprovalRequired,
         },
       });
       // Always create a grouping for this form
@@ -168,6 +170,7 @@ export async function updateFormTemplate(data: SaveFormData) {
         formType: settings.formType as FormTemplateCategory,
         isActive: (settings.isActive as FormTemplateStatus) || "DRAFT",
         isSignatureRequired: settings.requireSignature,
+        isApprovalRequired: settings.isApprovalRequired,
         description: settings.description,
       },
     });

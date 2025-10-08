@@ -36,6 +36,7 @@ export interface FormTemplate {
   description: string | null;
   formType?: string;
   isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
+  isApprovalRequired?: boolean;
   isSignatureRequired?: boolean;
   groupings: FormGrouping[];
   createdAt?: string;

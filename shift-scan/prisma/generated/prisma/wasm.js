@@ -220,6 +220,7 @@ exports.Prisma.FormTemplateScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isSignatureRequired: 'isSignatureRequired',
+  isApprovalRequired: 'isApprovalRequired',
   description: 'description',
   isActive: 'isActive',
   formType: 'formType'

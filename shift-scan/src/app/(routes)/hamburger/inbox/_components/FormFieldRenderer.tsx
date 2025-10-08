@@ -49,6 +49,7 @@ interface FormTemplate {
   formType: string;
   isActive: boolean;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   groupings: FormGrouping[];
 }
 
@@ -149,6 +150,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       formType: template.formType,
       isActive: template.isActive ? "ACTIVE" : "INACTIVE",
       isSignatureRequired: template.isSignatureRequired,
+      isApprovalRequired: template.isApprovalRequired,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       description: null,
