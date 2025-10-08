@@ -39,6 +39,7 @@ export default function RenderSearchPersonField({
   userOptions,
   formData,
   disabled,
+  useNativeInput = false,
 }: {
   field: {
     id: string;
@@ -73,6 +74,7 @@ export default function RenderSearchPersonField({
   touchedFields: Record<string, boolean>;
   error: string | null;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }) {
   if (field.multiple) {
     const selectedPeople: Person[] = Array.isArray(formData[field.id])

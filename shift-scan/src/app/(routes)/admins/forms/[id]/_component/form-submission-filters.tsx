@@ -29,7 +29,6 @@ const STATUS_OPTIONS = [
   { value: "PENDING", label: "Pending" },
   { value: "APPROVED", label: "Approved" },
   { value: "DENIED", label: "Denied" },
-  { value: "DRAFT", label: "Draft" },
 ];
 
 export default function FormSubmissionFilters({

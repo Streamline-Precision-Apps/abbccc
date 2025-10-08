@@ -37,6 +37,9 @@ export async function GET(
     const total = await prisma.formSubmission.count({
       where: {
         formTemplateId: id,
+        NOT: {
+          status: "DRAFT",
+        },
         ...(statusCondition && { status: statusCondition }),
       },
     });
@@ -88,6 +91,9 @@ export async function GET(
     const submissions = await prisma.formSubmission.findMany({
       where: {
         formTemplateId: id,
+        NOT: {
+          status: "DRAFT",
+        },
         ...(statusCondition && { status: statusCondition }),
         ...(dateRangeStart || dateRangeEnd
           ? {

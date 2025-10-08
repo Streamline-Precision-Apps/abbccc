@@ -4,6 +4,11 @@ import { format } from "date-fns";
 import { highlight } from "../../../_pages/highlight";
 import { SquareCheck, SquareX } from "lucide-react";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Define the column configuration
 export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [

@@ -64,10 +64,10 @@ export default function SubmittedForms({
   submissionStatus,
 }: {
   formData: FormTemplate;
-  formValues: Record<string, string>;
+  formValues: Record<string, string | boolean>;
   formTitle: string;
   setFormTitle: (title: string) => void;
-  updateFormValues: (values: Record<string, string>) => void;
+  updateFormValues: (values: Record<string, string | boolean>) => void;
   userId: string;
   signature: string | null;
   submittedForm: string | null;
@@ -81,7 +81,19 @@ export default function SubmittedForms({
   // Track if deleted to prevent auto-save after delete
   const [isDeleted, setIsDeleted] = useState(false);
 
-  type FormValues = Record<string, string>;
+  type FormValues = Record<string, string | boolean>;
+
+  // Convert mixed values to strings for API
+  const convertValuesToString = (
+    values: FormValues,
+  ): Record<string, string> => {
+    const stringValues: Record<string, string> = {};
+    Object.entries(values).forEach(([key, value]) => {
+      stringValues[key] =
+        typeof value === "boolean" ? String(value) : String(value || "");
+    });
+    return stringValues;
+  };
 
   // Helper function to validate date string
   const isValidDate = (dateString: string): boolean => {
@@ -98,8 +110,11 @@ export default function SubmittedForms({
 
     if ((Object.keys(values).length > 0 || title) && formData) {
       try {
+        // Convert boolean values to strings for API
+        const stringValues = convertValuesToString(values);
+
         await savePending(
-          values,
+          stringValues,
           formData.id,
           userId,
           formData.formType,

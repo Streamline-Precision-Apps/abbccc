@@ -160,8 +160,7 @@ export default function RenderButtonsAndFilters({
               <TooltipTrigger asChild>
                 <Button
                   variant={"destructive"}
-                  size={"icon"}
-                  className=" hover:bg-opacity-20 min-w-12"
+                  className="rounded-lg h-full hover:none min-w-12"
                   onClick={() => {
                     if (formTemplate) {
                       openHandleDelete(formTemplate.id);

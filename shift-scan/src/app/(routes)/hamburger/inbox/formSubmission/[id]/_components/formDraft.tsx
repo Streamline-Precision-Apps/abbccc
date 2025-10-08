@@ -62,14 +62,14 @@ export default function FormDraft({
 }: {
   formData: FormTemplate;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
-  formValues: Record<string, string>;
+  formValues: Record<string, string | boolean>;
   formTitle: string;
   setFormTitle: (title: string) => void;
-  updateFormValues: (values: Record<string, string>) => void;
+  updateFormValues: (values: Record<string, string | boolean>) => void;
   userId: string;
   submissionId: number;
 }) {
-  type FormValues = Record<string, string>;
+  type FormValues = Record<string, string | boolean>;
   const t = useTranslations("Hamburger-Inbox");
   const [signature, setSignature] = useState<string | null>(null);
   const [showSignature, setShowSignature] = useState(false);
@@ -93,10 +93,10 @@ export default function FormDraft({
   // Update formValues when showSignature changes
   const setSignatureData = (value: boolean) => {
     setShowSignature(value);
-    // Add signature status to formValues
+    // Add signature status to formValues as boolean
     updateFormValues({
       ...formValues,
-      signature: value ? "true" : "false",
+      signature: value, // Store as boolean
     });
   };
 
@@ -105,8 +105,21 @@ export default function FormDraft({
       try {
         // Include the title in the values object
         const dataToSave = { ...values };
+        // Convert boolean values to strings for the API
+        const stringValues: Record<string, string> = {};
+        
+        for (const [key, value] of Object.entries(dataToSave)) {
+          if (typeof value === 'boolean') {
+            stringValues[key] = value.toString();
+          } else if (value !== null && value !== undefined) {
+            stringValues[key] = String(value);
+          } else {
+            stringValues[key] = '';
+          }
+        }
+        
         await saveDraft(
-          dataToSave,
+          stringValues,
           formData.id,
           userId,
           formData.formType,
@@ -130,7 +143,7 @@ export default function FormDraft({
 
   //validation map function to required all fields that are required within form template
   const validateForm = (
-    formValues: Record<string, string>,
+    formValues: Record<string, string | boolean>,
     formData: FormTemplate,
   ): boolean => {
     // Check signature requirement separately
@@ -143,15 +156,39 @@ export default function FormDraft({
         if (field.required) {
           // Check both field ID and field label as keys
           const fieldValue = formValues[field.id] || formValues[field.label];
-          if (!fieldValue || fieldValue.trim() === "") {
+          
+          // Handle CHECKBOX field type specially
+          if (field.type === "CHECKBOX") {
+            // For checkboxes, any defined value is valid (true or false)
+            if (fieldValue === undefined || fieldValue === null) {
+              return false;
+            }
+            // All other validation is skipped for checkboxes
+            continue;
+          }
+          
+          // For string values
+          if (typeof fieldValue === 'string') {
+            if (!fieldValue || fieldValue.trim() === "") {
+              return false;
+            }
+          }
+          // For boolean values (other than checkboxes)
+          else if (typeof fieldValue === 'boolean') {
+            // Booleans are considered valid
+            continue;
+          }
+          // For undefined/null values
+          else if (fieldValue === undefined || fieldValue === null) {
             return false;
           }
 
           // For JSON fields, check if they contain meaningful data
           if (
-            field.type === "SEARCH_PERSON" ||
+            typeof fieldValue === 'string' &&
+            (field.type === "SEARCH_PERSON" ||
             field.type === "SEARCH_ASSET" ||
-            field.type === "MULTISELECT"
+            field.type === "MULTISELECT")
           ) {
             try {
               const parsed = JSON.parse(fieldValue);

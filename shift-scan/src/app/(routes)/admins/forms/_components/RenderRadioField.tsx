@@ -11,6 +11,7 @@ export default function RenderRadioField({
   error,
   options,
   disabled,
+  useNativeInput = false,
 }: {
   field: {
     id: string;
@@ -27,6 +28,7 @@ export default function RenderRadioField({
   touchedFields: Record<string, boolean>;
   error: string | null;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }) {
   return (
     <div key={field.id} className="flex flex-col">
@@ -38,19 +40,25 @@ export default function RenderRadioField({
         value={value}
         onValueChange={(val) => handleFieldChange(field.id, val)}
         onBlur={() => handleFieldTouch(field.id)}
-        className="flex flex-row gap-2"
+        className="flex flex-col gap-4 py-2"
         disabled={disabled}
       >
         {options.map((opt) => (
           <Label
             key={opt.id}
-            className="flex items-center gap-1 cursor-pointer select-none"
+            className="flex items-start gap-3 cursor-pointer border border-gray-200 rounded-md px-4 py-2 select-none"
           >
             <RadioGroupItem
               value={opt.value}
+              className={`${useNativeInput ? "w-4 h-4   " : "h-4 w-4"} `}
               id={`${field.id}-radio-${opt.id}`}
             />
-            <span>{opt.value}</span>
+
+            <span
+              className={`${useNativeInput ? "text-sm max-w-[200px] break-words" : "text-sm font-medium"} `}
+            >
+              {opt.value}
+            </span>
           </Label>
         ))}
       </RadioGroup>
