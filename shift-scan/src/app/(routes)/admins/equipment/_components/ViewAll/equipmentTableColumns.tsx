@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { EquipmentSummary } from "../useEquipmentData";
 import { format } from "date-fns";
+import Link from "next/link";
 import {
   Tooltip,
   TooltipTrigger,
@@ -202,6 +203,43 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
       return (
         <div className="text-xs text-center">
           {row.original.licenseState || " "}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "linkedTimesheets",
+    header: "Linked Timesheets",
+    cell: ({ row }) => {
+      const equipment = row.original;
+      // Calculate total timesheet-related logs
+      const totalLogs =
+        (equipment._count?.EmployeeEquipmentLogs || 0) +
+        (equipment._count?.TascoLogs || 0) +
+        (equipment._count?.HauledInLogs || 0) +
+        (equipment._count?.UsedAsTrailer || 0) +
+        (equipment._count?.UsedAsTruck || 0) +
+        (equipment._count?.Maintenance || 0);
+
+      return (
+        <div className="text-xs text-center">
+          {totalLogs > 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/admins/timesheets?equipmentId=${equipment.id}`}
+                  className="cursor-pointer underline decoration-dotted decoration-1 text-sm hover:text-blue-600"
+                >
+                  {totalLogs}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">See All Entries</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            "-"
+          )}
         </div>
       );
     },

@@ -3,6 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { createCostCode } from "@/actions/AssetActions";
 import { toast } from "sonner";
@@ -127,7 +134,7 @@ export default function CreateCostCodeModal({
                 </Label>
                 <Input
                   id="cc-name"
-                  type="tex t"
+                  type="text"
                   name="name"
                   value={formData.name}
                   onChange={(e) =>
@@ -136,6 +143,31 @@ export default function CreateCostCodeModal({
                   className="w-full text-xs"
                   required
                 />
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="mt-4">
+                <Label htmlFor="cc-active-status" className={`text-xs `}>
+                  Active Status
+                </Label>
+                <Select
+                  name="isActive"
+                  value={formData.isActive ? "true" : "false"}
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      isActive: value === "true",
+                    }))
+                  }
+                >
+                  <SelectTrigger id="cc-active-status" className="text-xs">
+                    <SelectValue placeholder="Select Active Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Active</SelectItem>
+                    <SelectItem value="false">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="mt-6 border-t border-gray-200 pt-2">

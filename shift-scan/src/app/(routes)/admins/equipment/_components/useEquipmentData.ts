@@ -41,6 +41,14 @@ export interface EquipmentSummary {
     firstName?: string;
     lastName?: string;
   };
+  _count?: {
+    EmployeeEquipmentLogs: number;
+    TascoLogs: number;
+    HauledInLogs: number;
+    UsedAsTrailer: number;
+    UsedAsTruck: number;
+    Maintenance: number;
+  };
 }
 export const useEquipmentData = () => {
   const { refresh } = useDashboardData();

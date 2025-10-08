@@ -63,6 +63,16 @@ export async function GET(req: Request) {
           acquiredCondition: true,
           licensePlate: true,
           licenseState: true,
+          _count: {
+            select: {
+              EmployeeEquipmentLogs: true,
+              TascoLogs: true,
+              HauledInLogs: true,
+              UsedAsTrailer: true,
+              UsedAsTruck: true,
+              Maintenance: true,
+            },
+          },
         },
         orderBy: {
           code: "asc",
@@ -137,6 +147,16 @@ export async function GET(req: Request) {
             acquiredCondition: true,
             licensePlate: true,
             licenseState: true,
+            _count: {
+              select: {
+                EmployeeEquipmentLogs: true,
+                TascoLogs: true,
+                HauledInLogs: true,
+                UsedAsTrailer: true,
+                UsedAsTruck: true,
+                Maintenance: true,
+              },
+            },
           },
           orderBy: {
             code: "asc",
@@ -187,6 +207,16 @@ export async function GET(req: Request) {
           acquiredCondition: true,
           licensePlate: true,
           licenseState: true,
+          _count: {
+            select: {
+              EmployeeEquipmentLogs: true,
+              TascoLogs: true,
+              HauledInLogs: true,
+              UsedAsTrailer: true,
+              UsedAsTruck: true,
+              Maintenance: true,
+            },
+          },
         },
         orderBy: {
           code: "asc",

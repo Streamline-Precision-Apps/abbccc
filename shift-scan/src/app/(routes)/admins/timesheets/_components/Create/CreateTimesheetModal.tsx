@@ -43,7 +43,6 @@ export function CreateTimesheetModal({
     [],
   );
   const [trucks, setTrucks] = useState<{ id: string; name: string }[]>([]);
-  const [trailers, setTrailers] = useState<{ id: string; name: string }[]>([]);
 
   const [materialTypes, setMaterialTypes] = useState<
     { id: string; name: string }[]
@@ -80,8 +79,7 @@ export function CreateTimesheetModal({
   };
   type TruckingLogDraft = {
     equipmentId: string;
-    trailerNumber: string | null;
-    truckNumber: string;
+    truckNumber: string; // Stores truck equipment ID
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: {
@@ -99,7 +97,6 @@ export function CreateTimesheetModal({
     {
       equipmentId: "",
       truckNumber: "",
-      trailerNumber: null,
       startingMileage: "",
       endingMileage: "",
       equipmentHauled: [
@@ -179,11 +176,6 @@ export function CreateTimesheetModal({
     label: e.name,
   }));
 
-  const trailerOptions = trailers.map((e) => ({
-    value: e.id,
-    label: e.name,
-  }));
-
   // Remove costCodeOptions dynamic logic (no costCodes on jobsites)
   const workTypeOptions = [
     { value: "MECHANIC", label: "Mechanic" },
@@ -219,12 +211,8 @@ export function CreateTimesheetModal({
           const filteredTrucks = equipment.filter(
             (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
           );
-          const filteredTrailers = equipment.filter(
-            (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER",
-          );
 
           setTrucks(filteredTrucks);
-          setTrailers(filteredTrailers);
         }
         setEquipment(equipment);
         setUsers(users);
@@ -321,33 +309,35 @@ export function CreateTimesheetModal({
       }));
 
       // Map trucking logs to convert loadType to lowercase for API compatibility
-      const mappedTruckingLogs = truckingLogs.map((log) => ({
-        ...log,
-        materials: log.materials.map((mat) => {
-          // Define the converted loadType
-          let convertedLoadType: "" | "screened" | "unscreened" = "";
-          if (mat.loadType === "SCREENED") convertedLoadType = "screened";
-          else if (mat.loadType === "UNSCREENED")
-            convertedLoadType = "unscreened";
+      const mappedTruckingLogs = truckingLogs
+        .filter((log) => log.truckNumber && log.equipmentId) // Both should have the same value (truck equipment ID)
+        .map((log) => ({
+          ...log,
+          materials: log.materials.map((mat) => {
+            // Define the converted loadType
+            let convertedLoadType: "" | "screened" | "unscreened" = "";
+            if (mat.loadType === "SCREENED") convertedLoadType = "screened";
+            else if (mat.loadType === "UNSCREENED")
+              convertedLoadType = "unscreened";
 
-          return {
-            location: mat.location,
-            name: mat.name,
-            quantity: mat.quantity,
-            unit: mat.unit as string, // Cast to string
-            loadType: convertedLoadType,
-          };
-        }),
-      }));
+            return {
+              location: mat.location,
+              name: mat.name,
+              quantity: mat.quantity,
+              unit: mat.unit as string, // Cast to string
+              loadType: convertedLoadType,
+            };
+          }),
+        }));
 
       // Format mechanic projects for API
       const mappedMechanicProjects = mechanicProjects
-        .filter((project) => project.equipmentId && project.hours !== null)
+        .filter((project) => project.equipmentId && project.hours !== null && project.hours !== undefined)
         .map((project) => ({
           id: project.id,
           equipmentId: project.equipmentId,
-          hours: project.hours,
-          description: project.description,
+          hours: project.hours as number, // Safe cast because of filter
+          description: project.description || "",
         }));
 
       const data = {
@@ -356,7 +346,7 @@ export function CreateTimesheetModal({
           startTime: form.startTime ? form.startTime.toISOString() : null,
           endTime: form.endTime ? form.endTime.toISOString() : null,
         },
-        maintenanceLogs: mappedMechanicProjects,
+        mechanicProjects: mappedMechanicProjects, // Changed from maintenanceLogs
         truckingLogs: mappedTruckingLogs,
         tascoLogs: mappedTascoLogs,
         laborLogs,
@@ -472,14 +462,16 @@ export function CreateTimesheetModal({
               />
             )}
             {form.workType === "TRUCK_DRIVER" && (
-              <TruckingSection
-                truckingLogs={truckingLogs}
-                setTruckingLogs={setTruckingLogs}
-                equipmentOptions={equipmentOptions}
-                jobsiteOptions={jobsiteOptions}
-                truckOptions={truckOptions}
-                trailerOptions={trailerOptions}
-              />
+              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
+                <h3 className="font-semibold text-sm mb-2">Trucking Details</h3>
+                <TruckingSection
+                  truckingLogs={truckingLogs}
+                  setTruckingLogs={setTruckingLogs}
+                  equipmentOptions={equipmentOptions}
+                  jobsiteOptions={jobsiteOptions}
+                  truckOptions={truckOptions}
+                />
+              </div>
             )}
             {form.workType === "TASCO" && (
               <TascoSection

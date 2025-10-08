@@ -12,6 +12,9 @@ export type CostCodeSummary = {
     id: string;
     name: string;
   }>;
+  _count: {
+    Timesheets: number;
+  };
 };
 
 export const useCostCodeData = () => {

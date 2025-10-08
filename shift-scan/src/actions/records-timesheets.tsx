@@ -23,14 +23,15 @@ export type TimesheetSubmission = {
     workType: string;
     comments: string;
   };
-  // maintenanceLogs: Array<{
-  //   startTime: string;
-  //   endTime: string;
-  //   maintenanceId: string;
-  // }>;
+  mechanicProjects: Array<{
+    id: number;
+    equipmentId: string;
+    hours: number;
+    description: string;
+  }>;
   truckingLogs: Array<{
-    truckNumber: string;
-    trailerNumber: string | null;
+    equipmentId: string;
+    truckNumber: string; // This is actually the truck equipment ID
     startingMileage: string;
     endingMileage: string;
     equipmentHauled: Array<{
@@ -95,30 +96,28 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
       data: timesheetData,
     });
 
-    // Maintenance Logs no need for now
-    // for (const log of data.maintenanceLogs) {
-    //   if (!log.maintenanceId) continue;
-    //   const maintenanceLogData: Prisma.MaintenanceLogCreateInput = {
-    //     TimeSheet: { connect: { id: timesheet.id } },
-    //     User: { connect: { id: data.form.user.id } },
-    //     Maintenance: { connect: { id: log.maintenanceId } },
-    //     startTime: log.startTime ? new Date(log.startTime) : new Date(),
-    //     endTime: log.endTime ? new Date(log.endTime) : new Date(),
-    //   };
-    //   await tx.maintenanceLog.create({
-    //     data: maintenanceLogData,
-    //   });
-    // }
+    // Mechanic Projects
+    for (const project of data.mechanicProjects) {
+      if (!project.equipmentId || project.hours === null) continue;
+      await tx.mechanicProjects.create({
+        data: {
+          timeSheetId: timesheet.id,
+          equipmentId: project.equipmentId,
+          hours: project.hours,
+          description: project.description || null,
+        },
+      });
+    }
 
     // Trucking Logs
     for (const tlog of data.truckingLogs) {
-      if (!tlog.truckNumber) continue;
+      if (!tlog.truckNumber || !tlog.equipmentId) continue; // Check both fields
       const truckingLog = await tx.truckingLog.create({
         data: {
           timeSheetId: timesheet.id,
           laborType: "truckDriver",
-          truckNumber: tlog.truckNumber, // Assuming equipmentId is the truck number
-          trailerNumber: tlog.trailerNumber,
+          equipmentId: tlog.equipmentId, // Equipment being hauled
+          truckNumber: tlog.truckNumber, // Truck equipment ID (foreign key)
           startingMileage: tlog.startingMileage
             ? parseInt(tlog.startingMileage)
             : null,

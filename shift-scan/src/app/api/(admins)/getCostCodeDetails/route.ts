@@ -34,6 +34,11 @@ export async function GET(req: Request) {
               name: true,
             },
           },
+          _count: {
+            select: {
+              Timesheets: true,
+            },
+          },
         },
         orderBy: {
           name: "asc",
@@ -57,6 +62,11 @@ export async function GET(req: Request) {
             select: {
               id: true,
               name: true,
+            },
+          },
+          _count: {
+            select: {
+              Timesheets: true,
             },
           },
         },

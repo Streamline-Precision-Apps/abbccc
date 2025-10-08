@@ -2,11 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { updateCostCodeAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
-import { Switch } from "@/components/ui/switch";
 import { CostCode, useCostCodeDataById } from "./useCostCodeDataById";
 import { format } from "date-fns";
 
@@ -122,20 +128,6 @@ export default function EditCostCodeModal({
             <p className="text-xs  text-gray-500">
               {`last updated at ${format(formData.updatedAt, "PPpp")}`}
             </p>
-            <div className="flex items-center gap-4">
-              <Label className="ml-2">
-                {formData.isActive ? "Active" : "Inactive"}
-              </Label>
-              <Switch
-                checked={formData.isActive}
-                onCheckedChange={(value) => {
-                  setFormData((prev) => {
-                    if (!prev) return prev;
-                    return { ...prev, isActive: value };
-                  });
-                }}
-              />
-            </div>
           </div>
           <div className="flex flex-row justify-between ">
             <div className="flex flex-col mb-4">
@@ -174,6 +166,30 @@ export default function EditCostCodeModal({
                 className="w-full text-xs"
                 required
               />
+            </div>
+
+            <div>
+              <Label htmlFor="cc-active-status" className="text-sm">
+                Active Status
+              </Label>
+              <Select
+                name="isActive"
+                value={formData.isActive ? "true" : "false"}
+                onValueChange={(value) =>
+                  setFormData((prev) => {
+                    if (!prev) return prev;
+                    return { ...prev, isActive: value === "true" };
+                  })
+                }
+              >
+                <SelectTrigger id="cc-active-status" className="text-xs">
+                  <SelectValue placeholder="Select Active Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             {tagSummaries && (
               <div className="my-4 border-t border-gray-200 pt-4">

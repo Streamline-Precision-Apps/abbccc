@@ -308,7 +308,7 @@ export default function CreateTagModal({
                 submitting ? "opacity-50" : ""
               }`}
             >
-              {submitting ? "Creating..." : "Create Cost Code"}
+              {submitting ? "Creating..." : "Create Tag"}
             </Button>
           </div>
         </div>
