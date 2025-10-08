@@ -30,6 +30,15 @@ export async function GET(req: Request) {
       skip = undefined;
       totalPages = 1;
       tagSummary = await prisma.cCTag.findMany({
+        include: {
+          CostCodes: {
+            select: {
+              id: true,
+              name: true,
+              isActive: true,
+            },
+          },
+        },
         orderBy: {
           name: "asc",
         },
@@ -47,6 +56,15 @@ export async function GET(req: Request) {
       tagSummary = await prisma.cCTag.findMany({
         skip,
         take,
+        include: {
+          CostCodes: {
+            select: {
+              id: true,
+              name: true,
+              isActive: true,
+            },
+          },
+        },
         orderBy: {
           name: "asc",
         },
