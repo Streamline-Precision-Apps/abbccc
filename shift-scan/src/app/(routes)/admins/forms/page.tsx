@@ -45,6 +45,7 @@ import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import { FormsDataTable } from "./_components/List/FormsDataTable";
 import tr from "zod/v4/locales/tr.cjs";
+import FormsFilters from "./_components/List/FormsFilters";
 
 // Form field definition
 interface FormField {
@@ -120,10 +121,17 @@ export default function Forms() {
     filteredForms,
     refetch,
     setForms,
+    rerender,
+    handleClearFilters,
+    filters,
+    setFilters,
+    reFilterPage,
   } = useFormsList();
 
-  // Helper to get enum values as array
-  const formTemplateCategoryValues = Object.values(FormTemplateCategory);
+  // Helper to get enum values as array of { value, label }
+  const formTemplateCategoryValues = Object.values(FormTemplateCategory).map(
+    (v) => ({ value: v, label: v }),
+  );
 
   //------------------------------------------------------------------------------
   // Helper function to unarchive modal
@@ -398,46 +406,21 @@ export default function Forms() {
             imageSize="10"
           />
           <div className="relative flex items-center">
-            <Select
-              value={formType}
-              onValueChange={(val) => setFormType(val as typeof formType)}
-            >
-              <SelectTrigger className="px-2 text-xs w-full max-w-[150px] text-center h-full bg-white border rounded-lg">
-                <SelectValue placeholder="Form Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">Filter By Category</SelectItem>
-                {formTemplateCategoryValues.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {formType !== "ALL" && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <Badge
-                    variant="destructive"
-                    className="h-4 w-4 absolute -top-1 -right-1 p-0.5 cursor-pointer hover:bg-red-400 hover:bg-opacity-100"
-                    onClick={() => setFormType("ALL")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent sideOffset={10} side="right" align="end">
-                  <p className="text-xs">Remove</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <FormsFilters
+              filters={filters}
+              onFilterChange={setFilters}
+              setFilters={setFilters}
+              onUseFiltersChange={reFilterPage}
+              handleClearFilters={handleClearFilters}
+              formTemplateCategoryValues={formTemplateCategoryValues}
+            />
           </div>
         </div>
         <div className="h-full flex flex-row gap-4 ">
           <Tooltip>
             <TooltipTrigger asChild>
               <Link href={`/admins/forms/create`}>
-                <Button size={"icon"} className="min-w-12">
+                <Button size={"icon"} className="h-full min-w-12">
                   <img
                     src="/plus-white.svg"
                     alt="Create New Form"

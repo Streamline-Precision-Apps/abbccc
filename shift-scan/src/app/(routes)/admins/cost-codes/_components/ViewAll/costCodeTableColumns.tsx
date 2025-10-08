@@ -1,12 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { CostCodeSummary } from "../useCostCodeData";
 import { format } from "date-fns";
-import { highlight } from "../../../_pages/higlight";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { highlight } from "../../../_pages/highlight";
 import { SquareCheck, SquareX } from "lucide-react";
 
 // Define the column configuration

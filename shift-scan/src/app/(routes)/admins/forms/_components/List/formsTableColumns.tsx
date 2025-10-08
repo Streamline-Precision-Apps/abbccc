@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { highlight } from "../../../_pages/higlight";
+import { highlight } from "../../../_pages/highlight";
 import Link from "next/link";
 import { Archive, ArchiveRestore } from "lucide-react";
 
@@ -30,24 +30,32 @@ export function getFormsTableColumns({
         const form = row.original;
         return (
           <div className="w-full flex flex-row gap-4 items-center">
-            {row.original.isActive === "ACTIVE" ? (
-              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg">
-                {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
-              </span>
-            ) : row.original.isActive === "DRAFT" ? (
-              <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg">
-                {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
-              </span>
-            ) : (
-              <span className="w-fit bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
-                {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
-              </span>
-            )}
             <div className="text-sm flex-1 ">
-              <div className="w-full h-full flex flex-col text-left">
-                <p className="">{highlight(form.name, "")}</p>
-                <p className="text-[10px] text-gray-400 italic">
-                  {form.description || " No description provided."}
+              <div className="w-full h-full flex flex-col">
+                <div className="flex flex-row gap-4 items-center ">
+                  <p className="">{highlight(form.name, "")}</p>
+                  <div className="flex flex-row gap-2 items-center">
+                    {row.original.isActive === "ACTIVE" ? (
+                      <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                        {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
+                      </span>
+                    ) : row.original.isActive === "DRAFT" ? (
+                      <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
+                        {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
+                      </span>
+                    ) : (
+                      <span className="w-fit bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+                        {`${row.original.isActive.slice(0, 1).toUpperCase()}${row.original.isActive.slice(1).toLowerCase()}`}
+                      </span>
+                    )}
+
+                    <span className="bg-sky-100 text-sky-600 px-2 py-1 rounded-lg text-xs">
+                      {row.original.formType}
+                    </span>
+                  </div>
+                </div>
+                <p className="truncate max-w-[750px] text-[10px] text-left text-gray-400 italic">
+                  {row.original.description || " No description provided."}
                 </p>
               </div>
             </div>
@@ -55,19 +63,7 @@ export function getFormsTableColumns({
         );
       },
     },
-    {
-      accessorKey: "formType",
-      header: "Form Type",
-      cell: ({ row }) => {
-        return (
-          <div className="text-xs text-center">
-            <span className="bg-sky-200 px-3 py-1 rounded-xl">
-              {row.original.formType}
-            </span>
-          </div>
-        );
-      },
-    },
+
     {
       accessorKey: "submissions",
       header: "Submissions",
@@ -85,19 +81,19 @@ export function getFormsTableColumns({
       },
     },
 
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => {
-        return (
-          <div className="text-xs text-center">
-            {row.original.createdAt
-              ? new Date(row.original.createdAt).toLocaleDateString()
-              : "-"}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "createdAt",
+    //   header: "Created",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="text-xs text-center">
+    //         {row.original.createdAt
+    //           ? new Date(row.original.createdAt).toLocaleDateString()
+    //           : "-"}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "updatedAt",
       header: "Last Updated",
@@ -116,7 +112,7 @@ export function getFormsTableColumns({
       header: "Actions",
       cell: ({ row }) => {
         const form = row.original;
-        console.log("Form in actions cell:", form.isActive);
+
         return (
           <div className="flex flex-row justify-center">
             <Link href={`/admins/forms/${form.id}`}>

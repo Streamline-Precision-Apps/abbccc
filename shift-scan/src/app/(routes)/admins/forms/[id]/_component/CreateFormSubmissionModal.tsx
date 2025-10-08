@@ -266,8 +266,8 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center ">
-        <div className="flex flex-col gap-4 w-full items-center relative">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
           <Button
             type="button"
             variant={"ghost"}
@@ -277,7 +277,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
           >
             <X width={20} height={20} />
           </Button>
-          <div className="w-full flex flex-col justify-center mb-2 ">
+          <div className="w-full flex flex-col justify-center  ">
             <div>
               <p className="text-lg text-black font-semibold ">
                 {formTemplate?.name || "N/A"}
@@ -289,7 +289,9 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               </p>
             </div>
           </div>
-          <div className="w-full">
+        </div>
+        <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
+          <div className="w-full mt-3">
             <RenderFields
               formTemplate={formTemplate}
               userOptions={userOptions}
@@ -366,27 +368,27 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               </div>
             </div>
           )}
+        </div>
 
-          <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
-            <Button
-              size={"sm"}
-              onClick={closeModal}
-              variant="outline"
-              className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button
-              size={"sm"}
-              onClick={handleSubmit}
-              variant="outline"
-              className={`bg-sky-500 text-white hover:bg-sky-400 hover:text-white`}
-              disabled={loading || !managerSignature}
-            >
-              {loading ? <Spinner size={20} /> : "Create & Approve"}
-            </Button>
-          </div>
+        <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
+          <Button
+            size={"sm"}
+            onClick={closeModal}
+            variant="outline"
+            className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button
+            size={"sm"}
+            onClick={handleSubmit}
+            variant="outline"
+            className={`bg-sky-500 text-white hover:bg-sky-400 hover:text-white`}
+            disabled={loading || !managerSignature}
+          >
+            {loading ? <Spinner size={20} /> : "Create & Approve"}
+          </Button>
         </div>
       </div>
     </div>

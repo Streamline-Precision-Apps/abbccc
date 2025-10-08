@@ -33,6 +33,7 @@ export interface FormTemplate {
   };
   id: string;
   name: string;
+  description: string | null;
   formType?: string;
   isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
   isSignatureRequired?: boolean;

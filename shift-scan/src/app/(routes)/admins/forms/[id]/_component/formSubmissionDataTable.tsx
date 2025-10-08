@@ -32,7 +32,7 @@ import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FormIndividualTemplate, Submission } from "./hooks/types";
 import { format } from "date-fns";
-import { highlight } from "../../../_pages/higlight";
+import { highlight } from "../../../_pages/highlight";
 import { Check, X } from "lucide-react";
 import LoadingFormSubmissionTableState from "./loadingFormSubmissionTableState";
 
@@ -124,7 +124,6 @@ export function FormSubmissionDataTable({
         },
       },
     ];
-
     // Add dynamic field columns based on the form template
     const fieldColumns: ColumnDef<Submission>[] = fields.map((field) => ({
       id: field.id,

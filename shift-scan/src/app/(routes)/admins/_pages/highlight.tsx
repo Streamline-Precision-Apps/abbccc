@@ -5,7 +5,7 @@ export function highlight(text: string, term: string) {
   const regex = new RegExp(`(${term})`, "ig");
   return text.split(regex).map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} className="bg-yellow-200 px-0.5 rounded">
+      <mark key={i} className="bg-yellow-200 rounded-sm">
         {part}
       </mark>
     ) : (

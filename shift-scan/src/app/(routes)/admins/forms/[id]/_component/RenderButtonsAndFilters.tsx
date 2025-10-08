@@ -49,25 +49,19 @@ export default function RenderButtonsAndFilters({
   return (
     <div className="h-fit max-h-12  w-full flex flex-row justify-between gap-2 mb-2 ">
       <div className="w-full flex flex-row gap-2 ">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={() => router.push("/admins/forms")}
-              variant="outline"
-              size="sm"
-              className="h-full w-fit text-xs"
-            >
-              <img
-                src="/arrowBack.svg"
-                alt="back"
-                className="w-4 h-auto object-contain"
-              />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent sideOffset={4} side="top" align="center">
-            <p className="text-xs">Back</p>
-          </TooltipContent>
-        </Tooltip>
+        <Button
+          onClick={() => router.push("/admins/forms")}
+          variant="outline"
+          size="sm"
+          className="h-full w-10 p-2.5 text-xs"
+        >
+          <img
+            src="/arrowBack.svg"
+            alt="back"
+            className="w-5 h-auto object-contain"
+          />
+        </Button>
+
         <SearchBarPopover
           term={inputValue}
           handleSearchChange={(e) => setInputValue(e.target.value)}

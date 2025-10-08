@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { highlight } from "../../../_pages/higlight";
+import { highlight } from "../../../_pages/highlight";
 import { format } from "date-fns";
 import Link from "next/link";
 

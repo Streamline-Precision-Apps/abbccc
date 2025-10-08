@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { highlight } from "@/app/(routes)/admins/_pages/higlight";
+import { highlight } from "@/app/(routes)/admins/_pages/highlight";
 
 // Define the column configuration
 export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [

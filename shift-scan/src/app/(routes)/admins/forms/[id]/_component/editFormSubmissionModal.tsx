@@ -4,12 +4,17 @@ import {
   updateFormSubmission,
 } from "@/actions/records-forms";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useEffect, useState } from "react";
 import {
   FormIndividualTemplate,
   FormSubmissionWithTemplate,
 } from "./hooks/types";
-import Spinner from "@/components/(animations)/spinner";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,7 +31,7 @@ import RenderSearchPersonField from "../../_components/RenderSearchPersonField";
 import RenderSearchAssetField from "../../_components/RenderSearchAssetField";
 import { useSession } from "next-auth/react";
 import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
 
 export default function EditFormSubmissionModal({
@@ -211,6 +216,11 @@ export default function EditFormSubmissionModal({
     return null;
   };
 
+  useEffect(() => {
+    console.log("Edit Data:", editData);
+    console.log("Form Submission:", formSubmission);
+  }, [editData]);
+
   const handleFieldChange = (
     fieldId: string,
     value: string | Date | string[] | object | boolean | number | null,
@@ -300,40 +310,103 @@ export default function EditFormSubmissionModal({
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="flex flex-col gap-4 w-full items-center ">
-            <div className="w-full flex flex-col mb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-lg text-black font-semibold mb-4">
-                    Loading...
-                  </p>
-                  <div className="h-4 w-32 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-3 w-48 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                <div className="h-5 w-16 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-              <Spinner size={40} />
-            </div>
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+            <Button
+              type="button"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={closeModal}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
 
-            <div className="w-full flex flex-row justify-end gap-2">
-              <Button
-                size={"sm"}
-                onClick={closeModal}
-                variant="outline"
-                className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
+            <p className="text-lg text-black font-semibold">
+              {formTemplate?.name || "N/A"}
+            </p>
+
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-xs text-gray-500 px-2 py-1 rounded-lg bg-gray-100">
+                Submission ID: {id}
+              </span>
+              <span
+                className={`w-fit text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-500 `}
               >
-                Close
-              </Button>
+                loading...
+              </span>
+            </div>
+          </div>
+          <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
+            <div className="w-full flex flex-col ">
               <Button
-                size={"sm"}
-                onClick={saveChanges}
                 variant="outline"
-                className="bg-sky-500 text-white hover:bg-sky-400 hover:text-white"
+                size="sm"
+                className="border border-gray-200 rounded-md bg-gray-50 mt-3 cursor-default w-fit px-3 py-2 hover:no-underline"
+                disabled
               >
-                Save Changes
+                <div className="w-full flex flex-row ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-emerald-600 mr-1"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-semibold text-xs text-gray-700 ">
+                    Approval History
+                  </span>
+                  <div className="flex-grow">
+                    <ChevronDown className="w-4 h-4 ml-auto" />
+                  </div>
+                </div>
               </Button>
             </div>
+            {/* Simulated form fields skeleton */}
+            {/* Simulated form fields skeleton - Including submitted for field */}
+            <div className="w-full h-full space-y-6 mt-4">
+              {/* Submitted For field skeleton */}
+              <div className="space-y-1">
+                <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-8 w-full bg-gray-100 rounded animate-pulse"></div>
+              </div>
+              {/* Form template fields skeleton - Adding one for "Submitted For" field */}
+              {Array.from({
+                length: formTemplate?.FormGrouping?.[0]?.Fields?.length || 4,
+              }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="h-8 w-full bg-gray-100 rounded animate-pulse"></div>
+                </div>
+              ))}
+              <div className="w-full border-t border-gray-200 pt-4 mt-4"></div>
+            </div>
+          </div>
+
+          <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
+            <Button
+              size={"sm"}
+              onClick={closeModal}
+              variant="outline"
+              className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800  "
+            >
+              Cancel
+            </Button>
+            <Button
+              size={"sm"}
+              onClick={saveChanges}
+              variant="outline"
+              className="bg-sky-500 text-white hover:bg-sky-400 hover:text-white"
+              disabled
+            >
+              Save Changes
+            </Button>
           </div>
         </div>
       </div>
@@ -343,377 +416,435 @@ export default function EditFormSubmissionModal({
   // Render editable fields for each field in the template
   const renderFields = () => {
     if (!formSubmission?.FormTemplate?.FormGrouping) return null;
-    return formSubmission.FormTemplate.FormGrouping.map((group) => (
-      <div key={group.id} className="mb-4">
-        <div className="mb-4">
-          <Label className="text-sm font-medium mb-1 ">
-            Submitted For <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            type="text"
-            placeholder="Submitted For"
-            value={`${formSubmission.User?.firstName} ${formSubmission.User?.lastName}`}
-            disabled={true}
-          />
-        </div>
+    // Helper to check if signed
+    const isSigned =
+      editData.signature === true || editData.signature === "true";
+    const signature = formSubmission.User.signature;
+    return (
+      <>
+        <div>
+          {formSubmission.FormTemplate.FormGrouping.map((group) => (
+            <div key={group.id} className="mb-4">
+              <div className="mb-4">
+                <Label className="text-sm font-medium mb-1 ">
+                  Submitted For <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  placeholder="Submitted For"
+                  value={`${formSubmission.User?.firstName} ${formSubmission.User?.lastName}`}
+                  disabled={true}
+                />
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-          {group.Fields.map((field) => {
-            const options = field.Options || [];
-            // Get raw value from state using the same fallback pattern
-            const rawValue =
-              editData[field.id] ?? editData[field.label] ?? null;
-            // Default to empty string if no value
-            const defaultValue = "";
-            const error = errors[field.id];
-            const isTouched = touchedFields[field.id];
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                {group.Fields.map((field) => {
+                  const options = field.Options || [];
+                  const rawValue =
+                    editData[field.id] ?? editData[field.label] ?? null;
+                  const defaultValue = "";
+                  const error = errors[field.id];
+                  const isTouched = touchedFields[field.id];
 
-            // Convert value based on field type with overloaded types
-            function getFieldValue(type: "CHECKBOX"): boolean;
-            function getFieldValue(type: "MULTISELECT"): string[];
-            function getFieldValue(
-              type:
-                | "NUMBER"
-                | "TEXTAREA"
-                | "DATE"
-                | "TIME"
-                | "DROPDOWN"
-                | "RADIO"
-                | "SEARCH_PERSON"
-                | "SEARCH_ASSET"
-                | "TEXT",
-            ): string;
-            function getFieldValue(type: string): string | boolean | string[] {
-              if (rawValue === null || rawValue === undefined)
-                return type === "CHECKBOX"
-                  ? false
-                  : type === "MULTISELECT"
-                    ? []
-                    : defaultValue;
-
-              switch (type) {
-                case "NUMBER":
-                  return typeof rawValue === "number"
-                    ? rawValue.toString()
-                    : typeof rawValue === "string"
-                      ? rawValue
-                      : defaultValue;
-                case "CHECKBOX":
-                  return typeof rawValue === "boolean"
-                    ? rawValue
-                    : rawValue === "true"
-                      ? true
-                      : rawValue === "false"
+                  function getFieldValue(type: "CHECKBOX"): boolean;
+                  function getFieldValue(type: "MULTISELECT"): string[];
+                  function getFieldValue(
+                    type:
+                      | "NUMBER"
+                      | "TEXTAREA"
+                      | "DATE"
+                      | "TIME"
+                      | "DROPDOWN"
+                      | "RADIO"
+                      | "SEARCH_PERSON"
+                      | "SEARCH_ASSET"
+                      | "TEXT",
+                  ): string;
+                  function getFieldValue(
+                    type: string,
+                  ): string | boolean | string[] {
+                    if (rawValue === null || rawValue === undefined)
+                      return type === "CHECKBOX"
                         ? false
-                        : false;
-                case "MULTISELECT":
-                  return typeof rawValue === "string"
-                    ? rawValue.split(",").filter(Boolean)
-                    : Array.isArray(rawValue)
-                      ? rawValue
-                      : [String(rawValue)];
-                default:
-                  return typeof rawValue === "string"
-                    ? rawValue
-                    : rawValue !== null
-                      ? String(rawValue)
-                      : defaultValue;
-              }
-            }
+                        : type === "MULTISELECT"
+                          ? []
+                          : defaultValue;
 
-            // Render input based on field type
-            switch (field.type) {
-              case "TEXTAREA":
-                return (
-                  <RenderTextArea
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("TEXTAREA")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "NUMBER":
-                return (
-                  <RenderNumberField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("NUMBER")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "DATE":
-                return (
-                  <RenderDateField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("DATE")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "TIME":
-                return (
-                  <RenderTimeField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("TIME")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "DROPDOWN":
-                return (
-                  <RenderDropdownField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("DROPDOWN")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                    options={options}
-                  />
-                );
-              case "RADIO":
-                return (
-                  <RenderRadioField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("RADIO")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                    options={options}
-                  />
-                );
-              case "CHECKBOX":
-                return (
-                  <RenderCheckboxField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("CHECKBOX")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "MULTISELECT":
-                return (
-                  <RenderMultiselectField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("MULTISELECT")}
-                    options={options}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                  />
-                );
-              case "SEARCH_PERSON":
-                return (
-                  <RenderSearchPersonField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("SEARCH_PERSON")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    error={error}
-                    userOptions={userOptions}
-                    formData={editData}
-                  />
-                );
-              case "SEARCH_ASSET":
-                return (
-                  <RenderSearchAssetField
-                    key={field.id}
-                    field={field}
-                    value={getFieldValue("SEARCH_ASSET")}
-                    handleFieldChange={handleFieldChange}
-                    handleFieldTouch={handleFieldTouch}
-                    touchedFields={touchedFields}
-                    equipmentOptions={equipmentOptions}
-                    jobsiteOptions={jobsiteOptions}
-                    costCodeOptions={costCodeOptions}
-                    formData={editData}
-                  />
-                );
-              default:
-                return (
-                  <div key={field.id} className="flex flex-col">
-                    <Label className="text-sm font-medium mb-1">
-                      {field.label}
-                    </Label>
-                    <Input
-                      type="text"
-                      className={`border rounded px-2 py-1 ${
-                        isTouched && error ? "border-red-500" : ""
-                      }`}
-                      value={getFieldValue("TEXT")}
-                      onChange={(e) =>
-                        handleFieldChange(field.id, e.target.value)
-                      }
-                      onBlur={() => handleFieldTouch(field.id)}
+                    switch (type) {
+                      case "NUMBER":
+                        return typeof rawValue === "number"
+                          ? rawValue.toString()
+                          : typeof rawValue === "string"
+                            ? rawValue
+                            : defaultValue;
+                      case "CHECKBOX":
+                        return typeof rawValue === "boolean"
+                          ? rawValue
+                          : rawValue === "true"
+                            ? true
+                            : rawValue === "false"
+                              ? false
+                              : false;
+                      case "MULTISELECT":
+                        return typeof rawValue === "string"
+                          ? rawValue.split(",").filter(Boolean)
+                          : Array.isArray(rawValue)
+                            ? rawValue
+                            : [String(rawValue)];
+                      default:
+                        return typeof rawValue === "string"
+                          ? rawValue
+                          : rawValue !== null
+                            ? String(rawValue)
+                            : defaultValue;
+                    }
+                  }
+
+                  switch (field.type) {
+                    case "TEXTAREA":
+                      return (
+                        <RenderTextArea
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("TEXTAREA")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "NUMBER":
+                      return (
+                        <RenderNumberField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("NUMBER")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "DATE":
+                      return (
+                        <RenderDateField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("DATE")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "TIME":
+                      return (
+                        <RenderTimeField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("TIME")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "DROPDOWN":
+                      return (
+                        <RenderDropdownField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("DROPDOWN")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                          options={options}
+                        />
+                      );
+                    case "RADIO":
+                      return (
+                        <RenderRadioField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("RADIO")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                          options={options}
+                        />
+                      );
+                    case "CHECKBOX":
+                      return (
+                        <RenderCheckboxField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("CHECKBOX")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "MULTISELECT":
+                      return (
+                        <RenderMultiselectField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("MULTISELECT")}
+                          options={options}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                        />
+                      );
+                    case "SEARCH_PERSON":
+                      return (
+                        <RenderSearchPersonField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("SEARCH_PERSON")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          error={error}
+                          userOptions={userOptions}
+                          formData={editData}
+                        />
+                      );
+                    case "SEARCH_ASSET":
+                      return (
+                        <RenderSearchAssetField
+                          key={field.id}
+                          field={field}
+                          value={getFieldValue("SEARCH_ASSET")}
+                          handleFieldChange={handleFieldChange}
+                          handleFieldTouch={handleFieldTouch}
+                          touchedFields={touchedFields}
+                          equipmentOptions={equipmentOptions}
+                          jobsiteOptions={jobsiteOptions}
+                          costCodeOptions={costCodeOptions}
+                          formData={editData}
+                        />
+                      );
+                    default:
+                      return (
+                        <div key={field.id} className="flex flex-col">
+                          <Label className="text-sm font-medium mb-1">
+                            {field.label}
+                          </Label>
+                          <Input
+                            type="text"
+                            className={`border rounded px-2 py-1 ${
+                              isTouched && error ? "border-red-500" : ""
+                            }`}
+                            value={getFieldValue("TEXT")}
+                            onChange={(e) =>
+                              handleFieldChange(field.id, e.target.value)
+                            }
+                            onBlur={() => handleFieldTouch(field.id)}
+                          />
+                          {isTouched && error && (
+                            <p className="text-xs text-red-500 mt-1">{error}</p>
+                          )}
+                        </div>
+                      );
+                  }
+                })}
+              </div>
+            </div>
+          ))}
+          {/* Signature display logic */}
+          {formSubmission.FormTemplate.isSignatureRequired && (
+            <div className="w-full p-3 mb-2 bg-gray-50 rounded-md border border-gray-200">
+              {isSigned && signature && (
+                <div className="mb-4">
+                  <label className="text-sm font-medium mb-2">Signature</label>
+                  <div className="border border-gray-300 bg-white rounded-md p-3">
+                    <img
+                      src={signature || ""}
+                      alt="User Signature"
+                      className="w-24 h-auto "
                     />
-                    {isTouched && error && (
-                      <p className="text-xs text-red-500 mt-1">{error}</p>
-                    )}
                   </div>
-                );
-            }
-          })}
+                </div>
+              )}
+              <div className="flex flex-row items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="signature-checkbox-edit"
+                  checked={isSigned}
+                  onChange={(e) => setSignatureChecked(e.target.checked)}
+                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                />
+                <label
+                  htmlFor="signature-checkbox-edit"
+                  className="text-sm text-gray-700 select-none cursor-pointer font-medium"
+                >
+                  User electronically signed this submission
+                </label>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    ));
+      </>
+    );
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
-        <div className="flex flex-col gap-4 w-full h-full items-center relative">
-          <div className="w-full flex flex-row justify-between">
-            <div className="flex flex-col">
-              <Button
-                type="button"
-                variant={"ghost"}
-                size={"icon"}
-                onClick={closeModal}
-                className="absolute top-0 right-0 cursor-pointer"
-              >
-                <X width={20} height={20} />
-              </Button>
-              <p className="text-lg text-black font-semibold">
-                {formTemplate?.name || "N/A"}
-              </p>
-              <div className="flex flex-row items-center gap-2">
-                <span className="text-xs text-gray-500 px-2 py-1 rounded-lg bg-gray-100">
-                  Submission ID: {id}
-                </span>
-                <span
-                  className={`w-fit text-xs px-2 py-1 rounded-lg ${formSubmission?.status === "APPROVED" ? "bg-green-100 text-green-800" : formSubmission?.status === "DENIED" ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
-                >
-                  {`${formSubmission?.status.slice(0, 1).toUpperCase()}${formSubmission?.status.slice(1).toLowerCase()}`}
-                </span>
-              </div>
-              {/* Show approval information if available */}
-              {formSubmission?.Approvals &&
-                formSubmission.Approvals.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    <div className="flex items-center mb-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 text-emerald-600 mr-1"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <p className="font-semibold text-sm text-gray-700">
-                        Approval History
-                      </p>
-                    </div>
-                    <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 pr-1">
-                      {/* Sort approvals by date (newest first) */}
-                      {[...formSubmission.Approvals]
-                        .sort(
-                          (a, b) =>
-                            new Date(b.updatedAt).getTime() -
-                            new Date(a.updatedAt).getTime(),
-                        )
-                        .map((approval, index) => (
-                          <div
-                            key={approval.id}
-                            className={`ml-2 py-1.5 ${index !== 0 ? "border-t border-gray-100" : ""}`}
-                          >
-                            <div className="flex items-center text-xs">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-3 w-3 text-emerald-500 mr-1 flex-shrink-0"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              <div>
-                                {approval.Approver ? (
-                                  <span className="font-medium">
-                                    {approval.Approver.firstName}{" "}
-                                    {approval.Approver.lastName}
-                                  </span>
-                                ) : (
-                                  <span className="font-medium">
-                                    System Approval
-                                  </span>
-                                )}
-                                <span className="text-xs ml-1 text-gray-500">
-                                  (
-                                  {new Date(
-                                    approval.updatedAt,
-                                  ).toLocaleDateString()}{" "}
-                                  at{" "}
-                                  {new Date(
-                                    approval.updatedAt,
-                                  ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                  )
-                                </span>
-                              </div>
-                            </div>
-                            {approval.comment && (
-                              <p className="text-xs ml-5 mt-1 italic text-gray-600 bg-white px-2 py-1 rounded border border-gray-100">
-                                {approval.comment}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
-            </div>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+          <Button
+            type="button"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={closeModal}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+          <p className="text-lg text-black font-semibold">
+            {formTemplate?.name || "N/A"}
+          </p>
+          <div className="flex flex-row items-center gap-2">
+            <span className="text-xs text-gray-500 px-2 py-1 rounded-lg bg-gray-100">
+              Submission ID: {id}
+            </span>
+            <span
+              className={`w-fit text-xs px-2 py-1 rounded-lg ${formSubmission?.status === "APPROVED" ? "bg-green-100 text-green-800" : formSubmission?.status === "DENIED" ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
+            >
+              {`${formSubmission?.status.slice(0, 1).toUpperCase()}${formSubmission?.status.slice(1).toLowerCase()}`}
+            </span>
           </div>
-          <div className="w-full h-full">{renderFields()}</div>
-          {formTemplate?.isSignatureRequired && !editData.signature && (
-            <div className="w-full flex flex-row items-center gap-2 mb-4 mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-              <input
-                type="checkbox"
-                id="signature-checkbox-edit"
-                checked={signatureChecked}
-                onChange={(e) => setSignatureChecked(e.target.checked)}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="signature-checkbox-edit"
-                className="text-sm text-gray-700 select-none cursor-pointer font-medium"
+        </div>
+        <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
+          {/* Show approval information if available */}
+          {formSubmission?.Approvals && formSubmission.Approvals.length > 0 ? (
+            <Accordion type="single" collapsible className="mt-3">
+              <AccordionItem
+                value="approvals"
+                className="border border-gray-200 rounded-md bg-gray-50"
               >
-                User electronically signed this submission
-              </label>
-            </div>
+                <AccordionTrigger className="px-3 py-2 hover:no-underline">
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-emerald-600 mr-1"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="font-semibold text-xs text-gray-700">
+                      Approval History
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-3">
+                  <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 pr-1">
+                    {/* Sort approvals by date (newest first) */}
+                    {[...formSubmission.Approvals]
+                      .sort(
+                        (a, b) =>
+                          new Date(b.updatedAt).getTime() -
+                          new Date(a.updatedAt).getTime(),
+                      )
+                      .map((approval, index) => (
+                        <div
+                          key={approval.id}
+                          className={`py-1.5 ${index !== 0 ? "border-t border-gray-100" : ""}`}
+                        >
+                          <div className="flex items-center text-xs">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-3 w-3 text-emerald-500 mr-1 flex-shrink-0"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            <div>
+                              {approval.Approver ? (
+                                <span className="font-medium">
+                                  {approval.Approver.firstName}{" "}
+                                  {approval.Approver.lastName}
+                                </span>
+                              ) : (
+                                <span className="font-medium">
+                                  System Approval
+                                </span>
+                              )}
+                              <span className="text-xs ml-1 text-gray-500">
+                                (
+                                {new Date(
+                                  approval.updatedAt,
+                                ).toLocaleDateString()}{" "}
+                                at{" "}
+                                {new Date(
+                                  approval.updatedAt,
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                                )
+                              </span>
+                            </div>
+                          </div>
+                          {approval.comment && (
+                            <p className="text-xs mt-1 italic text-gray-600 bg-white px-2 py-1 rounded border border-gray-100">
+                              {approval.comment}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border border-gray-200 rounded-md bg-gray-50 mt-3   py-2 hover:no-underline"
+              disabled
+            >
+              <div className="w-full flex flex-row ">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-emerald-600 mr-1"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path
+                    fillRule="evenodd"
+                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="font-semibold text-xs text-gray-700">
+                  Approval History
+                </span>
+                <div className="flex-grow">
+                  <ChevronDown className="w-4 h-4 ml-auto" />
+                </div>
+              </div>
+            </Button>
           )}
 
+          <div className="w-full mt-4">{renderFields()}</div>
           {/* Manager Approval Section - Only show when status is PENDING */}
           {formSubmission?.status === "PENDING" && (
             <div className="w-full border-t border-gray-200 pt-4 mt-4">
@@ -772,30 +903,28 @@ export default function EditFormSubmissionModal({
               </div>
             </div>
           )}
+        </div>
 
-          <div className="w-full flex flex-row justify-end gap-3 py-4 my-2 border-t border-gray-100">
-            <Button
-              size={"sm"}
-              onClick={closeModal}
-              variant="outline"
-              className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
-            >
-              Cancel
-            </Button>
-            <Button
-              size={"sm"}
-              onClick={saveChanges}
-              variant="outline"
-              className={`${formSubmission?.status === "PENDING" ? "bg-sky-500 text-white hover:bg-sky-400 hover:text-white" : "bg-sky-500 text-white hover:bg-sky-400 hover:text-white"}`}
-              disabled={
-                formSubmission?.status === "PENDING" && !managerSignature
-              }
-            >
-              {formSubmission?.status === "PENDING"
-                ? "Approve Submission"
-                : "Save Changes"}
-            </Button>
-          </div>
+        <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
+          <Button
+            size={"sm"}
+            onClick={closeModal}
+            variant="outline"
+            className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
+          >
+            Cancel
+          </Button>
+          <Button
+            size={"sm"}
+            onClick={saveChanges}
+            variant="outline"
+            className={`${formSubmission?.status === "PENDING" ? "bg-sky-500 text-white hover:bg-sky-400 hover:text-white" : "bg-sky-500 text-white hover:bg-sky-400 hover:text-white"}`}
+            disabled={formSubmission?.status === "PENDING" && !managerSignature}
+          >
+            {formSubmission?.status === "PENDING"
+              ? "Approve Submission"
+              : "Save Changes"}
+          </Button>
         </div>
       </div>
     </div>

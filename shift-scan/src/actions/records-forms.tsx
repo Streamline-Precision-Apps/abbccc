@@ -451,7 +451,12 @@ export async function getFormSubmissionById(submissionId: number) {
       where: { id: submissionId },
       include: {
         User: {
-          select: { id: true, firstName: true, lastName: true },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            signature: true,
+          },
         },
         FormTemplate: {
           include: {
@@ -766,7 +771,7 @@ export async function ApproveFormSubmission(
           data: notification.map((notification) => ({
             notificationId: notification.id,
             response: "Approved",
-            readAt: new Date(),
+            respondedAt: new Date(),
             userId: adminUserId,
           })),
         }),

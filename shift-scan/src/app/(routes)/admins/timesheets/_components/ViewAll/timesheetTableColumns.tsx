@@ -19,7 +19,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { highlight } from "../../../_pages/higlight";
+import { highlight } from "../../../_pages/highlight";
 
 // Define the column configuration for the timesheet table
 // We'll now include the search term as part of the context

@@ -108,7 +108,7 @@ export function FormsDataTable({
                     return (
                       <TableHead
                         key={header.id}
-                        className="whitespace-nowrap font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200  last:border-r-0 text-xs sticky top-0"
+                        className="whitespace-nowrap font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200 first:text-left first:pl-3   last:border-r-0 text-xs sticky top-0"
                       >
                         {header.isPlaceholder
                           ? null

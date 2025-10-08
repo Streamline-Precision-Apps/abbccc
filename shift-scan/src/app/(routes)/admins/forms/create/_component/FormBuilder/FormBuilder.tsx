@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,15 @@ import { toast } from "sonner";
 import { saveFormTemplate } from "@/actions/records-forms";
 import Spinner from "@/components/(animations)/spinner";
 import SortableItem from "./sortableItem";
+import { set } from "lodash";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Types for form building
 export interface FormField {
@@ -144,6 +153,7 @@ export const fieldTypes = [
 
 export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Form state
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [formSettings, setFormSettings] = useState<FormSettings>({
     id: "",
     companyId: "",
@@ -305,6 +315,19 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     }
   };
 
+  const openCancelModal = () => {
+    if (formFields.length === 0 && !formSettings.name) {
+      // If no changes made, just exit
+      onCancel?.();
+      return;
+    }
+    setShowCancelModal(true);
+  };
+  const handleExitBuild = () => {
+    setShowCancelModal(false);
+    onCancel?.();
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -326,7 +349,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           variant={"outline"}
           size={"sm"}
           className="bg-red-300 border-none rounded-lg"
-          onClick={onCancel}
+          onClick={openCancelModal}
         >
           <div className="flex flex-row items-center">
             <img
@@ -1247,6 +1270,36 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           </div>
         )}
       </div>
+      <Dialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Exit Form Builder</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to exit the form builder? All unsaved
+              changes will be lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex flex-row gap-2">
+              <Button
+                variant="outline"
+                className="bg-gray-100"
+                onClick={() => setShowCancelModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  handleExitBuild();
+                }}
+              >
+                Exit Without Saving
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

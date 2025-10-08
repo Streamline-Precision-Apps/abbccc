@@ -35,17 +35,17 @@ const SearchBarPopover: React.FC<SearchBarProps> = ({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="bg-white rounded-lg w-10 justify-center h-full flex items-center">
+    <div className="bg-white/5 rounded-lg w-10 justify-center h-full flex items-center">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
             aria-label="Open search"
             disabled={disabled}
-            className={`flex items-center justify-center w-${imageSize} h-${imageSize} p-3  transition focus:outline-none focus:ring-none focus:ring-blue-500 ${open ? "rounded-tl-md rounded-bl-md border-r border-black bg-app-blue hover:bg-sky-300 " : "rounded-md bg-white hover:bg-slate-100 "}`}
+            className={`flex items-center justify-center w-${imageSize} h-${imageSize} p-2.5  transition focus:outline-none focus:ring-none focus:ring-blue-500 ${open ? "rounded-tl-md rounded-bl-md border-r border-black bg-white/5 hover:bg-white/5 " : "rounded-md bg-white hover:bg-slate-100 "}`}
           >
             <img
-              src="/searchLeft.svg"
+              src={open ? "/searchLeft-white.svg" : "/searchLeft.svg"}
               alt="search"
               className={`w-${imageSize} h-${imageSize}`}
             />

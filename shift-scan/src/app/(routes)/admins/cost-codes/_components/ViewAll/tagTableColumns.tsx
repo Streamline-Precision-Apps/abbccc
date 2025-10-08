@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { TagSummary } from "../useTagData";
-import { highlight } from "../../../_pages/higlight";
+import { highlight } from "../../../_pages/highlight";
 import {
   Tooltip,
   TooltipContent,

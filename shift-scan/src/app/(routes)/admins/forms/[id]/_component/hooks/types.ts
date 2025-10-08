@@ -13,6 +13,7 @@ export interface Submission {
     id: string;
     firstName: string;
     lastName: string;
+    signature: string;
   };
 }
 
@@ -77,6 +78,7 @@ export interface FormSubmissionWithTemplate {
     id: string;
     firstName: string;
     lastName: string;
+    signature: string;
   };
   Approvals?: Array<{
     id: string;
