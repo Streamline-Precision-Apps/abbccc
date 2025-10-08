@@ -6,6 +6,11 @@ export type TagSummary = {
   id: string;
   name: string;
   description: string;
+  CostCodes: Array<{
+    id: string;
+    name: string;
+    isActive: boolean;
+  }>;
 };
 
 export const useTagData = () => {

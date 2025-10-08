@@ -13,38 +13,27 @@ import {
 // Define the column configuration
 export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
   {
-    accessorKey: "name",
-    header: "Name",
+    accessorKey: "nameAndStatus",
+    header: "Cost Code Summary",
     cell: ({ row }) => {
       return (
-        <div className="text-xs text-center">
-          {highlight(row.original.name, "")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => {
-      return (
-        <div className="text-xs text-center">
-          {format(new Date(row.original.createdAt), "MM/dd/yy")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Active",
-    cell: ({ row }) => {
-      return (
-        <div className="flex justify-center">
-          {row.original.isActive ? (
-            <SquareCheck className="h-4 w-4 text-green-600" />
-          ) : (
-            <SquareX className="h-4 w-4 text-red-600" />
-          )}
+        <div className="w-full flex flex-row items-center">
+          <div className="text-sm">
+            <div className="w-full h-full flex flex-col text-left">
+              <p className="">{highlight(row.original.name, "")}</p>
+            </div>
+          </div>
+          <div className="ml-2">
+            {row.original.isActive ? (
+              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg">
+                Active
+              </span>
+            ) : (
+              <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
+                Inactive
+              </span>
+            )}
+          </div>
         </div>
       );
     },
