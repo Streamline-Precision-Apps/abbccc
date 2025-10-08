@@ -87,22 +87,46 @@ export default function CostCodeDataTable({
               </Tooltip>
 
               {/* Delete button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => openHandleDelete(item.id)}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
+              {row.original._count?.Timesheets === 0 ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => openHandleDelete(item.id)}
+                    >
+                      <img
+                        src="/trash-red.svg"
+                        alt="Delete"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      className="opacity-50"
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => {}}
+                    >
+                      <img
+                        src="/trash-red.svg"
+                        alt="Delete"
+                        className="h-4 w-4 cursor-pointer"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white text-red-500 border border-red-300">
+                    <span className="">Cannot delete:</span>
+                    <br />
+                    <span className="">linked timesheets</span>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           );
         },
@@ -165,39 +189,41 @@ export default function CostCodeDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              <Suspense fallback={<LoadingCostCodeTableState columns={columns} />}>
-              {loading ? (
-                <LoadingCostCodeTableState columns={columns} />
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+              <Suspense
+                fallback={<LoadingCostCodeTableState columns={columns} />}
+              >
+                {loading ? (
+                  <LoadingCostCodeTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
+                )}
               </Suspense>
             </TableBody>
           </Table>

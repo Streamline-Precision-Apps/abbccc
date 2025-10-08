@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { SquareCheck, SquareX } from "lucide-react";
+import Link from "next/link";
 
 // Define the column configuration
 export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
@@ -55,6 +56,33 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
       return (
         <div className="text-xs text-center">
           {format(new Date(row.original.updatedAt), "MM/dd/yy")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "timecardCount",
+    header: "Linked Timesheets",
+    cell: ({ row }) => {
+      return (
+        <div className="text-xs text-center">
+          {row.original._count?.Timesheets > 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/admins/timesheets?costCode=${row.original.code}`}
+                  className="cursor-pointer underline decoration-dotted decoration-1 text-sm hover:text-blue-600"
+                >
+                  {row.original._count?.Timesheets || 0}
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">See All Entries</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            "-"
+          )}
         </div>
       );
     },
