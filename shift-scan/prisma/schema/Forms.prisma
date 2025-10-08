@@ -5,6 +5,7 @@ model FormTemplate {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   isSignatureRequired Boolean              @default(false)
+  isApprovalRequired  Boolean              @default(false) // adding this to field to indicate approval not necessary for form template
   description         String?
   isActive            FormTemplateStatus   @default(DRAFT)
   formType            FormTemplateCategory @default(GENERAL)

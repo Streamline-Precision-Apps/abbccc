@@ -14,7 +14,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { SquareCheck, SquareX } from "lucide-react";
-import { highlight } from "@/app/(routes)/admins/_pages/higlight";
+import { highlight } from "@/app/(routes)/admins/_pages/highlight";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

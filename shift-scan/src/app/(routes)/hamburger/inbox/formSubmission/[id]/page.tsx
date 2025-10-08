@@ -35,6 +35,7 @@ interface FormTemplate {
   formType: string;
   isActive: boolean;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   groupings: FormGrouping[];
 }
 
@@ -259,7 +260,9 @@ export default function DynamicForm({
   }, [id, submissionId, submissionStatus, submissionApprovingStatus]);
 
   // Legacy method for backward compatibility with existing components
-  const updateFormValuesLegacy = (newValues: Record<string, string>) => {
+  const updateFormValuesLegacy = (
+    newValues: Record<string, string | boolean>,
+  ) => {
     setFormValues((prevValues) => {
       // Convert new values from potentially label-based keys to ID-based keys
       const convertedValues: Record<string, FormFieldValue> = {};
@@ -278,8 +281,8 @@ export default function DynamicForm({
   // Convert FormFieldValue to string for legacy components
   const convertFormValuesToString = (
     values: Record<string, FormFieldValue>,
-  ): Record<string, string> => {
-    const stringValues: Record<string, string> = {};
+  ): Record<string, string | boolean> => {
+    const stringValues: Record<string, string | boolean> = {};
 
     // Get the form template for mapping
     const template = formData ? convertToLegacyFormTemplate(formData) : null;
@@ -330,7 +333,12 @@ export default function DynamicForm({
             }
             break;
           case "CHECKBOX":
-            stringValue = value ? "true" : "false";
+            // Convert to string for compatibility
+            if (typeof value === "boolean") {
+              stringValue = value ? "true" : "false";
+            } else {
+              stringValue = value ? "true" : "false";
+            }
             break;
           case "NUMBER":
             stringValue = value ? String(value) : "0";
@@ -397,6 +405,7 @@ export default function DynamicForm({
       formType: typedTemplate.formType,
       isActive: typedTemplate.isActive === "ACTIVE",
       isSignatureRequired: typedTemplate.isSignatureRequired,
+      isApprovalRequired: typedTemplate.isApprovalRequired,
       groupings:
         typedTemplate.FormGrouping?.map(
           (group): FormGrouping => ({
@@ -479,12 +488,20 @@ export default function DynamicForm({
         return;
       }
 
-      // Use the current formValues directly (they're already in the correct format)
-      const dataToSave = convertFormValuesToString(formValues);
+      // Get values with booleans preserved for checkboxes
+      const mixedValues = convertFormValuesToString(formValues);
+
+      // Convert all values to strings for API compatibility
+      const dataToSaveAPI: Record<string, string> = {};
+      Object.entries(mixedValues).forEach(([key, value]) => {
+        dataToSaveAPI[key] =
+          typeof value === "boolean" ? value.toString() : String(value || "");
+      });
 
       // Save data and wait for completion before navigating
       const result = await saveDraftToPending(
-        dataToSave,
+        dataToSaveAPI,
+        formData.isApprovalRequired,
         formData.id,
         userId,
         formData.formType,
@@ -492,7 +509,7 @@ export default function DynamicForm({
         formTitle,
       );
 
-      if (result) {
+      if (result && formData.isApprovalRequired) {
         const response = await fetch("/api/notifications/send-multicast", {
           method: "POST",
           headers: {
@@ -527,12 +544,23 @@ export default function DynamicForm({
     const legacyTemplate = convertToLegacyFormTemplate(formData);
     const stringFormValues = convertFormValuesToString(formValues);
 
+    // Convert to pure string values for legacy components
+    const stringOnlyValues: Record<string, string> = {};
+    Object.entries(stringFormValues).forEach(([key, value]) => {
+      stringOnlyValues[key] =
+        typeof value === "boolean"
+          ? value
+            ? "true"
+            : "false"
+          : String(value || "");
+    });
+
     // Common props for all components
     const commonProps = {
       formData: legacyTemplate,
       formTitle,
       setFormTitle,
-      formValues: stringFormValues,
+      formValues: stringOnlyValues,
       updateFormValues: updateFormValuesLegacy,
       userId: userId || "",
       submissionId: submissionId || null,

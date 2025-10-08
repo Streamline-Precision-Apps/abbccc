@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,14 @@ import { toast } from "sonner";
 import { saveFormTemplate } from "@/actions/records-forms";
 import Spinner from "@/components/(animations)/spinner";
 import SortableItem from "./sortableItem";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Types for form building
 export interface FormField {
@@ -53,6 +61,7 @@ export interface FormSettings {
   description: string;
   status: string;
   requireSignature: boolean;
+  isApprovalRequired: boolean;
   createdAt: string;
   updatedAt: string;
   isActive: string;
@@ -144,6 +153,7 @@ export const fieldTypes = [
 
 export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
   // Form state
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [formSettings, setFormSettings] = useState<FormSettings>({
     id: "",
     companyId: "",
@@ -156,6 +166,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     updatedAt: "",
     isActive: "",
     isSignatureRequired: false,
+    isApprovalRequired: false,
     FormGrouping: [],
   });
 
@@ -269,6 +280,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           updatedAt: formSettings.updatedAt,
           isActive: formSettings.isActive,
           isSignatureRequired: formSettings.isSignatureRequired,
+          isApprovalRequired: formSettings.isApprovalRequired,
         },
         fields: formFields,
         companyId: formSettings.companyId,
@@ -290,6 +302,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           updatedAt: "",
           isActive: "",
           isSignatureRequired: false,
+          isApprovalRequired: false,
           FormGrouping: [],
         });
         setFormFields([]);
@@ -303,6 +316,19 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
     } finally {
       setLoadingSave(false);
     }
+  };
+
+  const openCancelModal = () => {
+    if (formFields.length === 0 && !formSettings.name) {
+      // If no changes made, just exit
+      onCancel?.();
+      return;
+    }
+    setShowCancelModal(true);
+  };
+  const handleExitBuild = () => {
+    setShowCancelModal(false);
+    onCancel?.();
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -326,7 +352,7 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           variant={"outline"}
           size={"sm"}
           className="bg-red-300 border-none rounded-lg"
-          onClick={onCancel}
+          onClick={openCancelModal}
         >
           <div className="flex flex-row items-center">
             <img
@@ -1218,6 +1244,23 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
               </SortableContext>
             </DndContext>
           )}
+          {formSettings && formSettings.isApprovalRequired && (
+            <div className="w-full flex flex-col  px-4 mt-2">
+              <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
+                <div className="flex items-center w-8 h-8 rounded-lg bg-sky-300 justify-center">
+                  <img src="/team.svg" alt="Signature" className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">
+                    Submission Requires Approval
+                  </p>
+                  <p className="text-xs">
+                    Form must be reviewed and approved before completion.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {formSettings && formSettings.requireSignature && (
             <div className="w-full flex flex-col  px-4 mt-2">
               <div className="bg-white bg-opacity-40 rounded-md flex flex-row items-center gap-2 px-4 py-2">
@@ -1229,9 +1272,11 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Digital Signature</p>
+                  <p className="text-sm font-semibold">
+                    Requires Digital Signature
+                  </p>
                   <p className="text-xs">
-                    Automatically added at the end of the form
+                    A digital signature is needed to complete the submission.
                   </p>
                 </div>
               </div>
@@ -1247,6 +1292,36 @@ export default function FormBuilder({ onCancel }: { onCancel?: () => void }) {
           </div>
         )}
       </div>
+      <Dialog open={showCancelModal} onOpenChange={setShowCancelModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Exit Form Builder</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to exit the form builder? All unsaved
+              changes will be lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex flex-row gap-2">
+              <Button
+                variant="outline"
+                className="bg-gray-100"
+                onClick={() => setShowCancelModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  handleExitBuild();
+                }}
+              >
+                Exit Without Saving
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

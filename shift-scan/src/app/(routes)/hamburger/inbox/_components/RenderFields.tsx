@@ -14,6 +14,7 @@ import RenderSearchPersonField, { Fields } from "./RenderSearchPersonField";
 import RenderTextArea from "@/app/(routes)/admins/forms/_components/RenderTextAreaField";
 import RenderSearchAssetField from "./RenderSearchAssetField";
 import RenderTimeField from "./RenderTimeField";
+import { c } from "framer-motion/dist/types.d-Cjd591yU";
 
 // Define a FormFieldValue type to represent all possible field values
 type FormFieldValue =
@@ -261,6 +262,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "DROPDOWN":
@@ -302,6 +304,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "CHECKBOX":
@@ -314,6 +317,7 @@ export default function RenderFields({
                         readOnly
                           ? () => {}
                           : (id: string, val: string | boolean) => {
+                              console.log("RenderFields", val);
                               handleFieldChange(id, val);
                             }
                       }
@@ -321,6 +325,7 @@ export default function RenderFields({
                       touchedFields={touchedFields}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "HEADER":
@@ -391,6 +396,7 @@ export default function RenderFields({
                       error={error}
                       formData={formData}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 case "SEARCH_ASSET":
@@ -424,6 +430,7 @@ export default function RenderFields({
                       costCodeOptions={costCodeOptions || []}
                       error={error}
                       disabled={disabled}
+                      useNativeInput={useNativeInput}
                     />
                   );
                 default:

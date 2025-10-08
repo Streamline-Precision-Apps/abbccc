@@ -11,7 +11,7 @@ enum FormStatus {
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ status: string }> }
+  { params }: { params: Promise<{ status: string }> },
 ) {
   const session = await auth();
   const userId = session?.user.id;
@@ -81,7 +81,7 @@ export async function GET(
     console.error("Error fetching forms:", error);
     return NextResponse.json(
       { error: "Error fetching forms" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

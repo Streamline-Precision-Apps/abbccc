@@ -35,6 +35,7 @@ interface FormTemplate {
   formType: string;
   isActive: boolean;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   groupings: FormGrouping[];
 }
 

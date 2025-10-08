@@ -150,10 +150,11 @@ export default function RenderTitleDescriptionStatus({
                     <span
                       className={`inline-block w-3 h-3 rounded-full mr-2 ${status.color} border border-gray-300`}
                     />
+                    <span className="font-semibold flex-1">{status.label}</span>
 
                     {formTemplate.isActive === status.value && (
                       <svg
-                        className="w-3 h-3 ml-2 text-emerald-500"
+                        className="w-4 h-4 ml-2 text-emerald-500"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"

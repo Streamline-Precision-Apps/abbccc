@@ -145,7 +145,7 @@ export default function useSubmissionDataById(id: string) {
       {
         value: "DRAFT",
         label: "Draft",
-        color: "bg-yellow-400",
+        color: "bg-blue-400",
       },
     ],
     [],
@@ -431,7 +431,7 @@ export default function useSubmissionDataById(id: string) {
       toast.error("User not authenticated", { duration: 3000 });
       return;
     }
-    formData.append("comment", "Approved on Dashboard");
+    formData.append("comment", "Approved on Dashboard using Quick Approval"); // Example comment
     formData.append("adminUserId", ApproverId || ""); // Append the ApproverId from session
 
     const { success } = await ApproveFormSubmission(id, action, formData);

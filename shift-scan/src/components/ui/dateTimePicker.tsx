@@ -10,21 +10,63 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-export function DateTimePicker() {
+export interface DateTimePickerProps {
+  value: string;
+  onChange: (val: string) => void;
+  label?: string;
+  font?: string;
+}
+
+export function DateTimePicker({
+  value,
+  onChange,
+  label,
+  font,
+}: DateTimePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  // Parse value to get date and time
+  let date: Date | undefined = undefined;
+  let time = "";
+  if (value) {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) {
+      date = d;
+      // Get time in HH:mm format
+      time = d.toISOString().substring(11, 16);
+    }
+  }
+  const handleDateChange = (selectedDate: Date | undefined) => {
+    if (!selectedDate) return;
+    // If time is set, combine date and time
+    const newDate = new Date(selectedDate);
+    if (time) {
+      const [hours, minutes] = time.split(":");
+      newDate.setHours(Number(hours));
+      newDate.setMinutes(Number(minutes));
+    }
+    onChange(newDate.toISOString());
+    setOpen(false);
+  };
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = e.target.value;
+    const newDate = date ? new Date(date) : new Date();
+    const [hours, minutes] = newTime.split(":");
+    newDate.setHours(Number(hours));
+    newDate.setMinutes(Number(minutes));
+    onChange(newDate.toISOString());
+  };
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-3">
         <Label htmlFor="date-picker" className="px-1">
-          Date
+          {label || "Date"}
         </Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               id="date-picker"
-              className="w-32 justify-between font-normal"
+              className={`w-32 justify-between ${font || "font-normal"}`}
             >
               {date ? date.toLocaleDateString() : "Select date"}
               <ChevronDownIcon />
@@ -35,10 +77,7 @@ export function DateTimePicker() {
               mode="single"
               selected={date}
               captionLayout="dropdown"
-              onSelect={(date) => {
-                setDate(date);
-                setOpen(false);
-              }}
+              onSelect={handleDateChange}
             />
           </PopoverContent>
         </Popover>
@@ -50,7 +89,8 @@ export function DateTimePicker() {
         <Input
           type="time"
           id="time-picker"
-          step="1"
+          value={time}
+          onChange={handleTimeChange}
           className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
         />
       </div>

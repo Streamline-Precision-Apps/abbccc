@@ -190,7 +190,9 @@ export default function useAllTimeSheetData({
     }
     // Equipment (array)
     if (filters.equipmentId && filters.equipmentId.length > 0) {
-      filters.equipmentId.forEach((equipmentId) => params.append("equipmentId", equipmentId));
+      filters.equipmentId.forEach((equipmentId) =>
+        params.append("equipmentId", equipmentId),
+      );
     }
     // Equipment Log Types (array)
     if (filters.equipmentLogTypes && filters.equipmentLogTypes.length > 0) {
@@ -273,11 +275,12 @@ export default function useAllTimeSheetData({
       // Replace with your API call
       const res = await fetch("/api/equipmentIdNameQrIdAndCode");
       const data = await res.json();
-      const filteredEquipment = data
-        .map((equipment: { id: string; name: string }) => ({
+      const filteredEquipment = data.map(
+        (equipment: { id: string; name: string }) => ({
           id: equipment.id,
           name: equipment.name,
-        }));
+        }),
+      );
       setEquipment(filteredEquipment || []);
     };
     fetchEquipment();
@@ -452,8 +455,6 @@ export default function useAllTimeSheetData({
         old: "PENDING",
         new: action,
       };
-      console.log("Updating timesheet status...", id, action);
-      console.log("Changes:", changes);
       const res = await adminUpdateTimesheetStatus(id, action, changes);
       if (!res || res.success !== true)
         throw new Error("Failed to update timesheet status");

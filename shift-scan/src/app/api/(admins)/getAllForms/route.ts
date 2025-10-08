@@ -20,6 +20,28 @@ export async function GET(req: Request) {
     // Parse pagination params
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search")?.trim() || "";
+    const status = searchParams.getAll("status") || "all";
+    const formType = searchParams.getAll("formType") || "ALL";
+
+    // Build filters
+    const filter: Record<string, unknown> = {};
+    if (status.length === 1) {
+      // Single status
+      const statusForm = status[0];
+      if (statusForm) filter.isActive = statusForm;
+    } else if (status.length > 1) {
+      const statusForms = status.map((s) => s).filter((s) => s);
+      if (statusForms.length > 0) filter.isActive = { in: statusForms };
+    }
+
+    if (formType.length === 1 && formType[0] !== "ALL") {
+      // Single form type
+      const type = formType[0];
+      if (type) filter.formType = type;
+    } else if (formType.length > 1) {
+      const types = formType.map((s) => s).filter((s) => s);
+      if (types.length > 0) filter.formType = { in: types };
+    }
 
     let forms, total, pageSize, page, skip, totalPages;
     if (search !== "") {
@@ -28,6 +50,9 @@ export async function GET(req: Request) {
       skip = undefined;
       totalPages = 1;
       forms = await prisma.formTemplate.findMany({
+        where: {
+          ...filter,
+        },
         include: {
           _count: {
             select: {
@@ -73,6 +98,9 @@ export async function GET(req: Request) {
       // Get total count for pagination
 
       forms = await prisma.formTemplate.findMany({
+        where: {
+          ...filter,
+        },
         skip,
         take,
         include: {

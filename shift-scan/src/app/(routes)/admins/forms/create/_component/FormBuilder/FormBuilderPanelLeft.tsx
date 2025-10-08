@@ -125,15 +125,29 @@ export function FormBuilderPanelLeft({
             )}
           </div>
           <div className="mt-4 w-full flex flex-row justify-between items-center ">
-            <Label htmlFor="airplane-mode" className="text-xs">
-              Require Signature
+            <Label htmlFor="require-signature" className="text-xs">
+              Requires Digital Signature
             </Label>
             <Switch
-              id="airplane-mode"
-              name="airplane-mode"
+              id="require-signature"
+              name="require-signature"
               checked={formSettings.requireSignature}
               onCheckedChange={(checked) =>
                 updateFormSettings("requireSignature", checked)
+              }
+              className="bg-white  data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
+            />
+          </div>
+          <div className="mt-4 w-full flex flex-row justify-between items-center ">
+            <Label htmlFor="require-approval" className="text-xs">
+              Submission Requires Approval
+            </Label>
+            <Switch
+              id="require-approval"
+              name="require-approval"
+              checked={formSettings.isApprovalRequired}
+              onCheckedChange={(checked) =>
+                updateFormSettings("isApprovalRequired", checked)
               }
               className="bg-white  data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
             />

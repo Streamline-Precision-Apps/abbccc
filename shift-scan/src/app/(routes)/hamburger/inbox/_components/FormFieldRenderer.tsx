@@ -49,6 +49,7 @@ interface FormTemplate {
   formType: string;
   isActive: boolean;
   isSignatureRequired: boolean;
+  isApprovalRequired: boolean;
   groupings: FormGrouping[];
 }
 
@@ -59,8 +60,8 @@ interface Option {
 
 interface FormFieldRendererProps {
   formData: FormTemplate;
-  formValues: Record<string, string>;
-  setFormValues?: (values: Record<string, string>) => void;
+  formValues: Record<string, string | boolean>;
+  setFormValues?: (values: Record<string, string | boolean>) => void;
   readOnly?: boolean;
   disabled?: boolean;
   useNativeInput?: boolean;
@@ -149,6 +150,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       formType: template.formType,
       isActive: template.isActive ? "ACTIVE" : "INACTIVE",
       isSignatureRequired: template.isSignatureRequired,
+      isApprovalRequired: template.isApprovalRequired,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       description: null,
@@ -189,7 +191,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
 
   // Convert string values to proper types for RenderFields
   const convertToFormFieldValues = (
-    values: Record<string, string>,
+    values: Record<string, string | boolean>,
   ): Record<string, FormFieldValue> => {
     const result: Record<string, FormFieldValue> = {};
 
@@ -213,11 +215,25 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       if (field) {
         switch (field.type) {
           case "NUMBER":
-            result[field.id] = value ? parseFloat(value) : 0;
+            // For numbers, handle both string and numeric values
+            if (typeof value === "string") {
+              result[field.id] = value ? parseFloat(value) : 0;
+            } else {
+              result[field.id] = value ? 1 : 0;
+            }
             break;
           case "CHECKBOX":
-            const checkboxValue = value === "true";
-            result[field.id] = checkboxValue;
+            // For checkboxes, handle both string and boolean values
+            // Keep the actual boolean value
+            if (typeof value === "boolean") {
+              result[field.id] = value;
+            } else {
+              const checkboxValue = value === "true";
+              console.log(
+                `Converting checkbox ${field.id}: ${value} (${typeof value}) to ${checkboxValue}`,
+              );
+              result[field.id] = checkboxValue;
+            }
             break;
           case "DATE":
           case "DATE_TIME":
@@ -225,7 +241,11 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
             break;
           case "MULTISELECT":
             try {
-              result[field.id] = value ? JSON.parse(value) : [];
+              if (typeof value === "string") {
+                result[field.id] = value ? JSON.parse(value) : [];
+              } else {
+                result[field.id] = []; // Default for boolean case
+              }
             } catch (error) {
               // If JSON parsing fails, treat as empty array
               result[field.id] = [];
@@ -233,7 +253,11 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
             break;
           case "SEARCH_PERSON":
             try {
-              result[field.id] = value ? JSON.parse(value) : null;
+              if (typeof value === "string") {
+                result[field.id] = value ? JSON.parse(value) : null;
+              } else {
+                result[field.id] = null; // Default for boolean case
+              }
             } catch (error) {
               // If JSON parsing fails, treat as string (backward compatibility)
               result[field.id] = value || "";
@@ -241,7 +265,11 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
             break;
           case "SEARCH_ASSET":
             try {
-              result[field.id] = value ? JSON.parse(value) : null;
+              if (typeof value === "string") {
+                result[field.id] = value ? JSON.parse(value) : null;
+              } else {
+                result[field.id] = null; // Default for boolean case
+              }
             } catch (error) {
               // If JSON parsing fails, treat as string (backward compatibility)
               result[field.id] = value || "";
@@ -259,10 +287,14 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
   };
 
   // Convert FormFieldValue back to string for legacy components
-  const convertFromFormFieldValue = (value: FormFieldValue): string => {
+  const convertFromFormFieldValue = (
+    value: FormFieldValue,
+  ): string | boolean => {
     if (typeof value === "string") {
       return value;
-    } else if (typeof value === "number" || typeof value === "boolean") {
+    } else if (typeof value === "boolean") {
+      return value; // Keep booleans as booleans
+    } else if (typeof value === "number") {
       return value.toString();
     } else if (value instanceof Date) {
       return value.toISOString();
@@ -282,7 +314,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
         ?.flatMap((group: FormGrouping) => group.fields || [])
         .find((f: FormField) => f.id === fieldId);
 
-      let convertedValue = "";
+      let convertedValue: string | boolean = "";
 
       if (field) {
         switch (field.type) {
@@ -306,7 +338,9 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
             }
             break;
           case "CHECKBOX":
-            convertedValue = value ? "true" : "false";
+            // Store the actual boolean value
+            convertedValue = !!value;
+            console.log("convertedValue on FormFieldRenderer", convertedValue);
             break;
           case "NUMBER":
             convertedValue = value ? String(value) : "0";
@@ -330,11 +364,18 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = ({
       // Always use field.id as the key since we're standardizing on that
       // RenderFields will handle both field.id and field.label lookups
       const keyToUpdate = fieldId;
+      console.log(
+        "Updating field:",
+        keyToUpdate,
+        "with value:",
+        convertedValue,
+      );
 
       const newFormValues = {
         ...formValues,
         [keyToUpdate]: convertedValue,
       };
+      console.log("New form values:", newFormValues);
       setFormValues(newFormValues);
     }
   };

@@ -32,6 +32,7 @@ export interface FormSettingsData {
   description: string;
   formType: string;
   requireSignature: boolean;
+  isApprovalRequired: boolean;
   isActive: string;
 }
 
@@ -77,6 +78,7 @@ export async function saveFormTemplate(data: SaveFormData) {
           formType: settings.formType as FormTemplateCategory,
           isActive: settings.isActive as FormTemplateStatus,
           isSignatureRequired: settings.requireSignature,
+          isApprovalRequired: settings.isApprovalRequired,
         },
       });
       // Always create a grouping for this form
@@ -168,6 +170,7 @@ export async function updateFormTemplate(data: SaveFormData) {
         formType: settings.formType as FormTemplateCategory,
         isActive: (settings.isActive as FormTemplateStatus) || "DRAFT",
         isSignatureRequired: settings.requireSignature,
+        isApprovalRequired: settings.isApprovalRequired,
         description: settings.description,
       },
     });
@@ -341,6 +344,7 @@ export async function archiveFormTemplate(formId: string) {
     return { success: false, error: "Failed to archive form template" };
   }
 }
+
 export async function publishFormTemplate(formId: string) {
   try {
     await prisma.formTemplate.update({
@@ -450,7 +454,12 @@ export async function getFormSubmissionById(submissionId: number) {
       where: { id: submissionId },
       include: {
         User: {
-          select: { id: true, firstName: true, lastName: true },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            signature: true,
+          },
         },
         FormTemplate: {
           include: {
@@ -765,7 +774,7 @@ export async function ApproveFormSubmission(
           data: notification.map((notification) => ({
             notificationId: notification.id,
             response: "Approved",
-            readAt: new Date(),
+            respondedAt: new Date(),
             userId: adminUserId,
           })),
         }),

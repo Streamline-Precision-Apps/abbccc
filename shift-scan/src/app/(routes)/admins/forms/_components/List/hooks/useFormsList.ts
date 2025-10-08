@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { FormTemplate } from "./types";
 import { FormTemplateCategory } from "../../../../../../../../prisma/generated/prisma/client";
+import { useRouter } from "next/navigation";
+import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
 
 /**
  * Custom hook to manage fetching, filtering, and paginating forms for the List view.
@@ -9,7 +11,12 @@ import { FormTemplateCategory } from "../../../../../../../../prisma/generated/p
 
 export type FormTypeFilter = FormTemplateCategory | "ALL";
 
+interface FilterOptions {
+  formType: string[];
+  status: string[];
+}
 export function useFormsList() {
+  const { refresh } = useDashboardData();
   const [forms, setForms] = useState<FormTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +27,39 @@ export function useFormsList() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [inputValue, setInputValue] = useState("");
+  const router = useRouter();
+  const [refilterKey, setRefilterKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const rerender = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+    refresh();
+  }, [refresh]);
+
+  const [filters, setFilters] = useState<FilterOptions>({
+    formType: [],
+    status: [],
+  });
+
+  const reFilterPage = useCallback(() => {
+    setRefilterKey((k) => k + 1);
+  }, []);
+
+  const handleClearFilters = async () => {
+    // First clear the URL
+    router.replace("/admins/forms");
+
+    // Reset all filter-related states
+    setFilters({
+      formType: [],
+      status: [],
+    });
+    setFormType("ALL");
+    setPage(1);
+
+    // Trigger immediate refetch
+    setRefilterKey((k) => k + 1);
+  };
 
   // Debounce search input
   useEffect(() => {
@@ -29,13 +69,37 @@ export function useFormsList() {
     return () => clearTimeout(handler);
   }, [inputValue]);
 
-  const fetchForms = useCallback(async () => {
+  const buildFilterQuery = () => {
+    const params = new URLSearchParams();
+
+    // Form Type
+    if (filters.formType && filters.formType.length > 0) {
+      filters.formType.forEach((type) => {
+        // Skip if type is "ALL"
+        if (type !== "ALL") {
+          params.append("formType", type);
+        }
+      });
+    }
+
+    // Status (array)
+    if (filters.status && filters.status.length > 0) {
+      filters.status.forEach((status) => {
+        params.append("status", status);
+      });
+    }
+
+    return params.toString();
+  };
+
+  async function fetchForms() {
     setLoading(true);
     setError(null);
     try {
+      const filterQuery = buildFilterQuery();
       const encodedSearch = encodeURIComponent(searchTerm.trim());
       const res = await fetch(
-        `/api/getAllForms?page=${page}&pageSize=${pageSize}&search=${encodedSearch}`,
+        `/api/getAllForms?page=${page}&pageSize=${pageSize}&search=${encodedSearch}${filterQuery ? `&${filterQuery}` : ""}`,
       );
       if (!res.ok) throw new Error("Failed to fetch forms");
       const result = await res.json();
@@ -47,11 +111,12 @@ export function useFormsList() {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm]);
+  }
 
+  // Effect to handle filters and fetching
   useEffect(() => {
     fetchForms();
-  }, [fetchForms, searchTerm]);
+  }, [page, pageSize, searchTerm, refilterKey, refreshKey]);
 
   // Get unique form types from the current forms
   const formTypes = useMemo(() => {
@@ -76,10 +141,10 @@ export function useFormsList() {
       .map((form) => ({
         id: form.id,
         name: form.name,
-        description: null, // Add description to match FormItem interface
+        description: form.description,
         formType: form.formType || "UNKNOWN",
         _count: form._count,
-        isActive: form.isActive ? "ACTIVE" : "DRAFT",
+        isActive: form.isActive,
         createdAt: form.createdAt || new Date().toISOString(),
         updatedAt: form.updatedAt || new Date().toISOString(),
       }));
@@ -102,5 +167,11 @@ export function useFormsList() {
     totalPages,
     total,
     refetch: fetchForms,
+    setForms,
+    rerender,
+    handleClearFilters,
+    filters,
+    setFilters,
+    reFilterPage,
   };
 }

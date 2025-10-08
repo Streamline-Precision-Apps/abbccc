@@ -41,7 +41,7 @@ This file contains comprehensive styling guidelines for ensuring visual consiste
 
 ```jsx
 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-  <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
+  <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar">
     <div className="px-6 py-4">{/* Modal content */}</div>
   </div>
 </div>
@@ -242,6 +242,284 @@ This file contains comprehensive styling guidelines for ensuring visual consiste
   ```
 
 ## Component-Specific Styling
+
+### Export Modal Styles
+
+```jsx
+// Main Export Modal Structure
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+  <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4">
+    <div className="flex flex-col gap-4 items-center w-full relative">
+      {/* Header Section */}
+      <div className="flex flex-col w-full border-b border-gray-200 pb-3">
+        <div className="flex flex-row gap-2 items-center">
+          <h2 className="text-xl font-bold">Export Form Data</h2>
+          <Download className="h-5 w-5" />
+        </div>
+        <p className="text-xs text-gray-600 pt-1">
+          Select a date range, apply filters, and choose your preferred export
+          format
+        </p>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={closeModal}
+          className="absolute top-0 right-0 cursor-pointer"
+        >
+          <X width={20} height={20} />
+        </Button>
+      </div>
+      {/* Date Range Section */}
+      <div className="flex flex-col gap-6 w-full px-2 py-4">
+        <div className="w-full flex flex-col">
+          <Label className="font-semibold text-sm ">Date Range</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                id="date"
+                className="w-3/4 justify-between font-normal"
+              >
+                {dateRange.from && dateRange.to
+                  ? `${format(dateRange.from, "PPP")} - ${format(
+                      dateRange.to,
+                      "PPP"
+                    )}`
+                  : "Select date range"}
+                <ChevronDownIcon />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto overflow-hidden p-0"
+              align="start"
+            >
+              <div className="p-4 justify-center flex flex-col items-center">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={handleDateSelect}
+                  autoFocus
+                />
+                {(dateRange.from || dateRange.to) && (
+                  <Button
+                    variant="outline"
+                    className="w-1/2 text-xs text-blue-600 hover:underline"
+                    onClick={handleClearDateRange}
+                    type="button"
+                  >
+                    Clear date range
+                  </Button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+        {/* Export format selection */}
+        <div className="w-full">
+          <h3 className="font-semibold text-sm mb-2">Export Format</h3>
+          <div className="flex flex-row w-1/2 gap-4 border border-gray-200 rounded-md p-4">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="exportFormat"
+                value="csv"
+                checked={exportFormat === "csv"}
+                onChange={() => setExportFormat("csv")}
+                className="accent-blue-600"
+              />
+              <span className="text-xs">CSV</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="exportFormat"
+                value="xlsx"
+                checked={exportFormat === "xlsx"}
+                onChange={() => setExportFormat("xlsx")}
+                className="accent-green-600"
+              />
+              <span className="text-xs">Excel (XLSX)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      {/* Action buttons */}
+      <div className="flex flex-row gap-3 w-full justify-end border-t border-gray-200 pt-4">
+        <Button
+          variant="outline"
+          className=" bg-gray-200 hover:bg-gray-300 text-gray-800"
+          onClick={closeModal}
+        >
+          Cancel
+        </Button>
+        <Button
+          className=" bg-sky-500 hover:bg-sky-400 text-white disabled:opacity-50"
+          onClick={() => exportFormat && onExport(exportFormat, dateRange)}
+          disabled={!exportFormat}
+        >
+          Export
+        </Button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+#### Styling Guidelines
+
+1. **Layout Structure**
+
+   - Modal width: Fixed at 600px (`w-[600px]`)
+   - Max height: 80vh with scrolling (`max-h-[80vh]`)
+   - Inner padding: `px-6 py-4`
+   - Content spacing: `gap-4`
+
+2. **Section Styling**
+
+   - Section dividers: `border-t border-gray-200 pt-4`
+   - Section headers: `font-semibold text-sm mb-2`
+   - Description text: `text-xs text-gray-600 pt-1`
+
+3. **Interactive Elements**
+
+   - Radio buttons: CSV uses `accent-blue-600`, Excel uses `accent-green-600`
+   - Date range selector: `w-3/4` width with outline variant
+   - Buttons use consistent height without size prop
+
+4. **Specific Components**
+
+   - Format selection container: `w-1/2 gap-4 border border-gray-200 rounded-md p-4`
+   - Action buttons aligned to right with `justify-end`
+   - Calendar popover: `w-auto overflow-hidden p-0` with centered content
+
+5. **State Management**
+   - Disabled states: `disabled:opacity-50`
+   - Clear date range button shows conditionally
+   - Format selection required for export action
+
+#### Header Section
+
+```jsx
+{
+  /* Title Section */
+}
+<div className="flex flex-col w-full">
+  <div className="flex flex-row gap-2 items-center">
+    <h2 className="text-xl font-bold">Export Data</h2>
+    <Download className="h-5 w-5" />
+  </div>
+  <p className="text-xs text-gray-600 pt-1">Description text here</p>
+</div>;
+
+{
+  /* Close Button */
+}
+<Button
+  type="button"
+  variant="ghost"
+  size="icon"
+  onClick={onClose}
+  className="absolute top-0 right-0 cursor-pointer"
+>
+  <X width={20} height={20} />
+</Button>;
+```
+
+#### Date Range Section
+
+```jsx
+<div className="w-full flex flex-col border-t border-gray-200 pt-4">
+  <Label className="font-semibold text-sm">Date Range</Label>
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button variant="outline" className="w-1/2 justify-between font-normal">
+        {dateRangeText}
+        <ChevronDownIcon />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+      <div className="p-4 justify-center flex flex-col items-center">
+        <Calendar />
+        {/* Clear button if needed */}
+        <Button
+          variant="outline"
+          className="w-1/2 text-xs text-blue-600 hover:underline"
+        >
+          Clear date range
+        </Button>
+      </div>
+    </PopoverContent>
+  </Popover>
+</div>
+```
+
+#### Format Selection Section
+
+```jsx
+<div className="mt-4 w-full">
+  <h3 className="font-semibold text-sm mb-2">Export Format</h3>
+  <div className="flex flex-row w-1/2 gap-4 border border-gray-200 rounded-md p-4">
+    {/* Radio options */}
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input type="radio" className="accent-blue-600" />
+      <span className="text-xs">Format Option</span>
+    </label>
+  </div>
+</div>
+```
+
+#### Action Buttons
+
+```jsx
+<div className="flex flex-row gap-3 w-full mb-2 mt-4 border-t border-gray-200 pt-4">
+  <Button
+    size="sm"
+    variant="outline"
+    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800"
+  >
+    Cancel
+  </Button>
+  <Button
+    size="sm"
+    className="flex-1 bg-sky-500 hover:bg-sky-400 text-white disabled:opacity-50"
+  >
+    Export
+  </Button>
+</div>
+```
+
+#### Styling Guidelines
+
+1. **Layout Structure**
+
+   - Modal width: Fixed at 600px (`w-[600px]`)
+   - Max height: 80vh with scrolling (`max-h-[80vh]`)
+   - Inner padding: `px-6 py-4`
+   - Sections spacing: `gap-4`
+
+2. **Section Styling**
+
+   - Section dividers: `border-t border-gray-200 pt-4`
+   - Section headers: `font-semibold text-sm mb-2`
+   - Description text: `text-xs text-gray-600`
+
+3. **Interactive Elements**
+
+   - Buttons width: Use `flex-1` for equal widths
+   - Radio buttons: Use `accent-blue-600` for blue theme
+   - Popover width: `w-1/2` for date range selector
+
+4. **Specific Components**
+
+   - Date Range Button: `variant="outline" w-1/2 justify-between font-normal`
+   - Format Selection: Border container with `rounded-md p-4`
+   - Action buttons: Full width with equal sizing
+
+5. **Responsive Behavior**
+   - Container maintains fixed width on larger screens
+   - Scrollable content for overflow
+   - No horizontal scrolling (`no-scrollbar`)
 
 ### Timesheet Sections
 

@@ -33,8 +33,10 @@ export interface FormTemplate {
   };
   id: string;
   name: string;
+  description: string | null;
   formType?: string;
-  isActive?: boolean;
+  isActive: "ACTIVE" | "DRAFT" | "ARCHIVED" | string;
+  isApprovalRequired?: boolean;
   isSignatureRequired?: boolean;
   groupings: FormGrouping[];
   createdAt?: string;

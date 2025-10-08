@@ -41,6 +41,7 @@ export default function RenderSearchAssetField({
   touchedFields,
   error,
   disabled,
+  useNativeInput = false,
 }: {
   equipmentOptions: { value: string; label: string }[];
   jobsiteOptions: { value: string; label: string }[];
@@ -74,6 +75,7 @@ export default function RenderSearchAssetField({
   touchedFields: Record<string, boolean>;
   error?: string | null;
   disabled?: boolean;
+  useNativeInput?: boolean;
 }) {
   let assetOptions = [{ value: "", label: "" }];
   let assetType = "client";
