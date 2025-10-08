@@ -50,6 +50,35 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
     },
   },
   {
+    accessorKey: "CCTags",
+    header: "Tags",
+    cell: ({ row }) => {
+      const tags = row.original.CCTags || [];
+      const filteredTags = tags.filter(
+        (tag) => tag.name.toLowerCase() !== "all",
+      );
+
+      return (
+        <div className="text-xs text-center">
+          {filteredTags.length > 0 ? (
+            <div className="flex flex-wrap gap-1 justify-center">
+              {filteredTags.map((tag, index) => (
+                <span
+                  key={tag.id}
+                  className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "updatedAt",
     header: "Updated At",
     cell: ({ row }) => {
