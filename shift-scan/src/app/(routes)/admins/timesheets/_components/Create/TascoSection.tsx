@@ -1,4 +1,5 @@
-import { Combobox } from "@/components/ui/combobox";
+"use client";
+import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,174 +35,211 @@ export function TascoSection({
   materialTypes,
   equipmentOptions,
 }: Props) {
-  // ...existing code for rendering Tasco logs UI, using the props above...
-  // Copy the JSX and logic for the Tasco section from the main modal, replacing state/handlers with props
   return (
-    <div className="border-t-2 border-black pt-4 pb-2">
-      <div className="mb-4">
-        <h3 className="font-semibold text-xl mb-1">Additional Tasco Details</h3>
-        <p className="text-sm text-gray-600">
-          Fill out the additional details for this timesheet to report more
-          accurate Tasco logs.
-        </p>
-      </div>
+    <div className="col-span-2 mt-4">
+      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
+        Tasco Summary
+      </h3>
       {tascoLogs.map((log, idx) => (
-        <div key={idx} className="flex flex-col gap-6 mb-4  pb-4">
-          <div className="flex flex-col gap-4 py-2 rounded relative border p-4">
-            <Select
-              value={log.shiftType}
-              onValueChange={(val) => {
-                const updated = [...tascoLogs];
-                updated[idx].shiftType = val as TascoLogDraft["shiftType"];
-                setTascoLogs(updated);
-              }}
-            >
-              <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Shift Type*" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ABCD Shift">ABCD Shift</SelectItem>
-                <SelectItem value="E Shift">E Shift</SelectItem>
-                <SelectItem value="F Shift">F Shift</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={log.laborType}
-              onValueChange={(val) => {
-                const updated = [...tascoLogs];
-                updated[idx].laborType = val as TascoLogDraft["laborType"];
-                setTascoLogs(updated);
-              }}
-            >
-              <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Labor Type*" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Equipment Operator">
-                  Equipment Operator
-                </SelectItem>
-                <SelectItem value="Labor">Labor</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="w-fit min-w-[300px]">
-              <SingleCombobox
-                options={materialTypes.map((m) => ({
-                  value: m.name,
-                  label: m.name,
-                }))}
-                value={log.materialType}
-                onChange={(val) => {
-                  const updated = [...tascoLogs];
-                  updated[idx].materialType = val;
-                  setTascoLogs(updated);
-                }}
-                placeholder="Material Type*"
-              />
-            </div>
-            <Input
-              type="number"
-              placeholder="Load Quantity*"
-              value={log.loadQuantity}
-              onChange={(e) => {
-                const updated = [...tascoLogs];
-                updated[idx].loadQuantity = e.target.value;
-                setTascoLogs(updated);
-              }}
-              className="w-[300px]"
-            />
-            <Select
-              value={log.screenType}
-              onValueChange={(val) => {
-                const updated = [...tascoLogs];
-                updated[idx].screenType = val as TascoLogDraft["screenType"];
-                setTascoLogs(updated);
-              }}
-            >
-              <SelectTrigger className="w-[300px]">
-                <SelectValue placeholder="Screen Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="SCREENED">Screened</SelectItem>
-                <SelectItem value="UNSCREENED">Unscreened</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {/* Equipment selection */}
-          <div className="py-4 border-b mb-2">
-            <p className="text-sm">Select Equipment if Applicable</p>
-            <div className="flex flex-col gap-2 rounded border p-4">
-              {log.equipment.map((eq, eqIdx) => (
-                <div key={eq.id || eqIdx} className="flex gap-1 items-center">
+        <div
+          key={idx}
+          className="flex flex-col gap-6 relative p-2 mb-2 border-b"
+        >
+          <div className="flex flex-col gap-4 pb-4 border bg-slate-50 rounded p-2">
+            {/* Equipment Combobox */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row gap-4">
+                <div className="w-[350px]">
+                  <label htmlFor="equipmentId" className="block text-xs">
+                    Equipment
+                  </label>
                   <SingleCombobox
-                    label="Equipment"
                     options={equipmentOptions}
-                    value={eq.id}
+                    value={log.equipment[0]?.id || ""}
                     onChange={(val, option) => {
                       const updated = [...tascoLogs];
-                      updated[idx].equipment[eqIdx] = option
+                      updated[idx].equipment[0] = option
                         ? { id: option.value, name: option.label }
                         : { id: "", name: "" };
                       setTascoLogs(updated);
                     }}
-                    placeholder="Select equipment"
+                    placeholder="Select Equipment"
                   />
                 </div>
-              ))}
+              </div>
+              <div className="flex flex-row gap-4">
+                <div className="w-[350px]">
+                  <label htmlFor="shiftType" className="block text-xs">
+                    Shift Type
+                  </label>
+                  <Select
+                    name="shiftType"
+                    value={log.shiftType}
+                    onValueChange={(val) => {
+                      const updated = [...tascoLogs];
+                      updated[idx].shiftType =
+                        val as TascoLogDraft["shiftType"];
+                      setTascoLogs(updated);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white w-[350px] text-xs">
+                      <SelectValue placeholder="Select Shift Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ABCD Shift">ABCD Shift</SelectItem>
+                      <SelectItem value="E Shift">E Shift</SelectItem>
+                      <SelectItem value="F Shift">F Shift</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex flex-row gap-4">
+                <div className="w-[350px]">
+                  <label htmlFor="laborType" className="block text-xs">
+                    Labor Type
+                  </label>
+                  <Select
+                    name="laborType"
+                    value={log.laborType}
+                    onValueChange={(val) => {
+                      const updated = [...tascoLogs];
+                      updated[idx].laborType =
+                        val as TascoLogDraft["laborType"];
+                      setTascoLogs(updated);
+                    }}
+                  >
+                    <SelectTrigger className="bg-white w-[350px] text-xs">
+                      <SelectValue placeholder="Select Labor Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Equipment Operator">
+                        Equipment Operator
+                      </SelectItem>
+                      <SelectItem value="Labor">Labor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
+            <div className="flex flex-row gap-4">
+              <div className="w-[350px]">
+                <label htmlFor="materialType" className="block text-xs">
+                  Material Type
+                </label>
+                <SingleCombobox
+                  options={materialTypes.map((m) => ({
+                    value: m.name,
+                    label: m.name,
+                  }))}
+                  value={log.materialType}
+                  onChange={(val) => {
+                    const updated = [...tascoLogs];
+                    updated[idx].materialType = val;
+                    setTascoLogs(updated);
+                  }}
+                  placeholder="Select Material"
+                />
+              </div>
+            </div>
+            <div className="flex flex-row gap-4">
+              <div className="w-[350px]">
+                <label className="block text-xs">Number of Loads</label>
+                <Input
+                  type="number"
+                  placeholder="Enter number of loads"
+                  value={log.loadQuantity}
+                  onChange={(e) => {
+                    const updated = [...tascoLogs];
+                    updated[idx].loadQuantity = e.target.value;
+                    setTascoLogs(updated);
+                  }}
+                  className="bg-white border rounded px-2 py-1 w-full text-xs"
+                />
+              </div>
+            </div>
+            {/* <div className="flex flex-row gap-4">
+              <div className="w-[350px]">
+                <label htmlFor="screenType" className="block text-xs">
+                  Screen Type
+                </label>
+                <Select
+                  name="screenType"
+                  value={log.screenType}
+                  onValueChange={(val) => {
+                    const updated = [...tascoLogs];
+                    updated[idx].screenType =
+                      val as TascoLogDraft["screenType"];
+                    setTascoLogs(updated);
+                  }}
+                >
+                  <SelectTrigger className="bg-white w-[350px] text-xs">
+                    <SelectValue placeholder="Select Screen Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SCREENED">Screened</SelectItem>
+                    <SelectItem value="UNSCREENED">Unscreened</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div> */}
           </div>
-          {/* Refuel Logs */}
-          <div className=" mb-2">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <label className="block font-semibold text-md">Refuel Logs</label>
+          {/* Refuel Logs Section */}
+          <div className="mb-2 border-t pt-4">
+            <div className="flex flex-row justify-between ">
+              <p className="text-base font-semibold">Refuel Logs</p>
               <Button
                 type="button"
                 size="icon"
                 onClick={() => {
                   const updated = [...tascoLogs];
-                  updated[idx].refuelLogs.push({
-                    gallonsRefueled: "",
-                  });
+                  updated[idx].refuelLogs.push({ gallonsRefueled: "" });
                   setTascoLogs(updated);
                 }}
+                className=""
+                title="Add Refuel Log"
               >
                 <img src="/plus-white.svg" alt="add" className="w-4 h-4" />
               </Button>
             </div>
-            {log.refuelLogs.map((ref, refIdx) => (
-              <div
-                key={refIdx}
-                className="flex gap-4 relative rounded border p-4 "
-              >
-                <Input
-                  type="number"
-                  placeholder="Gallons Refueled"
-                  value={ref.gallonsRefueled}
-                  onChange={(e) => {
-                    const updated = [...tascoLogs];
-                    updated[idx].refuelLogs[refIdx].gallonsRefueled =
-                      e.target.value;
-                    setTascoLogs(updated);
-                  }}
-                  className="w-[350px]"
-                />
-
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    const updated = [...tascoLogs];
-                    updated[idx].refuelLogs = updated[idx].refuelLogs.filter(
-                      (_, i) => i !== refIdx,
-                    );
-                    setTascoLogs(updated);
-                  }}
-                >
-                  <img src="/trash.svg" alt="remove" className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
+            {log.refuelLogs && log.refuelLogs.length > 0
+              ? log.refuelLogs.map((ref, refIdx) => (
+                  <div
+                    key={refIdx}
+                    className="bg-slate-50 flex gap-2 my-2 items-end border p-2 rounded relative"
+                  >
+                    <div>
+                      <label className="block text-xs ">Gallons Refueled</label>
+                      <Input
+                        type="number"
+                        placeholder="Enter total gallons"
+                        value={ref.gallonsRefueled}
+                        onChange={(e) => {
+                          const updated = [...tascoLogs];
+                          updated[idx].refuelLogs[refIdx].gallonsRefueled =
+                            e.target.value;
+                          setTascoLogs(updated);
+                        }}
+                        className="bg-white w-[350px] text-xs"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        const updated = [...tascoLogs];
+                        updated[idx].refuelLogs = updated[
+                          idx
+                        ].refuelLogs.filter((_, i) => i !== refIdx);
+                        setTascoLogs(updated);
+                      }}
+                      className="absolute top-0 right-0"
+                    >
+                      <X className="h-4 w-4" color="red" />
+                    </Button>
+                  </div>
+                ))
+              : null}
           </div>
         </div>
       ))}

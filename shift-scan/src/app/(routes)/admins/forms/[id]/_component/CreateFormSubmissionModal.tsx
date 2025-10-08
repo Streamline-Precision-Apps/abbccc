@@ -266,8 +266,8 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
-        <div className="flex flex-col gap-4 w-full items-center">
+      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center ">
+        <div className="flex flex-col gap-4 w-full items-center relative">
           <Button
             type="button"
             variant={"ghost"}
@@ -280,13 +280,12 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
           <div className="w-full flex flex-col justify-center mb-2 ">
             <div>
               <p className="text-lg text-black font-semibold ">
-                Submit A New {formTemplate?.name || "N/A"}
+                {formTemplate?.name || "N/A"}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500">
-                Please complete the form below to initiate a new{" "}
-                {formTemplate?.name} submission.
+                Please complete the form fields to create a new submission.
               </p>
             </div>
           </div>
@@ -382,7 +381,7 @@ const CreateFormSubmissionModal: React.FC<CreateFormSubmissionModalProps> = ({
               size={"sm"}
               onClick={handleSubmit}
               variant="outline"
-              className={`bg-emerald-500 text-white hover:bg-emerald-400 hover:text-white`}
+              className={`bg-sky-500 text-white hover:bg-sky-400 hover:text-white`}
               disabled={loading || !managerSignature}
             >
               {loading ? <Spinner size={20} /> : "Create & Approve"}

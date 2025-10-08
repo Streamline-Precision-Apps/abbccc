@@ -243,6 +243,57 @@ This file contains comprehensive styling guidelines for ensuring visual consiste
 
 ## Component-Specific Styling
 
+### Export Modal Styles
+
+- **Modal Container:**
+
+  - `fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40`
+  - Inner: `bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar`
+  - Content: `px-6 py-4 flex flex-col gap-4 items-center w-full relative`
+
+- **Header:**
+
+  - Close button: `absolute top-0 right-0 cursor-pointer`, ghost variant, icon size
+  - Title row: `flex flex-row gap-2 mb-2 items-center`
+  - Title: `text-xl font-bold`
+  - Description: `text-xs text-gray-600`
+  - Note: `text-xs text-blue-600 italic`
+
+- **Section Containers:**
+
+  - Date range, export format, and advanced options: `border rounded-lg p-4 bg-gray-50 w-full` (add `mt-4` for spacing between sections)
+  - Section header: `font-semibold text-sm mb-2`
+
+- **Field Layout:**
+
+  - Use `flex flex-col gap-3` for vertical field groups
+  - Use `flex flex-row gap-4 mb-2` for radio button groups
+  - Checkbox grid: `grid grid-cols-2 gap-2 w-full bg-slate-50 rounded-lg p-3 border border-gray-200`
+  - Checkbox label: `flex items-center gap-2 cursor-pointer hover:bg-blue-50 rounded px-2 py-1 transition`
+  - Checkbox text: `text-xs`
+
+- **Buttons:**
+
+  - Primary: `bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded disabled:opacity-50`
+  - Secondary: `variant="outline" bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded`
+  - Export/Cancel row: `flex flex-row gap-3 w-full mb-2 mt-4`
+
+- **Popover/Calendar:**
+
+  - Date picker button: `variant="outline" w-full justify-between font-normal`
+  - Calendar popover: `w-auto overflow-hidden p-0` with inner `p-4 flex flex-col items-center`
+
+- **Accordion:**
+
+  - Advanced options: `Accordion type="single" collapsible className="w-full"`
+  - Trigger: `flex items-center gap-2 text-base font-semibold`
+  - Content: `w-full mb-4 flex items-center gap-2`
+  - Badge: `inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold`
+
+- **General:**
+  - Maintain consistent spacing and sizing between all modal sections and fields
+  - Use section headers and muted descriptions for clarity
+
 ### Timesheet Sections
 
 - Use consistent styling for all log entry types (Trucking, Maintenance, Equipment, Tasco)

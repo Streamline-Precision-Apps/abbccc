@@ -455,16 +455,11 @@ export function CreateTimesheetModal({
 
             {/* Conditional log sections */}
             {form.workType === "MECHANIC" && (
-              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
-                <h3 className="font-semibold text-sm mb-2">
-                  Mechanic Project Details
-                </h3>
-                <MechanicProject
-                  mechanicProjects={mechanicProjects}
-                  setMechanicProjects={setMechanicProjects}
-                  equipmentOptions={equipmentOptions}
-                />
-              </div>
+              <MechanicProject
+                mechanicProjects={mechanicProjects}
+                setMechanicProjects={setMechanicProjects}
+                equipmentOptions={equipmentOptions}
+              />
             )}
             {form.workType === "TRUCK_DRIVER" && (
               <div className="border rounded-lg p-4 bg-gray-50 mt-4">
@@ -479,25 +474,19 @@ export function CreateTimesheetModal({
               </div>
             )}
             {form.workType === "TASCO" && (
-              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Tasco Details</h3>
-                <TascoSection
-                  tascoLogs={tascoLogs}
-                  setTascoLogs={setTascoLogs}
-                  materialTypes={materialTypes}
-                  equipmentOptions={equipmentOptions}
-                />
-              </div>
+              <TascoSection
+                tascoLogs={tascoLogs}
+                setTascoLogs={setTascoLogs}
+                materialTypes={materialTypes}
+                equipmentOptions={equipmentOptions}
+              />
             )}
             {form.workType === "LABOR" && (
-              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Labor Details</h3>
-                <LaborSection
-                  laborLogs={laborLogs}
-                  setLaborLogs={setLaborLogs}
-                  equipmentOptions={equipmentOptions}
-                />
-              </div>
+              <LaborSection
+                laborLogs={laborLogs}
+                setLaborLogs={setLaborLogs}
+                equipmentOptions={equipmentOptions}
+              />
             )}
 
             <div className="col-span-2 flex justify-end gap-2 mt-4">

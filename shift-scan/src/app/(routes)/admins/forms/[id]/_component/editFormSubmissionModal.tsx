@@ -301,7 +301,7 @@ export default function EditFormSubmissionModal({
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
         <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="flex flex-col gap-4 w-full items-center">
+          <div className="flex flex-col gap-4 w-full items-center ">
             <div className="w-full flex flex-col mb-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -329,7 +329,7 @@ export default function EditFormSubmissionModal({
                 size={"sm"}
                 onClick={saveChanges}
                 variant="outline"
-                className="bg-emerald-500 text-white hover:bg-emerald-400 hover:text-white"
+                className="bg-sky-500 text-white hover:bg-sky-400 hover:text-white"
               >
                 Save Changes
               </Button>
@@ -345,6 +345,18 @@ export default function EditFormSubmissionModal({
     if (!formSubmission?.FormTemplate?.FormGrouping) return null;
     return formSubmission.FormTemplate.FormGrouping.map((group) => (
       <div key={group.id} className="mb-4">
+        <div className="mb-4">
+          <Label className="text-sm font-medium mb-1 ">
+            Submitted For <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            type="text"
+            placeholder="Submitted For"
+            value={`${formSubmission.User?.firstName} ${formSubmission.User?.lastName}`}
+            disabled={true}
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
           {group.Fields.map((field) => {
             const options = field.Options || [];
@@ -570,10 +582,10 @@ export default function EditFormSubmissionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
-        <div className="flex flex-col gap-4 w-full items-center ">
+      <div className="bg-white rounded-lg shadow-lg min-w-[600px] max-w-[90vw] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
+        <div className="flex flex-col gap-4 w-full h-full items-center relative">
           <div className="w-full flex flex-row justify-between">
-            <div className="flex flex-col ">
+            <div className="flex flex-col">
               <Button
                 type="button"
                 variant={"ghost"}
@@ -586,12 +598,16 @@ export default function EditFormSubmissionModal({
               <p className="text-lg text-black font-semibold">
                 {formTemplate?.name || "N/A"}
               </p>
-              <p className="text-sm text-gray-500">Submission ID: {id}</p>
-              <p className="text-sm text-gray-500">
-                Submitted By: {formSubmission?.User.firstName}{" "}
-                {formSubmission?.User.lastName}
-              </p>
-
+              <div className="flex flex-row items-center gap-2">
+                <span className="text-xs text-gray-500 px-2 py-1 rounded-lg bg-gray-100">
+                  Submission ID: {id}
+                </span>
+                <span
+                  className={`w-fit text-xs px-2 py-1 rounded-lg ${formSubmission?.status === "APPROVED" ? "bg-green-100 text-green-800" : formSubmission?.status === "DENIED" ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}
+                >
+                  {`${formSubmission?.status.slice(0, 1).toUpperCase()}${formSubmission?.status.slice(1).toLowerCase()}`}
+                </span>
+              </div>
               {/* Show approval information if available */}
               {formSubmission?.Approvals &&
                 formSubmission.Approvals.length > 0 && (
@@ -678,14 +694,8 @@ export default function EditFormSubmissionModal({
                   </div>
                 )}
             </div>
-            <div>
-              <p className="text-xs ">
-                <strong className="text-sm">Status:</strong>{" "}
-                {formSubmission?.status}
-              </p>
-            </div>
           </div>
-          <div className="w-full">{renderFields()}</div>
+          <div className="w-full h-full">{renderFields()}</div>
           {formTemplate?.isSignatureRequired && !editData.signature && (
             <div className="w-full flex flex-row items-center gap-2 mb-4 mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
               <input
@@ -763,7 +773,7 @@ export default function EditFormSubmissionModal({
             </div>
           )}
 
-          <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
+          <div className="w-full flex flex-row justify-end gap-3 py-4 my-2 border-t border-gray-100">
             <Button
               size={"sm"}
               onClick={closeModal}
@@ -776,7 +786,7 @@ export default function EditFormSubmissionModal({
               size={"sm"}
               onClick={saveChanges}
               variant="outline"
-              className={`${formSubmission?.status === "PENDING" ? "bg-blue-600 text-white hover:bg-blue-500 hover:text-white" : "bg-emerald-500 text-white hover:bg-emerald-400 hover:text-white"}`}
+              className={`${formSubmission?.status === "PENDING" ? "bg-sky-500 text-white hover:bg-sky-400 hover:text-white" : "bg-sky-500 text-white hover:bg-sky-400 hover:text-white"}`}
               disabled={
                 formSubmission?.status === "PENDING" && !managerSignature
               }

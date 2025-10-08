@@ -1,9 +1,9 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formsTableColumns } from "./formsTableColumns";
+import { getFormsTableColumns } from "./formsTableColumns";
 
 type Props = {
-  columns: typeof formsTableColumns;
+  columns: ReturnType<typeof getFormsTableColumns>;
 };
 
 export default function LoadingFormsTableState({ columns }: Props) {
