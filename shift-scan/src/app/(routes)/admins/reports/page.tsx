@@ -16,6 +16,7 @@ import {
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import TascoReport from "./_components/tascoReport";
 import TruckingReport from "./_components/truckingReport";
+import MechanicReport from "./_components/mechanicReport";
 
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
@@ -59,7 +60,7 @@ export default function AdminReports() {
     },
     {
       id: "trucking-mileage-report",
-      label: "Trucking Mileage Reports",
+      label: "Trucking Reports",
       description:
         "An exportable table of Trucking #, Trailer #, Date, Job #, Equipment Number if MOB, and start and end odometer for overweight loads",
       render: () => (
@@ -68,6 +69,22 @@ export default function AdminReports() {
           setShowExportModal={setShowExportModal}
           registerReload={(fn: () => Promise<void>) => {
             reportReloaders.current["trucking-mileage-report"] = fn;
+          }}
+          isRefreshing={isRefreshing}
+        />
+      ),
+    },
+    {
+      id: "mechanic-report",
+      label: "Mechanic Report",
+      description:
+        "Shows mechanic project data including employee name, equipment worked on, hours, and comments for each mechanic project",
+      render: () => (
+        <MechanicReport
+          showExportModal={showExportModal}
+          setShowExportModal={setShowExportModal}
+          registerReload={(fn: () => Promise<void>) => {
+            reportReloaders.current["mechanic-report"] = fn;
           }}
           isRefreshing={isRefreshing}
         />
@@ -114,7 +131,8 @@ export default function AdminReports() {
               }}
               variant={"default"}
               size={"icon"}
-              className="rounded-lg min-w-12 h-full hover:bg-slate-800 "
+              disabled={!selectedReportId}
+              className="rounded-lg min-w-12 h-full hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <img
                 src="/export-white.svg"
@@ -124,7 +142,7 @@ export default function AdminReports() {
             </Button>
           </TooltipTrigger>
           <TooltipContent align="center" side="top">
-            Export
+            {selectedReportId ? "Export" : "Select a report to export"}
           </TooltipContent>
         </Tooltip>
       </div>
