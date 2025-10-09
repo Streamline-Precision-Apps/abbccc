@@ -45,7 +45,7 @@ export default function CreateCostCodeModal({
     CCTags: TagSummary[];
   }>({
     code: "",
-    name: "",
+    name: "", // This should always contain ONLY the name part, never the code
     isActive: true,
     CCTags: [],
   });
@@ -65,10 +65,13 @@ export default function CreateCostCodeModal({
         setSubmitting(false);
         return;
       }
-      // Prepare payload
+      // Prepare payload - ensure clean separation of code and name
+      const cleanCode = formData.code.trim();
+      const cleanName = formData.name.trim();
+
       const payload = {
-        code: formData.code.trim(),
-        name: formData.name.trim(),
+        code: cleanCode, // Save code without #
+        name: `#${cleanCode} ${cleanName}`.trim(), // Save name as "#code name"
         isActive: formData.isActive,
         CCTags: [
           ...formData.CCTags.map((tag) => ({
@@ -117,10 +120,52 @@ export default function CreateCostCodeModal({
                   id="cc-number"
                   type="text"
                   name="code"
-                  value={formData.code}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, code: e.target.value }))
-                  }
+                  value={`#${formData.code}`}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    // Ensure it starts with # and prevent multiple #
+                    if (!value.startsWith("#")) {
+                      value = "#" + value;
+                    }
+                    // Remove any additional # characters
+                    value = "#" + value.slice(1).replace(/#/g, "");
+
+                    // Extract the numeric part after #
+                    const numericPart = value.slice(1);
+                    // Only allow numbers and one decimal point
+                    const validNumericPart = numericPart
+                      .replace(/[^0-9.]/g, "")
+                      .replace(/(\..*?)\..*/g, "$1");
+
+                    // Update ONLY the code field, never touch the name field
+                    setFormData((prev) => ({
+                      ...prev,
+                      code: validNumericPart,
+                    }));
+                  }}
+                  onKeyDown={(e) => {
+                    // Prevent deletion of # at the beginning
+                    if (e.key === "Backspace" || e.key === "Delete") {
+                      const input = e.target as HTMLInputElement;
+                      const selectionStart = input.selectionStart || 0;
+                      const selectionEnd = input.selectionEnd || 0;
+
+                      // If trying to delete the # or select text that includes #
+                      if (
+                        selectionStart === 0 ||
+                        (selectionStart === 0 && selectionEnd > 0)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }
+                  }}
+                  onClick={(e) => {
+                    // Prevent cursor from going before #
+                    const input = e.target as HTMLInputElement;
+                    if (input.selectionStart === 0) {
+                      input.setSelectionRange(1, 1);
+                    }
+                  }}
                   placeholder="#100.00"
                   className="w-full text-xs"
                   required
@@ -137,9 +182,13 @@ export default function CreateCostCodeModal({
                   type="text"
                   name="name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, name: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    // Update ONLY the name field, never touch the code field
+                    setFormData((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }));
+                  }}
                   className="w-full text-xs"
                   required
                 />

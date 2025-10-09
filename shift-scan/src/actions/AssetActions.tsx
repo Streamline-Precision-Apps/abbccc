@@ -852,10 +852,9 @@ export async function createCostCode(payload: {
     }
 
     // Check if cost code with the same name already exists
-    const existingCostCode = await prisma.costCode.findUnique({
+    const existingCostCode = await prisma.costCode.findFirst({
       where: {
-        code: payload.code.trim(),
-        name: `${payload.code.trim()} ${payload.name.trim()}`,
+        OR: [{ code: payload.code.trim() }, { name: payload.name.trim() }],
       },
     });
 
@@ -866,8 +865,8 @@ export async function createCostCode(payload: {
     // Create the new cost code
     const newCostCode = await prisma.costCode.create({
       data: {
-        code: payload.code.split("#")[1] || "",
-        name: `${payload.code.trim()} ${payload.name.trim()}`,
+        code: payload.code.trim(), // Use the code as-is (without #)
+        name: payload.name.trim(), // Use the name as-is (already formatted as "#code name")
         isActive: payload.isActive,
         CCTags: {
           connect: payload.CCTags?.map((tag) => ({ id: tag.id })) || [],
