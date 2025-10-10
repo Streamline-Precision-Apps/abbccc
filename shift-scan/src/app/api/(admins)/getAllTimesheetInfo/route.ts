@@ -74,66 +74,71 @@ export async function GET(req: Request) {
     if (equipmentIdParams.length > 0) {
       const equipmentOrConditions = [];
       
-      // If no specific log types are specified, include all types
-      const logTypesToInclude = equipmentLogTypesParams.length > 0 
-        ? equipmentLogTypesParams 
-        : ['employeeEquipmentLogs', 'truckingLogs', 'tascoLogs', 'mechanicProjects'];
-      
-      // Add conditions based on selected log types
-      if (logTypesToInclude.includes('employeeEquipmentLogs')) {
-        equipmentOrConditions.push({
-          EmployeeEquipmentLogs: {
-            some: {
-              equipmentId: { in: equipmentIdParams },
+      // If no specific log types are specified, show no results (when all checkboxes are unchecked)
+      // Only include results when specific log types are selected
+      if (equipmentLogTypesParams.length > 0) {
+        const logTypesToInclude = equipmentLogTypesParams;
+        
+        // Add conditions based on selected log types
+        if (logTypesToInclude.includes('employeeEquipmentLogs')) {
+          equipmentOrConditions.push({
+            EmployeeEquipmentLogs: {
+              some: {
+                equipmentId: { in: equipmentIdParams },
+              },
             },
-          },
-        });
-      }
-      
-      if (logTypesToInclude.includes('truckingLogs')) {
-        equipmentOrConditions.push({
-          TruckingLogs: {
-            some: {
-              OR: [
-                {
-                  equipmentId: { in: equipmentIdParams },
-                },
-                {
-                  EquipmentHauled: {
-                    some: {
-                      equipmentId: { in: equipmentIdParams },
+          });
+        }
+        
+        if (logTypesToInclude.includes('truckingLogs')) {
+          equipmentOrConditions.push({
+            TruckingLogs: {
+              some: {
+                OR: [
+                  {
+                    equipmentId: { in: equipmentIdParams },
+                  },
+                  {
+                    EquipmentHauled: {
+                      some: {
+                        equipmentId: { in: equipmentIdParams },
+                      },
                     },
                   },
-                },
-              ],
+                ],
+              },
             },
-          },
-        });
-      }
-      
-      if (logTypesToInclude.includes('tascoLogs')) {
-        equipmentOrConditions.push({
-          TascoLogs: {
-            some: {
-              equipmentId: { in: equipmentIdParams },
+          });
+        }
+        
+        if (logTypesToInclude.includes('tascoLogs')) {
+          equipmentOrConditions.push({
+            TascoLogs: {
+              some: {
+                equipmentId: { in: equipmentIdParams },
+              },
             },
-          },
-        });
-      }
-      
-      if (logTypesToInclude.includes('mechanicProjects')) {
-        equipmentOrConditions.push({
-          Maintenance: {
-            some: {
-              equipmentId: { in: equipmentIdParams },
+          });
+        }
+        
+        if (logTypesToInclude.includes('mechanicProjects')) {
+          equipmentOrConditions.push({
+            Maintenance: {
+              some: {
+                equipmentId: { in: equipmentIdParams },
+              },
             },
-          },
-        });
-      }
-      
-      // Only add the filter if there are conditions to include
-      if (equipmentOrConditions.length > 0) {
-        filter.OR = equipmentOrConditions;
+          });
+        }
+        
+        // Only add the filter if there are conditions to include
+        if (equipmentOrConditions.length > 0) {
+          filter.OR = equipmentOrConditions;
+        }
+      } else {
+        // When no equipment log types are selected (all checkboxes unchecked),
+        // add an impossible condition to return no results
+        filter.id = -1; // This will match no timesheets since IDs are positive
       }
     }
     

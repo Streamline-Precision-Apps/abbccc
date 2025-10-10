@@ -25,11 +25,11 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
           </div>
           <div className="ml-2">
             {row.original.isActive ? (
-              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg">
+              <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
                 Active
               </span>
             ) : (
-              <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
+              <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
                 Inactive
               </span>
             )}

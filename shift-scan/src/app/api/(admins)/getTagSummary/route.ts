@@ -38,6 +38,12 @@ export async function GET(req: Request) {
               isActive: true,
             },
           },
+          Jobsites: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
         orderBy: {
           name: "asc",
@@ -62,6 +68,12 @@ export async function GET(req: Request) {
               id: true,
               name: true,
               isActive: true,
+            },
+          },
+          Jobsites: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },

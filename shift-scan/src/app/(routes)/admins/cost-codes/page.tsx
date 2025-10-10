@@ -32,7 +32,6 @@ export default function CostCodePage() {
   const [pageState, setPageState] = useState<"CostCode" | "Tags">("CostCode");
   const {
     loading,
-    CostCodeDetails,
     rerender,
     total,
     page,

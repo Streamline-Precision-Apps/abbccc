@@ -11,6 +11,10 @@ export type TagSummary = {
     name: string;
     isActive: boolean;
   }>;
+  Jobsites: Array<{
+    id: string;
+    name: string;
+  }>;
 };
 
 export const useTagData = () => {

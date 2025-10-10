@@ -94,6 +94,51 @@ export const tagTableColumns: ColumnDef<TagSummary>[] = [
     },
   },
   {
+    accessorKey: "Jobsites",
+    header: "Jobsites",
+    cell: ({ row }) => {
+      const jobsites = row.original.Jobsites || [];
+      return (
+        <div className="text-sm text-center">
+          {jobsites.length > 0 ? (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <span className="cursor-pointer text-blue-600 underline-offset-2 decoration-solid underline">
+                  {jobsites.length}
+                </span>
+              </HoverCardTrigger>
+              <HoverCardContent className="p-4 min-w-[500px] max-w-[720px] w-[720px]">
+                <div className="space-y-2">
+                  <p className="font-bold text-sm text-gray-700 mb-3">
+                    Associated Jobsites
+                  </p>
+                  {jobsites.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      {jobsites.map((jobsite) => (
+                        <span
+                          key={jobsite.id}
+                          className="inline-block px-4 py-1 rounded-full text-xs whitespace-nowrap text-center bg-blue-100 text-blue-700"
+                        >
+                          {jobsite.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 italic text-xs">
+                      No jobsites associated with this tag.
+                    </div>
+                  )}
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          ) : (
+            <span className="text-gray-400">0</span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {

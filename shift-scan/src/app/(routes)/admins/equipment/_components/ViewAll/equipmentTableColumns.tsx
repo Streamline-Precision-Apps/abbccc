@@ -30,74 +30,128 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     },
   },
   {
-    accessorKey: "name",
-    header: "Name & Description",
+    accessorKey: "nameAndDescription",
+    header: "Equipment Summary",
     cell: ({ row, table }) => {
       const equipment = row.original;
       const tag = equipment.equipmentTag;
       const os = equipment.ownershipType;
       const condition = equipment.acquiredCondition;
       const searchTerm = table.options.meta?.searchTerm || "";
+      const status = equipment.state;
+      const approvalStatus = equipment.approvalStatus;
+
       return (
-        <div className="flex flex-col gap-1 text-left">
-          <p className="text-xs">
-            {highlight(equipment.name || " ", searchTerm)}
-          </p>
-          <div className="flex flex-row gap-2 pt-2">
-            <div className="text-xs text-left justify-start">
-              <span
-                className={`${
-                  tag === "VEHICLE"
-                    ? "text-sky-600 bg-sky-100"
-                    : tag === "TRUCK"
-                      ? "text-blue-600 bg-blue-100"
-                      : tag === "TRAILER"
-                        ? "text-green-600 bg-green-100"
-                        : tag === "EQUIPMENT"
-                          ? "text-orange-600 bg-orange-100"
-                          : ""
-                } px-2 py-1 text-[10px] rounded-xl`}
-              >
-                {tag ? tag.charAt(0) + tag.slice(1).toLowerCase() : " "}
-              </span>
-            </div>
-            {condition && (
-              <div className="text-xs text-center">
-                <span
-                  className={`px-2 py-1 rounded-lg text-[10px] ${
-                    condition === "NEW"
-                      ? "bg-green-100 text-green-800"
-                      : condition === "USED"
-                        ? "bg-amber-100 text-amber-600"
-                        : ""
-                  }`}
-                >
-                  {condition
-                    ? condition.charAt(0) + condition.slice(1).toLowerCase()
-                    : " "}
-                </span>
+        <div className="w-full flex flex-row gap-4 items-center">
+          <div className="text-sm flex-1">
+            <div className="w-full h-full flex flex-col">
+              <div className="flex flex-row gap-4 items-center">
+                <p className="">
+                  {highlight(equipment.name || "", searchTerm)}
+                </p>
+                <div className="flex flex-row gap-2 items-center">
+                  {/* Approval Status Badge */}
+                  {approvalStatus === "APPROVED" ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Approved
+                    </span>
+                  ) : approvalStatus === "PENDING" ? (
+                    <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg text-xs">
+                      Pending
+                    </span>
+                  ) : approvalStatus === "DRAFT" ? (
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
+                      Draft
+                    </span>
+                  ) : (
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                      Rejected
+                    </span>
+                  )}
+
+                  {/* Status Badge */}
+                  {status === "AVAILABLE" ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Available
+                    </span>
+                  ) : status === "IN_USE" ? (
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
+                      In Use
+                    </span>
+                  ) : status === "MAINTENANCE" ? (
+                    <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg text-xs">
+                      Maintenance
+                    </span>
+                  ) : status === "NEEDS_REPAIR" ? (
+                    <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-xs">
+                      Needs Repair
+                    </span>
+                  ) : (
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                      Retired
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
-            <div className="text-xs text-left">
-              <span
-                className={`px-2 py-0.5 text-[10px] rounded-lg ${
-                  os === "OWNED"
-                    ? "bg-indigo-100 text-indigo-600"
-                    : os === "LEASED"
-                      ? "bg-purple-100 text-purple-600"
-                      : os === "RENTAL"
-                        ? "bg-cyan-100 text-cyan-600"
-                        : ""
-                }`}
-              >
-                {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}
-              </span>
+
+              {/* Equipment tags row */}
+              <div className="flex flex-row gap-2 pt-2">
+                <div className="text-xs text-left justify-start">
+                  <span
+                    className={`${
+                      tag === "VEHICLE"
+                        ? "text-sky-600 bg-sky-100"
+                        : tag === "TRUCK"
+                          ? "text-blue-600 bg-blue-100"
+                          : tag === "TRAILER"
+                            ? "text-green-600 bg-green-100"
+                            : tag === "EQUIPMENT"
+                              ? "text-orange-600 bg-orange-100"
+                              : ""
+                    } px-2 py-1 text-[10px] rounded-xl`}
+                  >
+                    {tag ? tag.charAt(0) + tag.slice(1).toLowerCase() : " "}
+                  </span>
+                </div>
+                {condition && (
+                  <div className="text-xs text-center">
+                    <span
+                      className={`px-2 py-1 rounded-lg text-[10px] ${
+                        condition === "NEW"
+                          ? "bg-green-100 text-green-800"
+                          : condition === "USED"
+                            ? "bg-amber-100 text-amber-600"
+                            : ""
+                      }`}
+                    >
+                      {condition
+                        ? condition.charAt(0) + condition.slice(1).toLowerCase()
+                        : " "}
+                    </span>
+                  </div>
+                )}
+                <div className="text-xs text-left">
+                  <span
+                    className={`px-2 py-0.5 text-[10px] rounded-lg ${
+                      os === "OWNED"
+                        ? "bg-indigo-100 text-indigo-600"
+                        : os === "LEASED"
+                          ? "bg-purple-100 text-purple-600"
+                          : os === "RENTAL"
+                            ? "bg-cyan-100 text-cyan-600"
+                            : ""
+                    }`}
+                  >
+                    {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}
+                  </span>
+                </div>
+              </div>
+
+              <p className="truncate max-w-[750px] text-[10px] text-left text-gray-400 italic">
+                {equipment.description || "No description provided."}
+              </p>
             </div>
           </div>
-
-          <p className="text-[10px] text-gray-400 italic">
-            {equipment.description || ""}
-          </p>
         </div>
       );
     },
@@ -245,89 +299,6 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     },
   },
 
-  {
-    accessorKey: "state",
-    header: "Status",
-    cell: ({ row }) => {
-      const state = row.original.state;
-      return (
-        <div className="text-xs text-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span
-                className={`px-1 py-1 rounded-lg text-[10px] ${
-                  state === "AVAILABLE"
-                    ? "bg-green-100 text-green-800"
-                    : state === "IN_USE"
-                      ? "bg-blue-100 text-blue-800"
-                      : state === "MAINTENANCE"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : state === "NEEDS_REPAIR"
-                          ? "bg-orange-100 text-orange-800"
-                          : "bg-red-100 text-red-800"
-                }`}
-              >
-                {state ? state.charAt(0) + state.slice(1).toLowerCase() : " "}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              {state === "AVAILABLE"
-                ? "Equipment is available for use"
-                : state === "IN_USE"
-                  ? "Equipment is currently in use"
-                  : state === "MAINTENANCE"
-                    ? "Equipment is under maintenance"
-                    : state === "NEEDS_REPAIR"
-                      ? "Equipment needs repair"
-                      : "Equipment is retired"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      );
-    },
-  },
-
-  {
-    accessorKey: "approvalStatus",
-    header: "Approval",
-    cell: ({ row }) => {
-      const status = row.original.approvalStatus;
-      return (
-        <div className="text-xs text-center min-w-[50px]">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {status === "PENDING" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
-                  P
-                </span>
-              ) : status === "DRAFT" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
-                  P
-                </span>
-              ) : status === "APPROVED" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
-                  A
-                </span>
-              ) : (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
-                  R
-                </span>
-              )}
-            </TooltipTrigger>
-            <TooltipContent>
-              {status === "PENDING"
-                ? "Pending"
-                : status === "DRAFT"
-                  ? "In Progress"
-                  : status === "APPROVED"
-                    ? "Approved"
-                    : "Rejected"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      );
-    },
-  },
   {
     id: "actions",
     header: "Actions",
