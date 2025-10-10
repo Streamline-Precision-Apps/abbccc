@@ -184,7 +184,8 @@ export function EquipmentDataTable({
     initialState: {
       sorting: [
         {
-          id: "code",
+          // Use a column that actually exists in the table
+          id: "nameAndDescription",
           desc: false,
         },
       ],

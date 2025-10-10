@@ -2,20 +2,12 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { JobsiteSummary } from "../useJobsiteData";
-import { format } from "date-fns";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { SquareCheck, SquareX } from "lucide-react";
 import { highlight } from "@/app/(routes)/admins/_pages/highlight";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 // Define the column configuration as a function that takes router
@@ -23,15 +15,51 @@ export const getJobsiteTableColumns = (
   router: ReturnType<typeof import("next/navigation").useRouter>,
 ): ColumnDef<JobsiteSummary>[] => [
   {
-    accessorKey: "name",
-    header: "Name & Description",
+    accessorKey: "nameAndDescription",
+    header: "Jobsite Summary",
     cell: ({ row }) => {
+      const jobsite = row.original;
       return (
-        <div className="flex flex-col gap-1 text-left">
-          <p>{highlight(row.original.name || "", "")}</p>
-          <p className="text-[10px] text-gray-400 italic">
-            {row.original.description || "No Description"}
-          </p>
+        <div className="w-full flex flex-row gap-4 items-center">
+          <div className="text-sm flex-1">
+            <div className="w-full h-full flex flex-col">
+              <div className="flex flex-row gap-4 items-center">
+                <p className="">{highlight(jobsite.name || "", "")}</p>
+                <div className="flex flex-row gap-2 items-center">
+                  {jobsite.approvalStatus === "APPROVED" ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Approved
+                    </span>
+                  ) : jobsite.approvalStatus === "PENDING" ? (
+                    <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg text-xs">
+                      Pending
+                    </span>
+                  ) : jobsite.approvalStatus === "DRAFT" ? (
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
+                      Draft
+                    </span>
+                  ) : (
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                      Rejected
+                    </span>
+                  )}
+
+                  {jobsite.isActive ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Active
+                    </span>
+                  ) : (
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                      Inactive
+                    </span>
+                  )}
+                </div>
+              </div>
+              <p className="truncate max-w-[750px] text-[10px] text-left text-gray-400 italic">
+                {jobsite.description || "No description provided."}
+              </p>
+            </div>
+          </div>
         </div>
       );
     },
@@ -45,52 +73,6 @@ export const getJobsiteTableColumns = (
         <div className="text-xs text-center">
           {row.original.Address &&
             `${row.original.Address.street} ${row.original.Address.city}, ${row.original.Address.state} ${row.original.Address.zipCode}`}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "approvalStatus",
-    header: "Status",
-    cell: ({ row }) => {
-      return (
-        <div className="text-xs text-center min-w-[50px]">
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              {row.original.approvalStatus === "PENDING" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-yellow-300 rounded-full cursor-pointer font-semibold">
-                  P
-                </span>
-              ) : row.original.approvalStatus === "DRAFT" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-sky-200 rounded-full cursor-pointer font-semibold">
-                  P
-                </span>
-              ) : row.original.approvalStatus === "APPROVED" ? (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-green-300 rounded-full cursor-pointer font-semibold">
-                  A
-                </span>
-              ) : (
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-red-300 rounded-full cursor-pointer font-semibold">
-                  R
-                </span>
-              )}
-            </HoverCardTrigger>
-            <HoverCardContent
-              side="right"
-              align="center"
-              className="w-[120px] justify-center"
-            >
-              <div className="text-xs text-center">
-                {row.original.approvalStatus === "PENDING"
-                  ? "Pending"
-                  : row.original.approvalStatus === "DRAFT"
-                    ? "In Progress"
-                    : row.original.approvalStatus === "APPROVED"
-                      ? "Approved"
-                      : "Rejected"}
-              </div>
-            </HoverCardContent>
-          </HoverCard>
         </div>
       );
     },
@@ -119,28 +101,6 @@ export const getJobsiteTableColumns = (
             "-"
           )}
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Active",
-    cell: ({ row }) => {
-      return (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex justify-center">
-              {row.original.isActive ? (
-                <SquareCheck className="h-4 w-4 text-green-500" />
-              ) : (
-                <SquareX className="h-4 w-4 text-red-500" />
-              )}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            {row.original.isActive ? "Active" : "Inactive"}
-          </TooltipContent>
-        </Tooltip>
       );
     },
   },
