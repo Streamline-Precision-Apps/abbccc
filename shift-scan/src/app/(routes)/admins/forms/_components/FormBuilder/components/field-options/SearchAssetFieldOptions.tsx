@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { FormField } from "../../types";
 import { Input } from "@/components/ui/input";
 
@@ -18,14 +11,6 @@ interface SearchAssetFieldOptionsProps {
 export const SearchAssetFieldOptions: React.FC<
   SearchAssetFieldOptionsProps
 > = ({ field, updateField }) => {
-  const filterOptions = [
-    { value: "ALL", label: "All Assets" },
-    { value: "ACTIVE", label: "Active Assets Only" },
-    { value: "EQUIPMENT", label: "Equipment Only" },
-    { value: "VEHICLES", label: "Vehicles Only" },
-    { value: "TOOLS", label: "Tools Only" },
-  ];
-
   return (
     <div className="bg-white py-2 rounded-md flex flex-col my-2">
       <div>

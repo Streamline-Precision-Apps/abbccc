@@ -7,11 +7,25 @@ import { Label } from "@/components/ui/label";
 interface TextareaFieldOptionsProps {
   field: FormField;
   updateField: (fieldId: string, updatedProperties: Partial<FormField>) => void;
+  validationErrors?: Record<string, { minError?: string; maxError?: string }>;
+  setValidationErrors?: React.Dispatch<
+    React.SetStateAction<
+      Record<
+        string,
+        {
+          minError?: string;
+          maxError?: string;
+        }
+      >
+    >
+  >;
 }
 
 export const TextareaFieldOptions: React.FC<TextareaFieldOptionsProps> = ({
   field,
   updateField,
+  validationErrors = {},
+  setValidationErrors,
 }) => {
   return (
     <div>
@@ -23,40 +37,59 @@ export const TextareaFieldOptions: React.FC<TextareaFieldOptionsProps> = ({
           </span>
         </p>
         <p className="text-xs text-gray-500">
-          Specify the minimum and/or maximum number of characters for this
-          field.
+          Specify the maximum number of characters for this field.
         </p>
       </div>
       <div className="flex flex-row mt-2 gap-2">
-        <div className="flex flex-col">
-          <Label className="text-xs font-normal">Min Length</Label>
-          <Input
-            type="number"
-            value={field.minLength || ""}
-            onChange={(e) =>
-              updateField(field.id, {
-                minLength: parseInt(e.target.value) || undefined,
-              })
-            }
-            min={0}
-            className="bg-white rounded-lg text-xs w-48"
-            placeholder="Enter min length"
-          />
-        </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <Label className="text-xs font-normal">Max Length</Label>
           <Input
             type="number"
             value={field.maxLength || ""}
-            onChange={(e) =>
+            onChange={(e) => {
+              const value = e.target.value
+                ? parseInt(e.target.value)
+                : undefined;
+
+              if (setValidationErrors) {
+                const errors = {
+                  ...(validationErrors[field.id] || {}),
+                };
+                delete errors.maxError;
+
+                if (value !== undefined && value < 0) {
+                  errors.maxError = "Cannot be negative";
+                  setValidationErrors({
+                    ...validationErrors,
+                    [field.id]: errors,
+                  });
+                  return;
+                }
+
+                setValidationErrors({
+                  ...validationErrors,
+                  [field.id]: errors,
+                });
+              }
+
+              // Always set minLength to 0 when updating maxLength
               updateField(field.id, {
-                maxLength: parseInt(e.target.value) || undefined,
-              })
-            }
+                minLength: 0,
+                maxLength: value,
+              });
+            }}
             min={0}
-            className="bg-white rounded-lg text-xs w-48"
+            className={`bg-white rounded-lg text-xs w-full ${
+              validationErrors[field.id]?.maxError ? "border-red-500" : ""
+            }`}
             placeholder="Enter max length"
           />
+
+          {validationErrors[field.id]?.maxError && (
+            <p className="text-xs text-red-500 mt-1">
+              {validationErrors[field.id]?.maxError}
+            </p>
+          )}
         </div>
       </div>
     </div>

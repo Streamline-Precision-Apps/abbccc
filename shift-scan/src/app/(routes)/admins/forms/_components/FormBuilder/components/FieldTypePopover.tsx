@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { fieldTypes } from "../types";
+import { fieldTypes, FormField } from "../types";
 import { Button } from "@/components/ui/button";
 import { o } from "framer-motion/dist/types.d-Cjd591yU";
 
@@ -14,7 +14,7 @@ interface FieldTypePopoverProps {
   fieldType: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  updateField: (fieldId: string, updatedProperties: Partial<any>) => void;
+  updateField: (fieldId: string, updatedProperties: Partial<FormField>) => void;
 }
 
 export const FieldTypePopover: React.FC<FieldTypePopoverProps> = ({

@@ -9,6 +9,8 @@ import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 
 // Import types and API functions
+/* Lines 12-18 omitted */
+import { getFormValidationErrors } from "./utils/fieldValidation";
 import {
   FormField,
   FormGrouping,
@@ -255,6 +257,25 @@ export default function FormBuilder({
   const handleSave = async () => {
     if (!formSettings.name.trim()) {
       toast.error("Please enter a form name");
+      return;
+    }
+
+    // Validate all fields before saving
+    const validationErrors = getFormValidationErrors(formFields);
+    const hasErrors = Object.keys(validationErrors).length > 0;
+
+    if (hasErrors) {
+      toast.error("Cannot save form - there are incomplete or invalid fields");
+
+      // Find the first field with validation errors and open its options
+      const firstErrorFieldId = Object.keys(validationErrors)[0];
+      if (firstErrorFieldId) {
+        setAdvancedOptionsOpen({
+          ...advancedOptionsOpen,
+          [firstErrorFieldId]: true,
+        });
+      }
+
       return;
     }
 

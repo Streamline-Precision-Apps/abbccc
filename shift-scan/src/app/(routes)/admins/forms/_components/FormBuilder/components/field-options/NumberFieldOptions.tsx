@@ -38,62 +38,21 @@ export const NumberFieldOptions: React.FC<NumberFieldOptionsProps> = ({
           </span>
         </p>
         <p className="text-xs text-gray-500">
-          Set the minimum and/or maximum number Ranges for this field.
+          Specify the maximum number a user can enter for this field.
         </p>
       </div>
 
       <div className="flex flex-row gap-2 p-2">
-        <div className="flex flex-col">
-          <Label className="text-xs">Min Value</Label>
-          <Input
-            type="number"
-            value={field.minLength || ""}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-              const errors = {
-                ...(validationErrors[field.id] || {}),
-              };
-
-              // Clear existing error
-              delete errors.minError;
-
-              if (value < 0) {
-                errors.minError = "Cannot be negative";
-              } else if (
-                field.maxLength !== undefined &&
-                value > field.maxLength
-              ) {
-                errors.minError = "Cannot be greater than max";
-              } else {
-                updateField(field.id, {
-                  minLength: value || undefined,
-                });
-              }
-
-              setValidationErrors({
-                ...validationErrors,
-                [field.id]: errors,
-              });
-            }}
-            min={0}
-            className={`mt-1 bg-white rounded-lg text-xs w-fit ${
-              validationErrors[field.id]?.minError ? "border-red-500" : ""
-            }`}
-            placeholder="Enter min value"
-          />
-          {validationErrors[field.id]?.minError && (
-            <p className="text-xs text-red-500 mt-1">
-              {validationErrors[field.id]?.minError}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col">
+        {/* Min value is implicitly set to 0 */}
+        <div className="flex flex-col w-full">
           <Label className="text-xs">Max Value</Label>
           <Input
             type="number"
             value={field.maxLength || ""}
             onChange={(e) => {
-              const value = parseInt(e.target.value);
+              const value = e.target.value
+                ? parseInt(e.target.value)
+                : undefined;
               const errors = {
                 ...(validationErrors[field.id] || {}),
               };
@@ -101,16 +60,13 @@ export const NumberFieldOptions: React.FC<NumberFieldOptionsProps> = ({
               // Clear existing error
               delete errors.maxError;
 
-              if (value < 0) {
+              if (value !== undefined && value < 0) {
                 errors.maxError = "Cannot be negative";
-              } else if (
-                field.minLength !== undefined &&
-                value < field.minLength
-              ) {
-                errors.maxError = "Cannot be less than min";
               } else {
+                // Always set minLength to 0 when updating maxLength
                 updateField(field.id, {
-                  maxLength: value || undefined,
+                  minLength: 0,
+                  maxLength: value,
                 });
               }
 

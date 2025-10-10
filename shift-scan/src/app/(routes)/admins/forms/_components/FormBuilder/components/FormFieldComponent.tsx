@@ -1,7 +1,7 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
-import { X } from "lucide-react";
+import { Dispatch, SetStateAction, useState, useMemo } from "react";
+import { X, TriangleAlert, CircleAlert } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 import { FormField } from "../types";
@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { SortableItem } from "./SortableItem";
 import { FieldTypePopover } from "./FieldTypePopover";
 import { FieldOptions } from "./field-options/FieldOptions";
+import { Badge } from "@/components/ui/badge";
+import { hasValidationErrors } from "../utils/fieldValidation";
 
 interface FormFieldProps {
   field: FormField;
@@ -100,7 +102,7 @@ export const FormFieldComponent: React.FC<FormFieldProps> = ({
           field.type !== "TIME" &&
           field.type !== "CHECKBOX" && (
             <Toggle
-              className="bg-white border border-slate-200 rounded-lg text-xs"
+              className="bg-white border border-slate-200 rounded-lg text-xs relative"
               pressed={advancedOptionsOpen[field.id] || false}
               onPressedChange={(value: boolean) => {
                 setAdvancedOptionsOpen({
@@ -115,6 +117,11 @@ export const FormFieldComponent: React.FC<FormFieldProps> = ({
                 className="w-2 h-2 "
               />
               <p className="text-xs ">Options</p>
+              {hasValidationErrors(field) && (
+                <Badge className="absolute rounded-full -right-1 -top-1 bg-red-500 p-1 w-4 h-4 flex items-center justify-center">
+                  <CircleAlert className="w-3 h-3 text-white" />
+                </Badge>
+              )}
             </Toggle>
           )}
 
