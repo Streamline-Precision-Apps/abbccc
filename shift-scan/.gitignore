@@ -48,7 +48,8 @@ certificates
 # Sentry Config File
 .env.sentry-build-plugin
 
-# prisma/generated/
+# Prisma generated client files
+prisma/generated/
 
 
 # annoying merge stuff to ignore - comprehensive service worker patterns
