@@ -9,6 +9,7 @@ import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
 import { NModals } from "../(reusable)/newmodals";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
 interface SignatureSetupProps {
   id: string;
@@ -69,20 +70,21 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
   };
 
   return (
-    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+    <div className="h-dvh w-full flex flex-col">
+      {/*Header - fixed at top*/}
+      <div className="w-full h-[10%] flex flex-col justify-end py-3">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddASignature")}
         </Texts>
       </div>
-      <div className="h-full flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full overflow-auto no-scrollbar gap-4">
-          <ProgressBar
-            currentStep={
-              base64String ? Math.min(currentStep + 1, totalSteps) : currentStep
-            }
-            totalSteps={totalSteps}
-          />
+      <div className="bg-white w-full h-[40px] border border-slate-200 flex flex-col justify-center gap-1">
+        <div className="w-[95%] max-w-[600px] mx-auto">
+          <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+      </div>
+      {/*Middle - scrollable content*/}
+      <div className="flex-1 overflow-y-auto no-scrollbar bg-white pb-[200px]">
+        <div className="max-w-[600px] w-[95%] p-4 px-2 flex flex-col mx-auto gap-4">
           <div className=" h-full max-h-[60vh] flex flex-col items-center gap-8">
             <p className="text-xs text-gray-400">{t("AddYourBestSignature")}</p>
             <div>
@@ -109,20 +111,23 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
               </Holds>
             </div>
           </div>
-          <div className="flex flex-col  mb-4">
-            <Button
-              className="bg-app-dark-blue"
-              onClick={handleSubmitImage}
-              disabled={isSubmitting}
-            >
-              <p className="text-white font-semibold text-base">
-                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-              </p>
-            </Button>
-          </div>
         </div>
 
-        <NModals
+        <Dialog
+          open={editSignatureModalOpen}
+          onOpenChange={() => setEditSignatureModalOpen(false)}
+        >
+          <DialogContent className="max-w-3xl w-full rounded-lg">
+            <div className="mt-4">
+              <Signature
+                setBase64String={setBase64String}
+                closeModal={() => setEditSignatureModalOpen(false)}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* <NModals
           handleClose={() => setEditSignatureModalOpen(false)}
           size={"xlWS"}
           isOpen={editSignatureModalOpen}
@@ -133,7 +138,22 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
               closeModal={() => setEditSignatureModalOpen(false)}
             />
           </Holds>
-        </NModals>
+        </NModals> */}
+      </div>
+
+      {/*Footer - fixed at bottom*/}
+      <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
+        <Button
+          className={
+            base64String ? "bg-app-dark-blue w-full" : "bg-gray-300 w-full"
+          }
+          onClick={handleSubmitImage}
+          disabled={isSubmitting}
+        >
+          <p className="text-white font-semibold text-base">
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </p>
+        </Button>
       </div>
     </div>
   );

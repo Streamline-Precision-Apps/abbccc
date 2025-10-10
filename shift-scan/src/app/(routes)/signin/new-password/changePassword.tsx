@@ -71,7 +71,7 @@ export default function ChangePassword() {
 
     if (!validatePassword(newPassword)) {
       setBannerMessage(
-        "Invalid. Password must be at least 8 characters long, contain 1 number, and 1 symbol."
+        "Invalid. Password must be at least 6 characters long, contain 1 number, and 1 symbol.",
       );
       setShowBanner(true);
       return;
@@ -95,14 +95,14 @@ export default function ChangePassword() {
     } catch (error) {
       console.error("Error updating password:", error);
       setBannerMessage(
-        "There was an error updating your password. Please try again."
+        "There was an error updating your password. Please try again.",
       );
       setShowBanner(true);
     }
   };
 
   const validatePassword = (password: string) => {
-    const minLength = 8;
+    const minLength = 6;
     const hasNumber = /\d/;
     const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/;
 
@@ -114,7 +114,7 @@ export default function ChangePassword() {
   };
 
   const handlePasswordChange = (password: string) => {
-    setEightChar(password.length >= 8);
+    setEightChar(password.length >= 6);
     setOneNumber(/\d/.test(password));
     setOneSymbol(/[!@#$%^&*(),.?":{}|<>]/.test(password));
   };

@@ -218,17 +218,18 @@ export default function Signature({
         {/* Buttons */}
         <Holds
           position={"row"}
-          className="row-span-1 gap-4 h-full justify-center flex"
+          className="row-span-1 gap-2 h-full justify-center flex"
         >
+          <Buttons background={"red"} shadow={"none"} onClick={handleClear}>
+            {t("Clear")}
+          </Buttons>
           <Buttons
             disabled={hasStroke === false}
             onClick={handleSave}
+            shadow={"none"}
             className={`${hasStroke ? "bg-app-blue" : "bg-gray-400 "}`}
           >
             {t("Save")}
-          </Buttons>
-          <Buttons background={"red"} onClick={handleClear}>
-            {t("Clear")}
           </Buttons>
         </Holds>
       </Grids>

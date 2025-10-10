@@ -30,7 +30,7 @@
     "PasswordRequirements": "Password must include:",
     "NumberRequirement": "1 Number",
     "SymbolRequirement": "1 Symbol",
-    "LengthRequirement": "Has a Length 8+ characters",
+    "LengthRequirement": "Has a Length 6+ characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "Next": "Next",
@@ -84,7 +84,7 @@
     "PasswordRequirements": "Password must include:",
     "NumberRequirement": "1 Number",
     "SymbolRequirement": "1 Symbol",
-    "LengthRequirement": "Has a Length 8+ characters",
+    "LengthRequirement": "Has a Length 6+ characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password",
     "Next": "Next",
@@ -100,7 +100,7 @@
     "SpecialCharacterCriteriaLabel": "At Least One special character",
     "CapitalCriteriaLabel": "At Least One capital letter (A-Z)",
     "LowerCriteriaLabel": "At Least One lowercase letter (a-z)",
-    "LengthCriteriaLabel": "Minimum 8 characters",
+    "LengthCriteriaLabel": "Minimum 6 characters",
     "PasswordsMatch": "Passwords Match"
   },
 
@@ -1199,7 +1199,7 @@
     "SpecialCharacterCriteriaLabel": "At Least One special character",
     "CapitalCriteriaLabel": "At Least One capital letter (A-Z)",
     "LowerCriteriaLabel": "At Least One lowercase letter (a-z)",
-    "LengthCriteriaLabel": "Minimum 8 characters",
+    "LengthCriteriaLabel": "Minimum 6 characters",
     "NewPassword": "New Password",
     "ConfirmPassword": "Confirm Password"
   },

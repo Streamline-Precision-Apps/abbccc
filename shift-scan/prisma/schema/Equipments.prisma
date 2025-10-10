@@ -1,51 +1,63 @@
 model Equipment {
-  id                String         @id @default(uuid())
-  qrId              String         @unique
-  code              String?
-  name              String
-  description       String?
-  memo              String?
-  ownershipType     OwnershipType?
-  make              String?
-  model             String?
-  year              String?
-  color             String?
-  serialNumber      String?
-  acquiredDate      DateTime?
-  acquiredCondition Condition?
-  licensePlate      String?
-  licenseState      String?
-
-  // not used in excel
+  id                     String                 @id @default(uuid())
+  qrId                   String                 @unique
+  name                   String
+  description            String?
+  creationReason         String?
+  equipmentTag           EquipmentTags          @default(EQUIPMENT)
+  state                  EquipmentState         @default(AVAILABLE)
+  isDisabledByAdmin      Boolean                @default(false)
+  approvalStatus         ApprovalStatus         @default(PENDING)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  overWeight             Boolean?               @default(false)
+  currentWeight          Float?                 @default(0)
+  createdById            String?
+  createdVia             CreatedVia             @default(MOBILE)
+  acquiredDate           DateTime?
+  code                   String?
+  color                  String?
+  licensePlate           String?
+  licenseState           String?
+  make                   String?
+  memo                   String?
+  model                  String?
+  ownershipType          OwnershipType?
   registrationExpiration DateTime?
-  equipmentTag           EquipmentTags @default(EQUIPMENT)
-
-  //used in app
-  overWeight        Boolean?       @default(false)
-  currentWeight     Float?         @default(0)
-  state             EquipmentState @default(AVAILABLE)
-  isDisabledByAdmin Boolean        @default(false)
-  creationReason    String?
-  approvalStatus    ApprovalStatus @default(PENDING)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  createdVia        CreatedVia     @default(MOBILE)
-  createdById       String?
-
-  createdBy             User?                  @relation(fields: [createdById], references: [id])
-  EmployeeEquipmentLogs EmployeeEquipmentLog[]
-  EquipmentHauled       EquipmentHauled[]
-  Maintenances          Maintenance[]
-  TascoLogs             TascoLog[]
-  HauledInLogs          TruckingLog[]          @relation("HauledEquipment")
-  UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
-  UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
-  DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
-  Maintenance           mechanicProjects[]
+  serialNumber           String?
+  year                   String?
+  acquiredCondition      Condition?
+  EmployeeEquipmentLogs  EmployeeEquipmentLog[]
+  createdBy              User?                  @relation(fields: [createdById], references: [id])
+  EquipmentHauled        EquipmentHauled[]
+  Maintenances           Maintenance[]
+  TascoLogs              TascoLog[]
+  HauledInLogs           TruckingLog[]          @relation("HauledEquipment")
+  UsedAsTrailer          TruckingLog[]          @relation("TrailerEquipment")
+  UsedAsTruck            TruckingLog[]          @relation("TruckEquipment")
+  Maintenance            mechanicProjects[]
+  DocumentTags           DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
   @@index([approvalStatus])
+}
+
+model EmployeeEquipmentLog {
+  id            String       @id @default(uuid())
+  equipmentId   String?
+  maintenanceId String?
+  startTime     DateTime     @default(now())
+  endTime       DateTime?
+  comment       String?
+  timeSheetId   Int
+  rental        Boolean      @default(false)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  RefuelLog     RefuelLog?
+
+  @@index([timeSheetId, equipmentId, maintenanceId])
 }
 
 enum Condition {
@@ -72,23 +84,4 @@ enum OwnershipType {
   OWNED
   LEASED
   RENTAL
-}
-
-// purpose is to show all employee interactions with the equipment
-model EmployeeEquipmentLog {
-  id            String    @id @default(uuid())
-  timeSheetId   Int
-  equipmentId   String?
-  maintenanceId String?
-  startTime     DateTime  @default(now())
-  endTime       DateTime?
-  comment       String?
-  rental        Boolean   @default(false) // 
-
-  Equipment   Equipment?   @relation(fields: [equipmentId], references: [id])
-  Maintenance Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  TimeSheet   TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  RefuelLog   RefuelLog?
-
-  @@index([timeSheetId, equipmentId, maintenanceId])
 }

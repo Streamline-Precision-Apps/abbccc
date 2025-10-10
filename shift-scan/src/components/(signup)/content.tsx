@@ -70,14 +70,7 @@ export default function Content({
   if (!isValid) return <div>Error: Invalid props provided.</div>;
 
   return (
-    <Holds className="h-full" position={"row"}>
-      {/* {step === 1 && (
-        <Bases>
-          <Contents>
-            <ShiftScanIntro handleNextStep={handleNextStep} />
-          </Contents>
-        </Bases>
-      )} */}
+    <>
       {step === 1 && (
         <EnterAccountInfo
           userId={userId}
@@ -112,9 +105,7 @@ export default function Content({
           currentStep={step}
         />
       )}
-      {/* {step === 5 && (
-          <Permissions id={userId} handleAccept={handleComplete}/>
-        )} */}
+
       {step === 5 && (
         <SignatureSetup
           id={userId}
@@ -123,6 +114,6 @@ export default function Content({
           currentStep={step}
         />
       )}
-    </Holds>
+    </>
   );
 }
