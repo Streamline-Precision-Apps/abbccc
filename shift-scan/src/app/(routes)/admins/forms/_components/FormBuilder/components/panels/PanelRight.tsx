@@ -1,12 +1,16 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fieldTypes } from "./FormBuilder";
+import { fieldTypes } from "../../types";
 
-export function FormBuilderPanelRight({
-  addField,
-}: {
+interface FormBuilderPanelRightProps {
   addField: (fieldType: string) => void;
-}) {
+}
+
+export const FormBuilderPanelRight: React.FC<FormBuilderPanelRightProps> = ({
+  addField,
+}) => {
   return (
     <div className="flex flex-col min-w-[250px] w-1/5 h-full col-span-1 bg-white  rounded-tr-lg rounded-br-lg">
       {/* Field Types Header - Fixed */}
@@ -49,4 +53,4 @@ export function FormBuilderPanelRight({
       </div>
     </div>
   );
-}
+};

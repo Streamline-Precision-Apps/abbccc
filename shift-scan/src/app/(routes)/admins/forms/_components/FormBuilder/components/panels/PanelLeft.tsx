@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -7,30 +9,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FormSettings, FormField, fieldTypes } from "../../types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { FormField, FormSettings } from "./FormEditor";
-import { fieldTypes } from "../../../create/_component/FormBuilder/FormBuilder";
-import { FormTemplateCategory } from "../../../../../../../../prisma/generated/prisma/client";
-import { Asterisk } from "lucide-react";
+import { FormTemplateCategory } from "../../../../../../../../../prisma/generated/prisma/client";
 
-export function FormEditorPanelLeft({
-  formFields,
-  formSettings,
-  updateFormSettings,
-}: {
-  formFields: FormField[];
+interface FormEditorPanelLeftProps {
   formSettings: FormSettings;
+  formFields: FormField[];
   updateFormSettings: (
     key: keyof FormSettings,
     value: string | boolean,
   ) => void;
-}) {
+}
+
+export const PanelLeft: React.FC<FormEditorPanelLeftProps> = ({
+  formSettings,
+  formFields,
+  updateFormSettings,
+}) => {
   return (
-    <div className="flex flex-col col-span-1 min-w-[250px] w-1/5 h-full bg-white rounded-tl-lg rounded-bl-lg">
+    <div className="flex flex-col col-span-1 min-w-[250px] w-1/5 h-full bg-white  rounded-tl-lg rounded-bl-lg ">
       <Tabs
         defaultValue="settings"
         className="w-full h-full flex flex-col bg-white rounded-tl-lg rounded-bl-lg p-1"
@@ -70,7 +72,7 @@ export function FormEditorPanelLeft({
               <span className="mt-1 text-xs text-red-500">Required</span>
             )}
           </div>
-          <div className="w-full mt-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="description" className="text-xs">
               Description
             </Label>
@@ -83,10 +85,10 @@ export function FormEditorPanelLeft({
               }
               rows={5}
               maxLength={200}
-              className="bg-white rounded-lg text-xs"
+              className="bg-white rounded-lg text-xs "
             />
           </div>
-          <div className="w-full mt-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="category" className="text-xs">
               Category <span className="text-red-500">*</span>
             </Label>
@@ -110,7 +112,7 @@ export function FormEditorPanelLeft({
               <span className="mt-1 text-xs text-red-500">Required</span>
             )}
           </div>
-          <div className="w-full mt-4">
+          <div className=" w-full mt-4">
             <Label htmlFor="status" className="text-xs">
               Status <span className="text-red-500">*</span>
             </Label>
@@ -132,7 +134,7 @@ export function FormEditorPanelLeft({
               <span className="mt-1 text-xs text-red-500">Required</span>
             )}
           </div>
-          <div className="mt-4 w-full flex flex-row justify-between items-center">
+          <div className="mt-4 w-full flex flex-row justify-between items-center ">
             <Label htmlFor="require-signature" className="text-xs">
               Requires Digital Signature
             </Label>
@@ -143,10 +145,10 @@ export function FormEditorPanelLeft({
               onCheckedChange={(checked) =>
                 updateFormSettings("requireSignature", checked)
               }
-              className="bg-white data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
+              className="bg-white  data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
             />
           </div>
-          <div className="mt-4 w-full flex flex-row justify-between items-center">
+          <div className="mt-4 w-full flex flex-row justify-between items-center ">
             <Label htmlFor="require-approval" className="text-xs">
               Submission Requires Approval
             </Label>
@@ -157,7 +159,7 @@ export function FormEditorPanelLeft({
               onCheckedChange={(checked) =>
                 updateFormSettings("isApprovalRequired", checked)
               }
-              className="bg-white data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
+              className="bg-white  data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-sky-400 w-10"
             />
           </div>
         </TabsContent>
@@ -165,13 +167,13 @@ export function FormEditorPanelLeft({
           value="preview"
           className="bg-white h-full flex-1 overflow-y-auto rounded-lg"
         >
-          <div className="flex flex-col h-full">
-            <div className="w-full h-12 bg-slate-100 rounded-lg justify-between flex flex-row mb-4">
-              <div className="w-full h-full py-1 bg-slate-100 flex flex-col justify-center items-center rounded-lg">
+          <div className="flex flex-col h-full ">
+            <div className="w-full h-12  bg-slate-100 rounded-lg justify-between flex flex-row mb-4 ">
+              <div className="w-full h-full  py-1 bg-slate-100 flex flex-col justify-center items-center rounded-lg">
                 <p>{formFields.length}</p>
                 <p className="text-xs font-bold">Questions</p>
               </div>
-              <div className="w-full h-full py-1 bg-slate-100 flex flex-col justify-center items-center rounded-lg">
+              <div className="w-full h-full  py-1 bg-slate-100 flex flex-col justify-center items-center rounded-lg">
                 <p>{formFields.filter((f) => f.required).length}</p>
                 <p className="text-xs font-bold">Required</p>
               </div>
@@ -186,27 +188,27 @@ export function FormEditorPanelLeft({
                 <p className="text-xs text-gray-500">No questions added yet</p>
               </div>
             ) : (
-              <div className="w-full h-full px-2 flex-1 overflow-y-auto no-scrollbar gap-3">
+              <div className="w-full h-full px-2 flex-1 overflow-y-auto no-scrollbar  gap-3">
                 <p className="text-sm font-bold pb-4">Form Structure</p>
                 {formFields.map((field, index) => (
                   <div
                     key={field.id}
-                    className={`flex flex-row items-center w-full gap-1 mb-2 rounded-lg bg-slate-100 p-1 relative`}
+                    className={`flex flex-row items-center w-full gap-1 mb-2 rounded-lg bg-slate-100 p-1  relative `}
                   >
                     <div
-                      className={`flex flex-row items-center w-full gap-2 px-1 ${field.required && "mt-4"}`}
+                      className={`flex flex-row items-center w-full gap-2 px-1   ${field.required && "mt-4"}`}
                     >
                       {field.required && (
-                        <span className="bg-red-100 w-fit px-2 py-0.5 rounded-md text-red-500 flex flex-row items-center text-xs absolute left-1 top-1">
+                        <span className="bg-red-100  w-fit px-2 py-0.5  rounded-md text-red-500 flex flex-row items-center text-xs absolute left-1 top-1">
                           Required
                         </span>
                       )}
 
-                      <div className="w-[50px] justify-center items-center flex rounded-md gap-1">
+                      <div className="w-[50px]  justify-center items-center flex rounded-md gap-1">
                         <p className="text-xs font-semibold">{index + 1}.</p>
                       </div>
 
-                      <div className="flex flex-col gap-1 w-full">
+                      <div className="flex flex-col gap-1 w-full ">
                         {field.type !== "header" &&
                           field.type !== "paragraph" && (
                             <p className="text-xs font-medium truncate max-w-[140px] text-gray-700">
@@ -214,7 +216,6 @@ export function FormEditorPanelLeft({
                             </p>
                           )}
                       </div>
-
                       <Button
                         variant="ghost"
                         size="sm"
@@ -239,7 +240,6 @@ export function FormEditorPanelLeft({
                           className="w-7 h-auto mx-auto "
                         />
                       </Button>
-
                       {field.type === "dropdown" ||
                         (field.type === "multiselect" && (
                           <p className="w-fit text-xs text-gray-500">
@@ -256,4 +256,4 @@ export function FormEditorPanelLeft({
       </Tabs>
     </div>
   );
-}
+};
