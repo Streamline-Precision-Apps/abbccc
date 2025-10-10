@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { createFormSubmission } from "@/actions/records-forms";
-import RenderFields from "../../_components/RenderFields"; // Import the RenderFields component
+import RenderFields from "../../_components/RenderFields/RenderFields"; // Import the RenderFields component
 import Spinner from "@/components/(animations)/spinner";
 import { FormIndividualTemplate } from "./hooks/types";
 import { X } from "lucide-react";

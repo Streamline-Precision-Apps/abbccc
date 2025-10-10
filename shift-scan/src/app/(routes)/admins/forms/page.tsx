@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useFormsList } from "./_components/List/hooks/useFormsList";
+import { useFormsList } from "./_components/Table/hooks/useFormsList";
 import { FormTemplateCategory } from "../../../../../prisma/generated/prisma/client";
 import Link from "next/link";
 import {
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ExportModal } from "./_components/List/exportModal";
+import { ExportModal } from "./_components/Table/exportModal";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/tooltip";
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
-import { FormsDataTable } from "./_components/List/FormsDataTable";
-import FormsFilters from "./_components/List/FormsFilters";
+import { FormsDataTable } from "./_components/Table/FormsDataTable";
+import FormsFilters from "./_components/Table/FormsFilters";
 
 // Form field definition
 interface FormField {
