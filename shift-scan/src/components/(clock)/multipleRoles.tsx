@@ -166,7 +166,7 @@ export default function MultipleRoles({
                   </Holds>
                 )}
                 {numberOfRoles === 1 && (
-                  <Holds className="row-start-7 row-end-8  w-full justify-center">
+                  <Holds className="row-start-6 row-end-7  w-full justify-center">
                     <Buttons
                       onClick={handleNextStep}
                       background={"green"}
