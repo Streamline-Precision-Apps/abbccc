@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import FormEditor from "./_component/FormEditor";
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import FormBuilder from "../../_components/FormBuilder/FormBuilder";
 
 export default function FormPage({
   params,
@@ -50,7 +50,8 @@ export default function FormPage({
             </p>
           </div>
         </div>
-        <FormEditor formId={id} onCancel={handleCancel} />
+        <FormBuilder formId={id} onCancel={handleCancel} mode={"edit"} />
+        {/* <FormEditor formId={id} onCancel={handleCancel} /> */}
       </div>
     </div>
   );

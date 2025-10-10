@@ -10,8 +10,8 @@ import RenderSearchPersonField from "./RenderSearchPersonField";
 import RenderMultiselectField from "./RenderMultiselectField";
 import RenderSearchAssetField from "./RenderSearchAssetField";
 import RenderInputField from "./RenderInputField";
-import { FormIndividualTemplate } from "../[id]/_component/hooks/types";
-import { Fields } from "../[id]/_component/CreateFormSubmissionModal";
+import { FormIndividualTemplate } from "../../[id]/_component/hooks/types";
+import { Fields } from "../../[id]/_component/CreateFormSubmissionModal";
 import { useState } from "react";
 import { SingleCombobox } from "@/components/ui/single-combobox";
 

@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { ExportModal } from "../_components/List/exportModal";
+import { ExportModal } from "../_components/Table/exportModal";
 import EditFormSubmissionModal from "./_component/editFormSubmissionModal";
 import CreateFormSubmissionModal from "./_component/CreateFormSubmissionModal";
 import Spinner from "@/components/(animations)/spinner";
