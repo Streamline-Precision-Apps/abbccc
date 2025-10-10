@@ -50,6 +50,7 @@ certificates
 
 # Prisma generated client files
 prisma/generated/
+shift-scan/prisma/generated/
 
 
 # annoying merge stuff to ignore - comprehensive service worker patterns
