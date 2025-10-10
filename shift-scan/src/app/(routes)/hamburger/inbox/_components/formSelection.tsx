@@ -75,12 +75,40 @@ export default function FormSelection({
   const userId = session?.user.id;
   const router = useRouter();
 
+  // Calculate the start date (Monday) and end date (Sunday) of the current week
+  const getWeekDates = (): { startDate: string; endDate: string } => {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 is Sunday, 1 is Monday, etc.
+
+    // Calculate days to subtract to get to Monday (if today is Sunday (0), we need to go back 6 days)
+    const daysToSubtract = currentDay === 0 ? 6 : currentDay - 1;
+
+    // Calculate Monday (start of week)
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - daysToSubtract);
+    monday.setHours(0, 0, 0, 0);
+
+    // Calculate Sunday (end of week)
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    // Format dates as ISO strings (YYYY-MM-DD)
+    const startDate = monday.toISOString().split("T")[0];
+    const endDate = sunday.toISOString().split("T")[0];
+
+    return { startDate, endDate };
+  };
+
+  // Get the current week's start and end dates
+  const { startDate, endDate } = getWeekDates();
+
   const fetchSentContent = async (
     skip: number,
     reset?: boolean,
   ): Promise<SentContent[]> => {
     const response = await fetch(
-      `/api/formSubmissions/${selectedFilter}?skip=${skip}&take=10`,
+      `/api/formSubmissions/${selectedFilter}?startDate=${startDate}&endDate=${endDate}&skip=${skip}&take=10`,
     );
     const data = await response.json();
     // Defensive: filter out any non-object/string results

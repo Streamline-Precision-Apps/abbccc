@@ -25,9 +25,44 @@ export async function GET(
   const skip = parseInt(searchParams.get("skip") || "0"); // Number of records to skip
   const take = parseInt(searchParams.get("take") || "10"); // Number of records to fetch
 
+  // Get date filter parameters
+  const startDateParam = searchParams.get("startDate");
+  const endDateParam = searchParams.get("endDate");
+  const weekFilter = searchParams.get("week") === "true";
+
+  // Process date filters
+  let startDate: Date | null = null;
+  let endDate: Date | null = null;
+
+  if (startDateParam) {
+    startDate = new Date(startDateParam);
+  }
+
+  if (endDateParam) {
+    endDate = new Date(endDateParam);
+  }
+
+  // If week filter is true, calculate the current week's start and end dates
+  if (weekFilter) {
+    const today = new Date();
+    // Get the first day of the week (Sunday)
+    const firstDay = new Date(today);
+    firstDay.setDate(today.getDate() - today.getDay());
+    firstDay.setHours(0, 0, 0, 0);
+
+    // Get the last day of the week (Saturday)
+    const lastDay = new Date(today);
+    lastDay.setDate(today.getDate() + (6 - today.getDay()));
+    lastDay.setHours(23, 59, 59, 999);
+
+    startDate = firstDay;
+    endDate = lastDay;
+  }
+
   // Define the type for whereClause
   let whereClause: {
     userId: string;
+    createdAt?: { gte: Date; lte: Date };
     status?: FormStatus | { not: FormStatus };
   } = { userId }; // Always filter by current user's ID
 
@@ -40,7 +75,13 @@ export async function GET(
   } else if (status === "draft") {
     whereClause = { ...whereClause, status: FormStatus.DRAFT };
   } else if (status === "all") {
-    // No status filter for "all"
+    // No status filter for "all", but apply date filters if provided
+    if (startDate && endDate) {
+      whereClause = {
+        ...whereClause,
+        createdAt: { gte: startDate, lte: endDate },
+      };
+    }
   }
 
   try {

@@ -526,12 +526,10 @@ export default function DynamicForm({
         await response.json();
 
         // Ensure the save is complete before navigating
-        setTimeout(() => {
-          router.back(); // Redirect after a small delay to ensure save completes
-        }, 100);
-      } else {
-        console.error("Form submission failed: No result returned");
       }
+      setTimeout(() => {
+        router.back(); // Redirect after a small delay to ensure save completes
+      }, 100);
     } catch (error) {
       console.error("Error submitting form:", error);
     }

@@ -1,8 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
-import FormBuilder from "./_component/FormBuilder/FormBuilder";
 import { useRouter } from "next/navigation";
+import FormBuilder from "../_components/FormBuilder/FormBuilder";
 
 export default function CreateFormPage() {
   const { setOpen, open } = useSidebar();
@@ -44,7 +44,7 @@ export default function CreateFormPage() {
             </p>
           </div>
         </div>
-        <FormBuilder onCancel={returnToList} />
+        <FormBuilder onCancel={returnToList} mode={"create"} />
       </div>
     </div>
   );
