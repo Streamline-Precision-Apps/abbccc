@@ -12,13 +12,13 @@ interface ExportModalProps {
       from?: Date;
       to?: Date;
     },
-    selectedFields?: string[]
+    selectedFields?: string[],
   ) => void;
   setDateRange: Dispatch<SetStateAction<DateRange>>;
   dateRange: DateRange;
 }
 
-import { ChevronDownIcon, Download } from "lucide-react";
+import { ChevronDownIcon, Download, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -34,38 +34,50 @@ const ExportReportModal = ({
   dateRange,
 }: ExportModalProps) => {
   const [exportFormat, setExportFormat] = useState<"csv" | "xlsx" | "">("");
+  const closeModal = () => {
+    setDateRange({ from: undefined, to: undefined });
+    setExportFormat("");
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-        <div className="flex flex-col gap-4 w-full items-center">
-          <div className="w-full flex flex-col  mb-2">
-            <div className="flex flex-col  mb-6">
-              <div className="flex flex-row gap-2">
-                <Download className="h-5 w-5" />
-                <h2 className="text-base font-bold">Export Report Data</h2>
-              </div>
-              <p className="text-xs text-muted-foreground mb-2">
-                Select a date range, apply filters, and choose your preferred
-                export format
-              </p>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4">
+        <div className="flex flex-col gap-4 items-center w-full relative">
+          {/* Modal title Content */}
+          <div className="flex flex-col w-full border-b border-gray-200 pb-3">
+            <div className="flex flex-row gap-2 items-center">
+              <h2 className="text-xl font-bold">Export Report Data</h2>
+              <Download className="h-5 w-5" />
             </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="date" className="text-base font-semibold">
-                Date Range
-              </Label>
+            <p className="text-xs text-gray-600 pt-1">
+              Select a date range, apply filters, and choose your preferred
+              export format
+            </p>
+            {/* Close button to close the modal */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={closeModal}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+          </div>
+          <div className="flex flex-col gap-6 w-full px-2 py-4">
+            {/* Date range picker */}
+            <div className="w-full flex flex-col">
+              <Label className="font-semibold text-sm">Date Range</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     id="date"
-                    className="w-full justify-between font-normal"
+                    className="w-3/4 justify-between font-normal"
                   >
                     {dateRange.from && dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(
-                          dateRange.to,
-                          "PPP"
-                        )}`
+                      ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
                       : "Select date range"}
                     <ChevronDownIcon />
                   </Button>
@@ -99,50 +111,50 @@ const ExportReportModal = ({
                 </PopoverContent>
               </Popover>
             </div>
-          </div>
-
-          <div className="w-full flex flex-col">
-            <p className="text-base font-semibold mb-4 ">Export format</p>
-            <div className="flex flex-row gap-4 mb-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="exportFormat"
-                  value="csv"
-                  checked={exportFormat === "csv"}
-                  onChange={() => setExportFormat("csv")}
-                  className="accent-blue-600"
-                />
-                <span className="text-sm">CSV</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="exportFormat"
-                  value="xlsx"
-                  checked={exportFormat === "xlsx"}
-                  onChange={() => setExportFormat("xlsx")}
-                  className="accent-green-600"
-                />
-                <span className="text-sm">Excel (XLSX)</span>
-              </label>
+            {/* Export format selection */}
+            <div className="w-full">
+              <h3 className="font-semibold text-sm mb-2">Export Format</h3>
+              <div className="flex flex-row w-1/2 gap-4 border border-gray-200 rounded-md p-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="exportFormat"
+                    value="csv"
+                    checked={exportFormat === "csv"}
+                    onChange={() => setExportFormat("csv")}
+                    className="accent-blue-600"
+                  />
+                  <span className="text-xs">CSV</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="exportFormat"
+                    value="xlsx"
+                    checked={exportFormat === "xlsx"}
+                    onChange={() => setExportFormat("xlsx")}
+                    className="accent-green-600"
+                  />
+                  <span className="text-xs">Excel (XLSX)</span>
+                </label>
+              </div>
             </div>
           </div>
-          <div className="flex flex-row gap-3 w-full mb-2">
+          {/* Action buttons */}
+          <div className="flex flex-row gap-3 w-full justify-end border-t border-gray-200 pt-4">
             <Button
-              size={"sm"}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition disabled:opacity-50"
+              variant="outline"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+              onClick={closeModal}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-sky-500 hover:bg-sky-400 text-white disabled:opacity-50"
               onClick={() => exportFormat && onExport(exportFormat, dateRange)}
               disabled={!exportFormat}
             >
               Export
-            </Button>
-            <Button
-              size={"sm"}
-              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded transition"
-              onClick={onClose}
-            >
-              Cancel
             </Button>
           </div>
         </div>

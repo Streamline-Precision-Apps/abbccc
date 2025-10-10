@@ -45,8 +45,8 @@ export default function EditCostCodeModal({
     try {
       const fd = new FormData();
       fd.append("id", formData.id);
-      fd.append("code", formData.code);
-      fd.append("name", formData.name);
+      fd.append("code", formData.code); // Save code without #
+      fd.append("name", `#${formData.code} ${getName()}`.trim()); // Save name as "#code name"
       fd.append("isActive", String(formData.isActive));
       fd.append("CCTags", JSON.stringify(formData.CCTags.map((tag) => tag.id)));
 
@@ -77,36 +77,56 @@ export default function EditCostCodeModal({
     );
   }
 
-  const getCode = () => formData.name.split(" ")[0] || "";
-  const getName = () => formData.name.split(" ").slice(1).join(" ") || "";
+  const getCode = () => {
+    // Handle both cases: code with # or without #
+    const code = formData.code;
+    return code.startsWith("#") ? code.slice(1) : code;
+  };
+  const getName = () => {
+    // If formData.name contains the full format "#code name", extract just the name part
+    // Otherwise, return the name as-is
+    const fullName = formData.name;
+    if (fullName.startsWith("#")) {
+      const parts = fullName.split(" ");
+      return parts.slice(1).join(" "); // Return everything after the first space (the code part)
+    }
+    return fullName;
+  };
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newCode = e.target.value;
-    const currentName = getName();
+    let value = e.target.value;
+    // Ensure it starts with # and prevent multiple #
+    if (!value.startsWith("#")) {
+      value = "#" + value;
+    }
+    // Remove any additional # characters
+    value = "#" + value.slice(1).replace(/#/g, "");
+
+    // Extract the numeric part after #
+    const numericPart = value.slice(1);
+    // Only allow numbers and one decimal point
+    const validNumericPart = numericPart
+      .replace(/[^0-9.]/g, "")
+      .replace(/(\..*?)\..*/g, "$1");
+
+    // Update only the code field (store without #)
     setFormData((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
-        name: `${newCode} ${currentName}`.trim(),
-      };
-    });
-    setFormData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        code: newCode.split("#")[1] || "",
+        code: validNumericPart, // Store without # in formData
       };
     });
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    const currentCode = getCode();
+    // Store the name part separately from the code
     setFormData((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
-        name: `${currentCode} ${newName}`.trim(),
+        name: newName, // Store just the name part
       };
     });
   };
@@ -147,8 +167,31 @@ export default function EditCostCodeModal({
               <Input
                 type="text"
                 name="code"
-                value={getCode()}
+                value={`#${getCode()}`}
                 onChange={handleCodeChange}
+                onKeyDown={(e) => {
+                  // Prevent deletion of # at the beginning
+                  if (e.key === "Backspace" || e.key === "Delete") {
+                    const input = e.target as HTMLInputElement;
+                    const selectionStart = input.selectionStart || 0;
+                    const selectionEnd = input.selectionEnd || 0;
+
+                    // If trying to delete the # or select text that includes #
+                    if (
+                      selectionStart === 0 ||
+                      (selectionStart === 0 && selectionEnd > 0)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }
+                }}
+                onClick={(e) => {
+                  // Prevent cursor from going before #
+                  const input = e.target as HTMLInputElement;
+                  if (input.selectionStart === 0) {
+                    input.setSelectionRange(1, 1);
+                  }
+                }}
                 className="w-full text-xs"
                 required
               />
