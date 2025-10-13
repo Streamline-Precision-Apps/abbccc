@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,8 @@ import { FooterPagination } from "../_pages/FooterPagination";
 import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 
 export default function JobsitePage() {
+  const searchParams = useSearchParams();
+  
   const {
     searchTerm,
     setSearchTerm,
@@ -53,6 +56,24 @@ export default function JobsitePage() {
     totalPages,
     paginatedJobsites,
   } = useJobsiteData();
+
+  // Check URL parameters on component mount
+  useEffect(() => {
+    const isPendingApproval = searchParams.get('isPendingApproval');
+    const notificationId = searchParams.get('notificationId');
+    
+    if (isPendingApproval === 'true') {
+      // Enable pending approval view
+      setShowPendingOnly(true);
+      
+      // If there's a notificationId, we could use it to highlight or scroll to a specific jobsite
+      if (notificationId) {
+        console.log('Notification ID:', notificationId);
+        // You can add additional logic here to handle the specific notification
+        // For example, scrolling to a specific jobsite or opening its edit modal
+      }
+    }
+  }, [searchParams, setShowPendingOnly]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">

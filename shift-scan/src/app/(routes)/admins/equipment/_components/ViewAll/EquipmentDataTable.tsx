@@ -175,8 +175,11 @@ export function EquipmentDataTable({
     return cols;
   }, [onEditClick, onDeleteClick, onQrClick]);
 
+  // Ensure data is always an array
+  const safeData = Array.isArray(data) ? data : [];
+
   const table = useReactTable({
-    data,
+    data: safeData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -200,7 +203,7 @@ export function EquipmentDataTable({
       searchTerm, // Pass the search term to the table meta
     },
     manualPagination: true, // Tell TanStack Table we're handling pagination manually
-    pageCount: totalPages, // Important for proper page count display
+    pageCount: totalPages || 1, // Ensure we always have at least 1 page
     onPaginationChange: (updater) => {
       const newState =
         typeof updater === "function"
@@ -226,7 +229,7 @@ export function EquipmentDataTable({
                     return (
                       <TableHead
                         key={header.id}
-                        className="whitespace-nowrap font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs sticky top-0"
+                        className="whitespace-nowrap first:text-left  font-semibold text-gray-700 text-center border-r bg-gray-100 border-gray-200 last:border-r-0 text-xs sticky top-0"
                       >
                         {header.isPlaceholder
                           ? null
@@ -246,24 +249,27 @@ export function EquipmentDataTable({
               >
                 {loading ? (
                   <LoadingEquipmentTableState columns={columns} />
-                ) : table.getRowModel().rows?.length ? (
+                ) : table.getRowModel() &&
+                  table.getRowModel().rows &&
+                  table.getRowModel().rows.length > 0 ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
                       className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
+                      {row.getVisibleCells &&
+                        row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
                     </TableRow>
                   ))
                 ) : (

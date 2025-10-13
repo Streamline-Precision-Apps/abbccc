@@ -84,44 +84,6 @@ export default function NotificationSettings({
     );
   };
 
-  // Request system-level permissions
-  const requestSystemPermissions = async () => {
-    try {
-      // Request Camera Access using centralized permissions context
-      const cameraGranted = await requestCameraPermission();
-      if (!cameraGranted) {
-        console.warn("Camera access denied");
-      } else {
-        console.log("Camera access granted");
-      }
-
-      // Request Location Access using centralized permissions context
-      const locationGranted = await requestLocationPermission();
-      if (!locationGranted) {
-        console.warn("Location access denied");
-      } else {
-        console.log("Location access granted");
-      }
-
-      // Request Notification Access
-      const notificationPermission = await Notification.requestPermission();
-      if (notificationPermission === "granted") {
-        console.log("Notification access granted");
-      } else {
-        console.warn("Notification access denied");
-      }
-
-      // Now update the UI state to reflect that permissions were granted
-      handleYesToAll();
-    } catch (error) {
-      console.error("One or more permissions were denied", error);
-      setBannerMessage(
-        "One or more permissions were denied. Please check your browser settings.",
-      );
-      setShowBanner(true);
-    }
-  };
-
   useEffect(() => {
     if (showBanner) {
       const timer = setTimeout(() => {
@@ -200,15 +162,19 @@ export default function NotificationSettings({
   };
 
   return (
-    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+    <div className="h-dvh w-full flex flex-col">
+      <div className="w-full h-[10%] flex flex-col justify-end py-3">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AcceptAllPermissions")}
         </Texts>
       </div>
-      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full  gap-4">
+      <div className="bg-white w-full h-[40px] border border-slate-200 flex flex-col justify-center gap-1">
+        <div className="w-[95%] max-w-[600px] mx-auto">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar bg-white pb-[200px]">
+        <div className="max-w-[600px] w-[95%] p-4 px-2 flex flex-col mx-auto gap-4">
           <div className=" h-full max-h-[50vh] flex flex-col items-center gap-8">
             <div>
               <Titles size={"h5"}>{t("RequiredForAppUse")}</Titles>
@@ -251,17 +217,17 @@ export default function NotificationSettings({
               </Holds>
             </Holds>
           </div>
-          <div className="flex flex-col mb-4">
-            <Button
-              size={"lg"}
-              onClick={handleSubmitSettings}
-              className="bg-app-dark-blue text-white rounded-lg p-2 w-full"
-              disabled={isSubmitting} // Disable the button while submitting
-            >
-              <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
+        <Button
+          size={"lg"}
+          onClick={handleSubmitSettings}
+          className={`${isRequiredAcessed ? "bg-app-dark-blue" : "bg-gray-300 "} text-white rounded-lg p-2 w-full`}
+          disabled={isSubmitting} // Disable the button while submitting
+        >
+          <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
+        </Button>
       </div>
     </div>
   );

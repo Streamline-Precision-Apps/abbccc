@@ -1,5 +1,6 @@
 "use server";
 import { auth } from "@/auth";
+import { Bases } from "@/components/(reusable)/bases";
 import Content from "@/components/(signup)/content";
 
 export default async function SignUpPage() {

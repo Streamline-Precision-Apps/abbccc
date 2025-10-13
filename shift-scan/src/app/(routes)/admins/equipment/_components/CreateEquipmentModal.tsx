@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { US_STATES } from "@/data/stateValues";
+import { X } from "lucide-react";
 
 export default function CreateEquipmentModal({
   cancel,
@@ -159,21 +160,30 @@ export default function CreateEquipmentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-        <div className="flex flex-col gap-4 w-full">
-          <div>
-            <h2 className="text-lg font-semibold">Create Equipment</h2>
-            <p className="text-sm text-gray-600">
-              Fill in the details to create new equipment.
-            </p>
-          </div>
-          <div>
-            <div className="flex flex-col gap-6">
-              {/* Section: General Information */}
-              <div className="border rounded-md p-4">
-                <h3 className="text-md font-semibold mb-3 border-b pb-2">
-                  General Information
-                </h3>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh]  px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+          <h2 className="text-lg text-black font-semibold ">
+            Create Equipment
+          </h2>
+          <p className="text-xs text-gray-600">
+            Fill in the details to create new equipment.
+          </p>
+          <Button
+            type="button"
+            variant={"ghost"}
+            size={"icon"}
+            onClick={cancel}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+        </div>
+        <div className="flex-1 w-full px-2 pb-10 overflow-y-auto no-scrollbar">
+          <div className="w-full mt-3 ">
+            {/* Section: General Information */}
+            <div className="space-y-2 mb-5">
+              <h3 className="text-md font-semibold">General Information</h3>
+              <div className="border bg-slate-50 rounded-md p-4">
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label htmlFor="code" className={`text-sm `}>
@@ -184,7 +194,7 @@ export default function CreateEquipmentModal({
                       name="code"
                       value={formData.code}
                       onChange={handleInputChange}
-                      className="w-full text-xs"
+                      className="w-full text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -196,7 +206,7 @@ export default function CreateEquipmentModal({
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full text-xs"
+                      className="w-full text-xs bg-white"
                       required
                     />
                   </div>
@@ -212,7 +222,7 @@ export default function CreateEquipmentModal({
                       rows={3}
                       value={formData.description}
                       onChange={handleInputChange}
-                      className="w-full text-xs min-h-[80px]"
+                      className="w-full text-xs min-h-[80px] bg-white"
                       placeholder="Enter equipment description..."
                       style={{ resize: "none" }}
                       required
@@ -227,7 +237,7 @@ export default function CreateEquipmentModal({
                       rows={2}
                       value={formData.memo}
                       onChange={handleInputChange}
-                      className="w-full text-xs min-h-[60px]"
+                      className="w-full text-xs min-h-[60px] bg-white"
                       placeholder="Enter any additional notes..."
                       style={{ resize: "none" }}
                     />
@@ -246,7 +256,7 @@ export default function CreateEquipmentModal({
                         handleSelectChange("equipmentTag", value)
                       }
                     >
-                      <SelectTrigger className="text-xs">
+                      <SelectTrigger className="text-xs bg-white">
                         <SelectValue placeholder="Select Equipment Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -259,12 +269,12 @@ export default function CreateEquipmentModal({
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Section: Ownership Information */}
-              <div className="border rounded-md p-4">
-                <h3 className="text-md font-semibold mb-3 border-b pb-2">
-                  Ownership Information
-                </h3>
+            {/* Section: Ownership Information */}
+            <div className="space-y-2 mb-5">
+              <h3 className="text-md font-semibold ">Ownership Information</h3>
+              <div className="border bg-slate-50 rounded-md p-4">
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label htmlFor="ownershipType" className={`text-sm `}>
@@ -276,7 +286,7 @@ export default function CreateEquipmentModal({
                       }
                       value={formData.ownershipType}
                     >
-                      <SelectTrigger className="text-xs">
+                      <SelectTrigger className="text-xs bg-white">
                         <SelectValue placeholder="Select Ownership Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -301,7 +311,7 @@ export default function CreateEquipmentModal({
                           : ""
                       }
                       onChange={handleInputChange}
-                      className="w-full text-xs"
+                      className="w-full text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -315,7 +325,7 @@ export default function CreateEquipmentModal({
                         handleSelectChange("acquiredCondition", value)
                       }
                     >
-                      <SelectTrigger className="text-xs">
+                      <SelectTrigger className="text-xs bg-white">
                         <SelectValue placeholder="Select Condition" />
                       </SelectTrigger>
                       <SelectContent>
@@ -326,12 +336,14 @@ export default function CreateEquipmentModal({
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Section: Vehicle/Equipment Specifications */}
-              <div className="border rounded-md p-4">
-                <h3 className="text-md font-semibold mb-3 border-b pb-2">
-                  Equipment Specifications
-                </h3>
+            {/* Section: Vehicle/Equipment Specifications */}
+            <div className="space-y-2 mb-5">
+              <h3 className="text-md font-semibold ">
+                Equipment Specifications
+              </h3>
+              <div className="border bg-slate-50 rounded-md p-4">
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label htmlFor="make" className={`text-sm font-medium `}>
@@ -343,7 +355,7 @@ export default function CreateEquipmentModal({
                       value={formData.make || ""}
                       onChange={handleInputChange}
                       placeholder="Make"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -356,7 +368,7 @@ export default function CreateEquipmentModal({
                       value={formData.model || ""}
                       onChange={handleInputChange}
                       placeholder="Model"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -372,7 +384,7 @@ export default function CreateEquipmentModal({
                       value={formData.year || ""}
                       onChange={handleInputChange}
                       placeholder="YYYY"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -385,7 +397,7 @@ export default function CreateEquipmentModal({
                       value={formData.color || ""}
                       onChange={handleInputChange}
                       placeholder="Color"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -401,17 +413,17 @@ export default function CreateEquipmentModal({
                       value={formData.serialNumber || ""}
                       onChange={handleInputChange}
                       placeholder="Serial Number"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Section: License Information */}
-              <div className="border rounded-md p-4">
-                <h3 className="text-md font-semibold mb-3 border-b pb-2">
-                  License Information
-                </h3>
+            {/* Section: License Information */}
+            <div className="space-y-2 mb-5">
+              <h3 className="text-md font-semibold ">License Information</h3>
+              <div className="border rounded-md bg-slate-50 p-4">
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label
@@ -426,7 +438,7 @@ export default function CreateEquipmentModal({
                       value={formData.licensePlate || ""}
                       onChange={handleInputChange}
                       placeholder="Enter License Number"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div>
@@ -444,7 +456,7 @@ export default function CreateEquipmentModal({
                         handleSelectChange("licenseState", value)
                       }
                     >
-                      <SelectTrigger className="text-xs">
+                      <SelectTrigger className="text-xs bg-white">
                         <SelectValue placeholder="Select State" />
                       </SelectTrigger>
                       <SelectContent>
@@ -458,12 +470,12 @@ export default function CreateEquipmentModal({
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Section: Weight Information */}
-              <div className="border rounded-md p-4">
-                <h3 className="text-md font-semibold mb-3 border-b pb-2">
-                  Weight Information
-                </h3>
+            {/* Section: Weight Information */}
+            <div className="space-y-2 mb-5">
+              <h3 className="text-md font-semibold">Weight Information</h3>
+              <div className="bg-slate-50 border rounded-md p-4">
                 <div className="flex flex-col gap-3">
                   <div>
                     <Label htmlFor="currentWeight" className={`text-sm `}>
@@ -479,7 +491,7 @@ export default function CreateEquipmentModal({
                           : formData.currentWeight
                       }
                       placeholder="0"
-                      className="text-xs"
+                      className="text-xs bg-white"
                     />
                   </div>
                   <div className="flex items-center gap-2">
@@ -500,29 +512,34 @@ export default function CreateEquipmentModal({
                 </div>
               </div>
             </div>
+
+            {/* Section: Safety Documents */}
+            <div className="w-full flex flex-col p-1 mt-3">
+              <p className="text-base font-medium">
+                Safety Documents and Policies
+              </p>
+              <p className="text-sm text-slate-500">Coming Soon!</p>
+            </div>
           </div>
         </div>
-        <div className="w-full flex flex-col p-1 mt-3">
-          <p className="text-base font-medium">Safety Documents and Policies</p>
-          <p className="text-sm text-slate-500">Coming Soon!</p>
-        </div>
 
-        <div className="flex flex-row justify-end gap-2 w-full">
+        <div className="w-full flex flex-row justify-end gap-3 pt-4 mt-2 border-t border-gray-100">
           <Button
             variant="outline"
-            className="bg-emerald-400 text-white"
+            size={"sm"}
+            className="bg-gray-100 text-gray-800 hover:bg-gray-50 hover:text-gray-800"
+            onClick={cancel}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="outline"
+            size={"sm"}
+            className={`bg-sky-500 text-white hover:bg-sky-400 hover:text-white`}
             onClick={handleCreateEquipment}
             disabled={submitting}
           >
-            {submitting ? "Creating..." : "Create Equipment"}
-          </Button>
-
-          <Button
-            variant="outline"
-            onClick={cancel}
-            className="bg-red-400 text-white "
-          >
-            Cancel
+            {submitting ? "Creating..." : "Create & Approve"}
           </Button>
         </div>
       </div>

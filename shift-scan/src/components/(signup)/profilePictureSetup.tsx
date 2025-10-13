@@ -82,31 +82,37 @@ export default function ProfilePictureSetup({
   };
 
   return (
-    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+    <div className="h-dvh w-full flex flex-col">
+      {/*Header - fixed at top*/}
+      <div className="w-full h-[10%] flex flex-col justify-end py-3">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("AddProfilePicture")}
         </Texts>
       </div>
-      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full  gap-4">
+      <div className="bg-white w-full h-[40px] border border-slate-200 flex flex-col justify-center gap-1">
+        <div className="w-[95%] max-w-[600px] mx-auto">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
-
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar bg-white ">
+        <div className="max-w-[600px] w-[95%] p-4 px-2 flex flex-col mx-auto gap-4">
           <div className=" h-full max-h-[50vh] flex flex-col items-center">
             <CameraComponent setImageBlob={setImageBlob} />
           </div>
-          <div className="flex flex-col mb-4">
-            <Button
-              className="bg-app-dark-blue"
-              onClick={handleSubmitImage}
-              disabled={isSubmitting}
-            >
-              <p className="text-white font-semibold text-base">
-                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-              </p>
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
+        <Button
+          className={
+            imageBlob ? "bg-app-dark-blue w-full" : "bg-gray-300 w-full"
+          }
+          onClick={handleSubmitImage}
+          disabled={isSubmitting}
+        >
+          <p className="text-white  font-semibold text-base">
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </p>
+        </Button>
       </div>
     </div>
   );

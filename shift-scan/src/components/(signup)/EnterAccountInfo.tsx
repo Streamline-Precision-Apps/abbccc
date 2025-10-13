@@ -128,18 +128,24 @@ export const EnterAccountInfo = ({
     handleNextStep();
   };
   return (
-    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+    <div className="h-dvh w-full flex flex-col">
+      {/*Header - fixed at top*/}
+      <div className="w-full h-[10%] flex flex-col justify-end py-3">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("ItsTimeToSetUpYourAccount")}
         </Texts>
-        <Texts text={"white"} className="justify-end" size={"md"}>
+        <Texts text={"white"} className="justify-end" size={"sm"}>
           {userName}
         </Texts>
       </div>
-      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full gap-4">
+      <div className="bg-white w-full h-[40px] border border-slate-200 flex flex-col justify-center gap-1">
+        <div className="w-[95%] max-w-[600px] mx-auto">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+      </div>
+      {/*Middle - scrollable content*/}
+      <div className="flex-1 overflow-y-auto no-scrollbar bg-white pb-[200px]">
+        <div className="max-w-[600px] w-[95%] p-4 px-2 flex flex-col mx-auto gap-4">
           <div>
             <Label>{t("LanguagePreference")}</Label>
             <Select value={form.language} onValueChange={handleLanguageChange}>
@@ -191,8 +197,8 @@ export const EnterAccountInfo = ({
                 touched.email && !emailValid && form.email
                   ? "border-red-500 bg-red-50"
                   : touched.email && emailValid
-                  ? "border-green-500 bg-green-50"
-                  : "border-zinc-300"
+                    ? "border-green-500 bg-green-50"
+                    : "border-zinc-300"
               }`}
               value={form.email}
               onChange={handleChange("email")}
@@ -218,8 +224,8 @@ export const EnterAccountInfo = ({
                 touched.phoneNumber && !phoneValid && form.phoneNumber
                   ? "border-red-500 bg-red-50"
                   : touched.phoneNumber && phoneValid
-                  ? "border-green-500 bg-green-50"
-                  : "border-zinc-300"
+                    ? "border-green-500 bg-green-50"
+                    : "border-zinc-300"
               }`}
               value={formatPhone(form.phoneNumber)}
               onChange={handleChange("phoneNumber")}
@@ -263,8 +269,8 @@ export const EnterAccountInfo = ({
                 form.emergencyContactPhone
                   ? "border-red-500 bg-red-50"
                   : touched.emergencyContactPhone && emergencyPhoneValid
-                  ? "border-green-500 bg-green-50"
-                  : "border-zinc-300"
+                    ? "border-green-500 bg-green-50"
+                    : "border-zinc-300"
               }`}
               value={formatPhone(form.emergencyContactPhone)}
               onChange={handleChange("emergencyContactPhone")}
@@ -293,12 +299,17 @@ export const EnterAccountInfo = ({
                 </span>
               )}
           </div>
-          <div className="flex flex-col mb-4">
-            <Button className="bg-app-dark-blue" onClick={handleSubmit}>
-              <p className="text-white font-semibold text-base">{t("Next")}</p>
-            </Button>
-          </div>
         </div>
+      </div>
+
+      {/*Footer - fixed at bottom*/}
+      <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
+        <Button
+          className={`${!emailValid || !phoneValid || !emergencyPhoneValid ? "bg-gray-300 w-full" : "bg-app-dark-blue w-full"}`}
+          onClick={handleSubmit}
+        >
+          <p className="text-white font-semibold text-base">{t("Next")}</p>
+        </Button>
       </div>
     </div>
   );
