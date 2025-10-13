@@ -22,7 +22,7 @@ import {
 import { PageHeaderContainer } from "../_pages/PageHeaderContainer";
 import { FooterPagination } from "../_pages/FooterPagination";
 import { EquipmentDataTable } from "./_components/ViewAll/EquipmentDataTable";
-import FilterPopover from "./_components/FilterPopover";
+import EquipmentFilters from "./_components/ViewAll/EquipmentFilter";
 
 export default function EquipmentPage() {
   const {
@@ -49,11 +49,15 @@ export default function EquipmentPage() {
     confirmDelete,
     openHandleQr,
     cancelDelete,
-    filteredEquipment,
+    equipmentDetails,
     searchTerm,
     setSearchTerm,
+    filters,
+    handleClearFilters,
     setFilters,
     setUseFilters,
+    open,
+    setOpen,
   } = useEquipmentData();
 
   return (
@@ -75,9 +79,14 @@ export default function EquipmentPage() {
             textSize="xs"
             imageSize="10"
           />
-          <FilterPopover 
-            onFilterChange={setFilters} 
+          <EquipmentFilters
+            onFilterChange={setFilters}
             onUseFiltersChange={setUseFilters}
+            filters={filters}
+            setFilters={setFilters}
+            handleClearFilters={handleClearFilters}
+            open={open}
+            setOpen={setOpen}
           />
         </div>
 
@@ -135,7 +144,7 @@ export default function EquipmentPage() {
         )}
         <div className="h-full w-full overflow-auto pb-10 border border-slate-200 rounded-t-lg">
           <EquipmentDataTable
-            data={filteredEquipment}
+            data={equipmentDetails}
             loading={loading}
             page={page}
             totalPages={totalPages}

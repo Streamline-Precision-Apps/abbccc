@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 
 import { auth } from "@/auth";
 import {
+  ApprovalStatus,
   Condition,
   EquipmentState,
   EquipmentTags,
@@ -89,6 +90,7 @@ export async function GET(req: Request) {
           ownershipType?: { in: OwnershipType[] };
           acquiredCondition?: { in: Condition[] };
           state?: { in: EquipmentState[] };
+          approvalStatus?: { in: ApprovalStatus[] };
         };
 
         // Construct where clause based on filters

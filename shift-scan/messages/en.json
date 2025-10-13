@@ -1373,6 +1373,7 @@
   },
 
   "MechanicWidget": {
+    "NoDescription": "No Description",
     "DeleteProjectPrompt": "Are you sure you want to delete this log?",
     "AddDelay": "Add Delay",
     "RemoveDelay": "Remove Delay",

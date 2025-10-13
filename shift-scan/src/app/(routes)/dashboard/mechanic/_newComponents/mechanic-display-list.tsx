@@ -358,7 +358,6 @@ export function MechanicDisplayList() {
                     step="0.1"
                     value={form.hours}
                     onChange={handleFormChange}
-                    required
                     placeholder={t("EnterHoursWorked")}
                   />
                 </div>
@@ -369,7 +368,6 @@ export function MechanicDisplayList() {
                     name="description"
                     value={form.description}
                     onChange={handleFormChange}
-                    required
                     placeholder={t("DescribeRepair")}
                   />
                 </div>
@@ -527,14 +525,20 @@ export function MechanicDisplayList() {
                         onSwipeLeft={() => confirmDelete(project.id)}
                         confirmationMessage={t("DeleteProjectPrompt")}
                       >
-                        <div className="pb-2 pl-4 pt-1 pr-1 rounded-lg border border-gray-200 bg-white shadow-sm flex flex-col gap-1">
+                        <div className="pb-2 pl-2 pt-1 pr-1 rounded-lg border border-gray-200 bg-white shadow-sm flex flex-col gap-1">
                           <div className="flex justify-between items-end">
-                            <div className="font-semibold text-md text-green-700 truncate max-w-[200px]">
-                              {project.Equipment?.name || t("UnnamedEquipment")}
+                            <div className="flex flex-col">
+                              <div className="text-xs text-gray-400">
+                                {t("Hours")}: {project.hours ?? t("NotSet")}
+                              </div>
+                              <div className="font-semibold text-md text-green-700 truncate max-w-[200px]">
+                                {project.Equipment?.name ||
+                                  t("UnnamedEquipment")}
+                              </div>
                             </div>
                             <button
                               type="button"
-                              className={`text-xs ${loadingProjectId === project.id ? "bg-gray-100 text-gray-400" : "text-blue-600 bg-blue-50 hover:bg-blue-100"} px-2 py-1 rounded w-8 h-8 justify-center flex items-center`}
+                              className={`text-xs ${loadingProjectId === project.id ? "bg-gray-100 text-gray-400" : "text-blue-600 bg-blue-50 hover:bg-blue-100"} px-2 py-1 rounded w-14 h-10 justify-center flex items-center`}
                               onClick={() => handleEditProject(project.id)}
                               disabled={loadingProjectId === project.id}
                             >
@@ -549,11 +553,9 @@ export function MechanicDisplayList() {
                               )}
                             </button>
                           </div>
+
                           <div className="text-gray-600 text-xs">
                             {project.description || t("NoDescription")}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {t("Hours")}: {project.hours ?? t("NotSet")}
                           </div>
                         </div>
                       </SlidingDiv>

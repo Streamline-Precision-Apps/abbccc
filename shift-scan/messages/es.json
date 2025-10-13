@@ -1360,6 +1360,7 @@
     "ClickToAdd": "Haga clic en el + para añadir uno!"
   },
   "MechanicWidget": {
+    "NoDescription": "Sin descripción",
     "DeleteProjectPrompt": "¿Está seguro de que desea eliminar este registro?",
     "AddDelay": "Agregar retraso",
     "RemoveDelay": "Eliminar retraso",

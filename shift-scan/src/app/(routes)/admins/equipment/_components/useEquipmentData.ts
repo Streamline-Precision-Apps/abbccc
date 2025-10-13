@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
 import { deleteEquipment } from "@/actions/AssetActions";
-import { FilterOptions } from "./FilterPopover";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { FilterOptions } from "./ViewAll/EquipmentFilter";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -78,6 +78,7 @@ export const useEquipmentData = () => {
     conditions: [],
     statuses: [],
   });
+  const [open, setOpen] = useState(false);
 
   //Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
@@ -97,15 +98,14 @@ export const useEquipmentData = () => {
           // If searching, get all equipment in one page (no pagination)
           url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
         } else if (useFilters) {
+          // Only use filters when useFilters is true (set by Apply Filters button)
           url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
         } else {
           url = `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`;
         }
         const response = await fetch(url);
         const data = await response.json();
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status}`);
-        }
+
         setEquipmentDetails(data.equipment);
         setTotal(data.total);
         setTotalPages(data.totalPages);
@@ -122,6 +122,8 @@ export const useEquipmentData = () => {
     page,
     pageSize,
     showPendingOnly,
+    // Now data will only re-fetch when useFilters is toggled by the Apply button
+    // and not on every filter change
     useFilters,
     searchBarActive,
   ]);
@@ -152,6 +154,20 @@ export const useEquipmentData = () => {
       refresh();
       rerender();
     }
+  };
+
+  const handleClearFilters = async () => {
+    const emptyFilters: FilterOptions = {
+      equipmentTags: [],
+      ownershipTypes: [],
+      conditions: [],
+      statuses: [],
+    };
+    setFilters(emptyFilters);
+    // Immediately update to not use filters
+    setUseFilters(false);
+    // Force refresh data without filters
+    rerender();
   };
 
   useEffect(() => {
@@ -263,47 +279,6 @@ export const useEquipmentData = () => {
     setPendingDeleteId(null);
   };
 
-  // Filter equipment by name, make, or model, and by approval status if showPendingOnly is active
-  const filteredEquipment = equipmentDetails.filter((item) => {
-    // Text search filter
-    const term = searchTerm.trim().toLowerCase();
-    const matchesSearch =
-      !term ||
-      item.name.toLowerCase().includes(term) ||
-      (item.code?.toLowerCase().includes(term) ?? false);
-
-    if (!matchesSearch) return false;
-
-    // Equipment tag filter
-    const matchesTag =
-      filters.equipmentTags.length === 0 ||
-      filters.equipmentTags.includes(item.equipmentTag);
-
-    if (!matchesTag) return false;
-
-    // Ownership type filter
-    const matchesOwnership =
-      filters.ownershipTypes.length === 0 ||
-      (item.ownershipType &&
-        filters.ownershipTypes.includes(item.ownershipType));
-
-    if (!matchesOwnership) return false;
-
-    // Condition filter
-    const matchesCondition =
-      filters.conditions.length === 0 ||
-      (item.acquiredCondition &&
-        filters.conditions.includes(item.acquiredCondition));
-
-    if (!matchesCondition) return false;
-
-    // Status filter
-    const matchesStatus =
-      filters.statuses.length === 0 || filters.statuses.includes(item.state);
-
-    return matchesStatus;
-  });
-
   return {
     setEquipmentDetails,
     loading,
@@ -330,11 +305,14 @@ export const useEquipmentData = () => {
     confirmDelete,
     openHandleQr,
     cancelDelete,
-    filteredEquipment,
+    equipmentDetails,
     searchTerm,
     setSearchTerm,
+    handleClearFilters,
     filters,
     setFilters,
     setUseFilters,
+    open,
+    setOpen,
   };
 };
