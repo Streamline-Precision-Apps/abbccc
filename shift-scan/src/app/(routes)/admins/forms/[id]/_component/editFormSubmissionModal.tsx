@@ -697,7 +697,7 @@ export default function EditFormSubmissionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] overflow-y-auto no-scrollbar px-6 py-4 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] px-6 py-4 flex flex-col items-center">
         <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
           <Button
             type="button"
@@ -722,7 +722,8 @@ export default function EditFormSubmissionModal({
             </span>
           </div>
         </div>
-        <div className="flex-1 w-full pb-10 overflow-y-auto no-scrollbar">
+
+        <div className="flex-1 w-full px-2 pb-10 overflow-y-auto no-scrollbar">
           {/* Show approval information if available */}
           {formTemplate?.isApprovalRequired && (
             <>
