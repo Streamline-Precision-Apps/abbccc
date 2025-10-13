@@ -41,7 +41,7 @@ export const ProgressBar = ({
   }, [safeStep, progressAnimated]);
 
   return (
-    <div className="my-6 flex flex-col items-center w-full">
+    <div className="py-1 flex flex-col items-center w-full">
       <div className="relative flex w-full max-w-xl items-center justify-between">
         {/* Gray base line */}
         <div
@@ -58,8 +58,8 @@ export const ProgressBar = ({
                 safeStep === totalSteps
                   ? "100%"
                   : totalSteps > 1
-                  ? `calc(${(progress / (totalSteps - 1)) * 100}% )`
-                  : "0%",
+                    ? `calc(${(progress / (totalSteps - 1)) * 100}% )`
+                    : "0%",
               transform: "translateY(-50%)",
               right: "auto",
             }}
@@ -83,10 +83,10 @@ export const ProgressBar = ({
                   isFinalChecked
                     ? "bg-[#1E7D2C] border-green-600 text-white"
                     : isActive
-                    ? "bg-white border-green-600 text-green-600"
-                    : isCompleted
-                    ? "bg-[#1E7D2C] border-green-600 text-white"
-                    : "bg-white border-gray-300 text-gray-400"
+                      ? "bg-white border-green-600 text-green-600"
+                      : isCompleted
+                        ? "bg-[#1E7D2C] border-green-600 text-white"
+                        : "bg-white border-gray-300 text-gray-400"
                 }`}
                 aria-current={isActive ? "step" : undefined}
               >

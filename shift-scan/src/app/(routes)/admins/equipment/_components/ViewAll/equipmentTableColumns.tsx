@@ -30,22 +30,12 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
           <div className="text-sm flex-1">
             <div className="w-full h-full flex flex-col">
               <div className="flex flex-row gap-2 items-center">
-                <div className="flex flex-row gap-2 items-center">
-                  <p className="text-left text-sm">
+                <div className="w-fit min-w-[200px]">
+                  <p className="text-left text-sm pr-2">
                     {highlight(equipment.name || "", searchTerm)}
                   </p>
-                  {/* <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
-                    <div
-                      className={`text-xs text-center min-w-[50px] ${equipment.code ? "" : "italic text-red-400"}`}
-                    >
-                      {highlight(
-                        equipment.code || "Pending Registration",
-                        searchTerm,
-                      )}
-                    </div>
-                  </span> */}
                 </div>
-                <div className="flex flex-row gap-2 items-center">
+                <div className="w-fit flex flex-row gap-2 items-center">
                   {/* Approval Status Badge */}
                   {approvalStatus === "APPROVED" ? null : approvalStatus ===
                     "PENDING" ? (
@@ -128,32 +118,12 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                   </span>
                 </div>
               </div>
-
-              {/* <p className="truncate max-w-[750px] text-xs text-left text-gray-400 italic">
-                {equipment.description || "No description provided."}
-              </p> */}
             </div>
           </div>
         </div>
       );
     },
   },
-  // {
-  //   accessorKey: "code",
-  //   header: "ID",
-  //   cell: ({ row, table }) => {
-  //     const equipment = row.original;
-  //     // Get searchTerm from table options (passed as meta)
-  //     const searchTerm = table.options.meta?.searchTerm || "";
-  //     return (
-  //       <div
-  //         className={`text-xs text-center min-w-[50px] ${equipment.code ? "" : "italic text-red-400"}`}
-  //       >
-  //         {highlight(equipment.code || "Pending Registration", searchTerm)}
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "memo",
     header: "Memo",

@@ -65,53 +65,65 @@ model DocumentTag {
 }
 
 model Equipment {
-  id                String         @id @default(uuid())
-  qrId              String         @unique
-  code              String?
-  name              String
-  description       String?
-  memo              String?
-  ownershipType     OwnershipType?
-  make              String?
-  model             String?
-  year              String?
-  color             String?
-  serialNumber      String?
-  acquiredDate      DateTime?
-  acquiredCondition Condition?
-  licensePlate      String?
-  licenseState      String?
-
-  // not used in excel
+  id                     String                 @id @default(uuid())
+  qrId                   String                 @unique
+  name                   String
+  description            String?
+  creationReason         String?
+  equipmentTag           EquipmentTags          @default(EQUIPMENT)
+  state                  EquipmentState         @default(AVAILABLE)
+  isDisabledByAdmin      Boolean                @default(false)
+  approvalStatus         ApprovalStatus         @default(PENDING)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  overWeight             Boolean?               @default(false)
+  currentWeight          Float?                 @default(0)
+  createdById            String?
+  createdVia             CreatedVia             @default(MOBILE)
+  acquiredDate           DateTime?
+  code                   String?
+  color                  String?
+  licensePlate           String?
+  licenseState           String?
+  make                   String?
+  memo                   String?
+  model                  String?
+  ownershipType          OwnershipType?
   registrationExpiration DateTime?
-  equipmentTag           EquipmentTags @default(EQUIPMENT)
-
-  //used in app
-  overWeight        Boolean?       @default(false)
-  currentWeight     Float?         @default(0)
-  state             EquipmentState @default(AVAILABLE)
-  isDisabledByAdmin Boolean        @default(false)
-  creationReason    String?
-  approvalStatus    ApprovalStatus @default(PENDING)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  createdVia        CreatedVia     @default(MOBILE)
-  createdById       String?
-
-  createdBy             User?                  @relation(fields: [createdById], references: [id])
-  EmployeeEquipmentLogs EmployeeEquipmentLog[]
-  EquipmentHauled       EquipmentHauled[]
-  Maintenances          Maintenance[]
-  TascoLogs             TascoLog[]
-  HauledInLogs          TruckingLog[]          @relation("HauledEquipment")
-  UsedAsTrailer         TruckingLog[]          @relation("TrailerEquipment")
-  UsedAsTruck           TruckingLog[]          @relation("TruckEquipment")
-  DocumentTags          DocumentTag[]          @relation("DocumentTagToEquipment")
-  Maintenance           mechanicProjects[]
+  serialNumber           String?
+  year                   String?
+  acquiredCondition      Condition?
+  EmployeeEquipmentLogs  EmployeeEquipmentLog[]
+  createdBy              User?                  @relation(fields: [createdById], references: [id])
+  EquipmentHauled        EquipmentHauled[]
+  Maintenances           Maintenance[]
+  TascoLogs              TascoLog[]
+  HauledInLogs           TruckingLog[]          @relation("HauledEquipment")
+  UsedAsTrailer          TruckingLog[]          @relation("TrailerEquipment")
+  UsedAsTruck            TruckingLog[]          @relation("TruckEquipment")
+  Maintenance            mechanicProjects[]
+  DocumentTags           DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])
   @@index([state, isDisabledByAdmin])
   @@index([approvalStatus])
+}
+
+model EmployeeEquipmentLog {
+  id            String       @id @default(uuid())
+  equipmentId   String?
+  maintenanceId String?
+  startTime     DateTime     @default(now())
+  endTime       DateTime?
+  comment       String?
+  timeSheetId   Int
+  rental        Boolean      @default(false)
+  Equipment     Equipment?   @relation(fields: [equipmentId], references: [id])
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
+  TimeSheet     TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  RefuelLog     RefuelLog?
+
+  @@index([timeSheetId, equipmentId, maintenanceId])
 }
 
 enum Condition {
@@ -140,25 +152,6 @@ enum OwnershipType {
   RENTAL
 }
 
-// purpose is to show all employee interactions with the equipment
-model EmployeeEquipmentLog {
-  id            String    @id @default(uuid())
-  timeSheetId   Int
-  equipmentId   String?
-  maintenanceId String?
-  startTime     DateTime  @default(now())
-  endTime       DateTime?
-  comment       String?
-  rental        Boolean   @default(false) // 
-
-  Equipment   Equipment?   @relation(fields: [equipmentId], references: [id])
-  Maintenance Maintenance? @relation(fields: [maintenanceId], references: [id], onDelete: Cascade)
-  TimeSheet   TimeSheet    @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
-  RefuelLog   RefuelLog?
-
-  @@index([timeSheetId, equipmentId, maintenanceId])
-}
-
 model FormTemplate {
   id                  String               @id @default(uuid())
   companyId           String
@@ -166,10 +159,10 @@ model FormTemplate {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   isSignatureRequired Boolean              @default(false)
-  isApprovalRequired  Boolean              @default(false) // adding this to field to indicate approval not necessary for form template
   description         String?
   isActive            FormTemplateStatus   @default(DRAFT)
   formType            FormTemplateCategory @default(GENERAL)
+  isApprovalRequired  Boolean              @default(false)
   Submissions         FormSubmission[]
   Company             Company              @relation(fields: [companyId], references: [id])
   FormGrouping        FormGrouping[]       @relation("FormGroupingToFormTemplate")
@@ -208,7 +201,6 @@ model FormFieldOption {
 }
 
 model FormSubmission {
-  id             Int            @id @default(autoincrement())
   title          String?
   formTemplateId String
   userId         String
@@ -218,6 +210,7 @@ model FormSubmission {
   updatedAt      DateTime       @updatedAt
   submittedAt    DateTime?
   status         FormStatus     @default(DRAFT)
+  id             Int            @id @default(autoincrement())
   Approvals      FormApproval[]
   FormTemplate   FormTemplate   @relation(fields: [formTemplateId], references: [id], onDelete: Cascade)
   User           User           @relation(fields: [userId], references: [id])
@@ -225,12 +218,12 @@ model FormSubmission {
 
 model FormApproval {
   id               String         @id @default(uuid())
-  formSubmissionId Int
   signedBy         String?
   submittedAt      DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   signature        String?
   comment          String?
+  formSubmissionId Int
   FormSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   Approver         User?          @relation(fields: [signedBy], references: [id])
 }
@@ -263,7 +256,6 @@ model Jobsite {
 }
 
 model Report {
-  id          Int              @id
   name        String           @unique
   description String
   companyId   String
@@ -273,13 +265,13 @@ model Report {
   parameters  Json?
   visibility  ReportVisibility @default(PRIVATE)
   tags        String[]
+  id          Int              @id
   Company     Company          @relation(fields: [companyId], references: [id])
   ReportRuns  ReportRun[]
 }
 
 model ReportRun {
   id             String       @id @default(uuid())
-  reportId       Int
   runAt          DateTime     @default(now())
   status         ReportStatus
   results        Json?
@@ -289,11 +281,11 @@ model ReportRun {
   customParams   Json?
   exportFormats  String[]
   lastExportedAt DateTime?
+  reportId       Int
   Report         Report       @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
 
 model TimeSheet {
-  id                    Int                    @id @default(autoincrement())
   date                  DateTime
   userId                String
   jobsiteId             String
@@ -319,36 +311,36 @@ model TimeSheet {
   withinFenceIn         Boolean?
   withinFenceOut        Boolean?
   wasInjured            Boolean?               @default(false)
+  id                    Int                    @id @default(autoincrement())
   EmployeeEquipmentLogs EmployeeEquipmentLog[]
   MaintenanceLogs       MaintenanceLog[]
-  Maintenance           mechanicProjects[]
   TascoLogs             TascoLog[]
   CostCode              CostCode               @relation(fields: [costcode], references: [name])
   Jobsite               Jobsite                @relation(fields: [jobsiteId], references: [id])
   User                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ChangeLogs            TimeSheetChangeLog[]
   TruckingLogs          TruckingLog[]
-  ChangeLogs            TimeSheetChangeLog[] // Add relation to change logs
+  Maintenance           mechanicProjects[]
 }
 
-// new prosed model
 model mechanicProjects {
   id          Int       @id @default(autoincrement())
   timeSheetId Int
   hours       Float?
   equipmentId String
-  description String? // full notes
-  TimeSheet   TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  description String?
   Equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  TimeSheet   TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 }
 
 model MaintenanceLog {
   id            String      @id @default(uuid())
-  timeSheetId   Int
   userId        String
   maintenanceId String
   startTime     DateTime
   endTime       DateTime?
   comment       String?
+  timeSheetId   Int
   Maintenance   Maintenance @relation(fields: [maintenanceId], references: [id])
   TimeSheet     TimeSheet   @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
   User          User        @relation(fields: [userId], references: [id])
@@ -379,13 +371,13 @@ model Maintenance {
 
 model TascoLog {
   id                 String              @id @default(uuid())
-  timeSheetId        Int
   shiftType          String
   equipmentId        String?
   laborType          String?
   materialType       String?
   LoadQuantity       Int                 @default(0)
   screenType         LoadType?
+  timeSheetId        Int
   RefuelLogs         RefuelLog[]
   Equipment          Equipment?          @relation(fields: [equipmentId], references: [id])
   TascoMaterialTypes TascoMaterialTypes? @relation(fields: [materialType], references: [name], onDelete: Cascade)
@@ -400,7 +392,6 @@ model TascoMaterialTypes {
 
 model TruckingLog {
   id              String            @id @default(uuid())
-  timeSheetId     Int
   laborType       String
   taskName        String?
   equipmentId     String?
@@ -409,6 +400,7 @@ model TruckingLog {
   truckLaborLogId String?
   trailerNumber   String?
   truckNumber     String?
+  timeSheetId     Int
   EquipmentHauled EquipmentHauled[]
   Materials       Material[]
   RefuelLogs      RefuelLog[]
@@ -465,28 +457,26 @@ model EquipmentHauled {
   TruckingLog   TruckingLog? @relation(fields: [truckingLogId], references: [id], onDelete: Cascade)
 }
 
-enum materialUnit {
-  TONS
-  YARDS
-}
-
-// New model for tracking TimeSheet changes
 model TimeSheetChangeLog {
   id              String    @id @default(uuid())
   timeSheetId     Int
-  changedBy       String // User ID who made the change
+  changedBy       String
   changedAt       DateTime  @default(now())
-  changes         Json // JSON object containing all changes: {fieldName1: {old: value, new: value}, fieldName2: {old: value, new: value}}
-  changeReason    String? // Optional reason for the change
-  wasStatusChange Boolean   @default(false) // Flag to indicate if the change was related to status
-  numberOfChanges Int       @default(0) // Number of fields changed
-  // Relations
-  TimeSheet       TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
+  changeReason    String?
+  changes         Json
+  wasStatusChange Boolean   @default(false)
+  numberOfChanges Int       @default(0)
   User            User      @relation("ChangedByUser", fields: [changedBy], references: [id])
+  TimeSheet       TimeSheet @relation(fields: [timeSheetId], references: [id], onDelete: Cascade)
 
   @@index([timeSheetId])
   @@index([changedBy])
   @@index([changedAt])
+}
+
+enum materialUnit {
+  TONS
+  YARDS
 }
 
 model User {
@@ -503,7 +493,7 @@ model User {
   laborView            Boolean
   mechanicView         Boolean
   permission           Permission             @default(USER)
-  image                String? //change this to url of image 
+  image                String?
   startDate            DateTime?              @default(now())
   terminationDate      DateTime?
   accountSetup         Boolean                @default(false)
@@ -513,24 +503,24 @@ model User {
   workTypeId           String?
   middleName           String?
   secondLastName       String?
-  lastSeen             DateTime? // user Activity for notifications
+  lastSeen             DateTime?
   accountSetupToken    AccountSetupToken?
   Contact              Contacts?
   Equipment            Equipment[]
+  FCMToken             FCMToken[]
   FormApprovals        FormApproval[]
   FormSubmissions      FormSubmission[]
   Jobsite              Jobsite[]
   MaintenanceLogs      MaintenanceLog[]
+  NotificationRead     NotificationRead[]
+  NotificationResponse NotificationResponse[]
   PasswordResetTokens  PasswordResetToken[]
   TimeSheets           TimeSheet[]
   TimeSheetChanges     TimeSheetChangeLog[]   @relation("ChangedByUser")
+  topicSubscriptions   TopicSubscription[]
   Company              Company                @relation(fields: [companyId], references: [id])
   UserSettings         UserSettings?
   Crews                Crew[]                 @relation("CrewToUser")
-  topicSubscriptions   TopicSubscription[]
-  FCMToken             FCMToken[]
-  NotificationRead     NotificationRead[]
-  NotificationResponse NotificationResponse[]
 
   @@unique([firstName, lastName, username])
   @@index([email])
@@ -692,25 +682,18 @@ enum AssetType {
 }
 
 enum FormTemplateCategory {
-  GENERAL // remove
-  HR
+  GENERAL
+  MAINTENANCE
+  SAFETY
+  INSPECTION
+  INCIDENT
   FINANCE
+  OTHER
+  HR
   OPERATIONS
   COMPLIANCE
   CLIENTS
   IT
-  SAFETY
-  MAINTENANCE
-  INSPECTION
-  INCIDENT
-  OTHER
-  //  HR – hiring, onboarding, leave, evaluations
-  // Finance – payroll, reimbursements, invoices, taxes
-  // Operations – scheduling, approvals, workflows
-  // Compliance – policies, contracts, regulatory forms
-  // Clients – intake, feedback, orders, agreements
-  // IT – access requests, troubleshooting, equipment use
-  // Safety – incidents, inspections, maintenance
 }
 
 enum CreatedVia {
@@ -720,69 +703,65 @@ enum CreatedVia {
 
 model FCMToken {
   id         String    @id @default(cuid())
-  token      String    @unique // The FCM registration token provided by the client SDK
+  token      String    @unique
   userId     String
-  user       User      @relation(fields: [userId], references: [id])
-  platform   String? // Optional: "web", "android", "ios", "chrome_extension" etc.
-  lastUsedAt DateTime? // Optional: Track last time this token was active
-  isValid    Boolean   @default(true) // Set to false if FCM reports "NotRegistered"
+  platform   String?
+  lastUsedAt DateTime?
+  isValid    Boolean   @default(true)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id])
 
   @@index([userId])
-  @@index([token]) // Useful for quick invalidation lookups
+  @@index([token])
 }
 
 model TopicSubscription {
   id        String   @id @default(cuid())
+  topic     String
+  createdAt DateTime @default(now())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  topic     String // e.g., "timecardSubmissions"
-  createdAt DateTime @default(now())
 
   @@unique([userId, topic])
   @@index([topic])
 }
 
 model Notification {
-  id          Int      @id @default(autoincrement())
-  topic       String?
-  title       String
-  body        String?
-  url         String?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  referenceId String? // e.g., timecard ID or other entity reference
-
-  // push state: null = not pushed / not scheduled; timestamp when push was sent
+  topic        String?
+  title        String
+  body         String?
+  url          String?
+  metadata     Json?
+  createdAt    DateTime              @default(now())
   pushedAt     DateTime?
-  // if push failed attempts you can bump this
-  pushAttempts Int       @default(0)
-
-  readAt   DateTime?
-  Reads    NotificationRead[]
-  Response NotificationResponse?
+  pushAttempts Int                   @default(0)
+  readAt       DateTime?
+  id           Int                   @id @default(autoincrement())
+  referenceId  String?
+  Reads        NotificationRead[]
+  Response     NotificationResponse?
 
   @@index([topic, createdAt, referenceId])
 }
 
 model NotificationResponse {
   id             Int          @id @default(autoincrement())
-  notification   Notification @relation(fields: [notificationId], references: [id])
-  notificationId Int          @unique // Enforces one-to-one
-  user           User         @relation(fields: [userId], references: [id])
+  notificationId Int          @unique
   userId         String
   response       String?
   respondedAt    DateTime     @default(now())
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
 }
 
 model NotificationRead {
   id             Int          @id @default(autoincrement())
-  notification   Notification @relation(fields: [notificationId], references: [id])
   notificationId Int
-  user           User         @relation(fields: [userId], references: [id])
   userId         String
   readAt         DateTime     @default(now())
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
 
   @@unique([notificationId, userId])
 }

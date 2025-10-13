@@ -26,7 +26,7 @@ const ResetPassword = ({
   // Shared password scoring function (copied from changePassword)
   function getPasswordScore(password: string) {
     let score = 0;
-    if (password.length >= 8) score++; // Length
+    if (password.length >= 6) score++; // Length
     if (/[A-Z]/.test(password)) score++; // Uppercase letters
     if (/[a-z]/.test(password)) score++; // Lowercase letters
     if (/[0-9]/.test(password)) score++; // Number
@@ -80,18 +80,6 @@ const ResetPassword = ({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (newPassword.length === 0) {
-      setBannerMessage(t("NewPasswordEmptyError"));
-      setShowBanner(true);
-      return;
-    }
-
-    if (confirmPassword.length === 0) {
-      setBannerMessage(t("ConfirmPasswordEmptyError"));
-      setShowBanner(true);
-      return;
-    }
-
     if (newPassword !== confirmPassword) {
       setBannerMessage(t("PasswordMismatchError"));
       setShowBanner(true);
@@ -134,7 +122,7 @@ const ResetPassword = ({
     confirmPasswordValue: string,
   ) => {
     // Updated to match changePassword validation criteria
-    setEightChar(password.length >= 8);
+    setEightChar(password.length >= 6);
     setOneNumber(/\d/.test(password));
     setOneSymbol(/[!@#$%^&*(),.?":{}|<>]/.test(password));
     setOneCapital(/[A-Z]/.test(password));
@@ -190,15 +178,19 @@ const ResetPassword = ({
   }
 
   return (
-    <div className="w-full h-[100vh] overflow-y-auto flex flex-col gap-1">
-      <div className="w-full h-[10vh] flex flex-col justify-end gap-1 pb-4">
+    <div className="h-dvh w-full flex flex-col">
+      <div className="w-full h-[10%] flex flex-col justify-end py-3">
         <Texts text={"white"} className="justify-end" size={"sm"}>
           {t("ChoosePasswordTitle")}
         </Texts>
       </div>
-      <div className="h-[90vh] flex flex-col bg-white border border-zinc-300 p-4 overflow-y-auto no-scrollbar">
-        <div className="max-w-[600px] w-[95%] px-2 flex flex-col mx-auto h-full gap-4">
+      <div className="bg-white w-full h-[40px] border border-slate-200 flex flex-col justify-center gap-1">
+        <div className="w-[95%] max-w-[600px] mx-auto">
           <ProgressBar currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar bg-white pb-[200px]">
+        <div className="max-w-[600px] w-[95%] p-4 px-2 flex flex-col mx-auto gap-4">
           <form
             ref={useFormRef}
             onSubmit={handleSubmit}
@@ -288,7 +280,7 @@ const ResetPassword = ({
                   ) : (
                     <span aria-label="Too short">✗</span>
                   )}
-                  {t("LengthCriteriaLabel") || "At least 8 characters"}
+                  {t("LengthCriteriaLabel") || "At least 6 characters"}
                 </li>
               </ul>
 
@@ -332,19 +324,20 @@ const ResetPassword = ({
               </ul>
             </Holds>
           </form>
-
-          <div className="flex flex-col mb-4">
-            <Button
-              className={isPasswordValid ? "bg-app-dark-blue" : "bg-gray-400"}
-              onClick={handleSubmitPassword}
-              disabled={isSubmitting || !isPasswordValid}
-            >
-              <p className="text-white font-semibold text-base">
-                {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-              </p>
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
+        <Button
+          className={
+            isPasswordValid ? "bg-app-dark-blue w-full" : "w-full bg-gray-400"
+          }
+          onClick={handleSubmitPassword}
+          disabled={isSubmitting || !isPasswordValid}
+        >
+          <p className="text-white font-semibold text-base">
+            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+          </p>
+        </Button>
       </div>
     </div>
   );

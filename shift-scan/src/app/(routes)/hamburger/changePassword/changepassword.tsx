@@ -21,7 +21,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
   // Shared password scoring function
   function getPasswordScore(password: string) {
     let score = 0;
-    if (password.length >= 8) score++; // Length
+    if (password.length >= 6) score++; // Length
     if (/[A-Z]/.test(password)) score++; // Uppercase letters
     if (/[a-z]/.test(password)) score++; // Lowercase letters
     if (/[0-9]/.test(password)) score++; // Number
@@ -116,7 +116,7 @@ export default function ChangePassword({ userId }: { userId: string }) {
   };
 
   const handlePasswordChange = (password: string, confirmPassword: string) => {
-    setEightChar(password.length >= 8);
+    setEightChar(password.length >= 6);
     setOneNumber(/\d/.test(password));
     setOneSymbol(/[!@#$%^&*(),.?":{}|<>]/.test(password));
     setOneCapital(/[A-Z]/.test(password));

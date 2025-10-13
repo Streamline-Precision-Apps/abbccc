@@ -343,7 +343,8 @@ export async function createProject(formData: FormData) {
     const description = formData.get("description") as string;
     const timeSheetId = Number(formData.get("timecardId") as string);
 
-    if (!equipmentId || !hours || !description || !timeSheetId) {
+    // User Only needs to provide equipmentId and timeSheetId
+    if (!equipmentId || !timeSheetId) {
       throw new Error("All fields are required.");
     }
 
@@ -351,8 +352,8 @@ export async function createProject(formData: FormData) {
       data: {
         timeSheetId,
         equipmentId,
-        hours,
-        description,
+        hours: hours || 0,
+        description: description || "",
       },
     });
 
