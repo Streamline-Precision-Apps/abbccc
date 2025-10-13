@@ -28,6 +28,10 @@ import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 export default function JobsitePage() {
   const searchParams = useSearchParams();
   
+  // Check URL parameters before initializing the hook
+  const isPendingApproval = searchParams.get("isPendingApproval") === "true";
+  const notificationId = searchParams.get("notificationId");
+
   const {
     searchTerm,
     setSearchTerm,
@@ -55,25 +59,16 @@ export default function JobsitePage() {
     pendingCount,
     totalPages,
     paginatedJobsites,
-  } = useJobsiteData();
+  } = useJobsiteData(isPendingApproval); // Pass initial state to hook
 
-  // Check URL parameters on component mount
+  // Handle notification ID if present
   useEffect(() => {
-    const isPendingApproval = searchParams.get('isPendingApproval');
-    const notificationId = searchParams.get('notificationId');
-    
-    if (isPendingApproval === 'true') {
-      // Enable pending approval view
-      setShowPendingOnly(true);
-      
-      // If there's a notificationId, we could use it to highlight or scroll to a specific jobsite
-      if (notificationId) {
-        console.log('Notification ID:', notificationId);
-        // You can add additional logic here to handle the specific notification
-        // For example, scrolling to a specific jobsite or opening its edit modal
-      }
+    if (notificationId) {
+      console.log("Notification ID:", notificationId);
+      // You can add additional logic here to handle the specific notification
+      // For example, scrolling to a specific jobsite or opening its edit modal
     }
-  }, [searchParams, setShowPendingOnly]);
+  }, [notificationId]);
 
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">

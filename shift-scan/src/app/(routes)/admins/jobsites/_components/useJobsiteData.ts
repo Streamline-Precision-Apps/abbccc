@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { deleteJobsite } from "@/actions/AssetActions";
 import QRCode from "qrcode";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
-import { ApprovalStatus } from "../../../../../../prisma/generated/prisma/client";
+import { ApprovalStatus, FormTemplateStatus } from "../../../../../../prisma/generated/prisma/client";
 
 export type JobsiteSummary = {
   id: string;
@@ -12,7 +12,7 @@ export type JobsiteSummary = {
   name: string;
   qrId: string;
   description: string;
-  isActive: boolean;
+  status: FormTemplateStatus;
   approvalStatus: ApprovalStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -28,10 +28,10 @@ export type JobsiteSummary = {
 };
 
 export interface FilterOptions {
-  isActive: string[];
+  status: string[];
 }
 
-export const useJobsiteData = () => {
+export const useJobsiteData = (initialShowPendingOnly: boolean = false) => {
   const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [jobsiteDetails, setJobsiteDetails] = useState<JobsiteSummary[]>([]);
@@ -41,7 +41,7 @@ export const useJobsiteData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [showPendingOnly, setShowPendingOnly] = useState(initialShowPendingOnly);
   // State for modals
   const [editJobsiteModal, setEditJobsiteModal] = useState(false);
   const [createJobsiteModal, setCreateJobsiteModal] = useState(false);

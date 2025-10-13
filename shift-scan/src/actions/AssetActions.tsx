@@ -6,6 +6,7 @@ import {
   ApprovalStatus,
   CreatedVia,
   EquipmentState,
+  FormTemplateStatus,
 } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
@@ -281,7 +282,7 @@ export async function updateJobsite(formData: FormData) {
     const zipCode = formData.get("zipCode") as string;
     const country = formData.get("country") as string;
     const comment = formData.get("comment") as string;
-    const isActive = formData.get("isActive") === "true";
+    const status = formData.get("status") as FormTemplateStatus;
     const client = formData.get("client") as string;
     // CCTags are passed as a JSON string, not as multiple form fields
     const cCTagsString = formData.get("cCTags") as string;
@@ -360,7 +361,7 @@ export async function updateJobsite(formData: FormData) {
           description: description.trim(),
           // Removed country as it is not a valid field in the Prisma Jobsite model
           comment: comment?.trim() || null,
-          isActive: isActive,
+          status: status,
           updatedAt: new Date(),
           CCTags: {
             connect: tagsToConnect.length > 0 ? tagsToConnect : undefined,
@@ -423,8 +424,8 @@ export async function updateJobsiteAdmin(formData: FormData) {
         "approvalStatus",
       ) as ApprovalStatus;
     }
-    if (formData.has("isActive")) {
-      updateData.isActive = formData.get("isActive") === "true";
+    if (formData.has("status")) {
+      updateData.status = formData.get("status") as FormTemplateStatus;
     }
     if (formData.has("creationReason")) {
       updateData.creationReason = formData.get("creationReason") as string;
@@ -520,7 +521,7 @@ export async function createJobsiteAdmin({
     name: string;
     description: string;
     ApprovalStatus: string;
-    isActive: boolean;
+    status: string;
     Address: {
       street: string;
       city: string;
@@ -553,7 +554,7 @@ export async function createJobsiteAdmin({
             name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
-            isActive: payload.isActive,
+            status: payload.status as any, // Will be validated by Prisma enum
             createdVia: payload.CreatedVia as CreatedVia,
             Address: {
               connect: { id: existingAddress.id },
@@ -581,7 +582,7 @@ export async function createJobsiteAdmin({
             name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
-            isActive: payload.isActive,
+            status: payload.status as any, // Will be validated by Prisma enum
             createdVia: payload.CreatedVia as CreatedVia,
             Address: {
               create: {
@@ -630,7 +631,7 @@ export async function createJobsiteFromObject(jobsiteData: {
   zipCode?: string;
   country?: string;
   comment?: string;
-  isActive?: boolean;
+  status?: FormTemplateStatus;
   CCTags?: Array<{ id: string; name: string }>;
 }) {
   try {
@@ -669,7 +670,7 @@ export async function createJobsiteFromObject(jobsiteData: {
           description: jobsiteData.description.trim(),
           // Removed address, city, state, zipCode, and country as they are not valid fields in the Prisma Jobsite model
           comment: jobsiteData.comment?.trim() || null,
-          isActive: true,
+          status: jobsiteData.status || FormTemplateStatus.DRAFT,
           createdAt: new Date(),
           updatedAt: new Date(),
         },

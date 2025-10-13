@@ -72,7 +72,6 @@ model Equipment {
   creationReason         String?
   equipmentTag           EquipmentTags          @default(EQUIPMENT)
   state                  EquipmentState         @default(AVAILABLE)
-  isDisabledByAdmin      Boolean                @default(false)
   approvalStatus         ApprovalStatus         @default(PENDING)
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
@@ -93,6 +92,7 @@ model Equipment {
   serialNumber           String?
   year                   String?
   acquiredCondition      Condition?
+  status                 FormTemplateStatus     @default(DRAFT)
   EmployeeEquipmentLogs  EmployeeEquipmentLog[]
   createdBy              User?                  @relation(fields: [createdById], references: [id])
   EquipmentHauled        EquipmentHauled[]
@@ -105,8 +105,8 @@ model Equipment {
   DocumentTags           DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])
-  @@index([state, isDisabledByAdmin])
   @@index([approvalStatus])
+  @@index([status])
 }
 
 model EmployeeEquipmentLog {
@@ -229,30 +229,31 @@ model FormApproval {
 }
 
 model Jobsite {
-  id             String         @id @default(uuid())
-  qrId           String         @unique @default(uuid())
+  id             String             @id @default(uuid())
+  qrId           String             @unique @default(uuid())
   name           String
   description    String
   creationReason String?
-  approvalStatus ApprovalStatus @default(PENDING)
-  isActive       Boolean        @default(true)
+  approvalStatus ApprovalStatus     @default(PENDING)
   addressId      String?
   comment        String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
   archiveDate    DateTime?
   createdById    String?
-  createdVia     CreatedVia     @default(ADMIN)
+  createdVia     CreatedVia         @default(ADMIN)
   code           String?
   latitude       Float?
   longitude      Float?
   radiusMeters   Float?
-  Address        Address?       @relation(fields: [addressId], references: [id])
-  createdBy      User?          @relation(fields: [createdById], references: [id])
+  status         FormTemplateStatus @default(DRAFT)
+  Address        Address?           @relation(fields: [addressId], references: [id])
+  createdBy      User?              @relation(fields: [createdById], references: [id])
   TimeSheets     TimeSheet[]
-  CCTags         CCTag[]        @relation("CCTagToJobsite")
+  CCTags         CCTag[]            @relation("CCTagToJobsite")
 
   @@index([qrId])
+  @@index([status])
 }
 
 model Report {
@@ -751,7 +752,7 @@ model NotificationResponse {
   userId         String
   response       String?
   respondedAt    DateTime     @default(now())
-  notification   Notification @relation(fields: [notificationId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id])
 }
 
@@ -760,7 +761,7 @@ model NotificationRead {
   notificationId Int
   userId         String
   readAt         DateTime     @default(now())
-  notification   Notification @relation(fields: [notificationId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id])
 
   @@unique([notificationId, userId])

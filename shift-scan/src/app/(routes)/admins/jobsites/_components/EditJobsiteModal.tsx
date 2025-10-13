@@ -10,7 +10,13 @@ import { format } from "date-fns";
 import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 
 export default function EditJobsiteModal({
@@ -63,7 +69,7 @@ export default function EditJobsiteModal({
       fd.append("description", formData.description || "");
       fd.append("creationReason", formData.creationReason || "");
       fd.append("approvalStatus", formData.approvalStatus);
-      fd.append("isActive", String(formData.isActive));
+      fd.append("status", formData.status);
       fd.append(
         "CCTags",
         JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id }))),
@@ -106,18 +112,25 @@ export default function EditJobsiteModal({
               {`last updated at ${format(formData.updatedAt, "PPpp")}`}
             </p>
             <div className="flex items-center gap-4">
-              <Label className="ml-2">
-                {formData.isActive ? "Active" : "Inactive"}
-              </Label>
-              <Switch
-                checked={formData.isActive}
-                onCheckedChange={(value) => {
+              <Label className="ml-2">{formData.status}</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) => {
                   setFormData((prev) => {
                     if (!prev) return prev;
-                    return { ...prev, isActive: value };
+                    return { ...prev, status: value as any };
                   });
                 }}
-              />
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DRAFT">Draft</SelectItem>
+                  <SelectItem value="ACTIVE">Active</SelectItem>
+                  <SelectItem value="ARCHIVED">Archived</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex flex-row justify-between ">

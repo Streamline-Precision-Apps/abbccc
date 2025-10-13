@@ -41,7 +41,7 @@ export default function CreateJobsiteModal({
     name: "",
     description: "",
     ApprovalStatus: "APPROVED",
-    isActive: false,
+    status: "DRAFT",
     Address: {
       street: "",
       city: "",
@@ -120,7 +120,7 @@ export default function CreateJobsiteModal({
         name: formData.name.trim(),
         description: formData.description?.trim() || "",
         ApprovalStatus: formData.ApprovalStatus,
-        isActive: formData.isActive,
+        status: formData.status,
         Address: {
           street: formData.Address.street.trim(),
           city: formData.Address.city.trim(),
@@ -230,25 +230,26 @@ export default function CreateJobsiteModal({
               </div>
 
               <div>
-                <Label htmlFor="jobsite-active-status" className={`text-sm `}>
-                  Active Status
+                <Label htmlFor="jobsite-status" className={`text-sm `}>
+                  Status
                 </Label>
                 <Select
-                  name="isActive"
-                  value={formData.isActive ? "true" : "false"}
+                  name="status"
+                  value={formData.status}
                   onValueChange={(value) =>
                     setFormData((prev) => ({
                       ...prev,
-                      isActive: value === "true",
+                      status: value,
                     }))
                   }
                 >
-                  <SelectTrigger id="jobsite-active-status" className="text-xs">
-                    <SelectValue placeholder="Select Active Status" />
+                  <SelectTrigger id="jobsite-status" className="text-xs">
+                    <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="true">Active</SelectItem>
-                    <SelectItem value="false">Inactive</SelectItem>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="ARCHIVED">Archived</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
