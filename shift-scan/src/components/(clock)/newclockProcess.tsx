@@ -77,6 +77,19 @@ export default function NewClockProcess({
   const router = useRouter();
   const [laborType, setLaborType] = useState<string>("");
 
+  useEffect(() => {
+    console.log(
+      "Mechanic view",
+      mechanicView,
+      "tasco view",
+      tascoView,
+      "truck view",
+      truckView,
+      "labor view",
+      laborView,
+    );
+  }, [mechanicView, tascoView, truckView, laborView]);
+
   // Truck states
   const [truck, setTruck] = useState<Option>({
     id: "",
@@ -325,6 +338,7 @@ export default function NewClockProcess({
               clockOutComment={clockOutComment}
             />
           )}
+
           {type === "jobsite" && (
             <MultipleRoles
               numberOfRoles={numberOfRoles}
@@ -343,7 +357,7 @@ export default function NewClockProcess({
       )}
       {step === 2 && (
         <>
-          {numberOfRoles === 1 && (
+          {numberOfRoles === 1 && clockInRole !== "tasco" && (
             <QRStep
               type="jobsite"
               handleReturnPath={handleReturnPath}
@@ -362,6 +376,26 @@ export default function NewClockProcess({
               setJobsite={setJobsite}
             />
           )}
+
+          {numberOfRoles === 1 && clockInRole === "tasco" && (
+            <QRMultiRoles
+              type="jobsite"
+              handleReturnPath={handleReturnPath}
+              handleAlternativePath={handleAlternativePath}
+              handleNextStep={handleNextStep}
+              handleReturn={handleReturn}
+              handleScanJobsite={handleScanJobsite}
+              url={returnpath}
+              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+              clockInRole={clockInRole} // clock in role will make the qr know which role to use
+              setClockInRole={setClockInRole}
+              setClockInRoleTypes={setClockInRoleTypes}
+              clockInRoleTypes={clockInRoleTypes}
+              setScanned={setScanned}
+              setJobsite={setJobsite}
+            />
+          )}
+
           {numberOfRoles > 1 && (
             <QRMultiRoles
               type="jobsite"
