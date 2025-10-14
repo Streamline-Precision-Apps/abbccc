@@ -86,7 +86,7 @@ export default function MaintenanceLogEquipment({
               className="w-full text-base text-center"
             >
               <option value="AVAILABLE">{t("SelectAStatus")}</option>
-              <option value="MAINTENANCE">{t("MaintenanceRequired")}</option>
+
               <option value="NEEDS_REPAIR">{t("NeedsRepair")}</option>
             </Selects>
           </Holds>

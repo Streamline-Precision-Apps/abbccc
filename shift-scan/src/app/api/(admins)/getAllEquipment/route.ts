@@ -28,7 +28,7 @@ export async function GET(req: Request) {
       description: true,
       equipmentTag: true,
       state: true,
-      isDisabledByAdmin: true,
+      status: true,
       approvalStatus: true,
       overWeight: true,
       currentWeight: true,
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
       async (filter: string | null) => {
         if (filter === "inactive") {
           return await prisma.equipment.findMany({
-            where: { isDisabledByAdmin: true },
+            where: { status: "ARCHIVED" },
             select: baseSelect,
           });
         } else if (filter === "needsRepair") {
@@ -70,7 +70,7 @@ export async function GET(req: Request) {
       {
         tags: ["equipment", "admin-equipment"],
         revalidate: 1800, // Cache for 30 minutes
-      }
+      },
     );
 
     const equipment = await getCachedEquipment(filter);

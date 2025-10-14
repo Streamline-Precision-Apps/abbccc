@@ -1,8 +1,7 @@
-
-import { NextResponse } from 'next/server';
-import * as Sentry from '@sentry/nextjs';
-import prisma from '@/lib/prisma';
-import { auth } from '@/auth';
+import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
 
 /**
  * Get list of equipment for clock operations
@@ -21,8 +20,7 @@ export async function GET() {
 
     const equipment = await prisma.equipment.findMany({
       where: {
-        isDisabledByAdmin: false,
-        state: "AVAILABLE",
+        status: { not: "ARCHIVED" },
         approvalStatus: "APPROVED",
       },
       select: {
@@ -36,13 +34,12 @@ export async function GET() {
       },
     });
 
-
     return NextResponse.json(equipment);
   } catch (error) {
     Sentry.captureException(error);
-    console.error('Error fetching equipment:', error);
+    console.error("Error fetching equipment:", error);
     const errorMessage =
-      error instanceof Error ? error.message : 'Failed to fetch equipment data';
+      error instanceof Error ? error.message : "Failed to fetch equipment data";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

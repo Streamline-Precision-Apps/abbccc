@@ -5,7 +5,6 @@ import { Bases } from "@/components/(reusable)/bases";
 import { Contents } from "@/components/(reusable)/contents";
 import { Grids } from "@/components/(reusable)/grids";
 import { Holds } from "@/components/(reusable)/holds";
-import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import { Suspense, use, useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -15,10 +14,6 @@ import {
   deleteRefuelLog,
   updateRefuelLog,
 } from "@/actions/truckingActions";
-import Spinner from "@/components/(animations)/spinner";
-import { NewTab } from "@/components/(reusable)/newTabs";
-import UsageData from "./_components/UsageData";
-import MaintenanceLogEquipment from "./_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 
@@ -72,7 +67,6 @@ function createInitialState(): UnifiedEquipmentState {
   return {
     isLoading: true,
     hasChanged: false,
-    tab: 1,
     formState: {
       id: "",
       equipmentId: "",
@@ -360,12 +354,7 @@ export default function CombinedForm({
       // Make a single server call to update everything
       const res = await updateEmployeeEquipmentLog(formData);
 
-      if (
-        res.success &&
-        res.data.madeMaintenanceLog &&
-        res.data.id !== null &&
-        res.data.name !== undefined
-      ) {
+      if (res.success && res.data.id !== null && res.data.name !== undefined) {
         // Handle success case equipment-break if equipment is marked broken
         await fetch("/api/notifications/send-multicast", {
           method: "POST",

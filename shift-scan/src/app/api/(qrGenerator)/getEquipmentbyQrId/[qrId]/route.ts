@@ -40,7 +40,7 @@ export async function GET(
         description: true,
         equipmentTag: true,
         state: true,
-        isDisabledByAdmin: true,
+        status: true,
         approvalStatus: true,
         overWeight: true,
         currentWeight: true,

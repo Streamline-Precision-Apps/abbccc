@@ -208,46 +208,50 @@ export function JobsiteDataTable({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              <Suspense fallback={<LoadingJobsiteTableState columns={columns} />}>
-              {loading ? (
-                <LoadingJobsiteTableState columns={columns} />
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+            <TableBody className="h-full divide-y divide-gray-100 bg-white">
+              <Suspense
+                fallback={<LoadingJobsiteTableState columns={columns} />}
+              >
+                {loading ? (
+                  <LoadingJobsiteTableState columns={columns} />
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {showPendingOnly ? (
+                        <p className="text-gray-500 italic">
+                          No Jobsite to Approve.
+                        </p>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          No jobsites found.
+                        </p>
+                      )}
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {showPendingOnly ? (
-                      <p className="text-gray-500 italic">
-                        No Jobsite to Approve.
-                      </p>
-                    ) : (
-                      <p className="text-gray-500 italic">No jobsites found.</p>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
+                )}
               </Suspense>
             </TableBody>
           </Table>

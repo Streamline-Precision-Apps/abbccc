@@ -26,6 +26,19 @@ export const getJobsiteTableColumns = (
               <div className="flex flex-row gap-4 items-center">
                 <p className="">{highlight(jobsite.name || "", "")}</p>
                 <div className="flex flex-row gap-2 items-center">
+                  {jobsite.status === "ACTIVE" ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Active
+                    </span>
+                  ) : jobsite.status === "DRAFT" ? (
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
+                      Draft
+                    </span>
+                  ) : (
+                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs">
+                      Inactive
+                    </span>
+                  )}
                   {jobsite.approvalStatus === "APPROVED" ? (
                     <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
                       Approved
@@ -41,16 +54,6 @@ export const getJobsiteTableColumns = (
                   ) : (
                     <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
                       Rejected
-                    </span>
-                  )}
-
-                  {jobsite.isActive ? (
-                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
-                      Active
-                    </span>
-                  ) : (
-                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
-                      Inactive
                     </span>
                   )}
                 </div>

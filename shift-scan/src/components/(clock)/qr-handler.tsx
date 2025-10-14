@@ -28,7 +28,6 @@ type QRStepProps = {
   option?: string;
   clockInRole: string | undefined;
   setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
   setJobsite: Dispatch<SetStateAction<Option>>;
@@ -44,7 +43,6 @@ export default function QRStep({
   url,
   clockInRole,
   handlePrevStep,
-  setScanned,
   setJobsite,
 }: QRStepProps) {
   const t = useTranslations("Clock");
@@ -102,7 +100,6 @@ export default function QRStep({
                     startCamera={startCamera}
                     setStartCamera={setStartCamera}
                     setFailedToScan={setFailedToScan}
-                    setScanned={setScanned}
                     setJobsite={setJobsite}
                   />
                 </Holds>

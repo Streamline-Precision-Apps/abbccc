@@ -66,9 +66,17 @@ export default function UsageData({
                 const newTime = e.target.value;
                 const currentDate = new Date(formState.startTime || new Date());
                 const [newHours, newMinutes] = newTime.split(":").map(Number);
-                
+
                 // Create a new date preserving the original date but with new time in local timezone
-                const updatedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), newHours, newMinutes, 0, 0);
+                const updatedDate = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth(),
+                  currentDate.getDate(),
+                  newHours,
+                  newMinutes,
+                  0,
+                  0,
+                );
                 handleFieldChange("startTime", updatedDate.toISOString());
               }}
             />
@@ -87,9 +95,17 @@ export default function UsageData({
                 const newTime = e.target.value;
                 const currentDate = new Date(formState.endTime || new Date());
                 const [newHours, newMinutes] = newTime.split(":").map(Number);
-                
+
                 // Create a new date preserving the original date but with new time in local timezone
-                const updatedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), newHours, newMinutes, 0, 0);
+                const updatedDate = new Date(
+                  currentDate.getFullYear(),
+                  currentDate.getMonth(),
+                  currentDate.getDate(),
+                  newHours,
+                  newMinutes,
+                  0,
+                  0,
+                );
                 handleFieldChange("endTime", updatedDate.toISOString());
               }}
             />
@@ -148,7 +164,7 @@ export default function UsageData({
                 setRefuelLog(updatedRefuelLog);
               }
             }}
-            className="border-[3px] border-black p-1 pr-10 rounded-[10px] text-sm w-full mb-0"
+            className="border-[3px] border-black p-2 pr-10 rounded-[10px] text-sm w-full mb-0"
           />
           {/* Clear/Delete X button */}
           {(refuelLog?.gallonsRefueled || 0) > 0 && (
@@ -168,25 +184,6 @@ export default function UsageData({
               <span className="text-lg leading-none">X</span>
             </Buttons>
           )}
-        </Holds>
-      </Holds>
-
-      <Holds position={"row"} className="w-full pb-3">
-        <Holds size={"20"} className="h-full justify-center relative">
-          <CheckBox
-            shadow={false}
-            id="fullyOperational"
-            name="fullyOperational"
-            width={40}
-            height={40}
-            checked={formState.fullyOperational}
-            onChange={handleFullOperational}
-          />
-        </Holds>
-        <Holds size={"80"} className="h-full justify-center">
-          <Texts position={"left"} size="p3">
-            {t("FullyOperational")} <span className="text-red-500">*</span>
-          </Texts>
         </Holds>
       </Holds>
     </Holds>
