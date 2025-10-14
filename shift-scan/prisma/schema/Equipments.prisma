@@ -41,7 +41,6 @@ model Equipment {
   @@index([qrId])
   @@index([status])
   @@index([approvalStatus])
-  @@index([status])
 }
 
 model EmployeeEquipmentLog {

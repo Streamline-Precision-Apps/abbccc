@@ -24,5 +24,4 @@ model Jobsite {
 
   @@index([status])
   @@index([qrId])
-  @@index([status])
 }

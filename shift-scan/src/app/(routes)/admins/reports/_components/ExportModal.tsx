@@ -1,8 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-
-type DateRange = { from: Date | undefined; to: Date | undefined };
+import { useState } from "react";
 
 interface ExportModalProps {
   onClose: () => void;
@@ -14,35 +10,22 @@ interface ExportModalProps {
     },
     selectedFields?: string[],
   ) => void;
-  setDateRange: Dispatch<SetStateAction<DateRange>>;
-  dateRange: DateRange;
 }
 
-import { ChevronDownIcon, Download, X } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ExportReportModal = ({
-  onClose,
-  onExport,
-  setDateRange,
-  dateRange,
-}: ExportModalProps) => {
+const ExportReportModal = ({ onClose, onExport }: ExportModalProps) => {
   const [exportFormat, setExportFormat] = useState<"csv" | "xlsx" | "">("");
+
   const closeModal = () => {
-    setDateRange({ from: undefined, to: undefined });
     setExportFormat("");
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4">
+      <div className="bg-white rounded-lg shadow-lg w-[500px] max-h-[80vh] overflow-y-auto no-scrollbar px-6 py-4">
         <div className="flex flex-col gap-4 items-center w-full relative">
           {/* Modal title Content */}
           <div className="flex flex-col w-full border-b border-gray-200 pb-3">
@@ -51,8 +34,8 @@ const ExportReportModal = ({
               <Download className="h-5 w-5" />
             </div>
             <p className="text-xs text-gray-600 pt-1">
-              Select a date range, apply filters, and choose your preferred
-              export format
+              Choose your preferred export format. Date filtering is applied
+              based on your selection above.
             </p>
             {/* Close button to close the modal */}
             <Button
@@ -66,55 +49,10 @@ const ExportReportModal = ({
             </Button>
           </div>
           <div className="flex flex-col gap-6 w-full px-2 py-4">
-            {/* Date range picker */}
-            <div className="w-full flex flex-col">
-              <Label className="font-semibold text-sm">Date Range</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    id="date"
-                    className="w-3/4 justify-between font-normal"
-                  >
-                    {dateRange.from && dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
-                      : "Select date range"}
-                    <ChevronDownIcon />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-auto overflow-hidden p-0"
-                  align="start"
-                >
-                  <div className="p-4 justify-center flex flex-col items-center">
-                    <Calendar
-                      mode="range"
-                      selected={dateRange}
-                      onSelect={(value) =>
-                        setDateRange({ from: value?.from, to: value?.to })
-                      }
-                      autoFocus
-                    />
-                    {(dateRange.from || dateRange.to) && (
-                      <Button
-                        variant="outline"
-                        className="w-1/2 text-xs text-blue-600 hover:underline"
-                        onClick={() =>
-                          setDateRange({ from: undefined, to: undefined })
-                        }
-                        type="button"
-                      >
-                        Clear date range
-                      </Button>
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
             {/* Export format selection */}
             <div className="w-full">
               <h3 className="font-semibold text-sm mb-2">Export Format</h3>
-              <div className="flex flex-row w-1/2 gap-4 border border-gray-200 rounded-md p-4">
+              <div className="flex flex-row w-full gap-4 border border-gray-200 rounded-md p-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
@@ -151,7 +89,7 @@ const ExportReportModal = ({
             </Button>
             <Button
               className="bg-sky-500 hover:bg-sky-400 text-white disabled:opacity-50"
-              onClick={() => exportFormat && onExport(exportFormat, dateRange)}
+              onClick={() => exportFormat && onExport(exportFormat)}
               disabled={!exportFormat}
             >
               Export
