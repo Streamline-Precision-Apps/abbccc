@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { Switch } from "@/components/ui/switch";
 
 export default function EditJobsiteModal({
   cancel,
@@ -123,16 +124,7 @@ export default function EditJobsiteModal({
                     return { ...prev, status: value ? "ACTIVE" : "ARCHIVED" };
                   });
                 }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="DRAFT">Draft</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="ARCHIVED">Archived</SelectItem>
-                </SelectContent>
-              </Select>
+              />
             </div>
           </div>
           <div className="flex flex-row justify-between ">

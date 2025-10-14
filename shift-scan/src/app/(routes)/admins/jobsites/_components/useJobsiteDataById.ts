@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ApprovalStatus, FormStatus } from "../../../../../../prisma/generated/prisma";
+import { ApprovalStatus, FormStatus, FormTemplateStatus } from "../../../../../../prisma/generated/prisma";
 
 export type Jobsite = {
   id: string;
@@ -10,7 +10,7 @@ export type Jobsite = {
   description?: string;
   creationReason?: string;
   approvalStatus: ApprovalStatus;
-  status: FormStatus;
+  status: FormTemplateStatus;
   archivedDate: boolean;
   createdById: string;
   updatedAt: Date;

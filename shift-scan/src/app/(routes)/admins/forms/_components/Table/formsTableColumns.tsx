@@ -115,20 +115,20 @@ export function getFormsTableColumns({
 
         return (
           <div className="flex flex-row justify-center">
-            <Link href={`/admins/forms/${form.id}`}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size={"icon"}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size={"icon"} asChild>
+                  <Link href={`/admins/forms/${form.id}`}>
                     <img
                       src="/eye.svg"
                       alt="View Form"
                       className="h-4 w-4 cursor-pointer"
                     />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>View Submissions</TooltipContent>
-              </Tooltip>
-            </Link>
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>View Submissions</TooltipContent>
+            </Tooltip>
 
             <Tooltip>
               <TooltipTrigger asChild>
@@ -149,15 +149,15 @@ export function getFormsTableColumns({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href={`/admins/forms/edit/${form.id}`}>
-                  <Button variant="ghost" size={"icon"}>
+                <Button variant="ghost" size={"icon"} asChild>
+                  <Link href={`/admins/forms/edit/${form.id}`}>
                     <img
                       src="/formEdit.svg"
                       alt="Edit Form"
                       className="h-4 w-4 cursor-pointer"
                     />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>Edit Form Template</TooltipContent>
             </Tooltip>
