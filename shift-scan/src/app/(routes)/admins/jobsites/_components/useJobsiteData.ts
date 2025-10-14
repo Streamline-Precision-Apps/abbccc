@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { deleteJobsite } from "@/actions/AssetActions";
 import QRCode from "qrcode";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
-import { ApprovalStatus, FormTemplateStatus } from "../../../../../../prisma/generated/prisma/client";
+import {
+  ApprovalStatus,
+  FormTemplateStatus,
+} from "../../../../../../prisma/generated/prisma/client";
 
 export type JobsiteSummary = {
   id: string;

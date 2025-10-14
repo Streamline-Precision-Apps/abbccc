@@ -92,7 +92,7 @@ model Equipment {
   serialNumber           String?
   year                   String?
   acquiredCondition      Condition?
-  status                 FormTemplateStatus     @default(DRAFT)
+  status                 FormTemplateStatus     @default(ACTIVE)
   EmployeeEquipmentLogs  EmployeeEquipmentLog[]
   createdBy              User?                  @relation(fields: [createdById], references: [id])
   EquipmentHauled        EquipmentHauled[]
@@ -105,6 +105,7 @@ model Equipment {
   DocumentTags           DocumentTag[]          @relation("DocumentTagToEquipment")
 
   @@index([qrId])
+  @@index([status])
   @@index([approvalStatus])
   @@index([status])
 }
@@ -246,12 +247,13 @@ model Jobsite {
   latitude       Float?
   longitude      Float?
   radiusMeters   Float?
-  status         FormTemplateStatus @default(DRAFT)
+  status         FormTemplateStatus @default(ACTIVE)
   Address        Address?           @relation(fields: [addressId], references: [id])
   createdBy      User?              @relation(fields: [createdById], references: [id])
   TimeSheets     TimeSheet[]
   CCTags         CCTag[]            @relation("CCTagToJobsite")
 
+  @@index([status])
   @@index([qrId])
   @@index([status])
 }
@@ -654,6 +656,11 @@ enum FormStatus {
 
 enum FormTemplateStatus {
   DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ActiveStatus {
   ACTIVE
   ARCHIVED
 }

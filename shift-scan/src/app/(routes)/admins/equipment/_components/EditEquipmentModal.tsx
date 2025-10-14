@@ -29,6 +29,7 @@ type Equipment = {
   memo?: string;
   ownershipType?: "OWNED" | "LEASED" | "RENTAL";
   equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
+  status: "ACTIVE" | "ARCHIVED" | "DRAFT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   createdAt: string | Date;
@@ -44,7 +45,6 @@ type Equipment = {
   licensePlate?: string;
   licenseState?: string;
   registrationExpiration?: string | Date;
-  isDisabledByAdmin?: boolean;
   createdVia?: "MOBILE" | "WEB" | "IMPORT";
   overWeight?: boolean;
   currentWeight?: number;
@@ -234,9 +234,9 @@ export default function EditEquipmentModal({
         changedFields["approvalStatus"] = formData.approvalStatus;
       }
 
-      if (formData.isDisabledByAdmin !== originalForm.isDisabledByAdmin) {
-        fd.append("isDisabledByAdmin", String(formData.isDisabledByAdmin));
-        changedFields["isDisabledByAdmin"] = formData.isDisabledByAdmin;
+      if (formData.status !== originalForm.status) {
+        fd.append("status", formData.status);
+        changedFields["status"] = formData.status;
       }
 
       if (formData.creationReason !== originalForm.creationReason) {
@@ -314,17 +314,16 @@ export default function EditEquipmentModal({
                 </span>
                 <div className="flex flex-row items-center gap-2 ">
                   <p className="text-xs text-gray-600">
-                    {formData.isDisabledByAdmin
-                      ? "Equipment Disabled"
-                      : "Equipment Enabled"}
+                    {formData.status === "ARCHIVED"
+                      ? "Equipment Archived"
+                      : "Equipment Active"}
                   </p>
                   <Switch
-                    checked={!formData.isDisabledByAdmin}
+                    checked={!formData.status || formData.status !== "ARCHIVED"}
                     onCheckedChange={(checked) => {
-                      console.log("enabled:", checked, "disabled:", !checked);
                       setFormData((prev) => ({
                         ...prev!,
-                        isDisabledByAdmin: !checked,
+                        status: checked ? "ACTIVE" : "ARCHIVED",
                       }));
                     }}
                   />

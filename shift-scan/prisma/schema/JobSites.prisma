@@ -16,12 +16,13 @@ model Jobsite {
   latitude       Float?
   longitude      Float?
   radiusMeters   Float?
-  status         FormTemplateStatus @default(DRAFT)
+  status         FormTemplateStatus @default(ACTIVE)
   Address        Address?           @relation(fields: [addressId], references: [id])
   createdBy      User?              @relation(fields: [createdById], references: [id])
   TimeSheets     TimeSheet[]
   CCTags         CCTag[]            @relation("CCTagToJobsite")
 
+  @@index([status])
   @@index([qrId])
   @@index([status])
 }

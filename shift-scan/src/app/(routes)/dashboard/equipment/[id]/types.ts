@@ -93,7 +93,6 @@ export type UnifiedEquipmentState = {
   // Loading and UI state
   isLoading: boolean;
   hasChanged: boolean;
-  tab: number;
   markedForRefuel: boolean;
   // Form data (transformed from API response)
   formState: EquipmentLog;

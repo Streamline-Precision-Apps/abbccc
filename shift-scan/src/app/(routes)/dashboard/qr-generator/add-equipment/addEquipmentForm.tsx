@@ -9,27 +9,14 @@ import { useTranslations } from "next-intl";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Selects } from "@/components/(reusable)/selects";
-import { NModals } from "@/components/(reusable)/newmodals";
-import { JobsiteSelector } from "@/components/(clock)/(General)/jobsiteSelector";
 import { Titles } from "@/components/(reusable)/titles";
 import { Holds } from "@/components/(reusable)/holds";
 import { Contents } from "@/components/(reusable)/contents";
-import { Grids } from "@/components/(reusable)/grids";
 import { v4 as uuidv4 } from "uuid";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { US_STATES } from "@/data/stateValues";
 import { useDashboardData } from "@/app/(routes)/admins/_pages/sidebar/DashboardDataContext";
-import { Texts } from "@/components/(reusable)/texts";
 
 export type JobCode = {
   id: string;

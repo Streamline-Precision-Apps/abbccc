@@ -22,7 +22,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
       const os = equipment.ownershipType;
       const condition = equipment.acquiredCondition;
       const searchTerm = table.options.meta?.searchTerm || "";
-      const status = equipment.state;
+      const status = equipment.status;
       const approvalStatus = equipment.approvalStatus;
 
       return (
@@ -53,17 +53,12 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                   )}
 
                   {/* Status Badge */}
-                  {status === "AVAILABLE" ? null : status ===
-                    "IN_USE" ? null : status === "MAINTENANCE" ? (
-                    <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg text-xs">
-                      Maintenance
+                  {status === "ACTIVE" ? (
+                    <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+                      Active
                     </span>
-                  ) : status === "NEEDS_REPAIR" ? (
-                    <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-xs">
-                      Needs Repair
-                    </span>
-                  ) : (
-                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                  ) : status === "DRAFT" ? null : (
+                    <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs">
                       Archived
                     </span>
                   )}

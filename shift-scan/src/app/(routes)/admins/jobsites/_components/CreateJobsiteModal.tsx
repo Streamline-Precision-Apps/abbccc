@@ -21,10 +21,6 @@ type TagSummary = {
   name: string;
 };
 
-// type ClientsSummary = {
-//   id: string;
-//   name: string;
-// };
 export default function CreateJobsiteModal({
   cancel,
   rerender,
@@ -41,7 +37,7 @@ export default function CreateJobsiteModal({
     name: "",
     description: "",
     ApprovalStatus: "APPROVED",
-    status: "DRAFT",
+    status: "ACTIVE",
     Address: {
       street: "",
       city: "",
@@ -247,9 +243,8 @@ export default function CreateJobsiteModal({
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="DRAFT">Draft</SelectItem>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
                     <SelectItem value="ARCHIVED">Archived</SelectItem>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

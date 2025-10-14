@@ -69,7 +69,7 @@ export default function EditJobsiteModal({
       fd.append("description", formData.description || "");
       fd.append("creationReason", formData.creationReason || "");
       fd.append("approvalStatus", formData.approvalStatus);
-      fd.append("status", formData.status);
+      fd.append("status", String(formData.status));
       fd.append(
         "CCTags",
         JSON.stringify(formData.CCTags.map((tag) => ({ id: tag.id }))),
@@ -112,13 +112,15 @@ export default function EditJobsiteModal({
               {`last updated at ${format(formData.updatedAt, "PPpp")}`}
             </p>
             <div className="flex items-center gap-4">
-              <Label className="ml-2">{formData.status}</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => {
+              <Label className="ml-2">
+                {formData.status === "ACTIVE" ? "Active" : "Disabled"}
+              </Label>
+              <Switch
+                checked={formData.status === "ACTIVE"}
+                onCheckedChange={(value) => {
                   setFormData((prev) => {
                     if (!prev) return prev;
-                    return { ...prev, status: value as any };
+                    return { ...prev, status: value ? "ACTIVE" : "ARCHIVED" };
                   });
                 }}
               >
@@ -227,9 +229,7 @@ export default function EditJobsiteModal({
             {tagSummaries && (
               <div>
                 <div>
-                  <Label htmlFor="isActive" className="text-sm font-medium">
-                    Cost Code Tags
-                  </Label>
+                  <Label className="text-sm font-medium">Cost Code Tags</Label>
                   <Combobox
                     options={tagSummaries.map((tag) => ({
                       label: tag.name,

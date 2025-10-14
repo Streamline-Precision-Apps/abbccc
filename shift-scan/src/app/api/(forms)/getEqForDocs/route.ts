@@ -20,7 +20,7 @@ export async function GET() {
 
     const equipment = await prisma.equipment.findMany({
       where: {
-        isDisabledByAdmin: false,
+        status: { not: "ARCHIVED" },
         approvalStatus: "APPROVED",
       },
       select: {
@@ -43,7 +43,7 @@ export async function GET() {
     if (!equipment || equipment.length === 0) {
       return NextResponse.json(
         { message: "No equipment found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

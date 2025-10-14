@@ -371,6 +371,14 @@ export const FormTemplateStatus: {
 export type FormTemplateStatus = (typeof FormTemplateStatus)[keyof typeof FormTemplateStatus]
 
 
+export const ActiveStatus: {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED'
+};
+
+export type ActiveStatus = (typeof ActiveStatus)[keyof typeof ActiveStatus]
+
+
 export const FieldType: {
   TEXT: 'TEXT',
   TEXTAREA: 'TEXTAREA',
@@ -491,6 +499,10 @@ export const FormStatus: typeof $Enums.FormStatus
 export type FormTemplateStatus = $Enums.FormTemplateStatus
 
 export const FormTemplateStatus: typeof $Enums.FormTemplateStatus
+
+export type ActiveStatus = $Enums.ActiveStatus
+
+export const ActiveStatus: typeof $Enums.ActiveStatus
 
 export type FieldType = $Enums.FieldType
 
