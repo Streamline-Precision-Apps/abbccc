@@ -47,33 +47,47 @@ export default function SwitchJobsMultiRoles({
   const [commentsValue, setCommentsValue] = useState<string>("");
   const [submittable, setSubmittable] = useState<boolean>(false);
 
+  // Use a local state to store the selected main role
+  const [tempClockInRole, setTempClockInRole] = useState<string | undefined>(
+    clockInRole,
+  );
+
   const selectView = (selectedRoleType: string) => {
     setClockInRoleTypes(selectedRoleType);
 
-    // Map the selected role type to the main clock-in role
+    let newRole: string;
     if (
       selectedRoleType === "tascoAbcdLabor" ||
       selectedRoleType === "tascoAbcdEquipment" ||
       selectedRoleType === "tascoEEquipment"
     ) {
-      setClockInRole("tasco");
+      newRole = "tasco";
     } else if (
       selectedRoleType === "truckDriver" ||
       selectedRoleType === "truckEquipmentOperator" ||
       selectedRoleType === "truckLabor"
     ) {
-      setClockInRole("truck");
+      newRole = "truck";
     } else if (selectedRoleType === "mechanic") {
-      setClockInRole("mechanic");
+      newRole = "mechanic";
     } else if (selectedRoleType === "general") {
-      setClockInRole("general");
+      newRole = "general";
     } else {
-      setClockInRole("general"); // Handle undefined or invalid cases
+      newRole = "general"; // Handle undefined or invalid cases
     }
+
+    // Update local state only
+    setTempClockInRole(newRole);
   };
 
   const saveCurrentData = () => {
-    setCommentData({ id: commentsValue }); // Ensure correct data structure
+    // Save comment data
+    setCommentData({ id: commentsValue });
+
+    // Now update the parent's clockInRole state when user clicks Continue
+    if (tempClockInRole) {
+      setClockInRole(tempClockInRole);
+    }
   };
 
   useEffect(() => {
@@ -81,10 +95,15 @@ export default function SwitchJobsMultiRoles({
   }, [clockOutComment]);
 
   useEffect(() => {
-    setSubmittable(commentsValue.length >= 3);
-  }, [commentsValue]);
+    // Make sure we have both a valid comment and a selected role type
+    const hasValidComment = commentsValue.length >= 3;
+    const hasValidRole =
+      clockInRoleTypes !== undefined && clockInRoleTypes !== "";
 
-  if (numberOfRoles === 1) {
+    setSubmittable(hasValidComment && (numberOfRoles === 1 || hasValidRole));
+  }, [commentsValue, clockInRoleTypes, numberOfRoles]);
+
+  if (numberOfRoles === 1 && clockInRole !== "tasco") {
     return (
       <Holds background={"white"} className="h-full w-full">
         <Grids rows={"7"} gap={"5"} className="h-full w-full p-3 pb-5">
@@ -199,11 +218,11 @@ export default function SwitchJobsMultiRoles({
         <Holds className="row-start-4 row-end-6 h-full w-full justify-center">
           <Grids rows={"3"}>
             <Holds className="row-start-2 row-end-4 h-full w-full justify-center">
-              <Titles size={"h1"} className=" ">
+              <Titles size={"lg"} className="text-left">
                 {t("ChangeIfNecessary")}
               </Titles>
-              <Holds className=" w-full py-3 justify-center ">
-                <Holds className="h-full w-11/12 justify-center">
+              <Holds className=" w-full justify-center ">
+                <Holds className="h-full w-full justify-center">
                   <Selects
                     className="bg-app-blue text-center"
                     value={clockInRoleTypes}
@@ -212,6 +231,7 @@ export default function SwitchJobsMultiRoles({
                     <option value="">{t("SelectWorkType")}</option>
                     {tascoView === true && (
                       <>
+                        <option value="general">{t("GeneralLabor")}</option>
                         <option value="tascoAbcdLabor">
                           {t("TASCOABCDLabor")}
                         </option>

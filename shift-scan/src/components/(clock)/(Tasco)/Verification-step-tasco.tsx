@@ -117,6 +117,8 @@ export default function TascoVerificationStep({
       formData.append("workType", role);
       formData.append("equipment", equipment?.id || "");
 
+      console.log("Comments to submit:", comments);
+
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
         //
