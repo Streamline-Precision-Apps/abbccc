@@ -59,7 +59,7 @@ export async function createJobsite(formData: FormData) {
         description: creationComment,
         creationReason: creationReasoning,
         approvalStatus: "PENDING",
-        isActive: true,
+        status: "ACTIVE",
         createdAt: new Date(),
         updatedAt: new Date(),
         CCTags: {

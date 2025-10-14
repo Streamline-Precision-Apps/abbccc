@@ -6,6 +6,7 @@ import {
   ApprovalStatus,
   CreatedVia,
   EquipmentState,
+  FormTemplateStatus,
 } from "../../prisma/generated/prisma/client";
 import * as Sentry from "@sentry/nextjs";
 import {
@@ -43,6 +44,8 @@ export async function updateEquipmentAsset(formData: FormData) {
       updateData.equipmentTag = formData.get("equipmentTag") as EquipmentTags;
     if (formData.has("state"))
       updateData.state = formData.get("state") as EquipmentState;
+    if (formData.has("status"))
+      updateData.status = formData.get("status") as FormTemplateStatus;
     if (formData.has("ownershipType"))
       updateData.ownershipType =
         (formData.get("ownershipType") as OwnershipType) || null;
@@ -102,9 +105,9 @@ export async function updateEquipmentAsset(formData: FormData) {
       const overWeightValue = formData.get("overWeight") as string;
       updateData.overWeight = overWeightValue === "true";
     }
-    if (formData.has("isDisabledByAdmin")) {
-      const disabledValue = formData.get("isDisabledByAdmin") as string;
-      updateData.isDisabledByAdmin = disabledValue === "true";
+    if (formData.has("status")) {
+      const disabledValue = formData.get("status") as string;
+      updateData.status = disabledValue as FormTemplateStatus;
     }
 
     // Handle status fields
@@ -200,6 +203,7 @@ export async function registerEquipment(
     licensePlate?: string | null;
     licenseState?: string | null;
     equipmentTag: string;
+    status?: string;
     state?: string;
     approvalStatus?: string;
     isDisabledByAdmin?: boolean;
@@ -237,7 +241,7 @@ export async function registerEquipment(
         state: (equipmentData.state as EquipmentState) || "AVAILABLE",
         approvalStatus:
           (equipmentData.approvalStatus as ApprovalStatus) || "APPROVED",
-        isDisabledByAdmin: equipmentData.isDisabledByAdmin || false,
+        status: (equipmentData.status as FormTemplateStatus) || "ACTIVE",
         overWeight: equipmentData.overWeight || false,
         currentWeight: equipmentData.currentWeight || 0,
         createdById,
@@ -260,135 +264,6 @@ export async function registerEquipment(
       success: false,
       error:
         error instanceof Error ? error.message : "An unknown error occurred",
-    };
-  }
-}
-/**
- *
- * Server Actions for registering and updating equipment assets.
- *
- */
-
-export async function updateJobsite(formData: FormData) {
-  try {
-    // Extract form data
-    const id = formData.get("id") as string;
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    const address = formData.get("address") as string;
-    const city = formData.get("city") as string;
-    const state = formData.get("state") as string;
-    const zipCode = formData.get("zipCode") as string;
-    const country = formData.get("country") as string;
-    const comment = formData.get("comment") as string;
-    const isActive = formData.get("isActive") === "true";
-    const client = formData.get("client") as string;
-    // CCTags are passed as a JSON string, not as multiple form fields
-    const cCTagsString = formData.get("cCTags") as string;
-
-    // Validate required fields
-    if (!id) {
-      throw new Error("Jobsite ID is required");
-    }
-
-    if (!name?.trim()) {
-      throw new Error("Jobsite name is required");
-    }
-
-    if (!description?.trim()) {
-      throw new Error("Jobsite description is required");
-    }
-
-    const result = await prisma.$transaction(async (prisma) => {
-      // Check if jobsite exists
-      const existingJobsite = await prisma.jobsite.findUnique({
-        where: { id },
-      });
-
-      if (!existingJobsite) {
-        throw new Error("Jobsite not found");
-      }
-
-      // Check for duplicate jobsite name/location (excluding current jobsite)
-      const duplicateJobsite = await prisma.jobsite.findFirst({
-        where: {
-          AND: [
-            { id: { not: id } },
-            { name: name.trim() },
-            // Removed address, city, and state as they are not valid fields in the Prisma Jobsite model
-          ],
-        },
-      });
-
-      if (duplicateJobsite) {
-        throw new Error(
-          "A jobsite with the same name and location already exists",
-        );
-      }
-
-      // Get current CCTags for this jobsite
-      const jobsiteWithTags = await prisma.jobsite.findUnique({
-        where: { id },
-        include: { CCTags: true },
-      });
-
-      if (!jobsiteWithTags) {
-        throw new Error("Jobsite not found");
-      }
-
-      // Get current tag IDs
-      const currentTagIds = jobsiteWithTags.CCTags.map((tag) => tag.id);
-
-      // Parse cCTags from JSON string
-      const parsedCCTags = JSON.parse(cCTagsString || "[]");
-      const newTagIds = parsedCCTags.map((tag: { id: string }) => tag.id);
-
-      // Determine which tags to connect (add) and disconnect (remove)
-      const tagsToConnect = newTagIds
-        .filter((tagId: string) => !currentTagIds.includes(tagId))
-        .map((tagId: string) => ({ id: tagId }));
-
-      const tagsToDisconnect = currentTagIds
-        .filter((tagId: string) => !newTagIds.includes(tagId))
-        .map((tagId: string) => ({ id: tagId }));
-
-      // Update jobsite
-      return await prisma.jobsite.update({
-        where: { id },
-        data: {
-          name: name.trim(),
-          description: description.trim(),
-          // Removed country as it is not a valid field in the Prisma Jobsite model
-          comment: comment?.trim() || null,
-          isActive: isActive,
-          updatedAt: new Date(),
-          CCTags: {
-            connect: tagsToConnect.length > 0 ? tagsToConnect : undefined,
-            disconnect:
-              tagsToDisconnect.length > 0 ? tagsToDisconnect : undefined,
-          },
-        },
-        include: {
-          CCTags: true,
-        },
-      });
-    });
-
-    // Revalidate relevant paths and tags
-    revalidateTag("jobsites");
-    revalidateTag("assets");
-    revalidatePath("/admins/assets");
-
-    return {
-      success: true,
-      data: result,
-      message: "Jobsite updated successfully",
-    };
-  } catch (error) {
-    console.error("Error updating jobsite:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }
@@ -423,8 +298,8 @@ export async function updateJobsiteAdmin(formData: FormData) {
         "approvalStatus",
       ) as ApprovalStatus;
     }
-    if (formData.has("isActive")) {
-      updateData.isActive = formData.get("isActive") === "true";
+    if (formData.has("status")) {
+      updateData.status = formData.get("status") as FormTemplateStatus;
     }
     if (formData.has("creationReason")) {
       updateData.creationReason = formData.get("creationReason") as string;
@@ -520,7 +395,7 @@ export async function createJobsiteAdmin({
     name: string;
     description: string;
     ApprovalStatus: string;
-    isActive: boolean;
+    status: string;
     Address: {
       street: string;
       city: string;
@@ -553,7 +428,7 @@ export async function createJobsiteAdmin({
             name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
-            isActive: payload.isActive,
+            status: payload.status as FormTemplateStatus,
             createdVia: payload.CreatedVia as CreatedVia,
             Address: {
               connect: { id: existingAddress.id },
@@ -581,7 +456,7 @@ export async function createJobsiteAdmin({
             name: `${payload.code.trim()} - ${payload.name.trim()}`,
             description: payload.description.trim(),
             approvalStatus: payload.ApprovalStatus as ApprovalStatus,
-            isActive: payload.isActive,
+            status: payload.status as FormTemplateStatus,
             createdVia: payload.CreatedVia as CreatedVia,
             Address: {
               create: {
@@ -617,84 +492,6 @@ export async function createJobsiteAdmin({
   } catch (error) {
     console.error("Error creating jobsite:", error);
     throw error;
-  }
-}
-
-export async function createJobsiteFromObject(jobsiteData: {
-  name: string;
-  clientId: string;
-  description: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  country?: string;
-  comment?: string;
-  isActive?: boolean;
-  CCTags?: Array<{ id: string; name: string }>;
-}) {
-  try {
-    // Validate required fields
-    if (!jobsiteData.name?.trim()) {
-      throw new Error("Jobsite name is required");
-    }
-
-    if (!jobsiteData.description?.trim()) {
-      throw new Error("Jobsite description is required");
-    }
-
-    // Generate unique QR ID for new jobsite
-    const qrId = `JS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    const result = await prisma.$transaction(async (prisma) => {
-      // Check for duplicate jobsite (name + address + city + state combination)
-      const existingJobsite = await prisma.jobsite.findFirst({
-        where: {
-          name: jobsiteData.name.trim(),
-          // Removed address, city, and state as they are not valid fields in the Prisma Jobsite model
-        },
-      });
-
-      if (existingJobsite) {
-        throw new Error(
-          "A jobsite with the same name and location already exists",
-        );
-      }
-
-      // Create new jobsite
-      return await prisma.jobsite.create({
-        data: {
-          qrId,
-          name: jobsiteData.name.trim(),
-          description: jobsiteData.description.trim(),
-          // Removed address, city, state, zipCode, and country as they are not valid fields in the Prisma Jobsite model
-          comment: jobsiteData.comment?.trim() || null,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        include: {
-          CCTags: true,
-        },
-      });
-    });
-
-    // Revalidate relevant paths and tags
-    revalidateTag("jobsites");
-    revalidateTag("assets");
-    revalidatePath("/admins/assets");
-
-    return {
-      success: true,
-      data: result,
-      message: "Jobsite created successfully",
-    };
-  } catch (error) {
-    console.error("Error creating jobsite:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
   }
 }
 
@@ -894,120 +691,6 @@ export async function createCostCode(payload: {
 }
 
 /**
- * Server action to update an existing cost code
- */
-export async function updateCostCode(
-  id: string,
-  costCodeData: Partial<{
-    name: string;
-    isActive: boolean;
-    CCTags?: { id: string; name: string }[];
-  }>,
-) {
-  try {
-    // Validate cost code exists
-    const existingCostCode = await prisma.costCode.findUnique({
-      where: { id },
-      include: {
-        CCTags: true,
-      },
-    });
-
-    if (!existingCostCode) {
-      throw new Error("Cost code not found");
-    }
-
-    // If name is being updated, check for duplicates
-    if (costCodeData.name && costCodeData.name !== existingCostCode.name) {
-      const duplicateName = await prisma.costCode.findUnique({
-        where: {
-          name: costCodeData.name.trim(),
-          NOT: { id },
-        },
-      });
-
-      if (duplicateName) {
-        throw new Error("A cost code with this name already exists");
-      }
-    }
-
-    // Prepare update data with proper typing
-    type UpdateData = {
-      name?: string;
-      isActive?: boolean;
-      updatedAt: Date;
-      CCTags?: {
-        connect?: Array<{ id: string }>;
-        disconnect?: Array<{ id: string }>;
-      };
-    };
-
-    const updateData: UpdateData = {
-      ...(costCodeData.name && { name: costCodeData.name.trim() }),
-      ...(costCodeData.isActive !== undefined && {
-        isActive: costCodeData.isActive,
-      }),
-      updatedAt: new Date(),
-    };
-
-    // Handle tags update if provided
-    if (costCodeData.CCTags !== undefined) {
-      // Get the current tag IDs from the database
-      const currentTagIds = new Set(
-        existingCostCode.CCTags.map((tag) => tag.id),
-      );
-
-      // Get the new tag IDs from the form data
-      const newTagIds = new Set(costCodeData.CCTags.map((tag) => tag.id));
-
-      // Determine which tags to connect (add) and disconnect (remove)
-      const tagsToConnect = costCodeData.CCTags.filter(
-        (tag) => !currentTagIds.has(tag.id),
-      ).map((tag) => ({ id: tag.id }));
-
-      const tagsToDisconnect = existingCostCode.CCTags.filter(
-        (tag) => !newTagIds.has(tag.id),
-      ).map((tag) => ({ id: tag.id }));
-
-      // Add tag connection/disconnection operations to update data
-      updateData.CCTags = {};
-      if (tagsToConnect.length > 0) {
-        updateData.CCTags.connect = tagsToConnect;
-      }
-      if (tagsToDisconnect.length > 0) {
-        updateData.CCTags.disconnect = tagsToDisconnect;
-      }
-    }
-
-    // Update the cost code
-    const updatedCostCode = await prisma.costCode.update({
-      where: { id },
-      data: updateData,
-      include: {
-        CCTags: true, // Include tags in the returned data
-      },
-    });
-
-    // Revalidate relevant paths and tags
-    revalidateTag("costcodes");
-    revalidateTag("assets");
-    revalidatePath("/admins/assets");
-
-    return {
-      success: true,
-      data: updatedCostCode,
-      message: "Cost code updated successfully",
-    };
-  } catch (error) {
-    console.error("Error updating cost code:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
-  }
-}
-
-/**
  * Server action to delete a cost code
  */
 export async function deleteCostCode(id: string) {
@@ -1137,111 +820,6 @@ export async function updateTagAdmin(formData: FormData) {
         error instanceof Error ? error.message : "Unknown error"
       }`,
     );
-  }
-}
-
-export async function updateTags(
-  id: string,
-  tagData: Partial<{
-    name: string;
-    description: string;
-    CostCodes?: { id: string; name: string }[];
-  }>,
-) {
-  try {
-    // Validate tag exists
-    const existingTag = await prisma.cCTag.findUnique({
-      where: { id },
-      include: {
-        CostCodes: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    if (!existingTag) {
-      throw new Error("Tag not found");
-    }
-
-    // Prepare update data
-    const updateData: Partial<{
-      name: string;
-      description: string;
-      CostCodes: {
-        connect?: { id: string }[];
-        disconnect?: { id: string }[];
-      };
-    }> = {
-      ...(tagData.name && { name: tagData.name.trim() }),
-      ...(tagData.description !== undefined && {
-        description: tagData.description,
-      }),
-    };
-
-    // Handle CostCodes updates if provided
-    if (tagData.CostCodes !== undefined) {
-      // Get current cost code IDs
-      const currentCostCodeIds = new Set(
-        existingTag.CostCodes.map((costCode) => costCode.id),
-      );
-
-      // Get new cost code IDs
-      const newCostCodeIds = new Set(
-        tagData.CostCodes.map((costCode) => costCode.id),
-      );
-
-      // Determine which cost codes to connect (add) and disconnect (remove)
-      const costCodesToConnect = tagData.CostCodes.filter(
-        (costCode) => !currentCostCodeIds.has(costCode.id),
-      ).map((costCode) => ({ id: costCode.id }));
-
-      const costCodesToDisconnect = existingTag.CostCodes.filter(
-        (costCode) => !newCostCodeIds.has(costCode.id),
-      ).map((costCode) => ({ id: costCode.id }));
-
-      // Add cost code connection/disconnection operations to update data
-      updateData.CostCodes = {};
-      if (costCodesToConnect.length > 0) {
-        updateData.CostCodes.connect = costCodesToConnect;
-      }
-      if (costCodesToDisconnect.length > 0) {
-        updateData.CostCodes.disconnect = costCodesToDisconnect;
-      }
-    }
-
-    // Update the tag
-    const updatedTag = await prisma.cCTag.update({
-      where: { id },
-      data: updateData,
-      include: {
-        CostCodes: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    // Revalidate relevant paths and tags
-    revalidateTag("costcodes");
-    revalidateTag("assets");
-    revalidatePath("/admins/assets");
-
-    return {
-      success: true,
-      data: updatedTag,
-      message: "Tag updated successfully",
-    };
-  } catch (error) {
-    console.error("Error updating tag:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
   }
 }
 

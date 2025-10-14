@@ -17,7 +17,6 @@ import {
 import Spinner from "@/components/(animations)/spinner";
 import { NewTab } from "@/components/(reusable)/newTabs";
 import UsageData from "./../_components/UsageData";
-import MaintenanceLogEquipment from "./../_components/MaintenanceLogEquipment";
 import { Buttons } from "@/components/(reusable)/buttons";
 import { Titles } from "@/components/(reusable)/titles";
 
@@ -69,7 +68,6 @@ function createInitialState(): UnifiedEquipmentState {
   return {
     isLoading: true,
     hasChanged: false,
-    tab: 1,
     formState: {
       id: "",
       equipmentId: "",
@@ -383,22 +381,9 @@ export default function CombinedForm({ id }: { id: string }) {
 
   // Validation function
   const isFormValid = useCallback(() => {
-    return (
-      // Either equipment is fully operational
-      state.formState.fullyOperational ||
-      // OR maintenance request is properly filled out
-      (state.formState.maintenanceId?.equipmentIssue &&
-        state.formState.maintenanceId?.equipmentIssue.length > 0 &&
-        state.formState.maintenanceId?.additionalInfo &&
-        state.formState.maintenanceId?.additionalInfo.length > 0 &&
-        state.formState.equipment.status !== "OPERATIONAL")
-    );
-  }, [
-    state.formState.fullyOperational,
-    state.formState.maintenanceId?.equipmentIssue,
-    state.formState.maintenanceId?.additionalInfo,
-    state.formState.equipment.status,
-  ]);
+    // Equipment is always valid now that we've removed the maintenance requirement
+    return true;
+  }, []);
 
   const setTab = (newTab: number) => {
     setState((prev) => ({ ...prev, tab: newTab }));
@@ -469,38 +454,11 @@ export default function CombinedForm({ id }: { id: string }) {
       <Holds className="row-start-2 row-end-8 h-full w-full">
         <Grids rows={"10"} className="h-full w-full ">
           <Holds
-            position={"row"}
-            className={`row-start-1 row-end-2 h-full w-full gap-1 ${
-              state.isLoading ? "animate-pulse" : ""
-            }`}
-          >
-            <NewTab
-              isActive={state.tab === 1}
-              onClick={() => setTab(1)}
-              titleImage="/form.svg"
-              titleImageAlt=""
-              isComplete={true}
-              isLoading={state.isLoading}
-            >
-              {t("UsageData")}
-            </NewTab>
-            <NewTab
-              isActive={state.tab === 2}
-              onClick={() => setTab(2)}
-              titleImage="/broken.svg"
-              titleImageAlt=""
-              isComplete={true}
-              isLoading={state.isLoading}
-            >
-              {t("MaintenanceLog")}
-            </NewTab>
-          </Holds>
-          <Holds
             background="white"
             className={
               state.isLoading
-                ? "row-start-2 row-end-11 h-full rounded-t-none animate-pulse"
-                : "row-start-2 row-end-11 h-full rounded-t-none "
+                ? "row-start-1 row-end-11 h-full  animate-pulse"
+                : "row-start-1 row-end-11 h-full "
             }
           >
             {state.isLoading ? (
@@ -510,31 +468,21 @@ export default function CombinedForm({ id }: { id: string }) {
             ) : (
               <Contents width={"section"}>
                 <Grids rows={"8"} className="h-full w-full border-gray-200">
-                  {state.tab === 1 && (
-                    <UsageData
-                      formState={state.formState}
-                      refuelLog={state.formState.refuelLogs}
-                      setRefuelLog={setRefuelLog}
-                      handleFieldChange={handleFieldChange}
-                      formattedTime={formattedTime}
-                      isRefueled={state.markedForRefuel}
-                      handleChangeRefueled={handleChangeRefueled}
-                      AddRefuelLog={addRefuelLog}
-                      handleFullOperational={handleFullOperational}
-                      t={t}
-                      deleteLog={deleteLog}
-                      saveEdits={saveEdits}
-                      isFormValid={isFormValid}
-                    />
-                  )}
-                  {state.tab === 2 && (
-                    <MaintenanceLogEquipment
-                      formState={state.formState}
-                      handleFieldChange={handleFieldChange}
-                      hasChanged={state.hasChanged}
-                      t={t}
-                    />
-                  )}
+                  <UsageData
+                    formState={state.formState}
+                    refuelLog={state.formState.refuelLogs}
+                    setRefuelLog={setRefuelLog}
+                    handleFieldChange={handleFieldChange}
+                    formattedTime={formattedTime}
+                    isRefueled={state.markedForRefuel}
+                    handleChangeRefueled={handleChangeRefueled}
+                    AddRefuelLog={addRefuelLog}
+                    handleFullOperational={handleFullOperational}
+                    t={t}
+                    deleteLog={deleteLog}
+                    saveEdits={saveEdits}
+                    isFormValid={isFormValid}
+                  />
                   <Holds
                     position={"row"}
                     background="white"

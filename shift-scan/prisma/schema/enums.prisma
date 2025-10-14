@@ -72,6 +72,11 @@ enum FormTemplateStatus {
   ARCHIVED
 }
 
+enum ActiveStatus {
+  ACTIVE
+  ARCHIVED
+}
+
 enum FieldType {
   TEXT
   TEXTAREA

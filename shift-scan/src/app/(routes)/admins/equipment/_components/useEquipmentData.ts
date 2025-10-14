@@ -18,6 +18,7 @@ export interface EquipmentSummary {
   ownershipType?: "OWNED" | "LEASED" | "RENTAL";
   equipmentTag: "TRUCK" | "TRAILER" | "VEHICLE" | "EQUIPMENT";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED" | "DRAFT";
+  status: "ACTIVE" | "ARCHIVED" | "DRAFT";
   state: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "NEEDS_REPAIR" | "RETIRED";
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -32,7 +33,6 @@ export interface EquipmentSummary {
   licensePlate?: string;
   licenseState?: string;
   registrationExpiration?: string | Date;
-  isDisabledByAdmin?: boolean;
   createdVia?: "MOBILE" | "WEB" | "IMPORT";
   overWeight?: boolean;
   currentWeight?: number;

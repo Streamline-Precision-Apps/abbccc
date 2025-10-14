@@ -371,6 +371,14 @@ export const FormTemplateStatus: {
 export type FormTemplateStatus = (typeof FormTemplateStatus)[keyof typeof FormTemplateStatus]
 
 
+export const ActiveStatus: {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED'
+};
+
+export type ActiveStatus = (typeof ActiveStatus)[keyof typeof ActiveStatus]
+
+
 export const FieldType: {
   TEXT: 'TEXT',
   TEXTAREA: 'TEXTAREA',
@@ -491,6 +499,10 @@ export const FormStatus: typeof $Enums.FormStatus
 export type FormTemplateStatus = $Enums.FormTemplateStatus
 
 export const FormTemplateStatus: typeof $Enums.FormTemplateStatus
+
+export type ActiveStatus = $Enums.ActiveStatus
+
+export const ActiveStatus: typeof $Enums.ActiveStatus
 
 export type FieldType = $Enums.FieldType
 
@@ -12389,7 +12401,6 @@ export namespace Prisma {
     creationReason: string | null
     equipmentTag: $Enums.EquipmentTags | null
     state: $Enums.EquipmentState | null
-    isDisabledByAdmin: boolean | null
     approvalStatus: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12410,6 +12421,7 @@ export namespace Prisma {
     serialNumber: string | null
     year: string | null
     acquiredCondition: $Enums.Condition | null
+    status: $Enums.FormTemplateStatus | null
   }
 
   export type EquipmentMaxAggregateOutputType = {
@@ -12420,7 +12432,6 @@ export namespace Prisma {
     creationReason: string | null
     equipmentTag: $Enums.EquipmentTags | null
     state: $Enums.EquipmentState | null
-    isDisabledByAdmin: boolean | null
     approvalStatus: $Enums.ApprovalStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -12441,6 +12452,7 @@ export namespace Prisma {
     serialNumber: string | null
     year: string | null
     acquiredCondition: $Enums.Condition | null
+    status: $Enums.FormTemplateStatus | null
   }
 
   export type EquipmentCountAggregateOutputType = {
@@ -12451,7 +12463,6 @@ export namespace Prisma {
     creationReason: number
     equipmentTag: number
     state: number
-    isDisabledByAdmin: number
     approvalStatus: number
     createdAt: number
     updatedAt: number
@@ -12472,6 +12483,7 @@ export namespace Prisma {
     serialNumber: number
     year: number
     acquiredCondition: number
+    status: number
     _all: number
   }
 
@@ -12492,7 +12504,6 @@ export namespace Prisma {
     creationReason?: true
     equipmentTag?: true
     state?: true
-    isDisabledByAdmin?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -12513,6 +12524,7 @@ export namespace Prisma {
     serialNumber?: true
     year?: true
     acquiredCondition?: true
+    status?: true
   }
 
   export type EquipmentMaxAggregateInputType = {
@@ -12523,7 +12535,6 @@ export namespace Prisma {
     creationReason?: true
     equipmentTag?: true
     state?: true
-    isDisabledByAdmin?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -12544,6 +12555,7 @@ export namespace Prisma {
     serialNumber?: true
     year?: true
     acquiredCondition?: true
+    status?: true
   }
 
   export type EquipmentCountAggregateInputType = {
@@ -12554,7 +12566,6 @@ export namespace Prisma {
     creationReason?: true
     equipmentTag?: true
     state?: true
-    isDisabledByAdmin?: true
     approvalStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -12575,6 +12586,7 @@ export namespace Prisma {
     serialNumber?: true
     year?: true
     acquiredCondition?: true
+    status?: true
     _all?: true
   }
 
@@ -12672,7 +12684,6 @@ export namespace Prisma {
     creationReason: string | null
     equipmentTag: $Enums.EquipmentTags
     state: $Enums.EquipmentState
-    isDisabledByAdmin: boolean
     approvalStatus: $Enums.ApprovalStatus
     createdAt: Date
     updatedAt: Date
@@ -12693,6 +12704,7 @@ export namespace Prisma {
     serialNumber: string | null
     year: string | null
     acquiredCondition: $Enums.Condition | null
+    status: $Enums.FormTemplateStatus
     _count: EquipmentCountAggregateOutputType | null
     _avg: EquipmentAvgAggregateOutputType | null
     _sum: EquipmentSumAggregateOutputType | null
@@ -12722,7 +12734,6 @@ export namespace Prisma {
     creationReason?: boolean
     equipmentTag?: boolean
     state?: boolean
-    isDisabledByAdmin?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12743,6 +12754,7 @@ export namespace Prisma {
     serialNumber?: boolean
     year?: boolean
     acquiredCondition?: boolean
+    status?: boolean
     EmployeeEquipmentLogs?: boolean | Equipment$EmployeeEquipmentLogsArgs<ExtArgs>
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
     EquipmentHauled?: boolean | Equipment$EquipmentHauledArgs<ExtArgs>
@@ -12764,7 +12776,6 @@ export namespace Prisma {
     creationReason?: boolean
     equipmentTag?: boolean
     state?: boolean
-    isDisabledByAdmin?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12785,6 +12796,7 @@ export namespace Prisma {
     serialNumber?: boolean
     year?: boolean
     acquiredCondition?: boolean
+    status?: boolean
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["equipment"]>
 
@@ -12796,7 +12808,6 @@ export namespace Prisma {
     creationReason?: boolean
     equipmentTag?: boolean
     state?: boolean
-    isDisabledByAdmin?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12817,6 +12828,7 @@ export namespace Prisma {
     serialNumber?: boolean
     year?: boolean
     acquiredCondition?: boolean
+    status?: boolean
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["equipment"]>
 
@@ -12828,7 +12840,6 @@ export namespace Prisma {
     creationReason?: boolean
     equipmentTag?: boolean
     state?: boolean
-    isDisabledByAdmin?: boolean
     approvalStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -12849,9 +12860,10 @@ export namespace Prisma {
     serialNumber?: boolean
     year?: boolean
     acquiredCondition?: boolean
+    status?: boolean
   }
 
-  export type EquipmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "name" | "description" | "creationReason" | "equipmentTag" | "state" | "isDisabledByAdmin" | "approvalStatus" | "createdAt" | "updatedAt" | "overWeight" | "currentWeight" | "createdById" | "createdVia" | "acquiredDate" | "code" | "color" | "licensePlate" | "licenseState" | "make" | "memo" | "model" | "ownershipType" | "registrationExpiration" | "serialNumber" | "year" | "acquiredCondition", ExtArgs["result"]["equipment"]>
+  export type EquipmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "name" | "description" | "creationReason" | "equipmentTag" | "state" | "approvalStatus" | "createdAt" | "updatedAt" | "overWeight" | "currentWeight" | "createdById" | "createdVia" | "acquiredDate" | "code" | "color" | "licensePlate" | "licenseState" | "make" | "memo" | "model" | "ownershipType" | "registrationExpiration" | "serialNumber" | "year" | "acquiredCondition" | "status", ExtArgs["result"]["equipment"]>
   export type EquipmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     EmployeeEquipmentLogs?: boolean | Equipment$EmployeeEquipmentLogsArgs<ExtArgs>
     createdBy?: boolean | Equipment$createdByArgs<ExtArgs>
@@ -12894,7 +12906,6 @@ export namespace Prisma {
       creationReason: string | null
       equipmentTag: $Enums.EquipmentTags
       state: $Enums.EquipmentState
-      isDisabledByAdmin: boolean
       approvalStatus: $Enums.ApprovalStatus
       createdAt: Date
       updatedAt: Date
@@ -12915,6 +12926,7 @@ export namespace Prisma {
       serialNumber: string | null
       year: string | null
       acquiredCondition: $Enums.Condition | null
+      status: $Enums.FormTemplateStatus
     }, ExtArgs["result"]["equipment"]>
     composites: {}
   }
@@ -13355,7 +13367,6 @@ export namespace Prisma {
     readonly creationReason: FieldRef<"Equipment", 'String'>
     readonly equipmentTag: FieldRef<"Equipment", 'EquipmentTags'>
     readonly state: FieldRef<"Equipment", 'EquipmentState'>
-    readonly isDisabledByAdmin: FieldRef<"Equipment", 'Boolean'>
     readonly approvalStatus: FieldRef<"Equipment", 'ApprovalStatus'>
     readonly createdAt: FieldRef<"Equipment", 'DateTime'>
     readonly updatedAt: FieldRef<"Equipment", 'DateTime'>
@@ -13376,6 +13387,7 @@ export namespace Prisma {
     readonly serialNumber: FieldRef<"Equipment", 'String'>
     readonly year: FieldRef<"Equipment", 'String'>
     readonly acquiredCondition: FieldRef<"Equipment", 'Condition'>
+    readonly status: FieldRef<"Equipment", 'FormTemplateStatus'>
   }
     
 
@@ -22140,7 +22152,6 @@ export namespace Prisma {
     description: string | null
     creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus | null
-    isActive: boolean | null
     addressId: string | null
     comment: string | null
     createdAt: Date | null
@@ -22152,6 +22163,7 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number | null
+    status: $Enums.FormTemplateStatus | null
   }
 
   export type JobsiteMaxAggregateOutputType = {
@@ -22161,7 +22173,6 @@ export namespace Prisma {
     description: string | null
     creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus | null
-    isActive: boolean | null
     addressId: string | null
     comment: string | null
     createdAt: Date | null
@@ -22173,6 +22184,7 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number | null
+    status: $Enums.FormTemplateStatus | null
   }
 
   export type JobsiteCountAggregateOutputType = {
@@ -22182,7 +22194,6 @@ export namespace Prisma {
     description: number
     creationReason: number
     approvalStatus: number
-    isActive: number
     addressId: number
     comment: number
     createdAt: number
@@ -22194,6 +22205,7 @@ export namespace Prisma {
     latitude: number
     longitude: number
     radiusMeters: number
+    status: number
     _all: number
   }
 
@@ -22217,7 +22229,6 @@ export namespace Prisma {
     description?: true
     creationReason?: true
     approvalStatus?: true
-    isActive?: true
     addressId?: true
     comment?: true
     createdAt?: true
@@ -22229,6 +22240,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    status?: true
   }
 
   export type JobsiteMaxAggregateInputType = {
@@ -22238,7 +22250,6 @@ export namespace Prisma {
     description?: true
     creationReason?: true
     approvalStatus?: true
-    isActive?: true
     addressId?: true
     comment?: true
     createdAt?: true
@@ -22250,6 +22261,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    status?: true
   }
 
   export type JobsiteCountAggregateInputType = {
@@ -22259,7 +22271,6 @@ export namespace Prisma {
     description?: true
     creationReason?: true
     approvalStatus?: true
-    isActive?: true
     addressId?: true
     comment?: true
     createdAt?: true
@@ -22271,6 +22282,7 @@ export namespace Prisma {
     latitude?: true
     longitude?: true
     radiusMeters?: true
+    status?: true
     _all?: true
   }
 
@@ -22367,7 +22379,6 @@ export namespace Prisma {
     description: string
     creationReason: string | null
     approvalStatus: $Enums.ApprovalStatus
-    isActive: boolean
     addressId: string | null
     comment: string | null
     createdAt: Date
@@ -22379,6 +22390,7 @@ export namespace Prisma {
     latitude: number | null
     longitude: number | null
     radiusMeters: number | null
+    status: $Enums.FormTemplateStatus
     _count: JobsiteCountAggregateOutputType | null
     _avg: JobsiteAvgAggregateOutputType | null
     _sum: JobsiteSumAggregateOutputType | null
@@ -22407,7 +22419,6 @@ export namespace Prisma {
     description?: boolean
     creationReason?: boolean
     approvalStatus?: boolean
-    isActive?: boolean
     addressId?: boolean
     comment?: boolean
     createdAt?: boolean
@@ -22419,6 +22430,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    status?: boolean
     Address?: boolean | Jobsite$AddressArgs<ExtArgs>
     createdBy?: boolean | Jobsite$createdByArgs<ExtArgs>
     TimeSheets?: boolean | Jobsite$TimeSheetsArgs<ExtArgs>
@@ -22433,7 +22445,6 @@ export namespace Prisma {
     description?: boolean
     creationReason?: boolean
     approvalStatus?: boolean
-    isActive?: boolean
     addressId?: boolean
     comment?: boolean
     createdAt?: boolean
@@ -22445,6 +22456,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    status?: boolean
     Address?: boolean | Jobsite$AddressArgs<ExtArgs>
     createdBy?: boolean | Jobsite$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["jobsite"]>
@@ -22456,7 +22468,6 @@ export namespace Prisma {
     description?: boolean
     creationReason?: boolean
     approvalStatus?: boolean
-    isActive?: boolean
     addressId?: boolean
     comment?: boolean
     createdAt?: boolean
@@ -22468,6 +22479,7 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    status?: boolean
     Address?: boolean | Jobsite$AddressArgs<ExtArgs>
     createdBy?: boolean | Jobsite$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["jobsite"]>
@@ -22479,7 +22491,6 @@ export namespace Prisma {
     description?: boolean
     creationReason?: boolean
     approvalStatus?: boolean
-    isActive?: boolean
     addressId?: boolean
     comment?: boolean
     createdAt?: boolean
@@ -22491,9 +22502,10 @@ export namespace Prisma {
     latitude?: boolean
     longitude?: boolean
     radiusMeters?: boolean
+    status?: boolean
   }
 
-  export type JobsiteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "name" | "description" | "creationReason" | "approvalStatus" | "isActive" | "addressId" | "comment" | "createdAt" | "updatedAt" | "archiveDate" | "createdById" | "createdVia" | "code" | "latitude" | "longitude" | "radiusMeters", ExtArgs["result"]["jobsite"]>
+  export type JobsiteOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qrId" | "name" | "description" | "creationReason" | "approvalStatus" | "addressId" | "comment" | "createdAt" | "updatedAt" | "archiveDate" | "createdById" | "createdVia" | "code" | "latitude" | "longitude" | "radiusMeters" | "status", ExtArgs["result"]["jobsite"]>
   export type JobsiteInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Address?: boolean | Jobsite$AddressArgs<ExtArgs>
     createdBy?: boolean | Jobsite$createdByArgs<ExtArgs>
@@ -22525,7 +22537,6 @@ export namespace Prisma {
       description: string
       creationReason: string | null
       approvalStatus: $Enums.ApprovalStatus
-      isActive: boolean
       addressId: string | null
       comment: string | null
       createdAt: Date
@@ -22537,6 +22548,7 @@ export namespace Prisma {
       latitude: number | null
       longitude: number | null
       radiusMeters: number | null
+      status: $Enums.FormTemplateStatus
     }, ExtArgs["result"]["jobsite"]>
     composites: {}
   }
@@ -22970,7 +22982,6 @@ export namespace Prisma {
     readonly description: FieldRef<"Jobsite", 'String'>
     readonly creationReason: FieldRef<"Jobsite", 'String'>
     readonly approvalStatus: FieldRef<"Jobsite", 'ApprovalStatus'>
-    readonly isActive: FieldRef<"Jobsite", 'Boolean'>
     readonly addressId: FieldRef<"Jobsite", 'String'>
     readonly comment: FieldRef<"Jobsite", 'String'>
     readonly createdAt: FieldRef<"Jobsite", 'DateTime'>
@@ -22982,6 +22993,7 @@ export namespace Prisma {
     readonly latitude: FieldRef<"Jobsite", 'Float'>
     readonly longitude: FieldRef<"Jobsite", 'Float'>
     readonly radiusMeters: FieldRef<"Jobsite", 'Float'>
+    readonly status: FieldRef<"Jobsite", 'FormTemplateStatus'>
   }
     
 
@@ -53071,7 +53083,6 @@ export namespace Prisma {
     creationReason: 'creationReason',
     equipmentTag: 'equipmentTag',
     state: 'state',
-    isDisabledByAdmin: 'isDisabledByAdmin',
     approvalStatus: 'approvalStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -53091,7 +53102,8 @@ export namespace Prisma {
     registrationExpiration: 'registrationExpiration',
     serialNumber: 'serialNumber',
     year: 'year',
-    acquiredCondition: 'acquiredCondition'
+    acquiredCondition: 'acquiredCondition',
+    status: 'status'
   };
 
   export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
@@ -53199,7 +53211,6 @@ export namespace Prisma {
     description: 'description',
     creationReason: 'creationReason',
     approvalStatus: 'approvalStatus',
-    isActive: 'isActive',
     addressId: 'addressId',
     comment: 'comment',
     createdAt: 'createdAt',
@@ -53210,7 +53221,8 @@ export namespace Prisma {
     code: 'code',
     latitude: 'latitude',
     longitude: 'longitude',
-    radiusMeters: 'radiusMeters'
+    radiusMeters: 'radiusMeters',
+    status: 'status'
   };
 
   export type JobsiteScalarFieldEnum = (typeof JobsiteScalarFieldEnum)[keyof typeof JobsiteScalarFieldEnum]
@@ -54346,7 +54358,6 @@ export namespace Prisma {
     creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
@@ -54367,6 +54378,7 @@ export namespace Prisma {
     serialNumber?: StringNullableFilter<"Equipment"> | string | null
     year?: StringNullableFilter<"Equipment"> | string | null
     acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFilter<"Equipment"> | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     EquipmentHauled?: EquipmentHauledListRelationFilter
@@ -54387,7 +54399,6 @@ export namespace Prisma {
     creationReason?: SortOrderInput | SortOrder
     equipmentTag?: SortOrder
     state?: SortOrder
-    isDisabledByAdmin?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54408,6 +54419,7 @@ export namespace Prisma {
     serialNumber?: SortOrderInput | SortOrder
     year?: SortOrderInput | SortOrder
     acquiredCondition?: SortOrderInput | SortOrder
+    status?: SortOrder
     EmployeeEquipmentLogs?: EmployeeEquipmentLogOrderByRelationAggregateInput
     createdBy?: UserOrderByWithRelationInput
     EquipmentHauled?: EquipmentHauledOrderByRelationAggregateInput
@@ -54431,7 +54443,6 @@ export namespace Prisma {
     creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
@@ -54452,6 +54463,7 @@ export namespace Prisma {
     serialNumber?: StringNullableFilter<"Equipment"> | string | null
     year?: StringNullableFilter<"Equipment"> | string | null
     acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFilter<"Equipment"> | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogListRelationFilter
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     EquipmentHauled?: EquipmentHauledListRelationFilter
@@ -54472,7 +54484,6 @@ export namespace Prisma {
     creationReason?: SortOrderInput | SortOrder
     equipmentTag?: SortOrder
     state?: SortOrder
-    isDisabledByAdmin?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -54493,6 +54504,7 @@ export namespace Prisma {
     serialNumber?: SortOrderInput | SortOrder
     year?: SortOrderInput | SortOrder
     acquiredCondition?: SortOrderInput | SortOrder
+    status?: SortOrder
     _count?: EquipmentCountOrderByAggregateInput
     _avg?: EquipmentAvgOrderByAggregateInput
     _max?: EquipmentMaxOrderByAggregateInput
@@ -54511,7 +54523,6 @@ export namespace Prisma {
     creationReason?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsWithAggregatesFilter<"Equipment"> | $Enums.EquipmentTags
     state?: EnumEquipmentStateWithAggregatesFilter<"Equipment"> | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolWithAggregatesFilter<"Equipment"> | boolean
     approvalStatus?: EnumApprovalStatusWithAggregatesFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeWithAggregatesFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Equipment"> | Date | string
@@ -54532,6 +54543,7 @@ export namespace Prisma {
     serialNumber?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     year?: StringNullableWithAggregatesFilter<"Equipment"> | string | null
     acquiredCondition?: EnumConditionNullableWithAggregatesFilter<"Equipment"> | $Enums.Condition | null
+    status?: EnumFormTemplateStatusWithAggregatesFilter<"Equipment"> | $Enums.FormTemplateStatus
   }
 
   export type EmployeeEquipmentLogWhereInput = {
@@ -55059,7 +55071,6 @@ export namespace Prisma {
     description?: StringFilter<"Jobsite"> | string
     creationReason?: StringNullableFilter<"Jobsite"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Jobsite"> | $Enums.ApprovalStatus
-    isActive?: BoolFilter<"Jobsite"> | boolean
     addressId?: StringNullableFilter<"Jobsite"> | string | null
     comment?: StringNullableFilter<"Jobsite"> | string | null
     createdAt?: DateTimeFilter<"Jobsite"> | Date | string
@@ -55071,6 +55082,7 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Jobsite"> | number | null
     longitude?: FloatNullableFilter<"Jobsite"> | number | null
     radiusMeters?: FloatNullableFilter<"Jobsite"> | number | null
+    status?: EnumFormTemplateStatusFilter<"Jobsite"> | $Enums.FormTemplateStatus
     Address?: XOR<AddressNullableScalarRelationFilter, AddressWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     TimeSheets?: TimeSheetListRelationFilter
@@ -55084,7 +55096,6 @@ export namespace Prisma {
     description?: SortOrder
     creationReason?: SortOrderInput | SortOrder
     approvalStatus?: SortOrder
-    isActive?: SortOrder
     addressId?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -55096,6 +55107,7 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radiusMeters?: SortOrderInput | SortOrder
+    status?: SortOrder
     Address?: AddressOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
     TimeSheets?: TimeSheetOrderByRelationAggregateInput
@@ -55112,7 +55124,6 @@ export namespace Prisma {
     description?: StringFilter<"Jobsite"> | string
     creationReason?: StringNullableFilter<"Jobsite"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Jobsite"> | $Enums.ApprovalStatus
-    isActive?: BoolFilter<"Jobsite"> | boolean
     addressId?: StringNullableFilter<"Jobsite"> | string | null
     comment?: StringNullableFilter<"Jobsite"> | string | null
     createdAt?: DateTimeFilter<"Jobsite"> | Date | string
@@ -55124,6 +55135,7 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Jobsite"> | number | null
     longitude?: FloatNullableFilter<"Jobsite"> | number | null
     radiusMeters?: FloatNullableFilter<"Jobsite"> | number | null
+    status?: EnumFormTemplateStatusFilter<"Jobsite"> | $Enums.FormTemplateStatus
     Address?: XOR<AddressNullableScalarRelationFilter, AddressWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     TimeSheets?: TimeSheetListRelationFilter
@@ -55137,7 +55149,6 @@ export namespace Prisma {
     description?: SortOrder
     creationReason?: SortOrderInput | SortOrder
     approvalStatus?: SortOrder
-    isActive?: SortOrder
     addressId?: SortOrderInput | SortOrder
     comment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -55149,6 +55160,7 @@ export namespace Prisma {
     latitude?: SortOrderInput | SortOrder
     longitude?: SortOrderInput | SortOrder
     radiusMeters?: SortOrderInput | SortOrder
+    status?: SortOrder
     _count?: JobsiteCountOrderByAggregateInput
     _avg?: JobsiteAvgOrderByAggregateInput
     _max?: JobsiteMaxOrderByAggregateInput
@@ -55166,7 +55178,6 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Jobsite"> | string
     creationReason?: StringNullableWithAggregatesFilter<"Jobsite"> | string | null
     approvalStatus?: EnumApprovalStatusWithAggregatesFilter<"Jobsite"> | $Enums.ApprovalStatus
-    isActive?: BoolWithAggregatesFilter<"Jobsite"> | boolean
     addressId?: StringNullableWithAggregatesFilter<"Jobsite"> | string | null
     comment?: StringNullableWithAggregatesFilter<"Jobsite"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Jobsite"> | Date | string
@@ -55178,6 +55189,7 @@ export namespace Prisma {
     latitude?: FloatNullableWithAggregatesFilter<"Jobsite"> | number | null
     longitude?: FloatNullableWithAggregatesFilter<"Jobsite"> | number | null
     radiusMeters?: FloatNullableWithAggregatesFilter<"Jobsite"> | number | null
+    status?: EnumFormTemplateStatusWithAggregatesFilter<"Jobsite"> | $Enums.FormTemplateStatus
   }
 
   export type ReportWhereInput = {
@@ -57614,7 +57626,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -57634,6 +57645,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -57654,7 +57666,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -57675,6 +57686,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -57694,7 +57706,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57714,6 +57725,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -57734,7 +57746,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57755,6 +57766,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -57774,7 +57786,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -57795,6 +57806,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
   }
 
   export type EquipmentUpdateManyMutationInput = {
@@ -57805,7 +57817,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57825,6 +57836,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type EquipmentUncheckedUpdateManyInput = {
@@ -57835,7 +57847,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57856,6 +57867,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type EmployeeEquipmentLogCreateInput = {
@@ -58398,7 +58410,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -58408,6 +58419,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     Address?: AddressCreateNestedOneWithoutJobsiteInput
     createdBy?: UserCreateNestedOneWithoutJobsiteInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutJobsiteInput
@@ -58421,7 +58433,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -58433,6 +58444,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutJobsiteInput
     CCTags?: CCTagUncheckedCreateNestedManyWithoutJobsitesInput
   }
@@ -58444,7 +58456,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58454,6 +58465,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     Address?: AddressUpdateOneWithoutJobsiteNestedInput
     createdBy?: UserUpdateOneWithoutJobsiteNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutJobsiteNestedInput
@@ -58467,7 +58479,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58479,6 +58490,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutJobsiteNestedInput
     CCTags?: CCTagUncheckedUpdateManyWithoutJobsitesNestedInput
   }
@@ -58490,7 +58502,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -58502,6 +58513,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
   }
 
   export type JobsiteUpdateManyMutationInput = {
@@ -58511,7 +58523,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58521,6 +58532,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type JobsiteUncheckedUpdateManyInput = {
@@ -58530,7 +58542,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58542,6 +58553,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type ReportCreateInput = {
@@ -61194,6 +61206,13 @@ export namespace Prisma {
     not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
   }
 
+  export type EnumFormTemplateStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumFormTemplateStatusFilter<$PrismaModel> | $Enums.FormTemplateStatus
+  }
+
   export type EmployeeEquipmentLogListRelationFilter = {
     every?: EmployeeEquipmentLogWhereInput
     some?: EmployeeEquipmentLogWhereInput
@@ -61267,7 +61286,6 @@ export namespace Prisma {
     creationReason?: SortOrder
     equipmentTag?: SortOrder
     state?: SortOrder
-    isDisabledByAdmin?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -61288,6 +61306,7 @@ export namespace Prisma {
     serialNumber?: SortOrder
     year?: SortOrder
     acquiredCondition?: SortOrder
+    status?: SortOrder
   }
 
   export type EquipmentAvgOrderByAggregateInput = {
@@ -61302,7 +61321,6 @@ export namespace Prisma {
     creationReason?: SortOrder
     equipmentTag?: SortOrder
     state?: SortOrder
-    isDisabledByAdmin?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -61323,6 +61341,7 @@ export namespace Prisma {
     serialNumber?: SortOrder
     year?: SortOrder
     acquiredCondition?: SortOrder
+    status?: SortOrder
   }
 
   export type EquipmentMinOrderByAggregateInput = {
@@ -61333,7 +61352,6 @@ export namespace Prisma {
     creationReason?: SortOrder
     equipmentTag?: SortOrder
     state?: SortOrder
-    isDisabledByAdmin?: SortOrder
     approvalStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -61354,6 +61372,7 @@ export namespace Prisma {
     serialNumber?: SortOrder
     year?: SortOrder
     acquiredCondition?: SortOrder
+    status?: SortOrder
   }
 
   export type EquipmentSumOrderByAggregateInput = {
@@ -61458,6 +61477,16 @@ export namespace Prisma {
     _max?: NestedEnumConditionNullableFilter<$PrismaModel>
   }
 
+  export type EnumFormTemplateStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumFormTemplateStatusWithAggregatesFilter<$PrismaModel> | $Enums.FormTemplateStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
+    _max?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
+  }
+
   export type EquipmentNullableScalarRelationFilter = {
     is?: EquipmentWhereInput | null
     isNot?: EquipmentWhereInput | null
@@ -61517,13 +61546,6 @@ export namespace Prisma {
 
   export type EmployeeEquipmentLogSumOrderByAggregateInput = {
     timeSheetId?: SortOrder
-  }
-
-  export type EnumFormTemplateStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumFormTemplateStatusFilter<$PrismaModel> | $Enums.FormTemplateStatus
   }
 
   export type EnumFormTemplateCategoryFilter<$PrismaModel = never> = {
@@ -61595,16 +61617,6 @@ export namespace Prisma {
     isActive?: SortOrder
     formType?: SortOrder
     isApprovalRequired?: SortOrder
-  }
-
-  export type EnumFormTemplateStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumFormTemplateStatusWithAggregatesFilter<$PrismaModel> | $Enums.FormTemplateStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
-    _max?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
   }
 
   export type EnumFormTemplateCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -61973,7 +61985,6 @@ export namespace Prisma {
     description?: SortOrder
     creationReason?: SortOrder
     approvalStatus?: SortOrder
-    isActive?: SortOrder
     addressId?: SortOrder
     comment?: SortOrder
     createdAt?: SortOrder
@@ -61985,6 +61996,7 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    status?: SortOrder
   }
 
   export type JobsiteAvgOrderByAggregateInput = {
@@ -62000,7 +62012,6 @@ export namespace Prisma {
     description?: SortOrder
     creationReason?: SortOrder
     approvalStatus?: SortOrder
-    isActive?: SortOrder
     addressId?: SortOrder
     comment?: SortOrder
     createdAt?: SortOrder
@@ -62012,6 +62023,7 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    status?: SortOrder
   }
 
   export type JobsiteMinOrderByAggregateInput = {
@@ -62021,7 +62033,6 @@ export namespace Prisma {
     description?: SortOrder
     creationReason?: SortOrder
     approvalStatus?: SortOrder
-    isActive?: SortOrder
     addressId?: SortOrder
     comment?: SortOrder
     createdAt?: SortOrder
@@ -62033,6 +62044,7 @@ export namespace Prisma {
     latitude?: SortOrder
     longitude?: SortOrder
     radiusMeters?: SortOrder
+    status?: SortOrder
   }
 
   export type JobsiteSumOrderByAggregateInput = {
@@ -64115,6 +64127,10 @@ export namespace Prisma {
     set?: $Enums.Condition | null
   }
 
+  export type EnumFormTemplateStatusFieldUpdateOperationsInput = {
+    set?: $Enums.FormTemplateStatus
+  }
+
   export type EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput = {
     create?: XOR<EmployeeEquipmentLogCreateWithoutEquipmentInput, EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput> | EmployeeEquipmentLogCreateWithoutEquipmentInput[] | EmployeeEquipmentLogUncheckedCreateWithoutEquipmentInput[]
     connectOrCreate?: EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput | EmployeeEquipmentLogCreateOrConnectWithoutEquipmentInput[]
@@ -64483,10 +64499,6 @@ export namespace Prisma {
     create?: XOR<FormGroupingCreateWithoutFormTemplateInput, FormGroupingUncheckedCreateWithoutFormTemplateInput> | FormGroupingCreateWithoutFormTemplateInput[] | FormGroupingUncheckedCreateWithoutFormTemplateInput[]
     connectOrCreate?: FormGroupingCreateOrConnectWithoutFormTemplateInput | FormGroupingCreateOrConnectWithoutFormTemplateInput[]
     connect?: FormGroupingWhereUniqueInput | FormGroupingWhereUniqueInput[]
-  }
-
-  export type EnumFormTemplateStatusFieldUpdateOperationsInput = {
-    set?: $Enums.FormTemplateStatus
   }
 
   export type EnumFormTemplateCategoryFieldUpdateOperationsInput = {
@@ -67205,6 +67217,13 @@ export namespace Prisma {
     not?: NestedEnumConditionNullableFilter<$PrismaModel> | $Enums.Condition | null
   }
 
+  export type NestedEnumFormTemplateStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumFormTemplateStatusFilter<$PrismaModel> | $Enums.FormTemplateStatus
+  }
+
   export type NestedEnumEquipmentTagsWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.EquipmentTags | EnumEquipmentTagsFieldRefInput<$PrismaModel>
     in?: $Enums.EquipmentTags[] | ListEnumEquipmentTagsFieldRefInput<$PrismaModel>
@@ -67303,20 +67322,6 @@ export namespace Prisma {
     _max?: NestedEnumConditionNullableFilter<$PrismaModel>
   }
 
-  export type NestedEnumFormTemplateStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumFormTemplateStatusFilter<$PrismaModel> | $Enums.FormTemplateStatus
-  }
-
-  export type NestedEnumFormTemplateCategoryFilter<$PrismaModel = never> = {
-    equals?: $Enums.FormTemplateCategory | EnumFormTemplateCategoryFieldRefInput<$PrismaModel>
-    in?: $Enums.FormTemplateCategory[] | ListEnumFormTemplateCategoryFieldRefInput<$PrismaModel>
-    notIn?: $Enums.FormTemplateCategory[] | ListEnumFormTemplateCategoryFieldRefInput<$PrismaModel>
-    not?: NestedEnumFormTemplateCategoryFilter<$PrismaModel> | $Enums.FormTemplateCategory
-  }
-
   export type NestedEnumFormTemplateStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.FormTemplateStatus | EnumFormTemplateStatusFieldRefInput<$PrismaModel>
     in?: $Enums.FormTemplateStatus[] | ListEnumFormTemplateStatusFieldRefInput<$PrismaModel>
@@ -67325,6 +67330,13 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
     _max?: NestedEnumFormTemplateStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumFormTemplateCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.FormTemplateCategory | EnumFormTemplateCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.FormTemplateCategory[] | ListEnumFormTemplateCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.FormTemplateCategory[] | ListEnumFormTemplateCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumFormTemplateCategoryFilter<$PrismaModel> | $Enums.FormTemplateCategory
   }
 
   export type NestedEnumFormTemplateCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -68070,7 +68082,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68080,6 +68091,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     Address?: AddressCreateNestedOneWithoutJobsiteInput
     createdBy?: UserCreateNestedOneWithoutJobsiteInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutJobsiteInput
@@ -68092,7 +68104,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -68104,6 +68115,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutJobsiteInput
   }
 
@@ -68166,7 +68178,6 @@ export namespace Prisma {
     description?: StringFilter<"Jobsite"> | string
     creationReason?: StringNullableFilter<"Jobsite"> | string | null
     approvalStatus?: EnumApprovalStatusFilter<"Jobsite"> | $Enums.ApprovalStatus
-    isActive?: BoolFilter<"Jobsite"> | boolean
     addressId?: StringNullableFilter<"Jobsite"> | string | null
     comment?: StringNullableFilter<"Jobsite"> | string | null
     createdAt?: DateTimeFilter<"Jobsite"> | Date | string
@@ -68178,6 +68189,7 @@ export namespace Prisma {
     latitude?: FloatNullableFilter<"Jobsite"> | number | null
     longitude?: FloatNullableFilter<"Jobsite"> | number | null
     radiusMeters?: FloatNullableFilter<"Jobsite"> | number | null
+    status?: EnumFormTemplateStatusFilter<"Jobsite"> | $Enums.FormTemplateStatus
   }
 
   export type UserCreateWithoutCrewsInput = {
@@ -68334,7 +68346,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68354,6 +68365,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -68373,7 +68385,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68394,6 +68405,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -68467,7 +68479,6 @@ export namespace Prisma {
     creationReason?: StringNullableFilter<"Equipment"> | string | null
     equipmentTag?: EnumEquipmentTagsFilter<"Equipment"> | $Enums.EquipmentTags
     state?: EnumEquipmentStateFilter<"Equipment"> | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFilter<"Equipment"> | boolean
     approvalStatus?: EnumApprovalStatusFilter<"Equipment"> | $Enums.ApprovalStatus
     createdAt?: DateTimeFilter<"Equipment"> | Date | string
     updatedAt?: DateTimeFilter<"Equipment"> | Date | string
@@ -68488,6 +68499,7 @@ export namespace Prisma {
     serialNumber?: StringNullableFilter<"Equipment"> | string | null
     year?: StringNullableFilter<"Equipment"> | string | null
     acquiredCondition?: EnumConditionNullableFilter<"Equipment"> | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFilter<"Equipment"> | $Enums.FormTemplateStatus
   }
 
   export type PdfDocumentUpsertWithWhereUniqueWithoutDocumentTagsInput = {
@@ -69262,7 +69274,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69282,6 +69293,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
@@ -69301,7 +69313,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69322,6 +69333,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -69496,7 +69508,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -69516,6 +69527,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
@@ -69535,7 +69547,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -69556,6 +69567,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -71435,7 +71447,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71445,6 +71456,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     Address?: AddressCreateNestedOneWithoutJobsiteInput
     createdBy?: UserCreateNestedOneWithoutJobsiteInput
     CCTags?: CCTagCreateNestedManyWithoutJobsitesInput
@@ -71457,7 +71469,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -71469,6 +71480,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     CCTags?: CCTagUncheckedCreateNestedManyWithoutJobsitesInput
   }
 
@@ -71771,7 +71783,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71781,6 +71792,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     Address?: AddressUpdateOneWithoutJobsiteNestedInput
     createdBy?: UserUpdateOneWithoutJobsiteNestedInput
     CCTags?: CCTagUpdateManyWithoutJobsitesNestedInput
@@ -71793,7 +71805,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71805,6 +71816,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     CCTags?: CCTagUncheckedUpdateManyWithoutJobsitesNestedInput
   }
 
@@ -71973,7 +71985,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71993,6 +72004,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -72012,7 +72024,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72033,6 +72044,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -72139,7 +72151,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72159,6 +72170,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -72178,7 +72190,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72199,6 +72210,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -72761,7 +72773,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72781,6 +72792,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -72800,7 +72812,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72821,6 +72832,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -72899,7 +72911,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72919,6 +72930,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -72938,7 +72950,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72959,6 +72970,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -73019,7 +73031,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73039,6 +73050,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -73058,7 +73070,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73079,6 +73090,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -73228,7 +73240,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73248,6 +73259,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -73267,7 +73279,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73288,6 +73299,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -73563,7 +73575,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73583,6 +73594,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -73602,7 +73614,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73623,6 +73634,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -73718,7 +73730,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73738,6 +73749,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -73757,7 +73769,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73778,6 +73789,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -73801,7 +73813,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73821,6 +73832,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
@@ -73840,7 +73852,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73861,6 +73872,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -73984,7 +73996,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74004,6 +74015,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -74023,7 +74035,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74044,6 +74055,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -74151,7 +74163,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74171,6 +74182,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -74190,7 +74202,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74211,6 +74222,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -74240,7 +74252,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74260,6 +74271,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -74279,7 +74291,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74300,6 +74311,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -74678,7 +74690,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74698,6 +74709,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     createdBy?: UserCreateNestedOneWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
@@ -74717,7 +74729,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74738,6 +74749,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
     TascoLogs?: TascoLogUncheckedCreateNestedManyWithoutEquipmentInput
@@ -74809,7 +74821,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74829,6 +74840,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
@@ -74848,7 +74860,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74869,6 +74880,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
     TascoLogs?: TascoLogUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -75306,7 +75318,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75326,6 +75337,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceCreateNestedManyWithoutEquipmentInput
@@ -75345,7 +75357,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75365,6 +75376,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedCreateNestedManyWithoutEquipmentInput
     EquipmentHauled?: EquipmentHauledUncheckedCreateNestedManyWithoutEquipmentInput
     Maintenances?: MaintenanceUncheckedCreateNestedManyWithoutEquipmentInput
@@ -75486,7 +75498,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75496,6 +75507,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     Address?: AddressCreateNestedOneWithoutJobsiteInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutJobsiteInput
     CCTags?: CCTagCreateNestedManyWithoutJobsitesInput
@@ -75508,7 +75520,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -75519,6 +75530,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutJobsiteInput
     CCTags?: CCTagUncheckedCreateNestedManyWithoutJobsitesInput
   }
@@ -77007,7 +77019,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77017,6 +77028,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     createdBy?: UserCreateNestedOneWithoutJobsiteInput
     TimeSheets?: TimeSheetCreateNestedManyWithoutJobsiteInput
     CCTags?: CCTagCreateNestedManyWithoutJobsitesInput
@@ -77029,7 +77041,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -77040,6 +77051,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedCreateNestedManyWithoutJobsiteInput
     CCTags?: CCTagUncheckedCreateNestedManyWithoutJobsitesInput
   }
@@ -78478,7 +78490,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78488,6 +78499,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     Address?: AddressUpdateOneWithoutJobsiteNestedInput
     createdBy?: UserUpdateOneWithoutJobsiteNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutJobsiteNestedInput
@@ -78500,7 +78512,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78512,6 +78523,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutJobsiteNestedInput
   }
 
@@ -78522,7 +78534,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78534,6 +78545,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type UserUpdateWithoutCrewsInput = {
@@ -78672,7 +78684,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78692,6 +78703,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     createdBy?: UserUpdateOneWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
@@ -78711,7 +78723,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78732,6 +78743,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -78750,7 +78762,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78771,6 +78782,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type PdfDocumentUpdateWithoutDocumentTagsInput = {
@@ -80190,7 +80202,6 @@ export namespace Prisma {
     creationReason?: string | null
     equipmentTag?: $Enums.EquipmentTags
     state?: $Enums.EquipmentState
-    isDisabledByAdmin?: boolean
     approvalStatus?: $Enums.ApprovalStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80210,6 +80221,7 @@ export namespace Prisma {
     serialNumber?: string | null
     year?: string | null
     acquiredCondition?: $Enums.Condition | null
+    status?: $Enums.FormTemplateStatus
   }
 
   export type FCMTokenCreateManyUserInput = {
@@ -80250,7 +80262,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     addressId?: string | null
     comment?: string | null
     createdAt?: Date | string
@@ -80261,6 +80272,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
   }
 
   export type MaintenanceLogCreateManyUserInput = {
@@ -80343,7 +80355,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80363,6 +80374,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUpdateManyWithoutEquipmentNestedInput
@@ -80382,7 +80394,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80402,6 +80413,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     EmployeeEquipmentLogs?: EmployeeEquipmentLogUncheckedUpdateManyWithoutEquipmentNestedInput
     EquipmentHauled?: EquipmentHauledUncheckedUpdateManyWithoutEquipmentNestedInput
     Maintenances?: MaintenanceUncheckedUpdateManyWithoutEquipmentNestedInput
@@ -80421,7 +80433,6 @@ export namespace Prisma {
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     equipmentTag?: EnumEquipmentTagsFieldUpdateOperationsInput | $Enums.EquipmentTags
     state?: EnumEquipmentStateFieldUpdateOperationsInput | $Enums.EquipmentState
-    isDisabledByAdmin?: BoolFieldUpdateOperationsInput | boolean
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80441,6 +80452,7 @@ export namespace Prisma {
     serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
     year?: NullableStringFieldUpdateOperationsInput | string | null
     acquiredCondition?: NullableEnumConditionFieldUpdateOperationsInput | $Enums.Condition | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type FCMTokenUpdateWithoutUserInput = {
@@ -80544,7 +80556,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80554,6 +80565,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     Address?: AddressUpdateOneWithoutJobsiteNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutJobsiteNestedInput
     CCTags?: CCTagUpdateManyWithoutJobsitesNestedInput
@@ -80566,7 +80578,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80577,6 +80588,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutJobsiteNestedInput
     CCTags?: CCTagUncheckedUpdateManyWithoutJobsitesNestedInput
   }
@@ -80588,7 +80600,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     addressId?: NullableStringFieldUpdateOperationsInput | string | null
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80599,6 +80610,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type MaintenanceLogUpdateWithoutUserInput = {
@@ -80868,7 +80880,6 @@ export namespace Prisma {
     description: string
     creationReason?: string | null
     approvalStatus?: $Enums.ApprovalStatus
-    isActive?: boolean
     comment?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -80879,6 +80890,7 @@ export namespace Prisma {
     latitude?: number | null
     longitude?: number | null
     radiusMeters?: number | null
+    status?: $Enums.FormTemplateStatus
   }
 
   export type CompanyUpdateWithoutAddressInput = {
@@ -80918,7 +80930,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80928,6 +80939,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     createdBy?: UserUpdateOneWithoutJobsiteNestedInput
     TimeSheets?: TimeSheetUpdateManyWithoutJobsiteNestedInput
     CCTags?: CCTagUpdateManyWithoutJobsitesNestedInput
@@ -80940,7 +80952,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80951,6 +80962,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
     TimeSheets?: TimeSheetUncheckedUpdateManyWithoutJobsiteNestedInput
     CCTags?: CCTagUncheckedUpdateManyWithoutJobsitesNestedInput
   }
@@ -80962,7 +80974,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     creationReason?: NullableStringFieldUpdateOperationsInput | string | null
     approvalStatus?: EnumApprovalStatusFieldUpdateOperationsInput | $Enums.ApprovalStatus
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -80973,6 +80984,7 @@ export namespace Prisma {
     latitude?: NullableFloatFieldUpdateOperationsInput | number | null
     longitude?: NullableFloatFieldUpdateOperationsInput | number | null
     radiusMeters?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: EnumFormTemplateStatusFieldUpdateOperationsInput | $Enums.FormTemplateStatus
   }
 
   export type NotificationReadCreateManyNotificationInput = {

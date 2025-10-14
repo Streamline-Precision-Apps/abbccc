@@ -179,7 +179,6 @@ exports.Prisma.EquipmentScalarFieldEnum = {
   creationReason: 'creationReason',
   equipmentTag: 'equipmentTag',
   state: 'state',
-  isDisabledByAdmin: 'isDisabledByAdmin',
   approvalStatus: 'approvalStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -199,7 +198,8 @@ exports.Prisma.EquipmentScalarFieldEnum = {
   registrationExpiration: 'registrationExpiration',
   serialNumber: 'serialNumber',
   year: 'year',
-  acquiredCondition: 'acquiredCondition'
+  acquiredCondition: 'acquiredCondition',
+  status: 'status'
 };
 
 exports.Prisma.EmployeeEquipmentLogScalarFieldEnum = {
@@ -283,7 +283,6 @@ exports.Prisma.JobsiteScalarFieldEnum = {
   description: 'description',
   creationReason: 'creationReason',
   approvalStatus: 'approvalStatus',
-  isActive: 'isActive',
   addressId: 'addressId',
   comment: 'comment',
   createdAt: 'createdAt',
@@ -294,7 +293,8 @@ exports.Prisma.JobsiteScalarFieldEnum = {
   code: 'code',
   latitude: 'latitude',
   longitude: 'longitude',
-  radiusMeters: 'radiusMeters'
+  radiusMeters: 'radiusMeters',
+  status: 'status'
 };
 
 exports.Prisma.ReportScalarFieldEnum = {

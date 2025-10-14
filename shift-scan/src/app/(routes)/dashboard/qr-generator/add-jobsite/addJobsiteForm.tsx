@@ -12,7 +12,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Titles } from "@/components/(reusable)/titles";
 import { Contents } from "@/components/(reusable)/contents";
 import { Selects } from "@/components/(reusable)/selects";
-import { Grids } from "@/components/(reusable)/grids";
 import { StateOptions } from "@/data/stateValues";
 import { useSession } from "next-auth/react";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";

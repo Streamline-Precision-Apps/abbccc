@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import {
-  Priority,
   EquipmentTags,
   EquipmentState,
 } from "../../prisma/generated/prisma/client";
@@ -47,6 +46,7 @@ export async function createEquipment(formData: FormData) {
         data: {
           qrId,
           name,
+          status: "ACTIVE",
           description,
           creationReason,
           equipmentTag,
@@ -191,11 +191,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
       const comment = formData.get("comment") as string;
       const status = formData.get("Equipment.status") as EquipmentState;
 
-      // Maintenance fields
-      const equipmentIssue = formData.get("equipmentIssue") as string;
-      const additionalInfo = formData.get("additionalInfo") as string;
-      let maintenanceId = formData.get("maintenanceId") as string | null;
-
       // Refuel log fields - handle null values with special "__NULL__" marker
       const disconnectRefuelLog =
         formData.get("disconnectRefuelLog") === "true";
@@ -235,47 +230,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
           },
         };
       }
-      // If no refuel log data provided, don't include any RefuelLog updates
-
-      // --- MAINTENANCE LOGIC ---
-      let createdMaintenanceId: string | null = null;
-      let madeMaintenanceLog = false;
-      if (status === "NEEDS_REPAIR" || status === "MAINTENANCE") {
-        if (
-          (equipmentIssue && equipmentIssue.length > 0) ||
-          (additionalInfo && additionalInfo.length > 0)
-        ) {
-          const maintenanceData = {
-            equipmentIssue: equipmentIssue || null,
-            additionalInfo: additionalInfo || null,
-            priority: Priority.PENDING,
-            employeeEquipmentLogId: id,
-          };
-
-          if (maintenanceId) {
-            // Update existing maintenance request
-            await prisma.maintenance.update({
-              where: { id: maintenanceId },
-              data: maintenanceData,
-            });
-            madeMaintenanceLog = true;
-          } else {
-            // Create a new maintenance request and capture its ID
-            const newMaintenance = await prisma.maintenance.create({
-              data: {
-                ...maintenanceData,
-                equipmentId,
-                createdBy:
-                  `${session.user?.name} <${session.user?.lastName}>` ||
-                  "Unknown",
-              },
-            });
-            createdMaintenanceId = newMaintenance.id;
-            maintenanceId = newMaintenance.id;
-            madeMaintenanceLog = true;
-          }
-        }
-      }
 
       // --- UPDATE EMPLOYEE EQUIPMENT LOG (including maintenanceId if present) ---
       const log = await prisma.employeeEquipmentLog.update({
@@ -287,7 +241,6 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
           ...(Object.keys(refuelLogUpdate).length > 0
             ? { RefuelLog: refuelLogUpdate }
             : {}),
-          ...(maintenanceId ? { maintenanceId } : {}),
         },
         include: {
           Equipment: true,
@@ -309,22 +262,11 @@ export async function updateEmployeeEquipmentLog(formData: FormData) {
         });
       }
 
-      // Ensure bidirectional link: update Maintenance with employeeEquipmentLogId (if new maintenance was created)
-      if (createdMaintenanceId) {
-        await prisma.maintenance.update({
-          where: { id: createdMaintenanceId },
-          data: {
-            employeeEquipmentLogId: id,
-          },
-        });
-      }
-
       // Prepare data for send-multicast
       const resultData = {
         name: log.Equipment?.name || null,
         id: log.Equipment?.id || null,
         createdBy: `${log.TimeSheet?.User.firstName} ${log.TimeSheet?.User.lastName}`,
-        madeMaintenanceLog,
       };
 
       revalidatePath(`/dashboard/equipment/${id}`);

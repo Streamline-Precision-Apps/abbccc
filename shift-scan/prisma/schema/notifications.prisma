@@ -48,7 +48,7 @@ model NotificationResponse {
   userId         String
   response       String?
   respondedAt    DateTime     @default(now())
-  notification   Notification @relation(fields: [notificationId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id])
 }
 
@@ -57,7 +57,7 @@ model NotificationRead {
   notificationId Int
   userId         String
   readAt         DateTime     @default(now())
-  notification   Notification @relation(fields: [notificationId], references: [id])
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id])
 
   @@unique([notificationId, userId])
