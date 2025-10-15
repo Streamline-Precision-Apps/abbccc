@@ -575,7 +575,7 @@ export async function restoreEquipment(id: string) {
       },
     });
   } catch (error) {
-    console.error("Error archiving equipment:", error);
+    console.error("Error restoring equipment:", error);
   }
 }
 
