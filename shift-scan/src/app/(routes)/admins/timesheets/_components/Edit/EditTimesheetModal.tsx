@@ -159,7 +159,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
       formData.append("changeReason", changeReason);
       formData.append("wasStatusChanged", wasStatusChanged.toString());
       formData.append("numberOfChanges", numberOfChanges.toString());
-
+      console.log("Submitting changes:", formData);
       const result = await adminUpdateTimesheetOptimized(formData); // Use the optimized function
       if (result.success) {
         //after a successful update, refresh the dashboard data and close the modal the notification will be sent in the background
