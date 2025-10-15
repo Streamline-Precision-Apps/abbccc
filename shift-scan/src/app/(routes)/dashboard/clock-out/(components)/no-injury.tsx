@@ -30,11 +30,14 @@ export const PreInjuryReport = ({
   return (
     <Bases>
       <Contents>
-        <Holds background={"white"} className="h-full ">
+        <Holds
+          background={"white"}
+          className="h-full flex flex-col items-center "
+        >
           <TitleBoxes onClick={prevStep} className="h-24">
             <Holds className="h-full justify-end items-end">
               <Holds position={"row"} className="justify-center gap-2">
-                <Titles size={"lg"}>{t("EndWorkDay")}</Titles>
+                <Titles size={"md"}>{t("EndWorkDay")}</Titles>
                 <Images
                   titleImg="/endDay.svg"
                   titleImgAlt="end work day"
@@ -44,7 +47,7 @@ export const PreInjuryReport = ({
             </Holds>
           </TitleBoxes>
 
-          <Contents width={"section"} className="h-full py-5">
+          <div className="w-[90%] flex-grow flex flex-col py-5">
             <Texts size={"p5"}>{t("SignatureAcknowledgement")}</Texts>
             <Holds className="border-[3px] border-black rounded-[10px] h-32 my-5">
               {loading ? (
@@ -83,20 +86,20 @@ export const PreInjuryReport = ({
                 </Texts>
               </Holds>
             </Holds>
-          </Contents>
+          </div>
 
-          <Contents width={"section"} className="my-5 h-[70px]">
+          <div className="w-[90%] flex justify-end  pb-4 h-[70px] ">
             <Buttons
               background={checked ? "orange" : "red"}
               onClick={handleNextStepAndSubmit}
               disabled={loading}
               className="h-[60px] w-full "
             >
-              <Titles size={"lg"}>
+              <Titles size={"md"}>
                 {checked ? t("Continue") : t("ReportInjury")}
               </Titles>
             </Buttons>
-          </Contents>
+          </div>
         </Holds>
       </Contents>
     </Bases>

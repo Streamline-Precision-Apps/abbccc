@@ -155,7 +155,7 @@ const OptionsList = ({
           }
         >
           <Titles size={"sm"} className="max-w-[200px] truncate ">
-            <span className="font-bold text-base">
+            <span className="text-base">
               {option.viewpoint ? `${option.viewpoint} - ` : null}
             </span>
             {option.label}

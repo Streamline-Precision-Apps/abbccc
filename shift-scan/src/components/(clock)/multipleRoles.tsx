@@ -98,7 +98,7 @@ export default function MultipleRoles({
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes onClick={handleReturnPath}>
-              <Titles size={"h3"}>{t("SelectLaborType")}</Titles>
+              <Titles size={"md"}>{t("SelectLaborType")}</Titles>
             </TitleBoxes>
           </Holds>
           <Holds className="row-start-2 row-end-8 h-full w-full">
@@ -107,7 +107,7 @@ export default function MultipleRoles({
                 {numberOfRoles > 1 && (
                   <Holds className="p-1 justify-center ">
                     <Selects
-                      className="bg-app-blue text-center p-3"
+                      className="bg-app-blue text-center text-sm p-3"
                       value={clockInRoleTypes}
                       onChange={(e) => selectView(e.target.value)}
                     >
@@ -161,7 +161,7 @@ export default function MultipleRoles({
                       background={"darkGray"}
                       className="py-2"
                     >
-                      <Titles size={"h2"}>{t("StartCamera")}</Titles>
+                      <Titles size={"md"}>{t("StartCamera")}</Titles>
                     </Buttons>
                   </Holds>
                 )}
@@ -172,7 +172,7 @@ export default function MultipleRoles({
                       background={"green"}
                       className="py-2"
                     >
-                      <Titles size={"h2"}>{t("ScanJobsite")}</Titles>
+                      <Titles size={"md"}>{t("ScanJobsite")}</Titles>
                     </Buttons>
                   </Holds>
                 )}
@@ -183,7 +183,7 @@ export default function MultipleRoles({
                       background={"orange"}
                       className="py-2"
                     >
-                      <Titles size={"h2"}>{t("ReturnToPrevShift")}</Titles>
+                      <Titles size={"md"}>{t("ReturnToPrevShift")}</Titles>
                     </Buttons>
                   </Holds>
                 ) : null}

@@ -158,14 +158,10 @@ export default function NewClockProcess({
 
   const handleNextStep = () => setStep((prevStep) => prevStep + 1);
   const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
-  const handleScannedPrevStep = () => setStep(2);
-
   const handleAlternativePath = () => {
     setStep(3);
   };
-  const handleAlternativePathEQ = () => {
-    setStep(2);
-  };
+
   // Lets the user return to the previous work after break
   const handleReturn = async () => {
     try {

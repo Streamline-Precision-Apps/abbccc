@@ -111,7 +111,12 @@ export default function QRStep({
                     onClick={handleAlternativePath}
                     className="underline text-app-dark-blue"
                   >
-                    <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
+                    <Texts
+                      size={"md"}
+                      className="underline underline-offset-4 "
+                    >
+                      {t("TroubleScanning")}
+                    </Texts>
                   </Buttons>
                 </Holds>
               </Grids>
@@ -123,7 +128,7 @@ export default function QRStep({
                 onClick={() => setStartCamera(!startCamera)}
                 background={"green"}
               >
-                <Titles size={"h2"}>{t("StartCamera")}</Titles>
+                <Titles size={"md"}>{t("StartCamera")}</Titles>
               </Buttons>
             </Holds>
           ) : null}

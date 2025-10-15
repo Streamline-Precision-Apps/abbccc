@@ -113,7 +113,9 @@ export const LaborClockOut = ({
         <Holds
           background={"white"}
           className={
-            loading ? `h-full w-full  opacity-[0.50]` : `h-full w-full `
+            loading
+              ? `h-full w-full flex flex-col items-center opacity-[0.50]`
+              : `h-full w-full flex flex-col items-center `
           }
         >
           <TitleBoxes onClick={prevStep} className="h-24">
@@ -132,7 +134,7 @@ export const LaborClockOut = ({
             </Holds>
           </TitleBoxes>
 
-          <Contents width={"section"}>
+          <div className="w-[90%] flex-grow flex flex-col pb-5">
             <Holds
               background={"timeCardYellow"}
               className="h-full w-full rounded-[10px] border-[3px] border-black mt-8"
@@ -222,17 +224,17 @@ export const LaborClockOut = ({
                 </Holds>
               </Holds>
             </Holds>
-          </Contents>
+          </div>
 
-          <Contents width={"section"} className="my-5 h-[70px]">
+          <div className="w-[90%] flex justify-end  pb-4 h-[70px] ">
             <Buttons
               background={"red"}
               onClick={handleSubmitTimeSheet}
               className="h-[60px] w-full"
             >
-              <Titles size={"lg"}>{t("EndDay")}</Titles>
+              <Titles size={"md"}>{t("EndDay")}</Titles>
             </Buttons>
-          </Contents>
+          </div>
         </Holds>
       </Contents>
     </Bases>

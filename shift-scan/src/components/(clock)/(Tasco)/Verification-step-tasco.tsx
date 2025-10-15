@@ -329,7 +329,7 @@ export default function TascoVerificationStep({
                     className=" py-2"
                     disabled={loading}
                   >
-                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                    <Titles size={"md"}>{t("StartDay")}</Titles>
                   </Buttons>
                 </Holds>
               </Grids>
