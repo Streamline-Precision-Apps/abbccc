@@ -85,7 +85,7 @@ export async function GET(req: Request) {
       : {};
 
     // Parse filters if provided
-    let whereClause: any = { ...searchCondition };
+    const whereClause: Record<string, unknown> = { ...searchCondition };
 
     // Add status filter if specified
     if (status === "pending") {
