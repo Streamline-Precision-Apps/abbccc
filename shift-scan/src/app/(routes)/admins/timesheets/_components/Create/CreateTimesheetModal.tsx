@@ -332,7 +332,12 @@ export function CreateTimesheetModal({
 
       // Format mechanic projects for API
       const mappedMechanicProjects = mechanicProjects
-        .filter((project) => project.equipmentId && project.hours !== null && project.hours !== undefined)
+        .filter(
+          (project) =>
+            project.equipmentId &&
+            project.hours !== null &&
+            project.hours !== undefined,
+        )
         .map((project) => ({
           id: project.id,
           equipmentId: project.equipmentId,
@@ -417,28 +422,33 @@ export function CreateTimesheetModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
-        <div className="px-6 py-4">
-          <div className="mb-6 relative">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="absolute top-0 right-0 cursor-pointer"
-            >
-              <X width={20} height={20} />
-            </Button>
-            <div className="gap-2 flex flex-col">
-              <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
-              <p className="text-xs text-gray-600">
-                Use the form below to enter and submit a new timesheet on behalf
-                of an employee.
-                <br /> Ensure all required fields are accurates.
-              </p>
-            </div>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh]  px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+          <div className="gap-2 flex flex-col">
+            <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+            <p className="text-xs text-gray-600">
+              Use the form below to enter and submit a new timesheet on behalf
+              of an employee.
+              <br /> Ensure all required fields are accurates.
+            </p>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        </div>
+        <div className="flex-1 w-full px-2 pb-10 gap-4 overflow-y-auto no-scrollbar">
+          {/* Add id to the form so we can reference it later */}
+          <form
+            id="timesheet-form"
+            onSubmit={handleSubmit}
+            className="h-full flex flex-col gap-4"
+          >
             <GeneralSection
               form={form}
               setForm={setForm}
@@ -488,26 +498,29 @@ export function CreateTimesheetModal({
                 equipmentOptions={equipmentOptions}
               />
             )}
-
-            <div className="col-span-2 flex justify-end gap-2 mt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-                onClick={onClose}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
-                disabled={submitting}
-              >
-                Submit
-              </Button>
-            </div>
           </form>
+        </div>
+
+        <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex flex-row justify-end gap-2 w-full">
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="timesheet-form" /* Connect this button to the form */
+              className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+              disabled={submitting}
+            >
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -57,7 +57,7 @@ export default function EditGeneralSection({
 }: EditGeneralSectionProps) {
   return (
     <>
-      <div className="w-full flex flex-row items-end gap-2  ">
+      {/* <div className="w-full flex flex-row items-end gap-2  ">
         <div className="w-full">
           <Popover>
             <PopoverTrigger asChild>
@@ -83,10 +83,11 @@ export default function EditGeneralSection({
             </PopoverTrigger>
           </Popover>
         </div>
-      </div>
+      </div> */}
+      {/*
       <div className="flex flex-row items-end col-span-2">
         <div className="w-full">
-          {/* Single value combobox for User */}
+          
           <SingleCombobox
             label="User"
             options={userOptions}
@@ -114,6 +115,7 @@ export default function EditGeneralSection({
           />
         </div>
       </div>
+      /*}
       {/* Jobsite */}
       <div className="w-full">
         <SingleCombobox

@@ -8,6 +8,9 @@ import {
 } from "@/actions/AssetActions";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 import { FilterOptions } from "./ViewAll/EquipmentFilter";
+import { useSearchParams } from "next/navigation";
+import { se } from "date-fns/locale";
+import is from "zod/v4/locales/is.cjs";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -55,6 +58,9 @@ export interface EquipmentSummary {
   };
 }
 export const useEquipmentData = () => {
+  const searchParams = useSearchParams();
+  const isPendingApproval = searchParams.get("isPendingApproval");
+
   const { refresh } = useDashboardData();
   const [equipmentDetails, setEquipmentDetails] = useState<EquipmentSummary[]>(
     [],
@@ -82,6 +88,7 @@ export const useEquipmentData = () => {
     ownershipTypes: [],
     conditions: [],
     statuses: [],
+    activityStatuses: [],
   });
   const [open, setOpen] = useState(false);
   const [showPendingOnly, setShowPendingOnly] = useState(false);
@@ -101,7 +108,7 @@ export const useEquipmentData = () => {
           queryParams.set("search", searchTerm);
         }
 
-        // Add status filter for pending items
+        // Add status filter for pending items - only check showPendingOnly since it's now synced with URL
         if (showPendingOnly) {
           queryParams.set("status", "pending");
         }
@@ -116,12 +123,25 @@ export const useEquipmentData = () => {
         if (!searchBarActive && !showPendingOnly && !useFilters) {
           queryParams.set("page", page.toString());
           queryParams.set("pageSize", pageSize.toString());
+        } else {
+          // Always include pagination for better cache consistency
+          queryParams.set("page", page.toString());
+          queryParams.set("pageSize", pageSize.toString());
         }
 
         // Build the URL with all applicable parameters
         const url = `/api/getEquipmentDetails?${queryParams.toString()}`;
+        console.log(`Fetching equipment data: ${url}`);
 
-        const response = await fetch(url, { cache: "no-store" }); // Prevent caching
+        const response = await fetch(url, {
+          cache: "no-store",
+          // Add a cache-busting parameter to prevent duplicate requests
+          headers: {
+            pragma: "no-cache",
+            "cache-control": "no-cache",
+          },
+        });
+
         const data = await response.json();
 
         setEquipmentDetails(data.equipment);
@@ -134,7 +154,13 @@ export const useEquipmentData = () => {
         setLoading(false);
       }
     };
-    fetchEquipmentSummaries();
+
+    // Use a debounce to prevent rapid consecutive API calls
+    const timeoutId = setTimeout(() => {
+      fetchEquipmentSummaries();
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
   }, [
     refreshKey,
     page,
@@ -143,8 +169,6 @@ export const useEquipmentData = () => {
     useFilters,
     searchBarActive,
     searchTerm,
-    // Always include filters in dependency array, but only use it when filters are active
-    // This maintains consistent array size between renders
     useFilters ? JSON.stringify(filters) : "{}",
   ]);
 
@@ -155,6 +179,13 @@ export const useEquipmentData = () => {
       setSearchBarActive(false);
     }
   }, [searchTerm]);
+
+  // Handle URL parameters on initial load and when URL changes
+  useEffect(() => {
+    if (isPendingApproval === "true" && !showPendingOnly) {
+      setShowPendingOnly(true);
+    }
+  }, [isPendingApproval]);
 
   useEffect(() => {
     setPage(1);
@@ -245,6 +276,7 @@ export const useEquipmentData = () => {
       ownershipTypes: [],
       conditions: [],
       statuses: [],
+      activityStatuses: [],
     };
     setFilters(emptyFilters);
     // Immediately update to not use filters
@@ -255,6 +287,17 @@ export const useEquipmentData = () => {
 
   // Refresh function to trigger data reload
   const rerender = () => setRefreshKey((k) => k + 1);
+
+  // Function to handle notification-specific behavior
+  const handleNotificationHighlight = (notificationId: string) => {
+    // This could be used to highlight or scroll to a specific equipment item
+    // based on the notification ID
+    // You would typically map notification IDs to equipment IDs in your application
+    console.log(`Handling notification with ID: ${notificationId}`);
+
+    // Example: You could add logic here to find equipment related to this notification
+    // and then set some state to highlight it in the UI
+  };
 
   /* 
     ---------------------------------------
@@ -410,5 +453,6 @@ export const useEquipmentData = () => {
     cancelRestore,
     confirmRestore,
     openHandleRestore,
+    handleNotificationHighlight,
   };
 };
