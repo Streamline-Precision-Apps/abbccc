@@ -88,43 +88,62 @@ export async function createEquipment(formData: FormData) {
 }
 
 export async function CreateEmployeeEquipmentLog(formData: FormData) {
+  console.log("Creating Employee Equipment Log with formData:", formData);
   try {
     const equipmentId = formData.get("equipmentId") as string;
-    const jobsiteId = formData.get("jobsiteId") as string; // Execute all operations in a transaction
+
+    // First validate that the equipment exists
+    const equipmentExists = await prisma.equipment.findUnique({
+      where: { qrId: equipmentId },
+    });
+
+    if (!equipmentExists) {
+      throw new Error(
+        `Equipment with ID ${equipmentId} not found. Please scan a valid QR code.`,
+      );
+    }
+
     const result = await prisma.$transaction(async (tx) => {
-      const userId = formData.get("userId") as string | null;
-      if (userId === null) {
-        throw new Error("userId is required");
-      }
+      // Get timesheet ID from form data (which will be provided from cookie/localStorage on the client side)
+      const timeSheetId = formData.get("timeSheetId") as string | null;
 
-      const timeSheet = await tx.timeSheet.findFirst({
-        where: {
-          userId: userId,
-          endTime: null,
-        },
-        select: { id: true, workType: true },
-      });
-
-      // pulling current work type from current timesheet
-      const workType =
-        timeSheet?.workType === "MECHANIC"
-          ? "MAINTENANCE"
-          : timeSheet?.workType === "TRUCK_DRIVER"
-            ? "TRUCKING"
-            : timeSheet?.workType === "LABOR"
-              ? "LABOR"
-              : timeSheet?.workType === "TASCO"
-                ? "TASCO"
-                : "GENERAL";
-      // 3. Create the EmployeeEquipmentLog entry
-      if (!timeSheet?.id) {
+      if (!timeSheetId) {
         throw new Error(
-          "No open timesheet found for this user. Cannot create equipment log.",
+          "TimeSheet ID is required. Make sure you're properly clocked in.",
         );
       }
+
+      // Validate that the timesheet exists and is still open
+      const timeSheet = await tx.timeSheet.findUnique({
+        where: {
+          id: parseInt(timeSheetId, 10),
+        },
+        select: { id: true, workType: true, endTime: true },
+      });
+
+      if (!timeSheet) {
+        throw new Error("Invalid timesheet ID. Please clock in again.");
+      }
+
+      if (timeSheet.endTime) {
+        throw new Error(
+          "This timesheet has been closed. Please clock in again before logging equipment.",
+        );
+      }
+
+      // Get the correct equipment ID (database ID) using the qrId from the scan
+      const equipment = await tx.equipment.findUnique({
+        where: { qrId: equipmentId },
+        select: { id: true },
+      });
+
+      if (!equipment) {
+        throw new Error(`Equipment with QR ID ${equipmentId} not found`);
+      }
+
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
-          equipmentId,
+          equipmentId: equipment.id, // Use the actual database ID, not the QR ID
           timeSheetId: timeSheet?.id ?? "", // fallback to empty string if undefined
           startTime: new Date().toISOString(),
           endTime: formData.get("endTime")

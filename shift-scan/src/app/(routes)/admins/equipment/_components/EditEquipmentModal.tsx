@@ -14,7 +14,6 @@ import { useEquipmentDataById } from "./useEquipmentDataById";
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { SquareCheck, SquareXIcon, X } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 import { updateEquipmentAsset } from "@/actions/AssetActions";
 import { toast } from "sonner";
@@ -312,7 +311,7 @@ export default function EditEquipmentModal({
                   }
                 `}
                 </span>
-                <div className="flex flex-row items-center gap-2 ">
+                {/* <div className="flex flex-row items-center gap-2 ">
                   <p className="text-xs text-gray-600">
                     {formData.status === "ARCHIVED"
                       ? "Equipment Archived"
@@ -327,7 +326,7 @@ export default function EditEquipmentModal({
                       }));
                     }}
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

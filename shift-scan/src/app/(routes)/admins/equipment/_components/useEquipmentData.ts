@@ -1,7 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
-import { deleteEquipment } from "@/actions/AssetActions";
+import {
+  archiveEquipment,
+  deleteEquipment,
+  restoreEquipment,
+} from "@/actions/AssetActions";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 import { FilterOptions } from "./ViewAll/EquipmentFilter";
 
@@ -63,15 +67,16 @@ export const useEquipmentData = () => {
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [pendingCount, setPendingCount] = useState<number>(0);
-  // State for modals
   const [editEquipmentModal, setEditEquipmentModal] = useState(false);
   const [createEquipmentModal, setCreateEquipmentModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [pendingQrId, setPendingQrId] = useState<string | null>(null);
-
-  // Filter options state
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
+  const [pendingArchiveId, setPendingArchiveId] = useState<string | null>(null);
+  const [pendingRestoreId, setPendingRestoreId] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterOptions>({
     equipmentTags: [],
     ownershipTypes: [],
@@ -79,31 +84,44 @@ export const useEquipmentData = () => {
     statuses: [],
   });
   const [open, setOpen] = useState(false);
-
-  //Approval Button States
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [useFilters, setUseFilters] = useState(false);
   const [searchBarActive, setSearchBarActive] = useState(false);
-
-  const rerender = () => setRefreshKey((k) => k + 1);
 
   useEffect(() => {
     const fetchEquipmentSummaries = async () => {
       try {
         setLoading(true);
-        let url = "";
-        if (showPendingOnly) {
-          url = `/api/getEquipmentDetails?status=pending&filters=${JSON.stringify(filters)}`;
-        } else if (searchBarActive) {
-          // If searching, get all equipment in one page (no pagination)
-          url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
-        } else if (useFilters) {
-          // Only use filters when useFilters is true (set by Apply Filters button)
-          url = `/api/getEquipmentDetails?filters=${JSON.stringify(filters)}`;
-        } else {
-          url = `/api/getEquipmentDetails?page=${page}&pageSize=${pageSize}`;
+
+        // Build query parameters
+        const queryParams = new URLSearchParams();
+
+        // Always include search term if present
+        if (searchTerm.trim()) {
+          queryParams.set("search", searchTerm);
         }
-        const response = await fetch(url);
+
+        // Add status filter for pending items
+        if (showPendingOnly) {
+          queryParams.set("status", "pending");
+        }
+
+        // Add filters when they should be applied
+        if (useFilters || searchBarActive) {
+          const filtersString = JSON.stringify(filters);
+          queryParams.set("filters", filtersString);
+        }
+
+        // Add pagination params when not searching or filtering
+        if (!searchBarActive && !showPendingOnly && !useFilters) {
+          queryParams.set("page", page.toString());
+          queryParams.set("pageSize", pageSize.toString());
+        }
+
+        // Build the URL with all applicable parameters
+        const url = `/api/getEquipmentDetails?${queryParams.toString()}`;
+
+        const response = await fetch(url, { cache: "no-store" }); // Prevent caching
         const data = await response.json();
 
         setEquipmentDetails(data.equipment);
@@ -122,10 +140,12 @@ export const useEquipmentData = () => {
     page,
     pageSize,
     showPendingOnly,
-    // Now data will only re-fetch when useFilters is toggled by the Apply button
-    // and not on every filter change
     useFilters,
     searchBarActive,
+    searchTerm,
+    // Always include filters in dependency array, but only use it when filters are active
+    // This maintains consistent array size between renders
+    useFilters ? JSON.stringify(filters) : "{}",
   ]);
 
   useEffect(() => {
@@ -136,16 +156,72 @@ export const useEquipmentData = () => {
     }
   }, [searchTerm]);
 
-  const openHandleEdit = (id: string) => {
-    setPendingEditId(id);
-    setEditEquipmentModal(true);
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, showPendingOnly, filters]);
+
+  /* 
+    ---------------------------------------
+    Restore modals helper functions
+    ---------------------------------------
+    */
+
+  const openHandleRestore = (id: string) => {
+    setPendingRestoreId(id);
+    setShowRestoreDialog(true);
+  };
+  const confirmRestore = async () => {
+    if (pendingRestoreId) {
+      await restoreEquipment(pendingRestoreId);
+      setShowRestoreDialog(false);
+      setPendingRestoreId(null);
+      refresh();
+      rerender();
+    }
+  };
+  const cancelRestore = () => {
+    setShowRestoreDialog(false);
+    setPendingRestoreId(null);
   };
 
+  /* 
+  ---------------------------------------
+  Archive modals helper functions 
+  ---------------------------------------
+  */
+
+  const openHandleArchive = (id: string) => {
+    setPendingArchiveId(id);
+    setShowArchiveDialog(true);
+  };
+  const cancelArchive = () => {
+    setShowArchiveDialog(false);
+    setPendingArchiveId(null);
+  };
+
+  const confirmArchive = async () => {
+    if (pendingArchiveId) {
+      await archiveEquipment(pendingArchiveId);
+      setShowArchiveDialog(false);
+      setPendingArchiveId(null);
+      refresh();
+      rerender();
+    }
+  };
+
+  /* 
+  ---------------------------------------
+  delete modals helper functions
+  ---------------------------------------
+*/
   const openHandleDelete = (id: string) => {
     setPendingDeleteId(id);
     setShowDeleteDialog(true);
   };
-
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setPendingDeleteId(null);
+  };
   const confirmDelete = async () => {
     if (pendingDeleteId) {
       await deleteEquipment(pendingDeleteId);
@@ -156,6 +232,13 @@ export const useEquipmentData = () => {
     }
   };
 
+  // open edit modal
+  const openHandleEdit = (id: string) => {
+    setPendingEditId(id);
+    setEditEquipmentModal(true);
+  };
+
+  // filter helper functions
   const handleClearFilters = async () => {
     const emptyFilters: FilterOptions = {
       equipmentTags: [],
@@ -170,10 +253,14 @@ export const useEquipmentData = () => {
     rerender();
   };
 
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm, showPendingOnly, filters]);
+  // Refresh function to trigger data reload
+  const rerender = () => setRefreshKey((k) => k + 1);
 
+  /* 
+    ---------------------------------------
+    print QR helper functions
+    ---------------------------------------
+    */
   const openHandleQr = (id: string) => {
     setPendingQrId(id);
     const equipment = equipmentDetails.find((j) => j.id === id);
@@ -274,11 +361,6 @@ export const useEquipmentData = () => {
     printWindow.document.close();
   };
 
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setPendingDeleteId(null);
-  };
-
   return {
     setEquipmentDetails,
     loading,
@@ -292,6 +374,14 @@ export const useEquipmentData = () => {
     setPageSize,
     showPendingOnly,
     setShowPendingOnly,
+    showArchiveDialog,
+    setShowArchiveDialog,
+    showRestoreDialog,
+    setShowRestoreDialog,
+    pendingArchiveId,
+    setPendingArchiveId,
+    pendingRestoreId,
+    setPendingRestoreId,
     pendingCount,
     editEquipmentModal,
     setEditEquipmentModal,
@@ -314,5 +404,11 @@ export const useEquipmentData = () => {
     setUseFilters,
     open,
     setOpen,
+    cancelArchive,
+    confirmArchive,
+    openHandleArchive,
+    cancelRestore,
+    confirmRestore,
+    openHandleRestore,
   };
 };

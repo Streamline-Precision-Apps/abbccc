@@ -10,6 +10,7 @@ import { PullToRefresh } from "../(animations)/pullToRefresh";
 
 type Option = {
   id: string;
+  viewpoint?: string;
   code: string;
   label: string;
 };
@@ -43,7 +44,12 @@ export default function CodeFinder({
       .filter((option) => {
         const searchLower = searchTerm.toLowerCase();
         const labelLower = option.label.toLowerCase();
-        return labelLower.includes(searchLower);
+        const viewpointLower = option.viewpoint?.toLowerCase() || "";
+
+        return (
+          labelLower.includes(searchLower) ||
+          viewpointLower.includes(searchLower)
+        );
       })
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [options, searchTerm]);
@@ -148,10 +154,11 @@ const OptionsList = ({
               : onSelect(option)
           }
         >
-          <Titles size={"md"}>
-            {option.label.length > 21
-              ? option.label.slice(0, 21) + "..."
-              : option.label}
+          <Titles size={"sm"} className="max-w-[250px] text-center truncate">
+            <span className="font-bold text-base">
+              {option.viewpoint ? `${option.viewpoint} - ` : null}
+            </span>
+            {option.label}
           </Titles>
         </Buttons>
       </Holds>
