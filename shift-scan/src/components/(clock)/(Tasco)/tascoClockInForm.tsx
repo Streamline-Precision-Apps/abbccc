@@ -81,13 +81,13 @@ export default function TascoClockInForm({
           >
             <>
               {clockInRoleTypes === "tascoAbcdLabor" ? (
-                <Titles size={"h4"}>{t("SelectMaterialType")}</Titles>
+                <Titles size={"md"}>{t("SelectMaterialType")}</Titles>
               ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
-                <Titles size={"h4"}>
+                <Titles size={"md"}>
                   {t("SelectMaterialTypeAndEquipment")}
                 </Titles>
               ) : clockInRoleTypes === "tascoEEquipment" ? (
-                <Titles size={"h4"}>{t("Title-equipment-operator")}</Titles>
+                <Titles size={"md"}>{t("Title-equipment-operator")}</Titles>
               ) : (
                 ""
               )}

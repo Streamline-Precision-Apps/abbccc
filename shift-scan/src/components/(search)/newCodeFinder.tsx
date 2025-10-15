@@ -145,7 +145,7 @@ const OptionsList = ({
       <Holds key={option.code} className="p-2">
         <Buttons
           shadow={"none"}
-          className={`p-2 cursor-pointer ${
+          className={`py-2 px-2 cursor-pointer flex justify-left items-center ${
             selectedOption?.code === option.code ? "bg-app-green" : "bg-white"
           }`}
           onClick={() =>
@@ -154,7 +154,7 @@ const OptionsList = ({
               : onSelect(option)
           }
         >
-          <Titles size={"sm"} className="max-w-[250px] text-center truncate">
+          <Titles size={"sm"} className="max-w-[200px] truncate ">
             <span className="font-bold text-base">
               {option.viewpoint ? `${option.viewpoint} - ` : null}
             </span>
