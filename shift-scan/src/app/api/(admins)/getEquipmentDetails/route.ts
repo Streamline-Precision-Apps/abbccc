@@ -78,8 +78,8 @@ export async function GET(req: Request) {
     const searchCondition = searchTerm
       ? {
           OR: [
-            { name: { contains: searchTerm, mode: "insensitive" } },
-            { code: { contains: searchTerm, mode: "insensitive" } },
+            { name: { contains: searchTerm, mode: 'insensitive' } },
+            { code: { contains: searchTerm, mode: 'insensitive' } },
           ],
         }
       : {};
