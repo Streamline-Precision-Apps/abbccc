@@ -359,60 +359,45 @@ export default function NewClockProcess({
       )}
       {step === 2 && (
         <>
-          {numberOfRoles === 1 && clockInRole !== "tasco" && (
-            <QRStep
-              type="jobsite"
-              handleReturnPath={handleReturnPath}
-              handleAlternativePath={handleAlternativePath}
-              handleNextStep={handleNextStep}
-              handlePrevStep={handlePrevStep}
-              handleReturn={handleReturn}
-              handleScanJobsite={handleScanJobsite}
-              url={returnpath}
-              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-              clockInRole={clockInRole} // clock in role will make the qr know which role to use
-              setClockInRole={setClockInRole}
-              setClockInRoleTypes={setClockInRoleTypes}
-              clockInRoleTypes={clockInRoleTypes}
-              setJobsite={setJobsite}
-            />
-          )}
+          {numberOfRoles === 1 &&
+            clockInRole !== "tasco" &&
+            clockInRole !== "truck" && (
+              <QRStep
+                type="jobsite"
+                handleReturnPath={handleReturnPath}
+                handleAlternativePath={handleAlternativePath}
+                handleNextStep={handleNextStep}
+                handlePrevStep={handlePrevStep}
+                handleReturn={handleReturn}
+                handleScanJobsite={handleScanJobsite}
+                url={returnpath}
+                option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+                clockInRole={clockInRole} // clock in role will make the qr know which role to use
+                setClockInRole={setClockInRole}
+                setClockInRoleTypes={setClockInRoleTypes}
+                clockInRoleTypes={clockInRoleTypes}
+                setJobsite={setJobsite}
+              />
+            )}
 
-          {numberOfRoles === 1 && clockInRole === "tasco" && (
-            <QRMultiRoles
-              type="jobsite"
-              handleReturnPath={handleReturnPath}
-              handleAlternativePath={handleAlternativePath}
-              handleNextStep={handleNextStep}
-              handleReturn={handleReturn}
-              handleScanJobsite={handleScanJobsite}
-              url={returnpath}
-              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-              clockInRole={clockInRole} // clock in role will make the qr know which role to use
-              setClockInRole={setClockInRole}
-              setClockInRoleTypes={setClockInRoleTypes}
-              clockInRoleTypes={clockInRoleTypes}
-              setJobsite={setJobsite}
-            />
-          )}
-
-          {numberOfRoles > 1 && (
-            <QRMultiRoles
-              type="jobsite"
-              handleReturnPath={handleReturnPath}
-              handleAlternativePath={handleAlternativePath}
-              handleNextStep={handleNextStep}
-              handleReturn={handleReturn}
-              handleScanJobsite={handleScanJobsite}
-              url={returnpath}
-              option={type} // type is the method of clocking in ... general, switchJobs, or equipment
-              clockInRole={clockInRole} // clock in role will make the qr know which role to use
-              setClockInRole={setClockInRole}
-              setClockInRoleTypes={setClockInRoleTypes}
-              clockInRoleTypes={clockInRoleTypes}
-              setJobsite={setJobsite}
-            />
-          )}
+          {numberOfRoles > 1 ||
+            ((clockInRole === "tasco" || clockInRole === "truck") && (
+              <QRMultiRoles
+                type="jobsite"
+                handleReturnPath={handleReturnPath}
+                handleAlternativePath={handleAlternativePath}
+                handleNextStep={handleNextStep}
+                handleReturn={handleReturn}
+                handleScanJobsite={handleScanJobsite}
+                url={returnpath}
+                option={type} // type is the method of clocking in ... general, switchJobs, or equipment
+                clockInRole={clockInRole} // clock in role will make the qr know which role to use
+                setClockInRole={setClockInRole}
+                setClockInRoleTypes={setClockInRoleTypes}
+                clockInRoleTypes={clockInRoleTypes}
+                setJobsite={setJobsite}
+              />
+            ))}
         </>
       )}
 

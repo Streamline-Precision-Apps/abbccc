@@ -12,6 +12,7 @@ import { Selects } from "../(reusable)/selects";
 import { TextAreas } from "../(reusable)/textareas";
 import { Texts } from "../(reusable)/texts";
 import { Labels } from "../(reusable)/labels";
+import { TitleBoxes } from "../(reusable)/titleBoxes";
 
 type Props = {
   handleNextStep: () => void;
@@ -103,7 +104,11 @@ export default function SwitchJobsMultiRoles({
     setSubmittable(hasValidComment && (numberOfRoles === 1 || hasValidRole));
   }, [commentsValue, clockInRoleTypes, numberOfRoles]);
 
-  if (numberOfRoles === 1 && clockInRole !== "tasco") {
+  if (
+    numberOfRoles === 1 &&
+    clockInRole !== "tasco" &&
+    clockInRole !== "truck"
+  ) {
     return (
       <Holds background={"white"} className="h-full w-full">
         <Grids rows={"7"} gap={"5"} className="h-full w-full p-3 pb-5">
@@ -171,112 +176,90 @@ export default function SwitchJobsMultiRoles({
 
   return (
     <Holds background={"white"} className="h-full w-full">
-      <Grids rows={"7"} gap={"5"} className="h-full w-full p-3 pb-5">
-        <Holds className="row-start-1 row-end-4 h-full w-full justify-center ">
-          <Grids rows={"5"} cols={"5"} gap={"3"} className=" h-full w-full">
-            <Holds
-              className="row-start-1 row-end-2 col-start-1 col-end-2 h-full w-full justify-center"
-              onClick={handleReturnPath}
-            >
-              <Images
-                titleImg="/arrowBack.svg"
-                titleImgAlt="back"
-                position={"left"}
-              />
-            </Holds>
+      <TitleBoxes onClick={handleReturnPath} className="h-24"></TitleBoxes>
+      <div className="h-full w-full flex flex-col gap-5 items-center">
+        <Holds className="h-full max-h-[200px] w-[90%] justify-center relative">
+          <Labels size={"p4"} className="text-left">
+            {t("PreviousJobComment")}
+          </Labels>
+          <TextAreas
+            onChange={(e) => {
+              setCommentsValue(e.target.value);
+            }}
+            value={commentsValue}
+            placeholder={t("TodayIDidTheFollowing")}
+            className="w-full h-full"
+            maxLength={40}
+            style={{ resize: "none" }}
+          />
 
-            <Holds className="row-start-2 row-end-6 col-start-1 col-end-6  h-full w-full justify-center">
-              <Holds className="h-full w-[95%] justify-center relative">
-                <Labels size={"p4"} className="text-left">
-                  {t("PreviousJobComment")}
-                </Labels>
-                <TextAreas
-                  onChange={(e) => {
-                    setCommentsValue(e.target.value);
-                  }}
-                  value={commentsValue}
-                  placeholder={t("TodayIDidTheFollowing")}
-                  className="w-full h-full"
-                  maxLength={40}
-                  style={{ resize: "none" }}
-                />
-
-                <Texts
-                  size={"p2"}
-                  className={`${
-                    commentsValue.length === 40
-                      ? "text-red-500 absolute bottom-5 right-2"
-                      : "absolute bottom-5 right-2"
-                  }`}
-                >
-                  {commentsValue.length}/40
-                </Texts>
-              </Holds>
-            </Holds>
-          </Grids>
+          <Texts
+            size={"p2"}
+            className={`${
+              commentsValue.length === 40
+                ? "text-red-500 absolute bottom-5 right-2"
+                : "absolute bottom-5 right-2"
+            }`}
+          >
+            {commentsValue.length}/40
+          </Texts>
         </Holds>
-        <Holds className="row-start-4 row-end-6 h-full w-full justify-center">
-          <Grids rows={"3"}>
-            <Holds className="row-start-2 row-end-4 h-full w-full justify-center">
-              <Titles size={"lg"} className="text-left">
-                {t("ChangeIfNecessary")}
-              </Titles>
-              <Holds className=" w-full justify-center ">
-                <Holds className="h-full w-full justify-center">
-                  <Selects
-                    className="bg-app-blue text-center"
-                    value={clockInRoleTypes}
-                    onChange={(e) => selectView(e.target.value)}
-                  >
-                    <option value="">{t("SelectWorkType")}</option>
-                    {tascoView === true && (
-                      <>
-                        <option value="general">{t("GeneralLabor")}</option>
-                        <option value="tascoAbcdLabor">
-                          {t("TASCOABCDLabor")}
-                        </option>
-                        <option value="tascoAbcdEquipment">
-                          {t("TASCOABCDEquipmentOperator")}
-                        </option>
-                        <option value="tascoEEquipment">
-                          {t("TASCOEEquipmentOperator")}
-                        </option>
-                      </>
-                    )}
-                    {truckView === true && (
-                      <>
-                        <option value="truckDriver">{t("TruckDriver")}</option>
-                        {/* <option value="truckEquipmentOperator">
+        <Holds className=" w-[90%] flex flex-col justify-center">
+          <Titles size={"lg"} className="text-left">
+            {t("ChangeIfNecessary")}
+          </Titles>
+          <Selects
+            className="bg-app-blue text-md text-center"
+            value={clockInRoleTypes}
+            onChange={(e) => selectView(e.target.value)}
+          >
+            <option value="">{t("SelectWorkType")}</option>
+            {tascoView === true && (
+              <>
+                <option value="general">{t("GeneralLabor")}</option>
+                <option value="tascoAbcdLabor">{t("TASCOABCDLabor")}</option>
+                <option value="tascoAbcdEquipment">
+                  {t("TASCOABCDEquipmentOperator")}
+                </option>
+                <option value="tascoEEquipment">
+                  {t("TASCOEEquipmentOperator")}
+                </option>
+              </>
+            )}
+            {truckView === true && (
+              <>
+                <option value="truckDriver">{t("TruckDriver")}</option>
+                <option value="general">{t("General")}</option>
+                {/* <option value="truckEquipmentOperator">
                           {t("TruckEquipmentOperator")}
                         </option>
-                        <option value="truckLabor">{t("TruckLabor")}</option> */}
-                      </>
-                    )}
-                    {mechanicView === true && (
-                      <option value="mechanic">{t("Mechanic")}</option>
-                    )}
-                    {laborView === true && (
-                      <option value="general">{t("General")}</option>
-                    )}
-                  </Selects>
-                </Holds>
-              </Holds>
-            </Holds>
-          </Grids>
+                        */}
+              </>
+            )}
+            {mechanicView === true && (
+              <>
+                <option value="mechanic">{t("Mechanic")}</option>
+              </>
+            )}
+            {laborView === true && (
+              <option value="general">{t("General")}</option>
+            )}
+          </Selects>
         </Holds>
-        <Holds className="row-start-7 row-end-8 h-full w-full justify-center">
-          <Buttons
-            disabled={!submittable}
-            onClick={() => {
-              saveCurrentData();
-              handleNextStep();
-            }}
-            background={submittable === false ? "darkGray" : "orange"}
-          >
-            <Titles size={"h2"}>{t("Continue")}</Titles>
-          </Buttons>
-        </Holds>
-      </Grids>
+      </div>
+      <Holds className="row-start-7 row-end-8 h-[70px] w-[90%] pb-4 flex justify-end">
+        <Buttons
+          disabled={!submittable}
+          onClick={() => {
+            saveCurrentData();
+            handleNextStep();
+          }}
+          className="h-[60px]"
+          background={submittable === false ? "darkGray" : "orange"}
+        >
+          <Titles size={"md"}>{t("Continue")}</Titles>
+        </Buttons>
+      </Holds>
     </Holds>
   );
 }

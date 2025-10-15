@@ -175,9 +175,7 @@ export default function QRMultiRoles({
                         </Selects>
                       </Contents>
                     </Holds>
-                  ) : numberOfViews === 1 &&
-                    option !== "switchJobs" &&
-                    clockInRole === "tasco" ? (
+                  ) : numberOfViews === 1 && clockInRole === "tasco" ? (
                     <Holds className="p-1 justify-center row-start-1 row-end-2 ">
                       <Contents width={"section"}>
                         <Selects
@@ -200,6 +198,29 @@ export default function QRMultiRoles({
                               </option>
                               <option value="tascoEEquipment">
                                 {t("TASCOEEquipmentOperator")}
+                              </option>
+                            </>
+                          )}
+                        </Selects>
+                      </Contents>
+                    </Holds>
+                  ) : numberOfViews === 1 && clockInRole === "truck" ? (
+                    <Holds className="p-1 justify-center row-start-1 row-end-2 ">
+                      <Contents width={"section"}>
+                        <Selects
+                          className="bg-app-blue text-center p-3 disabled:bg-app-blue"
+                          value={clockInRoleTypes}
+                          disabled={startCamera}
+                          onChange={(e) => selectView(e.target.value)}
+                        >
+                          <option value="">{t("SelectWorkType")}</option>
+                          {truckView === true && (
+                            <>
+                              <option value="general">
+                                {t("GeneralLabor")}
+                              </option>
+                              <option value="truckDriver">
+                                {t("TruckDriver")}
                               </option>
                             </>
                           )}
