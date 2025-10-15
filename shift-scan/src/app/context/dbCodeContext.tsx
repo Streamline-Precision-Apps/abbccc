@@ -24,6 +24,7 @@ type CostCodes = {
 
 type EquipmentCode = {
   id: string;
+  code: string;
   qrId: string;
   name: string;
   equipmentTag: EquipmentTags;
@@ -57,6 +58,7 @@ const EquipmentSchema = z
   .array(
     z.object({
       id: z.string(),
+      code: z.string(),
       qrId: z.string(),
       name: z.string(),
       equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),

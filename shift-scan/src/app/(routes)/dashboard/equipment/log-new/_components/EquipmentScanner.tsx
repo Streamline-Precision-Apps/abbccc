@@ -8,7 +8,13 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import React, { Dispatch, SetStateAction, useEffect, useState, RefObject } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  RefObject,
+} from "react";
 type Option = {
   label: string;
   code: string;
@@ -33,7 +39,8 @@ export default function EquipmentScanner({
 }) {
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
-  const id = useSession().data?.user.id;
+  const { data: session } = useSession();
+  const id = session?.user?.id || ""; // Get the user ID from the session
   const router = useRouter();
   const t = useTranslations("Equipment");
 
@@ -41,15 +48,44 @@ export default function EquipmentScanner({
   const handleScanComplete = async (scannedId: string) => {
     if (submitRef.current) return;
     submitRef.current = true;
-    setEquipmentQr(scannedId);
+
+    // Format the scannedId: keep EQ- prefix capitalized and make the rest lowercase
+    let formattedId = scannedId;
+    if (scannedId.startsWith("EQ-") || scannedId.startsWith("eq-")) {
+      // Keep the "EQ-" prefix and make the rest lowercase
+      formattedId = "EQ-" + scannedId.substring(3).toLowerCase();
+    } else {
+      // If it doesn't start with EQ-, just lowercase the entire string
+      formattedId = scannedId.toLowerCase();
+    }
+
+    setEquipmentQr(formattedId);
     setScanned(true);
     setLoading(true);
 
     try {
+      // Get timesheet ID from local storage
+      const timeSheetData = localStorage.getItem("timesheetId");
+      let timeSheetId: string | null = null;
+
+      if (timeSheetData) {
+        try {
+          const parsedData = JSON.parse(timeSheetData);
+          timeSheetId = parsedData.id.toString();
+        } catch (e) {
+          console.error("Error parsing timesheet data from localStorage:", e);
+        }
+      }
+
+      if (!timeSheetId) {
+        throw new Error("No active timesheet found. Please clock in first.");
+      }
+
       const formData = new FormData();
-      formData.append("equipmentId", scannedId);
+      formData.append("equipmentId", formattedId); // Use the formatted ID
       formData.append("jobsiteId", jobSite?.code || "");
       formData.append("startTime", new Date().toString());
+      formData.append("timeSheetId", timeSheetId);
 
       const result = await CreateEmployeeEquipmentLog(formData);
       if (result) {
@@ -58,9 +94,8 @@ export default function EquipmentScanner({
     } catch (error) {
       console.error("Error submitting equipment log:", error);
       setEquipmentQr(null);
-      setError(t("scanError"));
+      setError(error instanceof Error ? error.message : t("scanError"));
       setStep(1);
-      // Handle error state if needed
     } finally {
       setLoading(false);
       submitRef.current = false;
