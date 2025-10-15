@@ -51,7 +51,6 @@ export const createEquipmentTableColumns = (
                       {highlight(equipment.name || "", searchTerm)}
                     </span>
                   </p>
-                  <p className="text-left text-sm pr-2"></p>
                 </div>
                 <div className="w-fit flex flex-row gap-2 items-center">
                   {/* Approval Status Badge */}
