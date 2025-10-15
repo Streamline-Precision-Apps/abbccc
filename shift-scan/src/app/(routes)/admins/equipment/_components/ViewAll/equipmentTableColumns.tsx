@@ -2,17 +2,29 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { EquipmentSummary } from "../useEquipmentData";
-import { format } from "date-fns";
 import Link from "next/link";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { highlight } from "@/app/(routes)/admins/_pages/highlight";
+import { ArchiveIcon, ArchiveRestore } from "lucide-react";
 
-// Define the column configuration
-export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
+// Define types for action handlers
+interface EquipmentActionHandlers {
+  onEditClick?: (id: string) => void;
+  onArchiveClick?: (id: string) => void;
+  onRestoreClick?: (id: string) => void;
+  onDeleteClick?: (id: string) => void;
+  onQrClick?: (id: string) => void;
+}
+
+// Define the column configuration as a function that accepts handlers
+export const createEquipmentTableColumns = (
+  actionHandlers?: EquipmentActionHandlers,
+): ColumnDef<EquipmentSummary>[] => [
   {
     accessorKey: "nameAndDescription",
     header: "Equipment Summary",
@@ -30,10 +42,16 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
           <div className="text-sm flex-1">
             <div className="w-full h-full flex flex-col">
               <div className="flex flex-row gap-2 items-center">
-                <div className="w-fit min-w-[200px]">
-                  <p className="text-left text-sm pr-2">
-                    {highlight(equipment.name || "", searchTerm)}
+                <div className="flex flex-row min-w-[220px]">
+                  <p className="text-left pr-2">
+                    <span className="font-semibold text-sm ">
+                      {highlight(equipment.code || "", searchTerm)}
+                    </span>
+                    <span className="text-gray-600 text-xs pl-2">
+                      {highlight(equipment.name || "", searchTerm)}
+                    </span>
                   </p>
+                  <p className="text-left text-sm pr-2"></p>
                 </div>
                 <div className="w-fit flex flex-row gap-2 items-center">
                   {/* Approval Status Badge */}
@@ -42,11 +60,7 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
                     <span className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-lg text-xs">
                       Pending
                     </span>
-                  ) : approvalStatus === "DRAFT" ? (
-                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
-                      Draft
-                    </span>
-                  ) : (
+                  ) : approvalStatus === "DRAFT" ? null : (
                     <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
                       Rejected
                     </span>
@@ -140,93 +154,9 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
       );
     },
   },
-
-  // {
-  //   accessorKey: "make",
-  //   header: "Manufacturer",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">{row.original.make || " "}</div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "model",
-  //   header: "Model",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">{row.original.model || " "}</div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "year",
-  //   header: "Model Year",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">{row.original.year || " "}</div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "color",
-  //   header: "Color",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">{row.original.color || " "}</div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "serialNumber",
-  //   header: "Equipment Serial Number",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">
-  //         {row.original.serialNumber || " "}
-  //       </div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "acquiredDate",
-  //   header: "Acquired Date",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">
-  //         {row.original.acquiredDate
-  //           ? format(new Date(row.original.acquiredDate), "MM/dd/yy")
-  //           : " "}
-  //       </div>
-  //     );
-  //   },
-  // },
-
-  // {
-  //   accessorKey: "licenseNumber",
-  //   header: "License Number",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">
-  //         {row.original.licensePlate || " "}
-  //       </div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "licenseState",
-  //   header: "License State",
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="text-xs text-center">
-  //         {row.original.licenseState || " "}
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "linkedTimesheets",
-    header: "Linked Timesheets",
+    header: "Linked Logs",
     cell: ({ row }) => {
       const equipment = row.original;
       // Calculate total timesheet-related logs
@@ -266,10 +196,117 @@ export const equipmentTableColumns: ColumnDef<EquipmentSummary>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      // This is a placeholder - actual implementation will be in the DataTable component
+      const item = row.original;
+      const {
+        onEditClick,
+        onDeleteClick,
+        onQrClick,
+        onArchiveClick,
+        onRestoreClick,
+      } = actionHandlers || {};
+
+      // Calculate total linked timesheet logs
+      const totalTimesheetLogs =
+        (item._count?.EmployeeEquipmentLogs || 0) +
+        (item._count?.TascoLogs || 0) +
+        (item._count?.HauledInLogs || 0) +
+        (item._count?.UsedAsTrailer || 0) +
+        (item._count?.UsedAsTruck || 0) +
+        (item._count?.Maintenance || 0);
+
       return (
-        <div className="flex flex-row justify-center items-center">
-          {/* Action buttons will be replaced */}
+        <div className="flex flex-row justify-center">
+          {/* QR Code button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size={"icon"}
+                onClick={() => onQrClick?.(item.id)}
+              >
+                <img
+                  src="/qrCode.svg"
+                  alt="QR"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Print QR Code</TooltipContent>
+          </Tooltip>
+
+          {/* Edit button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size={"icon"}
+                onClick={() => onEditClick?.(item.id)}
+              >
+                <img
+                  src="/formEdit.svg"
+                  alt="Edit"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit</TooltipContent>
+          </Tooltip>
+
+          {/* Delete button */}
+          {totalTimesheetLogs === 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size={"icon"}
+                  onClick={() => onDeleteClick?.(item.id)}
+                >
+                  <img
+                    src="/trash-red.svg"
+                    alt="Delete"
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              {item.status === "ACTIVE" ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => onArchiveClick?.(item.id)}
+                    >
+                      <ArchiveIcon
+                        className="h-4 w-4 cursor-pointer"
+                        color="red"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Archive</TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => onRestoreClick?.(item.id)}
+                    >
+                      <ArchiveRestore
+                        className="h-4 w-4 cursor-pointer"
+                        color="red"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Unarchive</TooltipContent>
+                </Tooltip>
+              )}
+            </>
+          )}
         </div>
       );
     },

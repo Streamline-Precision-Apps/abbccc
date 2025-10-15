@@ -1,9 +1,10 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { equipmentTableColumns } from "./equipmentTableColumns";
+import { ColumnDef } from "@tanstack/react-table";
+import { EquipmentSummary } from "../useEquipmentData";
 
 type Props = {
-  columns: typeof equipmentTableColumns;
+  columns: ColumnDef<EquipmentSummary>[];
 };
 
 export default function LoadingEquipmentTableState({ columns }: Props) {

@@ -553,6 +553,32 @@ export async function deleteEquipment(id: string) {
   }
 }
 
+export async function archiveEquipment(id: string) {
+  try {
+    await prisma.equipment.update({
+      where: { id },
+      data: {
+        status: "ARCHIVED",
+      },
+    });
+  } catch (error) {
+    console.error("Error archiving equipment:", error);
+  }
+}
+
+export async function restoreEquipment(id: string) {
+  try {
+    await prisma.equipment.update({
+      where: { id },
+      data: {
+        status: "ACTIVE",
+      },
+    });
+  } catch (error) {
+    console.error("Error archiving equipment:", error);
+  }
+}
+
 /**
  * Server action to create a new cost code
  */
