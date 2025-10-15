@@ -171,13 +171,13 @@ export default function MechanicVerificationStep({
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes position={"row"} gap={3} onClick={handlePrevStep}>
-              <Titles position={"right"} size={"h4"}>
+              <Titles position={"right"} size={"md"}>
                 {t("VerifyJobSite")}
               </Titles>
               <Images
                 titleImg="/clockIn.svg"
                 titleImgAlt="Verify"
-                className="w-10 h-10"
+                className="w-6 h-6"
               />
             </TitleBoxes>
           </Holds>
@@ -247,7 +247,7 @@ export default function MechanicVerificationStep({
                     className=" w-full h-full py-2"
                     disabled={loading}
                   >
-                    <Titles size={"h2"}>{t("StartDay")}</Titles>
+                    <Titles size={"md"}>{t("StartDay")}</Titles>
                   </Buttons>
                 </Holds>
               </Grids>

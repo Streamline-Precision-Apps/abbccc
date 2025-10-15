@@ -25,7 +25,7 @@ export default function StepButtons({
         disabled={disabled}
         className="py-2"
       >
-        <Titles size={"h2"}>{isLastStep ? t("Submit") : t("Continue")}</Titles>
+        <Titles size={"md"}>{isLastStep ? t("Submit") : t("Continue")}</Titles>
       </Buttons>
     </Holds>
   );

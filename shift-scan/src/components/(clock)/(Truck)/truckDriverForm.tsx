@@ -197,81 +197,77 @@ export default function TruckDriverForm({
     truck.code !== "" && selectedOpt && startingMileage > 0 && isValidMileage;
 
   return (
-    <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
-      <Holds className="row-start-1 row-end-7 h-full w-full ">
-        <Grids rows={"12"}>
-          {/* Starting Mileage Input with overlay validation message */}
-          <Holds className="row-start-1 row-end-2 h-full w-full relative">
-            {/* Validation Message Overlay */}
-            {!isValidMileage &&
-              lastMileageData?.lastMileage !== null &&
-              lastMileageData?.lastMileage !== undefined &&
-              !isLoadingMileage && (
-                <Holds className="absolute -top-6 left-0 right-0 z-10 px-2">
-                  <Texts size="p6" className="text-red-600 text-center text-xs">
-                    Minimum required:{" "}
-                    {lastMileageData.lastMileage.toLocaleString()}
-                  </Texts>
-                </Holds>
-              )}
+    <Grids rows={"7"} className="h-full w-full pb-5">
+      {/* Starting Mileage Input with overlay validation message */}
+      <Holds className="row-start-1 row-end-2  w-full relative">
+        {/* Validation Message Overlay */}
+        {!isValidMileage &&
+          lastMileageData?.lastMileage !== null &&
+          lastMileageData?.lastMileage !== undefined &&
+          !isLoadingMileage && (
+            <Holds className="absolute -top-6 left-0 right-0 z-10 px-2">
+              <Texts size="p6" className="text-red-600 text-center text-xs">
+                Minimum required:{" "}
+                {lastMileageData.lastMileage.toLocaleString()}
+              </Texts>
+            </Holds>
+          )}
 
-            <Inputs
-              type="text"
-              name={"startingMileage"}
-              value={displayValue}
-              placeholder={getPlaceholder()}
-              onChange={(e) => handleMileageChange(e.target.value)}
-              onBlur={() => {
-                if (startingMileage) {
-                  setDisplayValue(`${startingMileage.toLocaleString()}`);
-                }
-              }}
-              onFocus={() => {
-                // Remove commas when focusing to allow easy editing
-                // Only show value if it's greater than 0 to avoid auto-filling with "0"
-                setDisplayValue(
-                  startingMileage && startingMileage > 0
-                    ? startingMileage.toString()
-                    : "",
-                );
-              }}
-              disabled={!truck.id || !selectedOpt}
-              className={`text-center placeholder:text-sm ${
-                !isValidMileage && !isLoadingMileage
-                  ? "border-red-500 border-2"
-                  : ""
-              } ${
-                !truck.id || !selectedOpt
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : ""
-              }`}
-            />
-          </Holds>
+        <Inputs
+          type="text"
+          name={"startingMileage"}
+          value={displayValue}
+          placeholder={getPlaceholder()}
+          onChange={(e) => handleMileageChange(e.target.value)}
+          onBlur={() => {
+            if (startingMileage) {
+              setDisplayValue(`${startingMileage.toLocaleString()}`);
+            }
+          }}
+          onFocus={() => {
+            // Remove commas when focusing to allow easy editing
+            // Only show value if it's greater than 0 to avoid auto-filling with "0"
+            setDisplayValue(
+              startingMileage && startingMileage > 0
+                ? startingMileage.toString()
+                : "",
+            );
+          }}
+          disabled={!truck.id || !selectedOpt}
+          className={`text-center placeholder:text-sm ${
+            !isValidMileage && !isLoadingMileage
+              ? "border-red-500 border-2"
+              : ""
+          } ${
+            !truck.id || !selectedOpt
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : ""
+          }`}
+        />
+      </Holds>
 
-          {/* Truck Selector - fixed position */}
-          <Holds className="row-start-2 row-end-13 h-full w-full">
-            <TruckSelector
-              onTruckSelect={(selectedTruck) => {
-                // Reset mileage and display value when selecting a new truck
-                setStartingMileage(0);
-                setDisplayValue("");
+      {/* Truck Selector - fixed position */}
+      <Holds className="row-start-2 row-end-7 h-full w-full">
+        <TruckSelector
+          onTruckSelect={(selectedTruck) => {
+            // Reset mileage and display value when selecting a new truck
+            setStartingMileage(0);
+            setDisplayValue("");
 
-                // ^^^^^Added to clear mileage input on truck change
-                if (selectedTruck) {
-                  setTruck(selectedTruck); // Update the truck state with the full Option object
-                } else {
-                  setTruck({ id: "", code: "", label: "" }); // Reset if null
-                }
-                setSelectedOpt(!!selectedTruck);
-              }}
-              initialValue={truck}
-            />
-          </Holds>
-        </Grids>
+            // ^^^^^Added to clear mileage input on truck change
+            if (selectedTruck) {
+              setTruck(selectedTruck); // Update the truck state with the full Option object
+            } else {
+              setTruck({ id: "", code: "", label: "" }); // Reset if null
+            }
+            setSelectedOpt(!!selectedTruck);
+          }}
+          initialValue={truck}
+        />
       </Holds>
 
       {/* Continue Button */}
-      <Holds className="row-start-7 row-end-8 w-full">
+      <Holds className="row-start-7 row-end-8 w-full pt-5">
         <Buttons
           className="py-2"
           background={!isFormValid ? "darkGray" : "orange"}
@@ -280,7 +276,7 @@ export default function TruckDriverForm({
           }}
           disabled={!isFormValid}
         >
-          <Titles>{t("Continue")}</Titles>
+          <Titles size={"md"}>{t("Continue")}</Titles>
         </Buttons>
       </Holds>
     </Grids>

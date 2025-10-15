@@ -83,9 +83,9 @@ export default function TruckClockInForm({
             onClick={returnPathUsed ? () => setStep(1) : handlePrevStep}
           >
             {clockInRoleTypes === "truckDriver" ? (
-              <Titles size={"h4"}>{t("EnterTruckInfo")}</Titles>
+              <Titles size={"md"}>{t("EnterTruckInfo")}</Titles>
             ) : clockInRoleTypes === "truckEquipmentOperator" ? (
-              <Titles size={"h4"}>{t("EnterEquipmentInfo")}</Titles>
+              <Titles size={"md"}>{t("EnterEquipmentInfo")}</Titles>
             ) : (
               ""
             )}
