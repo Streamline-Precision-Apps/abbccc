@@ -339,7 +339,7 @@ export default function CreateUserModal({
                   </Label>
                   <p className="text-xs text-gray-600 mb-1">
                     You can only assign permission levels equal to or lower than
-                    your current level ({session?.user?.permission || "USER"})
+                    your current level ({allowedPermissions[allowedPermissions.length - 1] || "USER"})
                   </p>
                   <Select
                     value={formData.permission}
