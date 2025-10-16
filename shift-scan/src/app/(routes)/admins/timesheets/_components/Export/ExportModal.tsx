@@ -7,8 +7,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Switch } from "@/components/ui/switch";
+import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
+
+interface FilterData {
+  users?: string[];
+  crews?: string[];
+  exportByUser?: boolean;
+}
 
 interface ExportModalProps {
   onClose: () => void;
@@ -19,15 +27,22 @@ interface ExportModalProps {
       to?: Date;
     },
     selectedFields?: string[],
+    filterData?: FilterData,
   ) => void;
 }
 import { useMemo } from "react";
 import {
   AlertCircle,
   AlertTriangle,
+  ArrowUpAZ,
   Asterisk,
   ChevronDownIcon,
+  CircleQuestionMark,
   Download,
+  Funnel,
+  Info,
+  PlusIcon,
+  Table,
   X,
 } from "lucide-react";
 import {
@@ -37,6 +52,22 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
+
+// Sample user and crew data for demo purposes
+export const SAMPLE_USERS: ComboboxOption[] = [
+  { value: "user1", label: "John Doe" },
+  { value: "user2", label: "Jane Smith" },
+  { value: "user3", label: "Alex Johnson" },
+  { value: "user4", label: "Maria Garcia" },
+  { value: "user5", label: "Robert Chen" },
+];
+
+export const SAMPLE_CREWS: ComboboxOption[] = [
+  { value: "crew1", label: "Team Alpha" },
+  { value: "crew2", label: "Team Beta" },
+  { value: "crew3", label: "Team Gamma" },
+  { value: "crew4", label: "Team Delta" },
+];
 
 export const EXPORT_FIELDS = [
   { key: "Id", label: "Id" },
@@ -69,6 +100,17 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
     EXPORT_FIELDS.map((f) => f.key),
   );
   const [exportFormat, setExportFormat] = useState<"csv" | "xlsx" | "">("");
+
+  // Filter specific states
+  const [showExportGuide, setShowExportGuide] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
+  const [selectUserEnabled, setSelectUserEnabled] = useState(false);
+  const [selectCrewEnabled, setSelectCrewEnabled] = useState(false);
+  const [exportByUser, setExportByUser] = useState(false);
+  const [useCustomTimeRange, setUseCustomTimeRange] = useState(false);
+  const [startTime, setStartTime] = useState<string>("00:00"); // Default 12:00 AM
+  const [endTime, setEndTime] = useState<string>("23:59"); // Default 11:59 PM
 
   const allChecked = useMemo(
     () => selectedFields.length === EXPORT_FIELDS.length,
@@ -108,32 +150,66 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
           >
             <X width={20} height={20} />
           </Button>
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-row gap-2 py-2 items-center">
+          <div className="flex flex-row gap-2 items-center justify-between w-full max-w-[500px] py-1">
+            <div className="flex flex-row gap-2  items-center">
               <Download className="h-5 w-5" />
               <h2 className="text-lg font-bold">Export Timesheets</h2>
             </div>
+
+            <div className="w-fit ">
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                onClick={() => setShowExportGuide(!showExportGuide)}
+                className={
+                  showExportGuide
+                    ? "bg-blue-100 text-blue-600 border-1 border-blue-600 hover:bg-blue-100 hover:text-blue-600 "
+                    : "text-blue-600 hover:bg-white hover:text-blue-600"
+                }
+              >
+                <Info className="h-4 w-4" />
+                <span className="text-xs">
+                  {showExportGuide ? "Close Guide" : "Open Guide"}
+                </span>
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="flex-1 w-full px-2 pt-2 pb-10 gap-4 overflow-y-auto no-scrollbar">
+        <div className="flex-1 w-full px-2 pt-2 pb-10 space-y-5 overflow-y-auto no-scrollbar">
           <div className="w-full">
-            <div className="flex flex-row gap-1 pb-1 items-center">
-              <h3 className="font-semibold text-sm ">Export Guide</h3>
-            </div>
+            {showExportGuide && (
+              <>
+                <div className="flex flex-row gap-1 pb-1 items-center">
+                  <h3 className="font-semibold text-sm text-blue-600">
+                    Export Guide
+                  </h3>
+                </div>
 
-            <div className="flex flex-col  bg-blue-50 px-4 py-3 rounded-lg border border-blue-600 relative">
-              <ul className="list-disc list-inside text-sm font-normal text-blue-600 space-y-1.5">
-                <li>{`Only Approved Timesheets are included`}</li>
-                <li>{`Automatically applies a date range of 12:00 AM to 11:59 PM`}</li>
-                <li>{`Selecting one date you will export Timesheets for that day!`}</li>
-                <li>{`The second date ends the range and includes that entire day as well.`}</li>
-              </ul>
-            </div>
-            <div className="flex flex-col gap-1 mt-4">
+                <div className="flex flex-col  bg-blue-50 px-4 py-3 rounded-lg border border-blue-600 relative">
+                  <ul className="list-disc list-inside text-sm font-normal text-blue-600 space-y-1.5">
+                    <li>{`Only Approved Timesheets are included`}</li>
+                    <li>{`Automatically applies a date range of 12:00 AM to 11:59 PM`}</li>
+                    <li>{`Selecting one date you will export Timesheets for that day!`}</li>
+                    <li>{`The second date ends the range and includes that entire day as well.`}</li>
+                  </ul>
+                  <Button
+                    size={"sm"}
+                    variant={"ghost"}
+                    onClick={() => setShowExportGuide(false)}
+                    className={"absolute top-1 right-1  "}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
+            <div className="flex flex-col gap-1 pt-4">
               <Popover>
                 <PopoverTrigger asChild>
                   <div>
-                    <Label htmlFor="date">Date Range</Label>
+                    <Label htmlFor="date" className="font-semibold text-sm">
+                      Date Range
+                    </Label>
                     <Button
                       variant="outline"
                       id="date"
@@ -183,37 +259,34 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
             </div>
           </div>
           <div className="w-full flex flex-col items-center mb-2">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>
-                  <span className="flex items-center gap-2 text-base font-semibold">
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="text-blue-600"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                    Advanced Exporting Options
-                  </span>
+            <div className="w-full flex flex-row gap-1  items-center">
+              <h3 className="font-semibold text-sm ">
+                Advance Exporting Options
+              </h3>
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-600 rounded-md text-xs">{`Optional`}</span>
+            </div>
+            <div className="w-full pt-1 pb-4">
+              <p className="text-xs text-gray-600">
+                Customize your export with additional options to filter, sort,
+                and include specific fields.
+              </p>
+            </div>
+            <Accordion type="single" collapsible className="w-full space-y-2">
+              <AccordionItem value="item-1" className="border rounded-md px-4">
+                <AccordionTrigger className="py-3 hover:no-underline">
+                  <div className="flex flex-row items-center gap-2 ">
+                    <Table className="h-5 w-5" color="blue" />
+                    <div className="w-full flex items-center gap-2">
+                      <span className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                        Customize
+                      </span>
+                      <p className="text-xs text-gray-600">
+                        Select Field to include or exclude
+                      </p>
+                    </div>
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="w-full mb-4 flex items-center gap-2">
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
-                      Customize
-                    </span>
-                    <p className="text-xs text-gray-600">
-                      Select the fields you want to export.
-                    </p>
-                  </div>
                   <div className="grid grid-cols-2 gap-2 w-full bg-slate-50 rounded-lg p-3 border border-gray-200">
                     <label className="flex items-center gap-2 cursor-pointer col-span-2 hover:bg-blue-50 rounded px-2 py-1 transition">
                       <input
@@ -244,30 +317,183 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                       </label>
                     ))}
                   </div>
-                  <div className="w-full my-4 flex items-center gap-2">
-                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
-                      Filter
-                    </span>
-                    <p className="text-xs text-gray-600">
-                      Apply additional filters to the export.
-                    </p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2" className="border rounded-md px-4">
+                <AccordionTrigger className="py-3 hover:no-underline">
+                  <div className="flex flex-row items-center gap-2 ">
+                    <Funnel className="h-5 w-5" color="blue" />
+                    <div className="w-full flex flex-row items-center gap-2">
+                      <span className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                        Filter
+                      </span>
+                      <p className="text-xs text-gray-600">
+                        Filter the exported data based on specific criteria.
+                      </p>
+                    </div>
                   </div>
-                  <div className="w-full bg-slate-50 rounded-lg p-3 border border-gray-200">
-                    <div className="flex flex-col gap-2">
-                      Select Users - exports the data only for the selected
-                      users
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="w-full mb-4">
+                    <div className="w-full bg-slate-50 rounded-lg p-3 border border-gray-200 transition-all duration-200 ease-in-out">
+                      {/* User Selection */}
+                      <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Select Users
+                          </span>
+                          <Switch
+                            checked={selectUserEnabled}
+                            onCheckedChange={(checked) => {
+                              setSelectUserEnabled(checked);
+                              if (!checked) setSelectedUsers([]);
+                            }}
+                            aria-label="Toggle user selection"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Exports the data only for the selected users
+                        </p>
+
+                        {selectUserEnabled && (
+                          <Combobox
+                            options={SAMPLE_USERS}
+                            value={selectedUsers}
+                            onChange={setSelectedUsers}
+                            placeholder="Select users to include"
+                            filterKeys={["label"]}
+                          />
+                        )}
+                      </div>
+
+                      {/* Crew Selection */}
+                      <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Select Crews
+                          </span>
+                          <Switch
+                            checked={selectCrewEnabled}
+                            onCheckedChange={(checked) => {
+                              setSelectCrewEnabled(checked);
+                              if (!checked) setSelectedCrews([]);
+                            }}
+                            aria-label="Toggle crew selection"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Exports the data only for all users in the selected
+                          crews
+                        </p>
+
+                        {selectCrewEnabled && (
+                          <Combobox
+                            options={SAMPLE_CREWS}
+                            value={selectedCrews}
+                            onChange={setSelectedCrews}
+                            placeholder="Select crews to include"
+                            filterKeys={["label"]}
+                          />
+                        )}
+                      </div>
+
+                      {/* Time Range Override */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">
+                            Time Range Override
+                          </span>
+                          <Switch
+                            checked={useCustomTimeRange}
+                            onCheckedChange={setUseCustomTimeRange}
+                            aria-label="Toggle time range override"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          By default exports use 12:00 AM to 11:59 PM. Override
+                          to customize times.
+                        </p>
+
+                        {useCustomTimeRange && (
+                          <div className="flex flex-col gap-3">
+                            <div className="grid grid-cols-2 gap-3 pb-2">
+                              <div>
+                                <label className="text-xs font-medium block mb-1">
+                                  Start Time
+                                </label>
+                                <input
+                                  type="time"
+                                  value={startTime}
+                                  onChange={(e) => setStartTime(e.target.value)}
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs font-medium block mb-1">
+                                  End Time
+                                </label>
+                                <input
+                                  type="time"
+                                  value={endTime}
+                                  onChange={(e) => setEndTime(e.target.value)}
+                                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setStartTime("00:00");
+                                setEndTime("23:59");
+                              }}
+                              className="w-auto self-end text-xs text-blue-600"
+                              type="button"
+                            >
+                              Reset to default times
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      Select Crews - exports the data only for all users in the
-                      selected crew users
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3" className="border rounded-md px-4">
+                <AccordionTrigger className="py-3 hover:no-underline">
+                  <div className="flex flex-row items-center gap-2 ">
+                    <ArrowUpAZ className="h-5 w-5" color="blue" />
+                    <div className="w-full flex flex-row items-center gap-2">
+                      <span className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                        Sorting
+                      </span>
+                      <p className="text-xs text-gray-600">
+                        Sorts and format the data automatically
+                      </p>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      Export by user - exports the data and sorts the users by
-                      name
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      Date Range override - if you want to export a specific
-                      date range instead of the one selected above
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="w-full mb-4">
+                    <div className="w-full bg-slate-50 rounded-lg p-3 border border-gray-200 transition-all duration-200 ease-in-out">
+                      {/* Export by User */}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-sm font-medium">
+                              Filter by User
+                            </span>
+                            <p className="text-xs text-gray-600">
+                              Sort the users by name and then by date.
+                            </p>
+                          </div>
+                          <Switch
+                            checked={exportByUser}
+                            onCheckedChange={setExportByUser}
+                            aria-label="Toggle export by user"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </AccordionContent>
@@ -277,7 +503,7 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
         </div>
         <div className="w-full flex flex-row justify-between gap-3 pt-5 border-t border-gray-100">
           <div className="w-full flex flex-col max-w-[300px]">
-            <h3 className="font-semibold text-sm mb-1">Export Format</h3>
+            <h3 className="font-semibold text-xs mb-1">Export Format</h3>
             <div className="w-full flex flex-row gap-4 ">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -314,11 +540,55 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
             </Button>
             <Button
               className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
-              onClick={() =>
-                exportFormat &&
-                dateRange.from &&
-                onExport(exportFormat, dateRange, selectedFields)
-              }
+              onClick={() => {
+                if (exportFormat && dateRange.from) {
+                  // Apply time overrides if enabled
+                  let finalDateRange = { ...dateRange };
+
+                  if (useCustomTimeRange) {
+                    // Parse the time strings
+                    const [startHours, startMinutes] = startTime
+                      .split(":")
+                      .map(Number);
+                    const [endHours, endMinutes] = endTime
+                      .split(":")
+                      .map(Number);
+
+                    // Create new Date objects with original dates but custom times
+                    if (finalDateRange.from) {
+                      const newFrom = new Date(finalDateRange.from);
+                      newFrom.setHours(startHours, startMinutes, 0, 0);
+                      finalDateRange.from = newFrom;
+                    }
+
+                    if (finalDateRange.to) {
+                      const newTo = new Date(finalDateRange.to);
+                      newTo.setHours(endHours, endMinutes, 0, 0);
+                      finalDateRange.to = newTo;
+                    }
+                  }
+
+                  // Create a filter object to pass to the export function
+                  const filterData = {
+                    users:
+                      selectUserEnabled && selectedUsers.length > 0
+                        ? selectedUsers
+                        : undefined,
+                    crews:
+                      selectCrewEnabled && selectedCrews.length > 0
+                        ? selectedCrews
+                        : undefined,
+                    exportByUser: exportByUser,
+                  };
+                  // Pass the filter data to the onExport function
+                  onExport(
+                    exportFormat,
+                    finalDateRange,
+                    selectedFields,
+                    filterData,
+                  );
+                }
+              }}
               disabled={
                 selectedFields.length === 0 || !exportFormat || !dateRange.from
               }
