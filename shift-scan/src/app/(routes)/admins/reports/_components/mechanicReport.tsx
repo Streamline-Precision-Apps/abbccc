@@ -10,6 +10,7 @@ import { MechanicDataTable } from "./_mechanicReport/MechanicDataTable";
 interface MechanicReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
+  dateRange?: { from: Date | undefined; to: Date | undefined };
   registerReload?: (reloadFn: () => Promise<void>) => void;
   isRefreshing?: boolean;
 }
@@ -19,10 +20,12 @@ type DateRange = { from: Date | undefined; to: Date | undefined };
 export default function MechanicReport({
   showExportModal,
   setShowExportModal,
+  dateRange: externalDateRange,
   registerReload,
   isRefreshing,
 }: MechanicReportProps) {
-  const [data, setData] = useState<MechanicReportRow[]>([]);
+  const [allData, setAllData] = useState<MechanicReportRow[]>([]);
+  const [filteredData, setFilteredData] = useState<MechanicReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
@@ -37,13 +40,61 @@ export default function MechanicReport({
       if (!response.ok) {
         throw new Error(json.message || "Failed to fetch Mechanic report data");
       }
-      setData(json);
+      setAllData(json);
     } catch (error) {
       console.error("Error fetching Mechanic report data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Filter data based on external date range
+  useEffect(() => {
+    if (!allData.length) {
+      setFilteredData([]);
+      return;
+    }
+
+    let filtered = allData;
+
+    if (externalDateRange?.from && externalDateRange?.to) {
+      // If from and to are the same day, filter by the full day
+      const isSameDay =
+        externalDateRange.from.toDateString() ===
+        externalDateRange.to.toDateString();
+      if (isSameDay) {
+        const startOfDay = new Date(externalDateRange.from);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(externalDateRange.from);
+        endOfDay.setHours(23, 59, 59, 999);
+        filtered = allData.filter((row) => {
+          const date = new Date(row.dateWorked);
+          return date >= startOfDay && date <= endOfDay;
+        });
+      } else {
+        filtered = allData.filter((row) => {
+          const date = new Date(row.dateWorked);
+          return (
+            date >= externalDateRange.from! && date <= externalDateRange.to!
+          );
+        });
+      }
+    } else if (externalDateRange?.from) {
+      // Only start date provided
+      filtered = allData.filter((row) => {
+        const date = new Date(row.dateWorked);
+        return date >= externalDateRange.from!;
+      });
+    } else if (externalDateRange?.to) {
+      // Only end date provided
+      filtered = allData.filter((row) => {
+        const date = new Date(row.dateWorked);
+        return date <= externalDateRange.to!;
+      });
+    }
+
+    setFilteredData(filtered);
+  }, [allData, externalDateRange]);
 
   // Register reload function on mount
   useEffect(() => {
@@ -59,29 +110,9 @@ export default function MechanicReport({
     _dateRange?: { from?: Date; to?: Date },
     selectedFields?: string[],
   ) => {
-    if (!data.length) return;
-    // Filter by dateRange if set
-    let exportData = data;
-    if (dateRange.from && dateRange.to) {
-      // If from and to are the same day, filter by the full day
-      const isSameDay =
-        dateRange.from.toDateString() === dateRange.to.toDateString();
-      if (isSameDay) {
-        const startOfDay = new Date(dateRange.from);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(dateRange.from);
-        endOfDay.setHours(23, 59, 59, 999);
-        exportData = data.filter((row) => {
-          const date = new Date(row.dateWorked);
-          return date >= startOfDay && date <= endOfDay;
-        });
-      } else {
-        exportData = data.filter((row) => {
-          const date = new Date(row.dateWorked);
-          return date >= dateRange.from! && date <= dateRange.to!;
-        });
-      }
-    }
+    if (!filteredData.length) return;
+    // Use the already filtered data for export
+    const exportData = filteredData;
 
     const tableHeaders = [
       "Id",
@@ -147,14 +178,15 @@ export default function MechanicReport({
 
   return (
     <>
-      <MechanicDataTable data={data} loading={loading || !!isRefreshing} />
+      <MechanicDataTable
+        data={filteredData}
+        loading={loading || !!isRefreshing}
+      />
 
       {showExportModal && (
         <ExportReportModal
           onClose={() => setShowExportModal(false)}
           onExport={onExport}
-          dateRange={{ from: dateRange.from, to: dateRange.to }}
-          setDateRange={setDateRange}
         />
       )}
     </>

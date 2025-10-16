@@ -31,10 +31,10 @@ export type JobsiteSummary = {
 };
 
 export interface FilterOptions {
-  isActive: string[];
+  status: string[];
 }
 
-export const useJobsiteData = () => {
+export const useJobsiteData = (initialShowPendingOnly: boolean = false) => {
   const { refresh } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
   const [jobsiteDetails, setJobsiteDetails] = useState<JobsiteSummary[]>([]);
@@ -44,7 +44,7 @@ export const useJobsiteData = () => {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(25);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [showPendingOnly, setShowPendingOnly] = useState(initialShowPendingOnly);
   // State for modals
   const [editJobsiteModal, setEditJobsiteModal] = useState(false);
   const [createJobsiteModal, setCreateJobsiteModal] = useState(false);

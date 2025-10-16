@@ -93,14 +93,14 @@ export const notificationTableColumns = (
             <div className="flex flex-row justify-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={row.original.url}>
-                    <Button variant="ghost" size={"icon"}>
+                  <Button variant="ghost" size={"icon"} asChild>
+                    <Link href={row.original.url}>
                       <FileSymlink
                         className="h-4 w-4 cursor-pointer"
                         strokeWidth={2}
                       />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent>Start Task</TooltipContent>
               </Tooltip>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { isAuthenticationError } from "@/utils/authErrorUtils";
 
 // Type definition for the fetch function that will be provided by the user
 // Takes skip (pagination offset) and optional reset flag, returns promise of data array
@@ -54,6 +55,11 @@ export function useInfiniteScroll<T>({
           setHasMore(false);
         }
       } catch (error) {
+        // Silently handle authentication/redirect errors during sign-out
+        if (isAuthenticationError(error)) {
+          // User is likely being redirected to sign-in
+          return;
+        }
         console.error("Error fetching data:", error as Error);
       } finally {
         // Reset loading states
@@ -62,7 +68,7 @@ export function useInfiniteScroll<T>({
         setIsInitialLoading(false);
       }
     },
-    [fetchFn, take] // Dependencies for useCallback
+    [fetchFn, take], // Dependencies for useCallback
   );
 
   // RESET LOGIC WHEN DEPENDENCIES CHANGE
@@ -108,7 +114,7 @@ export function useInfiniteScroll<T>({
       // Start observing the node
       observer.current.observe(node);
     },
-    [isLoading, hasMore, skip, fetchData] // Dependencies for useCallback
+    [isLoading, hasMore, skip, fetchData], // Dependencies for useCallback
   );
 
   const refresh = useCallback(async () => {

@@ -7,6 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { ChevronDownIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import {
   Tooltip,
@@ -18,11 +26,17 @@ import TascoReport from "./_components/tascoReport";
 import TruckingReport from "./_components/truckingReport";
 import MechanicReport from "./_components/mechanicReport";
 
+type DateRange = { from: Date | undefined; to: Date | undefined };
+
 export default function AdminReports() {
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | undefined>(
     undefined,
   );
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
+  });
   // For reload button state
   const [isRefreshing, setIsRefreshing] = useState(false);
   // Ref to hold reload functions for each report
@@ -51,6 +65,7 @@ export default function AdminReports() {
         <TascoReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
+          dateRange={dateRange}
           registerReload={(fn: () => Promise<void>) => {
             reportReloaders.current["tasco-report"] = fn;
           }}
@@ -67,6 +82,7 @@ export default function AdminReports() {
         <TruckingReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
+          dateRange={dateRange}
           registerReload={(fn: () => Promise<void>) => {
             reportReloaders.current["trucking-mileage-report"] = fn;
           }}
@@ -83,6 +99,7 @@ export default function AdminReports() {
         <MechanicReport
           showExportModal={showExportModal}
           setShowExportModal={setShowExportModal}
+          dateRange={dateRange}
           registerReload={(fn: () => Promise<void>) => {
             reportReloaders.current["mechanic-report"] = fn;
           }}
@@ -106,23 +123,69 @@ export default function AdminReports() {
       />
 
       <div className="h-10 w-full flex flex-row justify-between gap-4">
-        <Select
-          name="report"
-          onValueChange={setSelectedReportId}
-          value={selectedReportId}
-        >
-          <SelectTrigger className="w-[350px] bg-white">
-            <SelectValue placeholder="Select a report" />
-          </SelectTrigger>
-          <SelectContent>
-            {reports.map((report) => (
-              <SelectItem key={report.id} value={report.id}>
-                {report.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-row gap-4">
+          <Select
+            name="report"
+            onValueChange={setSelectedReportId}
+            value={selectedReportId}
+          >
+            <SelectTrigger className="w-[350px] bg-white">
+              <SelectValue placeholder="Select a report" />
+            </SelectTrigger>
+            <SelectContent>
+              {reports.map((report) => (
+                <SelectItem key={report.id} value={report.id}>
+                  {report.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
+          {/* Date Range Picker */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[300px] justify-between font-normal bg-white"
+                disabled={!selectedReportId}
+              >
+                {dateRange.from && dateRange.to
+                  ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
+                  : dateRange.from
+                    ? format(dateRange.from, "PPP")
+                    : "Select date range"}
+                <ChevronDownIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto overflow-hidden p-0"
+              align="start"
+            >
+              <div className="p-4 justify-center flex flex-col items-center">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={(value) =>
+                    setDateRange({ from: value?.from, to: value?.to })
+                  }
+                  autoFocus
+                />
+                {(dateRange.from || dateRange.to) && (
+                  <Button
+                    variant="outline"
+                    className="w-1/2 text-xs text-blue-600 hover:underline mt-2"
+                    onClick={() =>
+                      setDateRange({ from: undefined, to: undefined })
+                    }
+                    type="button"
+                  >
+                    Clear date range
+                  </Button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
