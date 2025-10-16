@@ -26,6 +26,7 @@ import { CrewDataTable } from "./_components/ViewAll/CrewDataTable";
 import { useCrewsData } from "./_components/useCrewsData";
 import CreateCrewModal from "./_components/createCrewModal";
 import EditCrewModal from "./_components/editCrewModal";
+import PersonnelFilters from "./_components/PersonnelFilters";
 import { Users, User } from "lucide-react";
 
 export default function PersonnelPage() {
@@ -57,6 +58,15 @@ export default function PersonnelPage() {
     confirmDelete,
     cancelDelete,
     pendingEditId,
+    // Filter functionality
+    useFilters,
+    setUseFilters,
+    filters,
+    setFilters,
+    appliedFilters,
+    handleFilterChange,
+    handleApplyFilters,
+    handleClearFilters,
   } = usePersonnelData();
 
   const {
@@ -111,17 +121,30 @@ export default function PersonnelPage() {
       />
 
       <div className="h-10 w-full flex flex-row justify-between">
-        <SearchBarPopover
-          term={currentSearchTerm}
-          handleSearchChange={(e) => setCurrentSearchTerm(e.target.value)}
-          placeholder={
-            pageState === "Personnel"
-              ? "Search by name, username, or number..."
-              : "Search crews..."
-          }
-          textSize="xs"
-          imageSize="10"
-        />
+        <div className="flex flex-row gap-2">
+          <SearchBarPopover
+            term={currentSearchTerm}
+            handleSearchChange={(e) => setCurrentSearchTerm(e.target.value)}
+            placeholder={
+              pageState === "Personnel"
+                ? "Search by name, username, or number..."
+                : "Search crews..."
+            }
+            textSize="xs"
+            imageSize="10"
+          />
+          {pageState === "Personnel" && (
+            <PersonnelFilters
+              onFilterChange={handleFilterChange}
+              onApplyFilters={handleApplyFilters}
+              onUseFiltersChange={setUseFilters}
+              filters={filters}
+              appliedFilters={appliedFilters}
+              setFilters={setFilters}
+              handleClearFilters={handleClearFilters}
+            />
+          )}
+        </div>
 
         <div className="flex flex-row justify-end w-full gap-2">
           <Tooltip>

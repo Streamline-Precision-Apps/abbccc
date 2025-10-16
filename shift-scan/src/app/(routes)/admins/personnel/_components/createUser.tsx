@@ -17,6 +17,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Permission } from "../../../../../../prisma/generated/prisma";
 
+// Utility function to get allowed permissions based on current user's permission level
+const getAllowedPermissions = (currentUserPermission: string): string[] => {
+  const permissionHierarchy = ["USER", "MANAGER", "ADMIN", "SUPERADMIN"];
+  const currentIndex = permissionHierarchy.indexOf(currentUserPermission);
+
+  if (currentIndex === -1) return ["USER"]; // Default fallback
+
+  // User can only assign permissions equal to or lower than their own
+  return permissionHierarchy.slice(0, currentIndex + 1);
+};
+
 interface CreatePersonnel {
   username: string;
   firstName: string;
@@ -54,6 +65,11 @@ export default function CreateUserModal({
   const [submitting, setSubmitting] = useState(false);
   const [crew, setCrew] = useState<CrewData[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Get allowed permissions based on current user's permission level
+  const allowedPermissions = session?.user?.permission
+    ? getAllowedPermissions(session.user.permission)
+    : ["USER"];
   const [formData, setFormData] = useState<CreatePersonnel>({
     username: "",
     firstName: "",
@@ -321,6 +337,10 @@ export default function CreateUserModal({
                   <Label htmlFor="permission">
                     Permission <span className="text-red-500">*</span>
                   </Label>
+                  <p className="text-xs text-gray-600 mb-1">
+                    You can only assign permission levels equal to or lower than
+                    your current level ({session?.user?.permission || "USER"})
+                  </p>
                   <Select
                     value={formData.permission}
                     onValueChange={(value) =>
@@ -331,7 +351,7 @@ export default function CreateUserModal({
                       <SelectValue placeholder="Select permission" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(Permission).map((perm: string) => (
+                      {allowedPermissions.map((perm: string) => (
                         <SelectItem key={perm} value={perm}>
                           {perm}
                         </SelectItem>
