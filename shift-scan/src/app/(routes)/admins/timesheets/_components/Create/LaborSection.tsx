@@ -26,8 +26,13 @@ export function LaborSection({
   // ...existing code for rendering labor logs UI, using the props above...
   // Copy the JSX and logic for the Labor section from the main modal, replacing state/handlers with props
   return (
-    <div className="col-span-2 mt-4">
-      <h3 className="font-semibold text-sm mb-2">Employee Equipment Logs</h3>
+    <div className="col-span-2">
+      <div className="flex flex-col mb-4">
+        <h3 className="block font-semibold text-base">Equipment Logs</h3>
+        <p className="text-xs text-gray-600 pt-1">
+          Report equipment usage, you can add multiple entries.
+        </p>
+      </div>
       {laborLogs.map((log, idx) => (
         <div
           key={idx}

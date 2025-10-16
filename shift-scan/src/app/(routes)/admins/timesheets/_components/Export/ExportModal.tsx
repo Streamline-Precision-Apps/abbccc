@@ -21,16 +21,22 @@ interface ExportModalProps {
     selectedFields?: string[],
   ) => void;
 }
-
 import { useMemo } from "react";
-import { ChevronDownIcon, Download, X } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import {
+  AlertCircle,
+  AlertTriangle,
+  Asterisk,
+  ChevronDownIcon,
+  Download,
+  X,
+} from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Label } from "@radix-ui/react-label";
 
 export const EXPORT_FIELDS = [
   { key: "Id", label: "Id" },
@@ -87,51 +93,64 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
-        <div className="px-6 py-4 flex flex-col gap-4 items-center w-full relative">
-          <div className="relative w-full">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setDateRange({ from: undefined, to: undefined });
-                setExportFormat("");
-                onClose();
-              }}
-              className="absolute top-0 right-0 cursor-pointer"
-            >
-              <X width={20} height={20} />
-            </Button>
-            <div className="flex flex-col">
-              <div className="flex flex-row gap-2 mb-2 items-center">
-                <Download className="h-5 w-5" />
-                <h2 className="text-xl font-bold">Export Timesheet Data</h2>
-              </div>
-              <p className="text-xs text-gray-600">
-                Select a date range, apply filters, and choose your preferred
-                export format
-              </p>
-              <p className="text-xs text-blue-600 italic">
-                Exporting only includes timesheets that have been approved!
-              </p>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh] px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setDateRange({ from: undefined, to: undefined });
+              setExportFormat("");
+              onClose();
+            }}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2 py-2 items-center">
+              <Download className="h-5 w-5" />
+              <h2 className="text-lg font-bold">Export Timesheets</h2>
             </div>
           </div>
-          <div className="border rounded-lg p-4 bg-gray-50 w-full">
-            <h3 className="font-semibold text-sm mb-2">Date Range</h3>
-            <div className="flex flex-col gap-3">
+        </div>
+        <div className="flex-1 w-full px-2 pt-2 pb-10 gap-4 overflow-y-auto no-scrollbar">
+          <div className="w-full">
+            <div className="flex flex-row gap-1 pb-1 items-center">
+              <h3 className="font-semibold text-sm ">Export Guide</h3>
+            </div>
+
+            <div className="flex flex-col  bg-blue-50 px-4 py-3 rounded-lg border border-blue-600 relative">
+              <ul className="list-disc list-inside text-sm font-normal text-blue-600 space-y-1.5">
+                <li>{`Only Approved Timesheets are included`}</li>
+                <li>{`Automatically applies a date range of 12:00 AM to 11:59 PM`}</li>
+                <li>{`Selecting one date you will export Timesheets for that day!`}</li>
+                <li>{`The second date ends the range and includes that entire day as well.`}</li>
+              </ul>
+            </div>
+            <div className="flex flex-col gap-1 mt-4">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    id="date"
-                    className="w-full justify-between font-normal"
-                  >
-                    {dateRange.from && dateRange.to
-                      ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
-                      : "Select date range"}
-                    <ChevronDownIcon />
-                  </Button>
+                  <div>
+                    <Label htmlFor="date">Date Range</Label>
+                    <Button
+                      variant="outline"
+                      id="date"
+                      className="w-full justify-between font-normal"
+                    >
+                      {dateRange.from &&
+                      dateRange.to &&
+                      dateRange.from !== dateRange.to
+                        ? `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`
+                        : dateRange.from &&
+                            dateRange.to &&
+                            dateRange.from === dateRange.to
+                          ? `${format(dateRange.from, "PPP")}`
+                          : "Select a date or date range"}
+                      <ChevronDownIcon />
+                    </Button>
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent
                   className="w-auto overflow-hidden p-0"
@@ -225,13 +244,41 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                       </label>
                     ))}
                   </div>
+                  <div className="w-full my-4 flex items-center gap-2">
+                    <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                      Filter
+                    </span>
+                    <p className="text-xs text-gray-600">
+                      Apply additional filters to the export.
+                    </p>
+                  </div>
+                  <div className="w-full bg-slate-50 rounded-lg p-3 border border-gray-200">
+                    <div className="flex flex-col gap-2">
+                      Select Users - exports the data only for the selected
+                      users
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      Select Crews - exports the data only for all users in the
+                      selected crew users
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      Export by user - exports the data and sorts the users by
+                      name
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      Date Range override - if you want to export a specific
+                      date range instead of the one selected above
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
-          <div className="border rounded-lg p-4 bg-gray-50 mt-4 w-full">
-            <h3 className="font-semibold text-sm mb-2">Export Format</h3>
-            <div className="flex flex-row gap-4 mb-2">
+        </div>
+        <div className="w-full flex flex-row justify-between gap-3 pt-5 border-t border-gray-100">
+          <div className="w-full flex flex-col max-w-[300px]">
+            <h3 className="font-semibold text-sm mb-1">Export Format</h3>
+            <div className="w-full flex flex-row gap-4 ">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
@@ -256,25 +303,34 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
               </label>
             </div>
           </div>
-          <div className="flex flex-row gap-3 w-full mb-2 mt-4">
+          <div className="flex flex-row justify-end  gap-2 ">
             <Button
-              size="sm"
-              className="flex-1 bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded disabled:opacity-50"
-              onClick={() =>
-                exportFormat &&
-                onExport(exportFormat, dateRange, selectedFields)
-              }
-              disabled={selectedFields.length === 0 || !exportFormat}
-            >
-              Export
-            </Button>
-            <Button
-              size="sm"
+              type="button"
               variant="outline"
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
               onClick={onClose}
             >
               Cancel
+            </Button>
+            <Button
+              className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+              onClick={() =>
+                exportFormat &&
+                dateRange.from &&
+                onExport(exportFormat, dateRange, selectedFields)
+              }
+              disabled={
+                selectedFields.length === 0 || !exportFormat || !dateRange.from
+              }
+              title={
+                !dateRange.from
+                  ? "Please select a start date"
+                  : !exportFormat
+                    ? "Please select an export format"
+                    : ""
+              }
+            >
+              Export
             </Button>
           </div>
         </div>

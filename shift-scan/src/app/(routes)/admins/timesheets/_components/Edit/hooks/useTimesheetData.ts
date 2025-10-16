@@ -1,10 +1,18 @@
 /**
  * Custom hook for fetching and managing timesheet-related data (users, jobsites, equipment, cost codes, material types).
  * Keeps all data-fetching logic out of the main modal/component for maintainability.
+ * Optimized with useMemo and useCallback for better performance.
  *
  * @module hooks/useTimesheetData
  */
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { ApprovalStatus } from "../../../../../../../../prisma/generated/prisma/client";
 
 export interface EditTimesheetModalProps {
@@ -166,82 +174,233 @@ export function useTimesheetData(form: TimesheetData | null) {
   const [trailers, setTrailers] = useState<TrailerOption[]>([]);
   // Material types can be an array of objects with id and name
   const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([]);
+  // Cache to store cost codes by jobsite ID
+  const [costCodeCache, setCostCodeCache] = useState<
+    Record<string, { data: CostCodeOption[]; timestamp: number }>
+  >({});
+  // Cache for material types
+  const [materialTypesCache, setMaterialTypesCache] = useState<{
+    data: MaterialType[];
+    timestamp: number;
+  } | null>(null);
 
-  // Fetch users, jobsites, equipment
-  useEffect(() => {
-    async function fetchDropdowns() {
+  // Memoized fetch functions for better performance
+  const fetchUsers = useCallback(async () => {
+    try {
       const usersRes = await fetch("/api/getAllActiveEmployeeName");
-      const jobsitesRes = await fetch("/api/getJobsiteSummary");
-      const equipmentRes = await fetch("/api/getAllEquipment");
       const users = await usersRes.json();
-      const jobsite = await jobsitesRes.json();
-      const equipment = await equipmentRes.json();
-      const filteredJobsites = jobsite
+      return users || [];
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchJobsites = useCallback(async () => {
+    try {
+      const jobsitesRes = await fetch("/api/getJobsiteSummary");
+      const jobsites = await jobsitesRes.json();
+      const filteredJobsites = jobsites
         .filter(
           (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED",
         )
         .map((j: { id: string; name: string }) => ({ id: j.id, name: j.name }));
-      setUsers(users);
-      setJobsites(filteredJobsites);
+      return filteredJobsites;
+    } catch (error) {
+      console.error("Error fetching jobsites:", error);
+      return [];
+    }
+  }, []);
 
-      const filteredTrucks = equipment.filter(
+  const fetchEquipment = useCallback(async () => {
+    try {
+      const equipmentRes = await fetch("/api/getAllEquipment");
+      const equipment = await equipmentRes.json();
+      return equipment || [];
+    } catch (error) {
+      console.error("Error fetching equipment:", error);
+      return [];
+    }
+  }, []);
+
+  // Main fetch function that calls all the memoized fetchers
+  const fetchAllData = useCallback(async () => {
+    try {
+      // Use Promise.all to fetch data concurrently for better performance
+      const [usersData, jobsitesData, equipmentData] = await Promise.all([
+        fetchUsers(),
+        fetchJobsites(),
+        fetchEquipment(),
+      ]);
+
+      setUsers(usersData);
+      setJobsites(jobsitesData);
+      setEquipment(equipmentData);
+
+      // Process equipment to get trucks and trailers
+      const filteredTrucks = equipmentData.filter(
         (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
       );
-      const filteredTrailers = equipment.filter(
+      const filteredTrailers = equipmentData.filter(
         (e: { equipmentTag: string }) => e.equipmentTag === "TRAILER",
       );
 
       setTrucks(filteredTrucks as TruckOption[]);
       setTrailers(filteredTrailers as TrailerOption[]);
-      setEquipment(equipment as EquipmentOption[]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-    fetchDropdowns();
+  }, [fetchUsers, fetchJobsites, fetchEquipment]);
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  // Memoized function to fetch cost codes by jobsite
+  const fetchCostCodes = useCallback(async (jobsiteId: string) => {
+    if (!jobsiteId) {
+      return [];
+    }
+    try {
+      const res = await fetch(
+        `/api/getAllCostCodesByJobSites?jobsiteId=${jobsiteId}`,
+      );
+      if (!res.ok) {
+        return [];
+      }
+      const codes = await res.json();
+      const options = codes.map((c: { id: string; name: string }) => ({
+        value: c.id,
+        label: c.name,
+      }));
+      return options;
+    } catch (error) {
+      console.error("Error fetching cost codes:", error);
+      return [];
+    }
   }, []);
 
-  // Fetch cost codes when jobsite changes
+  // Fetch cost codes when jobsite changes with caching
   useEffect(() => {
-    async function fetchCostCodes() {
-      if (!form?.Jobsite?.id) {
-        setCostCodes([]);
-        return;
-      }
+    const jobsiteId = form?.Jobsite?.id || "";
+
+    if (!jobsiteId) {
+      setCostCodes([]);
+      return;
+    }
+
+    // Check if we have a recent cache (less than 5 minutes old)
+    const cachedData = costCodeCache[jobsiteId];
+    const cacheIsValid =
+      cachedData && Date.now() - cachedData.timestamp < 5 * 60 * 1000; // 5 minutes
+
+    if (cacheIsValid) {
+      // Use cached data
+      setCostCodes(cachedData.data);
+      return;
+    }
+
+    // Fetch fresh data
+    async function loadCostCodes() {
       try {
-        const res = await fetch(
-          `/api/getAllCostCodesByJobSites?jobsiteId=${form.Jobsite.id}`,
-        );
-        if (!res.ok) {
-          setCostCodes([]);
-          return;
-        }
-        const codes = await res.json();
-        const options = codes.map((c: { id: string; name: string }) => ({
-          value: c.id,
-          label: c.name,
+        const codes = await fetchCostCodes(jobsiteId);
+        setCostCodes(codes);
+
+        // Update the cache
+        setCostCodeCache((prev) => ({
+          ...prev,
+          [jobsiteId]: {
+            data: codes,
+            timestamp: Date.now(),
+          },
         }));
-        setCostCodes(options);
       } catch {
         setCostCodes([]);
       }
     }
-    fetchCostCodes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form?.Jobsite?.id]);
+
+    loadCostCodes();
+  }, [form?.Jobsite?.id, fetchCostCodes, costCodeCache]);
+
+  // Memoized function to fetch material types
+  const fetchMaterialTypes = useCallback(async () => {
+    try {
+      // Check if we have a recent cache (less than 10 minutes old)
+      if (
+        materialTypesCache &&
+        Date.now() - materialTypesCache.timestamp < 10 * 60 * 1000
+      ) {
+        return materialTypesCache.data;
+      }
+
+      const res = await fetch("/api/getMaterialTypes");
+      const data = await res.json();
+
+      // Update the cache
+      setMaterialTypesCache({
+        data,
+        timestamp: Date.now(),
+      });
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching material types:", error);
+      return [];
+    }
+  }, [materialTypesCache]);
 
   // Fetch material types
   useEffect(() => {
-    async function fetchMaterialTypes() {
-      try {
-        const res = await fetch("/api/getMaterialTypes");
-        const data = await res.json();
-        setMaterialTypes(data);
-      } catch {
-        setMaterialTypes([]);
-      }
+    async function loadMaterialTypes() {
+      const types = await fetchMaterialTypes();
+      setMaterialTypes(types);
     }
-    fetchMaterialTypes();
-  }, []);
+    loadMaterialTypes();
+  }, [fetchMaterialTypes]);
+
+  // Memoize dropdown options to prevent unnecessary re-rendering
+  const userOptions = useMemo(
+    () =>
+      users.map((u) => ({
+        value: u.id,
+        label: `${u.firstName} ${u.lastName}`,
+      })),
+    [users],
+  );
+
+  const jobsiteOptions = useMemo(
+    () => jobsites.map((j) => ({ value: j.id, label: j.name })),
+    [jobsites],
+  );
+
+  const costCodeOptions = useMemo(
+    () => costCodes.map((c) => ({ value: c.value, label: c.label })),
+    [costCodes],
+  );
+
+  const equipmentOptions = useMemo(
+    () => equipment.map((e) => ({ value: e.id, label: e.name })),
+    [equipment],
+  );
+
+  const truckOptions = useMemo(
+    () => trucks.map((t) => ({ value: t.id, label: t.name })),
+    [trucks],
+  );
+
+  const trailerOptions = useMemo(
+    () => trailers.map((t) => ({ value: t.id, label: t.name })),
+    [trailers],
+  );
+
+  const materialTypeOptions = useMemo(
+    () => materialTypes.map((m) => ({ value: m.id, label: m.name })),
+    [materialTypes],
+  );
 
   return {
+    // Raw data arrays
     users,
     jobsites,
     costCodes,
@@ -249,5 +408,13 @@ export function useTimesheetData(form: TimesheetData | null) {
     materialTypes,
     trucks,
     trailers,
+    // Memoized formatted options for dropdowns
+    userOptions,
+    jobsiteOptions,
+    costCodeOptions,
+    equipmentOptions,
+    truckOptions,
+    trailerOptions,
+    materialTypeOptions,
   };
 }

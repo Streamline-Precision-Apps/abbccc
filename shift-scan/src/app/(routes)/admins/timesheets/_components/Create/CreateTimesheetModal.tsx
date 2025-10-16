@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { TruckingSection } from "./TruckingSection";
 import { TascoSection } from "./TascoSection";
@@ -152,29 +152,51 @@ export function CreateTimesheetModal({
     { equipment: { id: "", name: "" }, startTime: "", endTime: "" },
   ]);
 
-  // Helper to map users/jobsites to combobox options
-  const userOptions = users.map((u) => ({
-    value: u.id,
-    label: `${u.firstName} ${u.lastName}`,
-  }));
-  const jobsiteOptions = jobsites.map((j) => ({
-    value: j.id,
-    label: j.name,
-  }));
-  const costCodeOptions = costCode.map((c) => ({
-    value: c.value,
-    label: c.label,
-  }));
+  // Memoized options for dropdowns to prevent unnecessary re-rendering
+  const userOptions = useMemo(
+    () =>
+      users.map((u) => ({
+        value: u.id,
+        label: `${u.firstName} ${u.lastName}`,
+      })),
+    [users],
+  );
 
-  const equipmentOptions = equipment.map((e) => ({
-    value: e.id,
-    label: e.name,
-  }));
+  const jobsiteOptions = useMemo(
+    () =>
+      jobsites.map((j) => ({
+        value: j.id,
+        label: j.name,
+      })),
+    [jobsites],
+  );
 
-  const truckOptions = trucks.map((e) => ({
-    value: e.id,
-    label: e.name,
-  }));
+  const costCodeOptions = useMemo(
+    () =>
+      costCode.map((c) => ({
+        value: c.value,
+        label: c.label,
+      })),
+    [costCode],
+  );
+
+  const equipmentOptions = useMemo(
+    () =>
+      equipment.map((e) => ({
+        value: e.id,
+        label: e.name,
+      })),
+    [equipment],
+  );
+
+  const truckOptions = useMemo(
+    () =>
+      trucks.map((e) => ({
+        value: e.id,
+        label: e.name,
+      })),
+    [trucks],
+  );
 
   // Remove costCodeOptions dynamic logic (no costCodes on jobsites)
   const workTypeOptions = [
@@ -184,99 +206,211 @@ export function CreateTimesheetModal({
     { value: "TASCO", label: "Tasco" },
   ];
 
-  // Fetch users and jobsites for dropdowns using your real API endpoints
-  useEffect(() => {
-    async function fetchDropdowns() {
-      try {
-        setLoading(true);
-
-        const usersRes = await fetch("/api/getAllActiveEmployeeName");
-        const jobsitesRes = await fetch("/api/getJobsiteSummary");
-        const equipmentRes = await fetch("/api/getAllEquipment");
-
-        const jobsite = (await jobsitesRes.json()) || [];
-        const equipment = (await equipmentRes.json()) || [];
-        const users = (await usersRes.json()) || [];
-
-        const filteredJobsite = jobsite.filter(
-          (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED",
-        );
-        const filteredJobsites = filteredJobsite.map(
-          (j: { id: string; name: string }) => ({
-            id: j.id,
-            name: j.name,
-          }),
-        );
-        if (equipment) {
-          const filteredTrucks = equipment.filter(
-            (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
-          );
-
-          setTrucks(filteredTrucks);
-        }
-        setEquipment(equipment);
-        setUsers(users);
-        setJobsites(filteredJobsites);
-      } catch (error) {
-        console.error("Error fetching dropdowns:", error);
-      } finally {
-        setLoading(false);
-      }
+  // Memoized fetch functions for users, jobsites, and equipment
+  const fetchUsers = useCallback(async () => {
+    try {
+      const usersRes = await fetch("/api/getAllActiveEmployeeName");
+      const users = (await usersRes.json()) || [];
+      return users;
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      return [];
     }
-    fetchDropdowns();
   }, []);
 
-  // Fetch cost codes when jobsite changes
-  useEffect(() => {
-    async function fetchCostCodes() {
-      if (!form.jobsite.id) {
-        setCostCode([]);
-        setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
-        return;
-      }
-      try {
-        const res = await fetch(
-          `/api/getAllCostCodesByJobSites?jobsiteId=${form.jobsite.id}`,
+  const fetchJobsites = useCallback(async () => {
+    try {
+      const jobsitesRes = await fetch("/api/getJobsiteSummary");
+      const jobsite = (await jobsitesRes.json()) || [];
+
+      const filteredJobsite = jobsite.filter(
+        (j: { approvalStatus: string }) => j.approvalStatus === "APPROVED",
+      );
+
+      const filteredJobsites = filteredJobsite.map(
+        (j: { id: string; name: string }) => ({
+          id: j.id,
+          name: j.name,
+        }),
+      );
+
+      return filteredJobsites;
+    } catch (error) {
+      console.error("Error fetching jobsites:", error);
+      return [];
+    }
+  }, []);
+
+  const fetchEquipment = useCallback(async () => {
+    try {
+      const equipmentRes = await fetch("/api/getAllEquipment");
+      const equipment = (await equipmentRes.json()) || [];
+      return equipment;
+    } catch (error) {
+      console.error("Error fetching equipment:", error);
+      return [];
+    }
+  }, []);
+
+  // Main fetch function that calls all the memoized fetchers
+  const fetchAllData = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      // Use Promise.all to fetch data concurrently
+      const [usersData, jobsitesData, equipmentData] = await Promise.all([
+        fetchUsers(),
+        fetchJobsites(),
+        fetchEquipment(),
+      ]);
+
+      // Process equipment to get trucks
+      if (equipmentData && equipmentData.length > 0) {
+        const filteredTrucks = equipmentData.filter(
+          (e: { equipmentTag: string }) => e.equipmentTag === "TRUCK",
         );
-        if (!res.ok) {
-          setCostCode([]);
-          setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
-          return;
-        }
-        const codes = await res.json();
-        const options = codes.map((c: { id: string; name: string }) => ({
-          value: c.id,
-          label: c.name,
-        }));
-        setCostCode(options);
-        // Optionally reset costcode if not in new list
-        if (
-          !options.find(
-            (c: { value: string; label: string }) =>
-              c.value === form.costcode.id,
-          )
-        ) {
-          setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
-        }
-      } catch (e) {
-        setCostCode([]);
+        setTrucks(filteredTrucks);
+      }
+
+      setEquipment(equipmentData);
+      setUsers(usersData);
+      setJobsites(jobsitesData);
+    } catch (error) {
+      console.error("Error fetching dropdowns:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchUsers, fetchJobsites, fetchEquipment]);
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  // Memoized function to fetch cost codes by jobsite
+  const fetchCostCodes = useCallback(async (jobsiteId: string) => {
+    if (!jobsiteId) {
+      return [];
+    }
+
+    try {
+      const res = await fetch(
+        `/api/getAllCostCodesByJobSites?jobsiteId=${jobsiteId}`,
+      );
+      if (!res.ok) {
+        return [];
+      }
+      const codes = await res.json();
+      return codes.map((c: { id: string; name: string }) => ({
+        value: c.id,
+        label: c.name,
+      }));
+    } catch (e) {
+      console.error("Error fetching cost codes:", e);
+      return [];
+    }
+  }, []);
+
+  // Cache to store cost codes by jobsite ID
+  const [costCodeCache, setCostCodeCache] = useState<
+    Record<
+      string,
+      {
+        data: { value: string; label: string }[];
+        timestamp: number;
+      }
+    >
+  >({});
+
+  // Fetch cost codes when jobsite changes with caching
+  useEffect(() => {
+    const jobsiteId = form.jobsite.id;
+
+    // Reset costcode when jobsite is empty
+    if (!jobsiteId) {
+      setCostCode([]);
+      setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
+      return;
+    }
+
+    // Check if we have a recent cache (less than 5 minutes old)
+    const cachedData = costCodeCache[jobsiteId];
+    const cacheIsValid =
+      cachedData && Date.now() - cachedData.timestamp < 5 * 60 * 1000; // 5 minutes
+
+    if (cacheIsValid) {
+      // Use cached data
+      setCostCode(cachedData.data);
+
+      // Reset costcode if not in the list
+      if (!cachedData.data.find((c) => c.value === form.costcode.id)) {
+        setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
+      }
+      return;
+    }
+
+    // Fetch fresh data
+    async function loadCostCodes() {
+      const options = await fetchCostCodes(jobsiteId);
+
+      // Update the cache
+      setCostCodeCache((prev) => ({
+        ...prev,
+        [jobsiteId]: {
+          data: options,
+          timestamp: Date.now(),
+        },
+      }));
+
+      setCostCode(options);
+
+      // Reset costcode if not in the list
+      if (
+        !options.find(
+          (c: { value: string; label: string }) => c.value === form.costcode.id,
+        )
+      ) {
         setForm((prev) => ({ ...prev, costcode: { id: "", name: "" } }));
       }
     }
-    fetchCostCodes();
-  }, [form.jobsite.id]);
 
-  const fetchMaterialTypes = async () => {
+    loadCostCodes();
+  }, [form.jobsite.id, fetchCostCodes, form.costcode.id, costCodeCache]);
+
+  // Memoized material types fetch
+  const [materialTypesCache, setMaterialTypesCache] = useState<{
+    data: { id: string; name: string }[];
+    timestamp: number;
+  } | null>(null);
+
+  const fetchMaterialTypes = useCallback(async () => {
     try {
+      // Check if we have a recent cache (less than 5 minutes old)
+      if (
+        materialTypesCache &&
+        Date.now() - materialTypesCache.timestamp < 5 * 60 * 1000 &&
+        materialTypesCache.data.length > 0
+      ) {
+        setMaterialTypes(materialTypesCache.data);
+        return;
+      }
+
       const res = await fetch("/api/getMaterialTypes");
       if (!res.ok) throw new Error("Failed to fetch material types");
       const data = await res.json();
+
+      // Update cache
+      setMaterialTypesCache({
+        data,
+        timestamp: Date.now(),
+      });
+
       setMaterialTypes(data);
     } catch (error) {
       console.error(error);
       setMaterialTypes([]);
     }
-  };
+  }, [materialTypesCache]);
 
   const handleChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -395,24 +529,50 @@ export function CreateTimesheetModal({
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg min-w-[700px] max-h-[80vh] overflow-y-auto no-scrollbar">
-          <div className="px-6 py-4">
-            <div className="mb-6 relative">
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <div className="gap-2 flex flex-col">
+              <h2 className="text-xl font-bold">Create New Timesheet</h2>
+              <p className="text-xs text-gray-600">
+                Use the form below to enter and submit a new timesheet on behalf
+                of an employee.
+                <br /> Ensure all required fields are accurates.
+              </p>
+            </div>
+          </div>
+          <div className="bg-gray-50 flex-1 w-full p-2 pb-10 overflow-y-auto no-scrollbar">
+            <div className=" w-full h-full flex flex-col justify-center animate-pulse">
+              <Spinner size={30} />
+            </div>
+          </div>
+          <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex flex-row justify-end gap-2 w-full">
               <Button
                 type="button"
-                variant="ghost"
-                size="icon"
+                variant="outline"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
                 onClick={onClose}
-                className="absolute top-0 right-0 cursor-pointer"
+                disabled={submitting}
               >
-                <X width={20} height={20} />
+                Cancel
               </Button>
-              <div className="gap-2 flex flex-col">
-                <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
-              </div>
-              <div className="w-full flex justify-center items-center mt-4">
-                <Spinner />
-              </div>
+              <Button
+                type="submit"
+                form="timesheet-form" /* Connect this button to the form */
+                className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+                disabled={submitting}
+              >
+                Create & Approve
+              </Button>
             </div>
           </div>
         </div>
@@ -422,7 +582,7 @@ export function CreateTimesheetModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh]  px-6 py-4 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
         <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
           <Button
             type="button"
@@ -434,7 +594,7 @@ export function CreateTimesheetModal({
             <X width={20} height={20} />
           </Button>
           <div className="gap-2 flex flex-col">
-            <h2 className="text-xl font-bold">Submit a New Timesheet</h2>
+            <h2 className="text-xl font-bold">Create New Timesheet</h2>
             <p className="text-xs text-gray-600">
               Use the form below to enter and submit a new timesheet on behalf
               of an employee.
@@ -442,12 +602,11 @@ export function CreateTimesheetModal({
             </p>
           </div>
         </div>
-        <div className="flex-1 w-full px-2 pb-10 gap-4 overflow-y-auto no-scrollbar">
-          {/* Add id to the form so we can reference it later */}
+        <div className="flex-1 w-full overflow-y-auto no-scrollbar">
           <form
             id="timesheet-form"
             onSubmit={handleSubmit}
-            className="h-full flex flex-col gap-4"
+            className="h-full flex flex-col gap-4 px-2 pt-2 pb-10 overflow-y-auto no-scrollbar"
           >
             <GeneralSection
               form={form}
@@ -472,8 +631,16 @@ export function CreateTimesheetModal({
               />
             )}
             {form.workType === "TRUCK_DRIVER" && (
-              <div className="border rounded-lg p-4 bg-gray-50 mt-4">
-                <h3 className="font-semibold text-sm mb-2">Trucking Details</h3>
+              <div className="flex flex-col">
+                <div className="flex flex-col border-b border-gray-200 pb-2">
+                  <h3 className="block font-semibold text-base">
+                    Trucking Logs
+                  </h3>
+                  <p className="text-xs text-gray-500 pt-1">
+                    Enter in accurate trucking logs for precise tracking.
+                  </p>
+                </div>
+
                 <TruckingSection
                   truckingLogs={truckingLogs}
                   setTruckingLogs={setTruckingLogs}
@@ -518,7 +685,7 @@ export function CreateTimesheetModal({
               className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
               disabled={submitting}
             >
-              Submit
+              Create & Approve
             </Button>
           </div>
         </div>
