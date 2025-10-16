@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
-import { Prisma } from "@prisma/client";
+import { Permission } from "../../../../../prisma/generated/prisma";
 
 export const dynamic = "force-dynamic";
 
 interface FilterConditions {
-  permission?: Prisma.StringFilter | { in: string[] };
+  permission?: Permission | { in: string[] };
   accountSetup?: boolean | { in: boolean[] };
   hasCrews?: boolean;
   accessLevelConditions?: Array<{
@@ -152,14 +152,14 @@ export async function GET(req: Request) {
         
         if (search) {
           searchConditions.push(
-            { username: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { firstName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { middleName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { lastName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { secondLastName: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            { username: { contains: search, mode: "insensitive" } },
+            { firstName: { contains: search, mode: "insensitive" } },
+            { middleName: { contains: search, mode: "insensitive" } },
+            { lastName: { contains: search, mode: "insensitive" } },
+            { secondLastName: { contains: search, mode: "insensitive" } },
             {
               Contact: {
-                phoneNumber: { contains: search, mode: Prisma.QueryMode.insensitive },
+                phoneNumber: { contains: search, mode: "insensitive" },
               },
             }
           );
@@ -254,14 +254,14 @@ export async function GET(req: Request) {
         
         if (search) {
           searchConditions.push(
-            { username: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { firstName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { middleName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { lastName: { contains: search, mode: Prisma.QueryMode.insensitive } },
-            { secondLastName: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            { username: { contains: search, mode: "insensitive" } },
+            { firstName: { contains: search, mode: "insensitive" } },
+            { middleName: { contains: search, mode: "insensitive" } },
+            { lastName: { contains: search, mode: "insensitive" } },
+            { secondLastName: { contains: search, mode: "insensitive" } },
             {
               Contact: {
-                phoneNumber: { contains: search, mode: Prisma.QueryMode.insensitive },
+                phoneNumber: { contains: search, mode: "insensitive" },
               },
             }
           );
