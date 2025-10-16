@@ -70,6 +70,12 @@ export async function middleware(request: NextRequest) {
       if (pathname.startsWith("/api/")) {
         return NextResponse.next();
       }
+      
+      // If admin is trying to access admin paths on mobile/tablet, redirect to home
+      if (isAdmin && pathname.startsWith("/admins")) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      
       // On mobile, check if the current path starts with any allowed mobile path
       const isMobileAllowedPath = MOBILE_ALLOWED_PATHS.some((path) => {
         // For root path, only exact match is allowed
@@ -95,25 +101,21 @@ export async function middleware(request: NextRequest) {
       }
       // If the user is an admin and trying to access mobile-only paths, redirect to admin section
       if (isAdmin) {
-        // Only apply mobile path restrictions if not in development
-        const isProdTest = process.env.IS_PROD_TEST === "true";
-        if (isProdTest && process.env.NODE_ENV !== "development") {
-          const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
-            // Skip the check for paths that are allowed on both mobile and desktop
-            if (path === "/signin") {
-              return false;
-            }
-
-            // Check if the current path matches a mobile-only path
-            if (path === "/") {
-              return pathname === "/";
-            }
-            return pathname === path || pathname.startsWith(`${path}/`);
-          });
-
-          if (isMobilePath) {
-            return NextResponse.redirect(new URL("/admins", request.url));
+        const isMobilePath = MOBILE_ALLOWED_PATHS.some((path) => {
+          // Skip the check for paths that are allowed on both mobile and desktop
+          if (path === "/signin") {
+            return false;
           }
+
+          // Check if the current path matches a mobile-only path
+          if (path === "/") {
+            return pathname === "/";
+          }
+          return pathname === path || pathname.startsWith(`${path}/`);
+        });
+
+        if (isMobilePath) {
+          return NextResponse.redirect(new URL("/admins", request.url));
         }
       }
     }

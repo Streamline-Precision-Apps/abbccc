@@ -226,8 +226,8 @@ export default function CreateJobsiteModal({
               </div>
 
               <div>
-                <Label htmlFor="jobsite-active-status" className={`text-sm `}>
-                  Active Status
+                <Label htmlFor="jobsite-status" className={`text-sm `}>
+                  Status
                 </Label>
                 <Select
                   name="status"
@@ -239,8 +239,8 @@ export default function CreateJobsiteModal({
                     }))
                   }
                 >
-                  <SelectTrigger id="jobsite-active-status" className="text-xs">
-                    <SelectValue placeholder="Select Active Status" />
+                  <SelectTrigger id="jobsite-status" className="text-xs">
+                    <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ARCHIVED">Archived</SelectItem>

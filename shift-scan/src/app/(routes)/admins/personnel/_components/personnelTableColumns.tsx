@@ -10,16 +10,78 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Define the column configuration
 export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
   {
     accessorKey: "name",
-    header: "Employee",
+    header: "Employee Summary",
     cell: ({ row }) => {
       const personnel = row.original;
+
+      // Helper function to get access level styling
+      const getAccessLevelTag = (permission: string) => {
+        const permissionDisplay =
+          permission.slice(0, 1) + permission.slice(1).toLowerCase();
+        let bgColor = "bg-gray-100";
+        let textColor = "text-gray-600";
+
+        switch (permission) {
+          case "SUPERADMIN":
+            bgColor = "bg-purple-100";
+            textColor = "text-purple-600";
+            break;
+          case "ADMIN":
+            bgColor = "bg-blue-100";
+            textColor = "text-blue-600";
+            break;
+          case "MANAGER":
+            bgColor = "bg-orange-100";
+            textColor = "text-orange-600";
+            break;
+          case "USER":
+            bgColor = "bg-green-100";
+            textColor = "text-green-600";
+            break;
+        }
+
+        return (
+          <span
+            className={`${bgColor} ${textColor} px-2 py-1 rounded-lg text-xs`}
+          >
+            {permissionDisplay}
+          </span>
+        );
+      };
+
+      // Helper function to get active/inactive tag
+      const getActiveStatusTag = (isActive: boolean) => {
+        return isActive ? (
+          <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+            Active
+          </span>
+        ) : (
+          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+            Inactive
+          </span>
+        );
+      };
+
       return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full">
           {/* Avatar */}
           <div className="flex-shrink-0">
             {personnel.image ? (
@@ -36,30 +98,67 @@ export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
               </div>
             )}
           </div>
-          {/* Info & Status */}
-          <div className="flex flex-col items-start flex-1 min-w-0">
-            <span className="text-black text-sm truncate">
-              {`${personnel.firstName} ${personnel.middleName ? personnel.middleName : ""} ${personnel.lastName} ${personnel.secondLastName ? personnel.secondLastName : ""}`
-                .replace(/\s+/g, " ")
-                .trim()}
-            </span>
-            <span
-              className={`block ${personnel.terminationDate ? "text-gray-500" : "text-emerald-600"} text-[10px]`}
-            >
-              {personnel.terminationDate ? "Inactive" : "Active"}
-            </span>
-          </div>
 
-          {!personnel.accountSetup && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="ml-2 bg-white border border-gray-300 rounded-md px-2 py-1 flex items-center">
-                  <UserX className="h-4 w-4 text-red-400" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">Account Not Set Up</TooltipContent>
-            </Tooltip>
-          )}
+          {/* Main content area */}
+          <div className="flex-1 min-w-0">
+            {/* First row: Name, Access Level, Active Status on left; Account Setup on right */}
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-2">
+                <span className="text-black text-sm truncate">
+                  {`${personnel.firstName} ${personnel.middleName ? personnel.middleName : ""} ${personnel.lastName} ${personnel.secondLastName ? personnel.secondLastName : ""}`
+                    .replace(/\s+/g, " ")
+                    .trim()}
+                </span>
+                {getAccessLevelTag(personnel.permission)}
+                {getActiveStatusTag(!personnel.terminationDate)}
+              </div>
+
+              <div className="flex-shrink-0">
+                {!personnel.accountSetup && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="ml-2 bg-white border border-gray-300 rounded-md px-2 py-1 flex items-center">
+                        <UserX className="h-4 w-4 text-red-400" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      Account Not Set Up
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+
+            {/* Second row: Roles on left; Account Setup on right (if needed) */}
+            <div className="flex justify-between items-center w-full mt-1">
+              <div className="flex items-center gap-1">
+                {personnel.truckView && (
+                  <div className="bg-emerald-300 rounded-full px-2 py-1">
+                    <p className="text-xs">Trucking</p>
+                  </div>
+                )}
+                {personnel.tascoView && (
+                  <div className="bg-red-300 rounded-full px-2 py-1">
+                    <p className="text-xs">Tasco</p>
+                  </div>
+                )}
+                {personnel.mechanicView && (
+                  <div className="bg-blue-400 rounded-full px-2 py-1">
+                    <p className="text-xs">Mechanic</p>
+                  </div>
+                )}
+                {personnel.laborView && (
+                  <div className="bg-sky-300 rounded-full px-2 py-1">
+                    <p className="text-xs">General</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-shrink-0">
+                {/* Spacer to maintain layout balance */}
+              </div>
+            </div>
+          </div>
         </div>
       );
     },
@@ -123,63 +222,58 @@ export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
     },
   },
   {
-    accessorKey: "permission",
-    header: "Access Level",
-    cell: ({ row }) => {
-      const permission = row.original.permission;
-      return (
-        <div className="text-xs text-left">
-          {permission.slice(0, 1) + permission.slice(1).toLowerCase()}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "roles",
-    header: "Role(s)",
+    accessorKey: "crews",
+    header: () => <div className="text-center">Crews</div>,
     cell: ({ row }) => {
       const personnel = row.original;
+      const crews = personnel.Crews || [];
+      const crewCount = crews.length;
+
       return (
-        <div className="flex flex-row gap-1 justify-center">
-          {personnel.truckView && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="bg-emerald-300 rounded-full px-2 py-1">
-                  <p className="text-xs">{"T"}</p>
+        <div className="text-xs text-center">
+          {crewCount > 0 ? (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <span className="cursor-pointer underline text-blue-600">
+                  {crewCount}
+                </span>
+              </HoverCardTrigger>
+              <HoverCardContent className="p-2 w-[400px]">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-sm text-center border-r border-gray-200 bg-gray-100">
+                          Crew Name
+                        </TableHead>
+                        <TableHead className="text-sm text-center border-gray-200 bg-gray-100">
+                          Crew Lead
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {crews.map((crew, rowIdx) => (
+                        <TableRow
+                          key={crew.id}
+                          className={
+                            rowIdx % 2 === 0 ? "bg-white" : "bg-gray-100"
+                          }
+                        >
+                          <TableCell className="px-2 py-1 border-b text-center">
+                            {crew.name}
+                          </TableCell>
+                          <TableCell className="px-2 py-1 border-b text-center">
+                            {crew.leadName}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent>Trucking</TooltipContent>
-            </Tooltip>
-          )}
-          {personnel.tascoView && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="bg-red-300 rounded-full px-2 py-1">
-                  <p className="text-xs">{"TS"}</p>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>Tasco</TooltipContent>
-            </Tooltip>
-          )}
-          {personnel.mechanicView && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="bg-blue-400 rounded-full px-2 py-1">
-                  <p className="text-xs">{"M"}</p>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>Mechanic</TooltipContent>
-            </Tooltip>
-          )}
-          {personnel.laborView && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="bg-sky-300 rounded-full px-2 py-1">
-                  <p className="text-xs">{"G"}</p>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>General</TooltipContent>
-            </Tooltip>
+              </HoverCardContent>
+            </HoverCard>
+          ) : (
+            "0"
           )}
         </div>
       );

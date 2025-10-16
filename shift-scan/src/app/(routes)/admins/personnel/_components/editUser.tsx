@@ -11,9 +11,21 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Permission } from "../../../../../../prisma/generated/prisma";
+
+// Utility function to get allowed permissions based on current user's permission level
+const getAllowedPermissions = (currentUserPermission: string): string[] => {
+  const permissionHierarchy = ["USER", "MANAGER", "ADMIN", "SUPERADMIN"];
+  const currentIndex = permissionHierarchy.indexOf(currentUserPermission);
+
+  if (currentIndex === -1) return ["USER"]; // Default fallback
+
+  // User can only assign permissions equal to or lower than their own
+  return permissionHierarchy.slice(0, currentIndex + 1);
+};
 import { useUserData } from "./useUserData";
 import Spinner from "@/components/(animations)/spinner";
 import { editUserAdmin } from "@/actions/adminActions";
@@ -27,10 +39,21 @@ export default function EditUserModal({
   rerender: () => void;
   pendingEditId: string;
 }) {
+  const { data: session } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const { userData, setUserData, loading, crew } = useUserData({
     userid: pendingEditId,
   });
+
+  // Get allowed permissions based on current user's permission level
+  const allowedPermissions = session?.user?.permission
+    ? getAllowedPermissions(session.user.permission)
+    : ["USER"];
+
+  // Check if the user being edited has a permission level higher than what current user can assign
+  const isEditingHigherPermissionUser = userData?.permission
+    ? !allowedPermissions.includes(userData.permission)
+    : false;
 
   const handleEditUser = async () => {
     setSubmitting(true);
@@ -239,21 +262,39 @@ export default function EditUserModal({
                   <Label htmlFor="permission">
                     Permission <span className="text-red-500">*</span>
                   </Label>
+                  {isEditingHigherPermissionUser && (
+                    <p className="text-xs text-orange-600 mb-1">
+                      Cannot modify permission - This user has a higher access
+                      level than yours
+                    </p>
+                  )}
                   <Select
                     value={userData.permission}
                     onValueChange={(value) =>
                       setUserData((prev) => ({ ...prev, permission: value }))
                     }
+                    disabled={isEditingHigherPermissionUser}
                   >
                     <SelectTrigger id="permission" className="w-full text-xs">
                       <SelectValue placeholder="Select permission" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(Permission).map((perm: string) => (
-                        <SelectItem key={perm} value={perm}>
-                          {perm}
+                      {isEditingHigherPermissionUser ? (
+                        // If editing a user with higher permissions, show their current permission but disabled
+                        <SelectItem
+                          key={userData.permission}
+                          value={userData.permission}
+                        >
+                          {userData.permission} (Cannot modify - Higher access
+                          level)
                         </SelectItem>
-                      ))}
+                      ) : (
+                        allowedPermissions.map((perm: string) => (
+                          <SelectItem key={perm} value={perm}>
+                            {perm}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>

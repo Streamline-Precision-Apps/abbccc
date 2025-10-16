@@ -1,5 +1,10 @@
 "use client";
 import { getCookie, setPrevTimeSheet } from "@/actions/cookieActions";
+import {
+  isSignInRedirect,
+  safeServerAction,
+  isAuthenticationError,
+} from "@/utils/authErrorUtils";
 import React, {
   createContext,
   useState,
@@ -59,10 +64,10 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (savedTimeSheetData) {
       localStorage.setItem("timesheetId", JSON.stringify(savedTimeSheetData));
-      setPrevTimeSheet(savedTimeSheetData.id.toString());
+      safeServerAction(setPrevTimeSheet, [savedTimeSheetData.id.toString()]);
     } else {
       localStorage.removeItem("timesheetId");
-      setPrevTimeSheet("");
+      safeServerAction(setPrevTimeSheet, [""]);
     }
   }, [savedTimeSheetData]);
 
@@ -75,15 +80,28 @@ export const TimeSheetDataProvider: React.FC<{ children: ReactNode }> = ({
           `Failed to fetch recent timecard: ${prevTimeSheet.statusText}`,
         );
       }
+
+      // Check if response is HTML (redirect to signin)
+      if (isSignInRedirect(prevTimeSheet)) {
+        // User is being redirected to sign-in, silently return
+        return;
+      }
+
       const data = await prevTimeSheet.json();
       if (data && data.id) {
         setTimeSheetData(data);
-        setPrevTimeSheet(data.id as string);
+        await safeServerAction(setPrevTimeSheet, [data.id as string]);
       } else {
         setTimeSheetData(null);
-        setPrevTimeSheet("");
+        await safeServerAction(setPrevTimeSheet, [""]);
       }
     } catch (error) {
+      // Silently handle authentication/redirect errors during sign-out
+      if (isAuthenticationError(error)) {
+        // User is likely being redirected to sign-in
+        setTimeSheetData(null);
+        return;
+      }
       console.error("Error fetching recent timecard:", error);
       setTimeSheetData(null);
     }

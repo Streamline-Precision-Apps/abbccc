@@ -335,7 +335,7 @@ export default function NotificationActionsList({
                             <div className="flex flex-row items-start ml-2">
                               {!isRead ? (
                                 <Tooltip>
-                                  <TooltipTrigger>
+                                  <TooltipTrigger asChild>
                                     <Button
                                       className="w-4 h-4"
                                       size="icon"

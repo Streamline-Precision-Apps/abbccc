@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,12 @@ import { FooterPagination } from "../_pages/FooterPagination";
 import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 
 export default function JobsitePage() {
+  const searchParams = useSearchParams();
+  
+  // Check URL parameters before initializing the hook
+  const isPendingApproval = searchParams.get("isPendingApproval") === "true";
+  const notificationId = searchParams.get("notificationId");
+
   const {
     searchTerm,
     setSearchTerm,
@@ -52,8 +59,9 @@ export default function JobsitePage() {
     pendingCount,
     totalPages,
     paginatedJobsites,
-  } = useJobsiteData();
+  } = useJobsiteData(isPendingApproval); // Pass initial state to hook
 
+  // Handle notification ID if present
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer

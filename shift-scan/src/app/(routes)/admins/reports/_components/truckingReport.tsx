@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TruckingReportRow } from "./_truckingReport/truckingReportTableColumns";
+import { 
+  TruckingReportRow, 
+  EquipmentItem, 
+  MaterialItem, 
+  FuelItem, 
+  StateMileageItem 
+} from "./_truckingReport/truckingReportTableColumns";
 import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
 import { TruckingDataTable } from "./_truckingReport/TruckingDataTable";
@@ -9,6 +15,7 @@ import { TruckingDataTable } from "./_truckingReport/TruckingDataTable";
 interface TruckingReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
+  dateRange?: { from: Date | undefined; to: Date | undefined };
   registerReload?: (reloadFn: () => Promise<void>) => void;
   isRefreshing?: boolean;
 }
@@ -18,10 +25,12 @@ type DateRange = { from: Date | undefined; to: Date | undefined };
 export default function TruckingReport({
   showExportModal,
   setShowExportModal,
+  dateRange: externalDateRange,
   registerReload,
   isRefreshing,
 }: TruckingReportProps) {
-  const [data, setData] = useState<TruckingReportRow[]>([]);
+  const [allData, setAllData] = useState<TruckingReportRow[]>([]);
+  const [filteredData, setFilteredData] = useState<TruckingReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
@@ -36,13 +45,61 @@ export default function TruckingReport({
       if (!response.ok) {
         throw new Error(json.message || "Failed to fetch Trucking report data");
       }
-      setData(json);
+      setAllData(json);
     } catch (error) {
       console.error("Error fetching Trucking report data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Filter data based on external date range
+  useEffect(() => {
+    if (!allData.length) {
+      setFilteredData([]);
+      return;
+    }
+
+    let filtered = allData;
+
+    if (externalDateRange?.from && externalDateRange?.to) {
+      // If from and to are the same day, filter by the full day
+      const isSameDay =
+        externalDateRange.from.toDateString() ===
+        externalDateRange.to.toDateString();
+      if (isSameDay) {
+        const startOfDay = new Date(externalDateRange.from);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(externalDateRange.from);
+        endOfDay.setHours(23, 59, 59, 999);
+        filtered = allData.filter((row) => {
+          const date = new Date(row.date);
+          return date >= startOfDay && date <= endOfDay;
+        });
+      } else {
+        filtered = allData.filter((row) => {
+          const date = new Date(row.date);
+          return (
+            date >= externalDateRange.from! && date <= externalDateRange.to!
+          );
+        });
+      }
+    } else if (externalDateRange?.from) {
+      // Only start date provided
+      filtered = allData.filter((row) => {
+        const date = new Date(row.date);
+        return date >= externalDateRange.from!;
+      });
+    } else if (externalDateRange?.to) {
+      // Only end date provided
+      filtered = allData.filter((row) => {
+        const date = new Date(row.date);
+        return date <= externalDateRange.to!;
+      });
+    }
+
+    setFilteredData(filtered);
+  }, [allData, externalDateRange]);
 
   // Register reload function on mount
   useEffect(() => {
@@ -58,30 +115,40 @@ export default function TruckingReport({
     _dateRange?: { from?: Date; to?: Date },
     selectedFields?: string[],
   ) => {
-    if (!data.length) return;
+    if (!filteredData.length) return;
+    // Use the already filtered data for export
+    const exportData = filteredData;
 
-    // Filter by dateRange if set
-    let exportData = data;
-    if (dateRange.from && dateRange.to) {
-      // If from and to are the same day, filter by the full day
-      const isSameDay =
-        dateRange.from.toDateString() === dateRange.to.toDateString();
-      if (isSameDay) {
-        const startOfDay = new Date(dateRange.from);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(dateRange.from);
-        endOfDay.setHours(23, 59, 59, 999);
-        exportData = data.filter((row) => {
-          const date = new Date(row.date);
-          return date >= startOfDay && date <= endOfDay;
-        });
-      } else {
-        exportData = data.filter((row) => {
-          const date = new Date(row.date);
-          return date >= dateRange.from! && date <= dateRange.to!;
-        });
-      }
-    }
+    // Helper functions for formatting each type of data
+    const formatEquipment = (equipment: EquipmentItem[]) => {
+      if (!Array.isArray(equipment) || equipment.length === 0) return "-";
+      return equipment.map(
+        (eq: EquipmentItem) =>
+          `[${eq.name}: ${eq.source} → ${eq.destination} (${eq.startMileage}-${eq.endMileage} mi)]`,
+      ).join(" | ");
+    };
+
+    const formatMaterials = (materials: MaterialItem[]) => {
+      if (!Array.isArray(materials) || materials.length === 0) return "-";
+      return materials.map(
+        (mat: MaterialItem) =>
+          `[${mat.name}: ${mat.quantity} ${mat.unit} at ${mat.location}]`,
+      ).join(" | ");
+    };
+
+    const formatFuel = (fuel: FuelItem[]) => {
+      if (!Array.isArray(fuel) || fuel.length === 0) return "-";
+      return fuel.map(
+        (f: FuelItem) => `[${f.milesAtFueling} mi: ${f.gallonsRefueled} gal]`,
+      ).join(" | ");
+    };
+
+    const formatStateMileages = (stateMileages: StateMileageItem[]) => {
+      if (!Array.isArray(stateMileages) || stateMileages.length === 0) return "-";
+      return stateMileages.map(
+        (s: StateMileageItem) => `[${s.state}: ${s.stateLineMileage} mi]`,
+      ).join(" | ");
+    };
 
     const tableHeaders = [
       "Driver",
@@ -92,8 +159,8 @@ export default function TruckingReport({
       "Job #",
       "Starting Mileage",
       "Ending Mileage",
-      "Equipment",
-      "Material Hauled",
+      "Equipment Details [equipment moved: starting location -> ending location (mileage)]",
+      "Material Hauled Details [Material: Quantity - Location]",
       "Refuel Details",
       "State Line Details",
       "Notes",
@@ -112,10 +179,10 @@ export default function TruckingReport({
             row.jobId || "-",
             row.StartingMileage || "-",
             row.EndingMileage || "-",
-            row.Equipment?.length || 0,
-            row.Materials?.length || 0,
-            row.Fuel?.length || 0,
-            row.StateMileages?.length || 0,
+            formatEquipment(row.Equipment || []),
+            formatMaterials(row.Materials || []),
+            formatFuel(row.Fuel || []),
+            formatStateMileages(row.StateMileages || []),
             row.notes || "-",
           ]
             .map((cell) => {
@@ -149,10 +216,10 @@ export default function TruckingReport({
             "Job #": row.jobId || "-",
             "Starting Mileage": row.StartingMileage || "-",
             "Ending Mileage": row.EndingMileage || "-",
-            "Equipment Count": row.Equipment?.length || 0,
-            "Material Hauled Count": row.Materials?.length || 0,
-            "Refuel Details Count": row.Fuel?.length || 0,
-            "State Line Details Count": row.StateMileages?.length || 0,
+            "Equipment Details [equipment moved: starting location -> ending location (mileage)]": formatEquipment(row.Equipment || []),
+            "Material Hauled Details [Material: Quantity - Location]": formatMaterials(row.Materials || []),
+            "Refuel Details": formatFuel(row.Fuel || []),
+            "State Line Details": formatStateMileages(row.StateMileages || []),
             Notes: row.notes || "-",
           })),
         );
@@ -165,14 +232,12 @@ export default function TruckingReport({
 
   return (
     <>
-      <TruckingDataTable data={data} loading={loading} />
+      <TruckingDataTable data={filteredData} loading={loading} />
 
       {showExportModal && (
         <ExportReportModal
           onClose={() => setShowExportModal(false)}
           onExport={onExport}
-          dateRange={{ from: dateRange.from, to: dateRange.to }}
-          setDateRange={setDateRange}
         />
       )}
     </>

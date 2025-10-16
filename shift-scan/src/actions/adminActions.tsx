@@ -172,7 +172,7 @@ export async function createCrew(formData: FormData) {
     });
 
     revalidateTag("crews");
-    revalidatePath(`/admins/crew`);
+    revalidatePath(`/admins/personnel`);
     return {
       success: true,
       crewId: newCrew.id,
@@ -237,7 +237,7 @@ export async function editCrew(formData: FormData) {
     });
 
     revalidateTag("crews");
-    revalidatePath(`/admins/crew`);
+    revalidatePath(`/admins/personnel`);
     return {
       success: true,
       crewId: updatedCrew.id,

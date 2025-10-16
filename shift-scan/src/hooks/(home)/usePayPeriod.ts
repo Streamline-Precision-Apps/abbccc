@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { UseTotalPayPeriodHours } from "@/app/(content)/calculateTotal";
+import { isSignInRedirect, isAuthenticationError } from "@/utils/authErrorUtils";
 
 type PayPeriodTimesheets = {
   startTime: Date; // Correct field name
@@ -35,6 +36,13 @@ export const usePayPeriodData = (
 
         // Fetch pay period timesheets
         const payPeriodResponse = await fetch("/api/getPayPeriodTimeSheets");
+        
+        // Check if response is HTML (redirect to signin)
+        if (isSignInRedirect(payPeriodResponse)) {
+          // User is being redirected to sign-in, silently return
+          return;
+        }
+        
         const data = await payPeriodResponse.json();
         const validatedData = PayPeriodSheetsArraySchema.parse(data);
 
@@ -51,9 +59,21 @@ export const usePayPeriodData = (
         const pageViewResponse = await fetch(
           "/api/cookies?method=get&name=currentPageView",
         );
+        
+        // Check if response is HTML (redirect to signin)
+        if (isSignInRedirect(pageViewResponse)) {
+          // User is being redirected to sign-in, silently return
+          return;
+        }
+        
         const pageViewData = await pageViewResponse.json();
         setPageView(pageViewData || "");
       } catch (error) {
+        // Silently handle authentication/redirect errors during sign-out
+        if (isAuthenticationError(error)) {
+          // User is likely being redirected to sign-in
+          return;
+        }
         console.error("Error fetching data:", error);
       } finally {
         setLoading(false);

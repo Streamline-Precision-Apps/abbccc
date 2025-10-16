@@ -10,8 +10,15 @@ import { format } from "date-fns";
 import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
-import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import { Switch } from "@/components/ui/switch";
 
 export default function EditJobsiteModal({
   cancel,
