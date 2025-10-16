@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TruckingReportRow } from "./_truckingReport/truckingReportTableColumns";
+import { 
+  TruckingReportRow, 
+  EquipmentItem, 
+  MaterialItem, 
+  FuelItem, 
+  StateMileageItem 
+} from "./_truckingReport/truckingReportTableColumns";
 import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
 import { TruckingDataTable } from "./_truckingReport/TruckingDataTable";
@@ -113,44 +119,35 @@ export default function TruckingReport({
     // Use the already filtered data for export
     const exportData = filteredData;
 
-    // Helper function to format arrays for export
-    const formatArrayForExport = (
-      items: any[],
-      formatter: (item: any) => string,
-    ) => {
-      if (!Array.isArray(items) || items.length === 0) return "-";
-      return items.map(formatter).join(" | ");
-    };
-
     // Helper functions for formatting each type of data
-    const formatEquipment = (equipment: any[]) => {
-      return formatArrayForExport(
-        equipment,
-        (eq) =>
+    const formatEquipment = (equipment: EquipmentItem[]) => {
+      if (!Array.isArray(equipment) || equipment.length === 0) return "-";
+      return equipment.map(
+        (eq: EquipmentItem) =>
           `[${eq.name}: ${eq.source} → ${eq.destination} (${eq.startMileage}-${eq.endMileage} mi)]`,
-      );
+      ).join(" | ");
     };
 
-    const formatMaterials = (materials: any[]) => {
-      return formatArrayForExport(
-        materials,
-        (mat) =>
+    const formatMaterials = (materials: MaterialItem[]) => {
+      if (!Array.isArray(materials) || materials.length === 0) return "-";
+      return materials.map(
+        (mat: MaterialItem) =>
           `[${mat.name}: ${mat.quantity} ${mat.unit} at ${mat.location}]`,
-      );
+      ).join(" | ");
     };
 
-    const formatFuel = (fuel: any[]) => {
-      return formatArrayForExport(
-        fuel,
-        (f) => `[${f.milesAtFueling} mi: ${f.gallonsRefueled} gal]`,
-      );
+    const formatFuel = (fuel: FuelItem[]) => {
+      if (!Array.isArray(fuel) || fuel.length === 0) return "-";
+      return fuel.map(
+        (f: FuelItem) => `[${f.milesAtFueling} mi: ${f.gallonsRefueled} gal]`,
+      ).join(" | ");
     };
 
-    const formatStateMileages = (stateMileages: any[]) => {
-      return formatArrayForExport(
-        stateMileages,
-        (s) => `[${s.state}: ${s.stateLineMileage} mi]`,
-      );
+    const formatStateMileages = (stateMileages: StateMileageItem[]) => {
+      if (!Array.isArray(stateMileages) || stateMileages.length === 0) return "-";
+      return stateMileages.map(
+        (s: StateMileageItem) => `[${s.state}: ${s.stateLineMileage} mi]`,
+      ).join(" | ");
     };
 
     const tableHeaders = [
