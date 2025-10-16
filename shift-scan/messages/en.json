@@ -662,6 +662,7 @@
   },
 
   "Clock": {
+    "GeneralLabor": "General Labor",
     "NoResultsFound": "No results found",
     "Equipment": "Equipment",
     "SelectMaterialTypeAndEquipment": "Select Material & Equipment",

@@ -164,23 +164,17 @@ export default function TempClockOutContent({
   // step 0  is the comment step for clocking out
   if (step === 0) {
     return (
-      <Bases>
-        <Contents>
-          <Holds background={"white"} className="h-full">
-            <Comment
-              handleClick={() => setStep(1)}
-              clockInRole={""}
-              setCommentsValue={setCommentsValue}
-              commentsValue={commentsValue}
-              checked={checked}
-              handleCheckboxChange={handleCheckboxChange}
-              loading={loading}
-              setLoading={setLoading}
-              currentTimesheetId={savedTimeSheetData?.id}
-            />
-          </Holds>
-        </Contents>
-      </Bases>
+      <Comment
+        handleClick={() => setStep(1)}
+        clockInRole={""}
+        setCommentsValue={setCommentsValue}
+        commentsValue={commentsValue}
+        checked={checked}
+        handleCheckboxChange={handleCheckboxChange}
+        loading={loading}
+        setLoading={setLoading}
+        currentTimesheetId={savedTimeSheetData?.id}
+      />
     );
   }
 

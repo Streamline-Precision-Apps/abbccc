@@ -24,7 +24,7 @@ export async function createUserAdmin(payload: {
   }[];
 }) {
   const hashedPassword = await hash(payload.password, 10);
-
+  console.log("Payload in createUserAdmin:", payload);
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
     // Create the user
@@ -92,6 +92,7 @@ export async function editUserAdmin(payload: {
     id: string;
   }[];
 }) {
+  console.log("Payload in editUserAdmin:", payload);
   // Use a transaction to ensure both operations succeed or fail together
   const result = await prisma.$transaction(async (prisma) => {
     // Create the user

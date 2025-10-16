@@ -81,13 +81,13 @@ export default function TascoClockInForm({
           >
             <>
               {clockInRoleTypes === "tascoAbcdLabor" ? (
-                <Titles size={"h4"}>{t("SelectMaterialType")}</Titles>
+                <Titles size={"md"}>{t("SelectMaterialType")}</Titles>
               ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
-                <Titles size={"h4"}>
+                <Titles size={"md"}>
                   {t("SelectMaterialTypeAndEquipment")}
                 </Titles>
               ) : clockInRoleTypes === "tascoEEquipment" ? (
-                <Titles size={"h4"}>{t("Title-equipment-operator")}</Titles>
+                <Titles size={"md"}>{t("Title-equipment-operator")}</Titles>
               ) : (
                 ""
               )}
@@ -166,12 +166,12 @@ export default function TascoClockInForm({
               <Holds className="row-start-7 row-end-8  w-full">
                 {clockInRoleTypes === "tascoEEquipment" ? (
                   <Buttons
-                    background={equipment.code === "" ? "lightGray" : "orange"}
+                    background={equipment.code === "" ? "darkGray" : "orange"}
                     className="py-2"
                     onClick={handleNextStep}
                     disabled={equipment.code === ""}
                   >
-                    <Titles size={"h2"}>{t("Continue")}</Titles>
+                    <Titles size={"md"}>{t("Continue")}</Titles>
                   </Buttons>
                 ) : clockInRoleTypes === "tascoAbcdEquipment" ? (
                   <Buttons
@@ -180,7 +180,7 @@ export default function TascoClockInForm({
                     onClick={handleNextStep}
                     disabled={materialType === ""}
                   >
-                    <Titles size={"h2"}>{t("Continue")}</Titles>
+                    <Titles size={"md"}>{t("Continue")}</Titles>
                   </Buttons>
                 ) : clockInRoleTypes === "tascoAbcdLabor" ? (
                   <Buttons
@@ -189,7 +189,7 @@ export default function TascoClockInForm({
                     onClick={handleNextStep}
                     disabled={materialType === ""}
                   >
-                    <Titles size={"h2"}>{t("Continue")}</Titles>
+                    <Titles size={"md"}>{t("Continue")}</Titles>
                   </Buttons>
                 ) : null}
               </Holds>

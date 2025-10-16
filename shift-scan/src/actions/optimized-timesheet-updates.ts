@@ -343,9 +343,9 @@ async function updateMaintenanceLogs(
     const log = newData.Maintenance?.find((l) => String(l.id) === id);
     if (!log) continue;
 
+    // Don't specify id for new records, let the database auto-generate it
     await tx.mechanicProjects.create({
       data: {
-        id: Number(id),
         timeSheetId: timesheetId,
         equipmentId: log.equipmentId,
         hours: log.hours,

@@ -30,7 +30,7 @@ import React, {
 } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EquipmentSummary } from "../useEquipmentData";
-import { equipmentTableColumns } from "./equipmentTableColumns";
+import { createEquipmentTableColumns } from "./equipmentTableColumns";
 import LoadingEquipmentTableState from "./loadingEquipmentTableState";
 
 interface EquipmentDataTableProps {
@@ -47,6 +47,8 @@ interface EquipmentDataTableProps {
   onDeleteClick?: (id: string) => void;
   onQrClick?: (id: string) => void;
   showPendingOnly?: boolean;
+  onArchiveClick?: (id: string) => void;
+  onRestoreClick?: (id: string) => void;
 }
 
 export function EquipmentDataTable({
@@ -61,119 +63,21 @@ export function EquipmentDataTable({
   setPageSize,
   onEditClick,
   onDeleteClick,
+  onArchiveClick,
+  onRestoreClick,
   onQrClick,
   showPendingOnly,
 }: EquipmentDataTableProps) {
-  // Create column definitions with the action handlers
+  // Create column definitions with the action handlers directly using our factory function
   const columns = useMemo(() => {
-    // Copy the base columns
-    const cols = [...equipmentTableColumns];
-
-    // Find and update the actions column
-    const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
-    if (actionsColumnIndex >= 0) {
-      // Replace with a new definition that includes our handlers
-      cols[actionsColumnIndex] = {
-        ...cols[actionsColumnIndex],
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex flex-row justify-center">
-              {/* QR Code button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => onQrClick?.(item.id)}
-                  >
-                    <img
-                      src="/qrCode.svg"
-                      alt="QR"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Print QR Code</TooltipContent>
-              </Tooltip>
-
-              {/* Edit button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => onEditClick?.(item.id)}
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-
-              {/* Delete button */}
-              {(() => {
-                const totalTimesheetLogs =
-                  (item._count?.EmployeeEquipmentLogs || 0) +
-                  (item._count?.TascoLogs || 0) +
-                  (item._count?.HauledInLogs || 0) +
-                  (item._count?.UsedAsTrailer || 0) +
-                  (item._count?.UsedAsTruck || 0) +
-                  (item._count?.Maintenance || 0);
-
-                return totalTimesheetLogs === 0 ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => onDeleteClick?.(item.id)}
-                      >
-                        <img
-                          src="/trash-red.svg"
-                          alt="Delete"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        className="opacity-50"
-                        variant="ghost"
-                        size={"icon"}
-                        onClick={() => {}}
-                      >
-                        <img
-                          src="/trash-red.svg"
-                          alt="Delete"
-                          className="h-4 w-4 cursor-pointer"
-                        />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white text-red-500 border border-red-300">
-                      <span className="">Cannot delete:</span>
-                      <br />
-                      <span className="">linked timesheets</span>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })()}
-            </div>
-          );
-        },
-      };
-    }
-
-    return cols;
-  }, [onEditClick, onDeleteClick, onQrClick]);
+    return createEquipmentTableColumns({
+      onEditClick,
+      onDeleteClick,
+      onQrClick,
+      onArchiveClick,
+      onRestoreClick,
+    });
+  }, [onEditClick, onDeleteClick, onQrClick, onArchiveClick, onRestoreClick]);
 
   // Ensure data is always an array
   const safeData = Array.isArray(data) ? data : [];

@@ -10,6 +10,7 @@ import { PullToRefresh } from "../(animations)/pullToRefresh";
 
 type Option = {
   id: string;
+  viewpoint?: string;
   code: string;
   label: string;
 };
@@ -43,7 +44,12 @@ export default function CodeFinder({
       .filter((option) => {
         const searchLower = searchTerm.toLowerCase();
         const labelLower = option.label.toLowerCase();
-        return labelLower.includes(searchLower);
+        const viewpointLower = option.viewpoint?.toLowerCase() || "";
+
+        return (
+          labelLower.includes(searchLower) ||
+          viewpointLower.includes(searchLower)
+        );
       })
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [options, searchTerm]);
@@ -139,7 +145,7 @@ const OptionsList = ({
       <Holds key={option.code} className="p-2">
         <Buttons
           shadow={"none"}
-          className={`p-2 cursor-pointer ${
+          className={`py-2 px-2 cursor-pointer flex justify-left items-center ${
             selectedOption?.code === option.code ? "bg-app-green" : "bg-white"
           }`}
           onClick={() =>
@@ -148,10 +154,11 @@ const OptionsList = ({
               : onSelect(option)
           }
         >
-          <Titles size={"md"}>
-            {option.label.length > 21
-              ? option.label.slice(0, 21) + "..."
-              : option.label}
+          <Titles size={"sm"} className="max-w-[200px] truncate ">
+            <span className="text-base">
+              {option.viewpoint ? `${option.viewpoint} - ` : null}
+            </span>
+            {option.label}
           </Titles>
         </Buttons>
       </Holds>

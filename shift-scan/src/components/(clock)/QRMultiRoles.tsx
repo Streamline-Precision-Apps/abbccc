@@ -30,7 +30,6 @@ type QRStepProps = {
   option?: string;
   clockInRole: string | undefined;
   setClockInRole: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
   setJobsite: Dispatch<SetStateAction<Option>>;
@@ -46,7 +45,7 @@ export default function QRMultiRoles({
   url,
   clockInRole,
   setClockInRole,
-  setScanned,
+
   clockInRoleTypes,
   setClockInRoleTypes,
   setJobsite,
@@ -60,30 +59,39 @@ export default function QRMultiRoles({
   const laborView = session?.user.laborView;
   const [numberOfViews, setNumberOfViews] = useState(0);
   const [failedToScan, setFailedToScan] = useState(false);
+  // Local state to store the selected role until camera starts
+  const [tempClockInRole, setTempClockInRole] = useState<string | undefined>(
+    clockInRole,
+  );
 
   const selectView = (selectedRoleType: string) => {
     setClockInRoleTypes(selectedRoleType);
-    // Map the selected role type to the main clock-in role
+
+    // Map the selected role type to the main clock-in role but only update local state
+    let newRole: string;
     if (
       selectedRoleType === "tascoAbcdLabor" ||
       selectedRoleType === "tascoAbcdEquipment" ||
       selectedRoleType === "tascoEEquipment"
     ) {
-      setClockInRole("tasco");
+      newRole = "tasco";
     } else if (
       selectedRoleType === "truckDriver" ||
       selectedRoleType === "truckEquipmentOperator" ||
       selectedRoleType === "truckLabor"
     ) {
-      setClockInRole("truck");
+      newRole = "truck";
     } else if (selectedRoleType === "mechanic") {
-      setClockInRole("mechanic");
+      newRole = "mechanic";
     } else if (selectedRoleType === "general") {
-      setClockInRole("general");
+      newRole = "general";
     } else {
       setClockInRoleTypes("general");
-      setClockInRole("general"); // Handle undefined or invalid cases
+      newRole = "general"; // Handle undefined or invalid cases
     }
+
+    // Only update local state
+    setTempClockInRole(newRole);
   };
 
   useEffect(() => {
@@ -102,13 +110,18 @@ export default function QRMultiRoles({
     }, 5000);
   }, [failedToScan]);
 
+  // Keep local state in sync with incoming props
+  useEffect(() => {
+    setTempClockInRole(clockInRole);
+  }, [clockInRole]);
+
   return (
     <>
       <Holds background={"white"} className="h-full w-full">
         <Grids rows={"7"} gap={"5"} className="h-full w-full">
           <Holds className="row-start-1 row-end-2 h-full w-full">
             <TitleBoxes onClick={handleReturnPath}>
-              <Titles size={"h4"}>
+              <Titles size={"md"}>
                 {startCamera ? t("ScanJobsite") : t("SelectLaborType")}
               </Titles>
             </TitleBoxes>
@@ -121,7 +134,7 @@ export default function QRMultiRoles({
                     <Holds className="p-1 justify-center row-start-1 row-end-2 ">
                       <Contents width={"section"}>
                         <Selects
-                          className="bg-app-blue text-center p-3 disabled:bg-app-blue"
+                          className="bg-app-blue text-center p-3 text-sm disabled:bg-app-blue"
                           value={clockInRoleTypes}
                           disabled={startCamera}
                           onChange={(e) => selectView(e.target.value)}
@@ -157,7 +170,59 @@ export default function QRMultiRoles({
                             <option value="mechanic">{t("Mechanic")}</option>
                           )}
                           {laborView === true && (
-                            <option value="general">{t("General")}</option>
+                            <option value="general">{t("GeneralLabor")}</option>
+                          )}
+                        </Selects>
+                      </Contents>
+                    </Holds>
+                  ) : numberOfViews === 1 && clockInRole === "tasco" ? (
+                    <Holds className="p-1 justify-center row-start-1 row-end-2 ">
+                      <Contents width={"section"}>
+                        <Selects
+                          className="bg-app-blue text-center p-3 disabled:bg-app-blue"
+                          value={clockInRoleTypes}
+                          disabled={startCamera}
+                          onChange={(e) => selectView(e.target.value)}
+                        >
+                          <option value="">{t("SelectWorkType")}</option>
+                          {tascoView === true && (
+                            <>
+                              <option value="general">
+                                {t("GeneralLabor")}
+                              </option>
+                              <option value="tascoAbcdLabor">
+                                {t("TASCOABCDLabor")}
+                              </option>
+                              <option value="tascoAbcdEquipment">
+                                {t("TASCOABCDEquipmentOperator")}
+                              </option>
+                              <option value="tascoEEquipment">
+                                {t("TASCOEEquipmentOperator")}
+                              </option>
+                            </>
+                          )}
+                        </Selects>
+                      </Contents>
+                    </Holds>
+                  ) : numberOfViews === 1 && clockInRole === "truck" ? (
+                    <Holds className="p-1 justify-center row-start-1 row-end-2 ">
+                      <Contents width={"section"}>
+                        <Selects
+                          className="bg-app-blue text-center p-3 disabled:bg-app-blue"
+                          value={clockInRoleTypes}
+                          disabled={startCamera}
+                          onChange={(e) => selectView(e.target.value)}
+                        >
+                          <option value="">{t("SelectWorkType")}</option>
+                          {truckView === true && (
+                            <>
+                              <option value="general">
+                                {t("GeneralLabor")}
+                              </option>
+                              <option value="truckDriver">
+                                {t("TruckDriver")}
+                              </option>
+                            </>
                           )}
                         </Selects>
                       </Contents>
@@ -204,7 +269,6 @@ export default function QRMultiRoles({
                           startCamera={startCamera}
                           setStartCamera={setStartCamera}
                           setFailedToScan={setFailedToScan}
-                          setScanned={setScanned}
                           setJobsite={setJobsite}
                         />
                       </Holds>
@@ -215,7 +279,12 @@ export default function QRMultiRoles({
                           shadow={"none"}
                           onClick={handleAlternativePath}
                         >
-                          <Texts size={"p4"}>{t("TroubleScanning")}</Texts>
+                          <Texts
+                            size={"p4"}
+                            className="underline underline-offset-4"
+                          >
+                            {t("TroubleScanning")}
+                          </Texts>
                         </Buttons>
                       </Holds>
                     </Grids>
@@ -226,11 +295,27 @@ export default function QRMultiRoles({
                 <Holds className="row-start-7 row-end-8 w-full justify-center">
                   <Contents width={"section"}>
                     <Buttons
-                      onClick={() => setStartCamera(!startCamera)}
-                      background={"green"}
+                      onClick={() => {
+                        // Update parent state with our local role state only when starting camera
+                        if (tempClockInRole) {
+                          setClockInRole(tempClockInRole);
+                        }
+                        setStartCamera(!startCamera);
+                      }}
+                      // Only enable the button if a role is selected when multiple views are available
+                      disabled={
+                        numberOfViews > 1 &&
+                        (!clockInRoleTypes || clockInRoleTypes === "")
+                      }
+                      background={
+                        numberOfViews > 1 &&
+                        (!clockInRoleTypes || clockInRoleTypes === "")
+                          ? "darkGray"
+                          : "green"
+                      }
                       className="py-2"
                     >
-                      <Titles size={"h2"}>{t("StartCamera")}</Titles>
+                      <Titles size={"md"}>{t("StartCamera")}</Titles>
                     </Buttons>
                   </Contents>
                 </Holds>

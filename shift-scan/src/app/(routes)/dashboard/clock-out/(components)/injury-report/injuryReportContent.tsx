@@ -85,12 +85,12 @@ export const InjuryReportContent = ({
       <Contents>
         <Holds
           background={"white"}
-          className="h-full w-full border-red-500 border-[3px]"
+          className="h-full w-full flex flex-col items-center "
         >
           <TitleBoxes onClick={prevStep} className="h-24">
             <Holds className="h-full justify-end">
               <Holds position={"row"} className="w-full justify-center gap-2">
-                <Titles size={"lg"}>{t("InjuryVerification")}</Titles>
+                <Titles size={"md"}>{t("InjuryVerification")}</Titles>
                 <Images
                   titleImg="/injury.svg"
                   titleImgAlt="Verify"
@@ -103,7 +103,7 @@ export const InjuryReportContent = ({
 
           {/* Describe What Happened */}
 
-          <Contents width={"section"}>
+          <div className="w-[90%] flex-grow flex flex-col">
             <Holds position={"row"} className="w-full  my-5">
               <Holds className="w-fit pr-5">
                 <CheckBox
@@ -164,9 +164,9 @@ export const InjuryReportContent = ({
                 </Texts>
               </Holds>
             </Holds>
-          </Contents>
+          </div>
 
-          <Contents width={"section"} className="my-5 h-[70px]">
+          <div className="w-[90%] flex justify-end  pb-4 h-[70px] ">
             <Buttons
               background={
                 completedForm && signatureChecked ? "orange" : "darkGray"
@@ -175,9 +175,9 @@ export const InjuryReportContent = ({
               onClick={handleSubmit}
               className="h-[60px] w-full"
             >
-              <Titles size={"lg"}>{t("Continue")}</Titles>
+              <Titles size={"md"}>{t("Continue")}</Titles>
             </Buttons>
-          </Contents>
+          </div>
         </Holds>
       </Contents>
     </Bases>

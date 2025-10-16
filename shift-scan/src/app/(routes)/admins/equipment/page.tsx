@@ -43,9 +43,20 @@ export default function EquipmentPage() {
     setCreateEquipmentModal,
     showDeleteDialog,
     setShowDeleteDialog,
+    showArchiveDialog,
+    setShowArchiveDialog,
+    showRestoreDialog,
+    setShowRestoreDialog,
+    pendingArchiveId,
     pendingEditId,
     openHandleEdit,
     openHandleDelete,
+    openHandleArchive,
+    openHandleRestore,
+    confirmArchive,
+    cancelArchive,
+    confirmRestore,
+    cancelRestore,
     confirmDelete,
     openHandleQr,
     cancelDelete,
@@ -157,6 +168,8 @@ export default function EquipmentPage() {
             onDeleteClick={openHandleDelete}
             onQrClick={openHandleQr}
             showPendingOnly={showPendingOnly}
+            onArchiveClick={openHandleArchive}
+            onRestoreClick={openHandleRestore}
           />
         </div>
 
@@ -185,9 +198,9 @@ export default function EquipmentPage() {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Form Template?</DialogTitle>
+            <DialogTitle>Delete Equipment?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this form template? All form data
+              Are you sure you want to delete this equipment? All equipment data
               will be permanently deleted. This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
@@ -197,6 +210,48 @@ export default function EquipmentPage() {
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Equipment?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive this equipment? This will disable
+              it in the mobile app, but all existing data will remain available.
+              You can restore it at any time.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelArchive}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmArchive}>
+              Archive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Restore Equipment?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to restore this equipment? This will
+              re-enable it in the mobile app and make it available for use
+              again.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelRestore}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRestore}>
+              Restore
             </Button>
           </DialogFooter>
         </DialogContent>

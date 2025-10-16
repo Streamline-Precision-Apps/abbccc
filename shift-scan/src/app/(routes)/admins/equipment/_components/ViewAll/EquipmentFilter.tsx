@@ -59,7 +59,9 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
     setFilters(localFilters);
     onFilterChange(localFilters);
 
+    // Set useFilters based on whether we have active filters
     if (onUseFiltersChange) {
+      // Just set it directly - our dependency array is now properly handling filter changes
       onUseFiltersChange(Boolean(hasActiveFilters));
     }
     setOpen(false);

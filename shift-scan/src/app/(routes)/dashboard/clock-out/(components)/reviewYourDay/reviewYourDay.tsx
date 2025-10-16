@@ -55,20 +55,20 @@ export default function ReviewYourDay({
     <Bases>
       <Contents>
         <Holds background={"white"} className="row-span-1 h-full ">
-          <Holds className="h-full w-full flex flex-col">
+          <Holds className="h-full w-full flex flex-col justify-center items-center">
             <TitleBoxes onClick={prevStep} className="h-24 flex-shrink-0">
               <Holds className="h-full justify-end">
-                <Titles size={"lg"}>{t("ReviewYourDay")}</Titles>
+                <Titles size={"md"}>{t("ReviewYourDay")}</Titles>
               </Holds>
             </TitleBoxes>
             <Texts size={"sm"} className="p-2 flex-shrink-0">
               {t("ReviewYourDayDirections")}
             </Texts>
-            <Contents width={"section"} className="flex-1 min-h-0">
-              <Holds className="h-full w-full border-[3px] rounded-[10px] border-black">
+            <div className="w-[90%] flex-grow flex flex-col pb-5">
+              <Holds className="flex flex-col border-[3px] rounded-[10px] border-black h-full">
                 <Holds
                   position={"row"}
-                  className="border-b-[3px] border-black py-1 px-2"
+                  className="border-b-[3px] border-black py-1 px-2 flex-shrink-0"
                 >
                   <Grids cols={"3"} gap={"2"} className="w-full">
                     <Titles position={"left"} size={"h6"}>
@@ -84,12 +84,12 @@ export default function ReviewYourDay({
                   <Holds className="w-4"></Holds>
                 </Holds>
                 {loading ? (
-                  <Holds className="h-full w-full justify-center">
+                  <Holds className="flex-grow w-full justify-center">
                     <Spinner />
                   </Holds>
                 ) : (
-                  <div className="h-full flex flex-col overflow-y-auto no-scrollbar  pb-4">
-                    <Accordion type="single" collapsible>
+                  <div className="flex-grow overflow-y-auto no-scrollbar min-h-0 max-h-[calc(100%-40px)]">
+                    <Accordion type="single" collapsible className="w-full">
                       {timesheets
                         .slice()
                         .sort((a, b) => {
@@ -222,16 +222,16 @@ export default function ReviewYourDay({
                   </div>
                 )}
               </Holds>
-            </Contents>
-            <Contents width={"section"} className="mt-5 h-[70px] flex-shrink-0">
+            </div>
+            <div className="w-[90%] flex justify-end  pb-4 h-[70px] ">
               <Buttons
                 background={"orange"}
                 onClick={handleClick}
-                className="h-[60px] w-full"
+                className="h-[60px] w-full "
               >
-                <Titles size={"lg"}>{t("Continue")}</Titles>
+                <Titles size={"md"}>{t("Continue")}</Titles>
               </Buttons>
-            </Contents>
+            </div>
           </Holds>
         </Holds>
       </Contents>

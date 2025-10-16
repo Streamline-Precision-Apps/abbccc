@@ -472,6 +472,7 @@ export async function handleMechanicTimeSheet(formData: FormData) {
 //---------- Transaction to create a new time sheet
 export async function handleTascoTimeSheet(formData: FormData) {
   try {
+    console.log("handleTascoTimeSheet called with formData:", formData);
     const session = await auth();
     if (!session) {
       throw new Error("Unauthorized user");
@@ -484,6 +485,7 @@ export async function handleTascoTimeSheet(formData: FormData) {
     const jobsiteId = formData.get("jobsiteId") as string;
     const userId = formData.get("userId") as string;
     const equipmentId = formData.get("equipment") as string;
+
     previousTimeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
     const shiftType = formData.get("shiftType") as string;
@@ -824,6 +826,7 @@ export async function updateTimeSheet(formData: FormData) {
 //---------
 export async function returnToPrevWork(formData: FormData) {
   try {
+    console.log("formData received:", formData);
     const id = Number(formData.get("id"));
     const PrevTimeSheet = await prisma.timeSheet.findUnique({
       where: { id },
@@ -846,9 +849,9 @@ export async function returnToPrevWork(formData: FormData) {
         TascoLogs: {
           select: {
             shiftType: true,
-
             Equipment: {
               select: {
+                id: true,
                 qrId: true,
                 name: true,
               },
@@ -871,7 +874,7 @@ export async function returnToPrevWork(formData: FormData) {
         },
       },
     });
-
+    console.log("PrevTimeSheet fetched:", PrevTimeSheet);
     return PrevTimeSheet;
   } catch (error) {
     console.error("Error updating timesheet:", error);

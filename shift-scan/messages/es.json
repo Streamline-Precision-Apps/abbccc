@@ -656,6 +656,7 @@
     "Approved": "Aprobado"
   },
   "Clock": {
+    "GeneralLabor": "Trabajo general",
     "NoResultsFound": "No se encontraron resultados",
     "Equipment": "Equipo",
     "SelectMaterialTypeAndEquipment": "Seleccionar material y equipo",

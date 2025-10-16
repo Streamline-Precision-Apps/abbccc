@@ -180,13 +180,13 @@ export default function TruckVerificationStep({
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
               <TitleBoxes position={"row"} onClick={handlePrevStep}>
-                <Titles position={"right"} size={"h4"}>
+                <Titles position={"right"} size={"md"}>
                   {t("VerifyJobSite")}
                 </Titles>
                 <Images
                   titleImg="/clockIn.svg"
                   titleImgAlt="Verify"
-                  className="w-8 h-8"
+                  className="w-6 h-6"
                 />
               </TitleBoxes>
             </Holds>
@@ -198,103 +198,103 @@ export default function TruckVerificationStep({
                     className="row-start-1 row-end-7 w-full h-full rounded-[10px] border-[3px] border-black"
                   >
                     <Contents width={"section"} className="h-full py-2">
-                      <Holds className="flex flex-row justify-between pb-3">
-                        <Texts size={"p7"} position={"left"}>
-                          {date.toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "numeric",
-                            day: "numeric",
-                          })}
-                        </Texts>
-                        <Texts size={"p7"} position={"right"}>
-                          {date.toLocaleTimeString("en-US", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: true,
-                          })}
-                        </Texts>
-                      </Holds>
-
-                      <Holds
-                        className={
-                          clockInRoleTypes === "truckDriver"
-                            ? "row-span-1 col-span-1"
-                            : "row-span-1 col-span-2"
-                        }
-                      >
-                        <Labels
-                          htmlFor="clockInRole"
-                          size={"p3"}
-                          position={"left"}
-                        >
-                          {t("LaborType")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="clockInRole"
-                          variant={"white"}
-                          data={
+                      <div className="h-full overflow-y-auto no-scrollbar">
+                        <Holds className="flex flex-row justify-between pb-3">
+                          <Texts size={"p7"} position={"left"}>
+                            {date.toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "numeric",
+                              day: "numeric",
+                            })}
+                          </Texts>
+                          <Texts size={"p7"} position={"right"}>
+                            {date.toLocaleTimeString("en-US", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                              hour12: true,
+                            })}
+                          </Texts>
+                        </Holds>
+                        <Holds
+                          className={
                             clockInRoleTypes === "truckDriver"
-                              ? t("TruckDriver")
-                              : clockInRoleTypes === "truckEquipmentOperator"
-                                ? t("TruckEquipmentOperator")
-                                : t("TruckLabor")
+                              ? "row-span-1 col-span-1"
+                              : "row-span-1 col-span-2"
                           }
-                          className={"pl-2 text-base text-center"}
-                        />
-                      </Holds>
-                      <Holds className={"row-span-1 col-span-2"}>
-                        <Labels
-                          htmlFor="jobsiteId"
-                          size={"p3"}
-                          position={"left"}
                         >
-                          {t("JobSite-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="jobsiteId"
-                          variant={"white"}
-                          data={jobsite?.label || ""}
-                          className={"pl-2 text-base text-center"}
-                        />
-                      </Holds>
-                      <Holds className={"row-span-1 col-span-2"}>
-                        <Labels
-                          htmlFor="costcode"
-                          size={"p3"}
-                          position={"left"}
-                        >
-                          {t("CostCode-label")}
-                        </Labels>
-                        <Inputs
-                          state="disabled"
-                          name="costcode"
-                          variant={"white"}
-                          data={cc?.label || ""}
-                          className={"pl-2 text-base text-center"}
-                        />
-                      </Holds>
-                      {clockInRoleTypes === "truckDriver" && (
-                        <>
-                          <Holds className={"row-span-1 col-span-2"}>
-                            <Labels
-                              htmlFor="truckId"
-                              size={"p3"}
-                              position={"left"}
-                            >
-                              {t("Truck-label")}
-                            </Labels>
-                            <Inputs
-                              state="disabled"
-                              name="truckId"
-                              variant={"white"}
-                              data={truck?.label || ""}
-                              className={"pl-2 text-base text-center"}
-                            />
-                          </Holds>
-                          {/* <Holds className={"row-span-1 col-span-2"}>
+                          <Labels
+                            htmlFor="clockInRole"
+                            size={"p3"}
+                            position={"left"}
+                          >
+                            {t("LaborType")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="clockInRole"
+                            variant={"white"}
+                            data={
+                              clockInRoleTypes === "truckDriver"
+                                ? t("TruckDriver")
+                                : clockInRoleTypes === "truckEquipmentOperator"
+                                  ? t("TruckEquipmentOperator")
+                                  : t("TruckLabor")
+                            }
+                            className={"pl-2 text-base text-center"}
+                          />
+                        </Holds>
+                        <Holds className={"row-span-1 col-span-2"}>
+                          <Labels
+                            htmlFor="jobsiteId"
+                            size={"p3"}
+                            position={"left"}
+                          >
+                            {t("JobSite-label")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="jobsiteId"
+                            variant={"white"}
+                            data={jobsite?.label || ""}
+                            className={"pl-2 text-base text-center"}
+                          />
+                        </Holds>
+                        <Holds className={"row-span-1 col-span-2"}>
+                          <Labels
+                            htmlFor="costcode"
+                            size={"p3"}
+                            position={"left"}
+                          >
+                            {t("CostCode-label")}
+                          </Labels>
+                          <Inputs
+                            state="disabled"
+                            name="costcode"
+                            variant={"white"}
+                            data={cc?.label || ""}
+                            className={"pl-2 text-base text-center"}
+                          />
+                        </Holds>
+                        {clockInRoleTypes === "truckDriver" && (
+                          <>
+                            <Holds className={"row-span-1 col-span-2"}>
+                              <Labels
+                                htmlFor="truckId"
+                                size={"p3"}
+                                position={"left"}
+                              >
+                                {t("Truck-label")}
+                              </Labels>
+                              <Inputs
+                                state="disabled"
+                                name="truckId"
+                                variant={"white"}
+                                data={truck?.label || ""}
+                                className={"pl-2 text-base text-center"}
+                              />
+                            </Holds>
+                            {/* <Holds className={"row-span-1 col-span-2"}>
                             <Labels
                               htmlFor="trailerId"
                               size={"p3"}
@@ -313,26 +313,27 @@ export default function TruckVerificationStep({
                               className={"pl-2 text-base text-center"}
                             />
                           </Holds> */}
-                        </>
-                      )}
-                      {clockInRoleTypes === "truckEquipmentOperator" && (
-                        <Holds className={"row-span-1 col-span-2"}>
-                          <Labels
-                            htmlFor="SelectedEquipment"
-                            size={"p3"}
-                            position={"left"}
-                          >
-                            {t("SelectedEquipment")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="SelectedEquipment"
-                            variant={"white"}
-                            data={equipment?.label || ""}
-                            className={"pl-2 text-base text-center"}
-                          />
-                        </Holds>
-                      )}
+                          </>
+                        )}
+                        {clockInRoleTypes === "truckEquipmentOperator" && (
+                          <Holds className={"row-span-1 col-span-2"}>
+                            <Labels
+                              htmlFor="SelectedEquipment"
+                              size={"p3"}
+                              position={"left"}
+                            >
+                              {t("SelectedEquipment")}
+                            </Labels>
+                            <Inputs
+                              state="disabled"
+                              name="SelectedEquipment"
+                              variant={"white"}
+                              data={equipment?.label || ""}
+                              className={"pl-2 text-base text-center"}
+                            />
+                          </Holds>
+                        )}
+                      </div>
                     </Contents>
                   </Holds>
 
@@ -343,7 +344,7 @@ export default function TruckVerificationStep({
                       className=" w-full h-full py-2"
                       disabled={loading}
                     >
-                      <Titles size={"h2"}>{t("StartDay")}</Titles>
+                      <Titles size={"md"}>{t("StartDay")}</Titles>
                     </Buttons>
                   </Holds>
                 </Grids>

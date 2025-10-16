@@ -20,7 +20,6 @@ type QrReaderProps = {
   startCamera: boolean;
   setStartCamera: React.Dispatch<React.SetStateAction<boolean>>;
   setFailedToScan: React.Dispatch<React.SetStateAction<boolean>>;
-  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
   setJobsite: React.Dispatch<React.SetStateAction<Option>>;
 };
 
@@ -33,7 +32,6 @@ export default function QR({
   startCamera,
   setStartCamera,
   setFailedToScan,
-  setScanned,
   setJobsite,
 }: QrReaderProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -123,12 +121,11 @@ export default function QR({
 
         if (type === "equipment") {
           processEquipmentScan(data);
-          setScanned(true);
+
           handleNextStep();
           handleNextStep();
         } else {
           processGeneralScan(data);
-          setScanned(true);
         }
       } catch (error) {
         console.error("QR Code Processing Error:", error);
@@ -142,7 +139,6 @@ export default function QR({
       type,
       processEquipmentScan,
       processGeneralScan,
-      setScanned,
       setStartCamera,
       setFailedToScan,
     ],

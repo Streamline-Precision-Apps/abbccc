@@ -13,6 +13,42 @@ import {
 
 export const dynamic = "force-dynamic"; // Ensures API is always dynamic and not cached
 
+// Common select fields for equipment queries
+const equipmentSelectFields = {
+  id: true,
+  qrId: true,
+  code: true,
+  name: true,
+  description: true,
+  memo: true,
+  ownershipType: true,
+  equipmentTag: true,
+  status: true,
+  approvalStatus: true,
+  state: true,
+  createdAt: true,
+  updatedAt: true,
+  make: true,
+  model: true,
+  year: true,
+  color: true,
+  serialNumber: true,
+  acquiredDate: true,
+  acquiredCondition: true,
+  licensePlate: true,
+  licenseState: true,
+  _count: {
+    select: {
+      EmployeeEquipmentLogs: true,
+      TascoLogs: true,
+      HauledInLogs: true,
+      UsedAsTrailer: true,
+      UsedAsTruck: true,
+      Maintenance: true,
+    },
+  },
+};
+
 /**
  * Get summary information of all equipment (just id and name)
  * Used for lightweight equipment listing in admin assets page
@@ -27,151 +63,67 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse query params for pagination
+    // Parse query params for pagination and filtering
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "all";
     const filtersParam = searchParams.get("filters");
+    const searchTerm = searchParams.get("search") || "";
+    const requestedPage = parseInt(searchParams.get("page") || "1", 10);
+    const requestedPageSize = parseInt(
+      searchParams.get("pageSize") || "25",
+      10,
+    );
 
-    let equipmentSummary, total, pageSize, page, skip, totalPages;
+    // Base search condition that will be applied to all queries
+    const searchCondition = searchTerm
+      ? {
+          OR: [
+            { name: { contains: searchTerm, mode: 'insensitive' } },
+            { code: { contains: searchTerm, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    // Parse filters if provided
+    const whereClause: Record<string, unknown> = { ...searchCondition };
+
+    // Add status filter if specified
     if (status === "pending") {
-      page = undefined;
-      pageSize = undefined;
-      skip = undefined;
-      totalPages = 1;
-      equipmentSummary = await prisma.equipment.findMany({
-        where: {
-          approvalStatus: "PENDING",
-        },
-        select: {
-          id: true,
-          qrId: true,
-          code: true,
-          name: true,
-          description: true,
-          memo: true,
-          ownershipType: true,
-          equipmentTag: true,
-          status: true,
-          approvalStatus: true,
-          state: true,
-          createdAt: true,
-          updatedAt: true,
-          make: true,
-          model: true,
-          year: true,
-          color: true,
-          serialNumber: true,
-          acquiredDate: true,
-          acquiredCondition: true,
-          licensePlate: true,
-          licenseState: true,
-          _count: {
-            select: {
-              EmployeeEquipmentLogs: true,
-              TascoLogs: true,
-              HauledInLogs: true,
-              UsedAsTrailer: true,
-              UsedAsTruck: true,
-              Maintenance: true,
-            },
-          },
-        },
-        orderBy: {
-          code: "asc",
-        },
-      });
-    } else if (filtersParam) {
-      // When filters are applied, get all equipment without pagination
+      whereClause.approvalStatus = "PENDING";
+    }
+
+    // Add custom filters if provided
+    if (filtersParam) {
       try {
         const filters = JSON.parse(filtersParam);
-
-        // Define the type for the where clause
-        type WhereClause = {
-          equipmentTag?: { in: EquipmentTags[] };
-          ownershipType?: { in: OwnershipType[] };
-          acquiredCondition?: { in: Condition[] };
-          state?: { in: EquipmentState[] };
-          approvalStatus?: { in: ApprovalStatus[] };
-        };
-
-        // Construct where clause based on filters
-        const whereClause: WhereClause = {};
 
         // Add filter for equipment tags if provided
         if (filters.equipmentTags && filters.equipmentTags.length > 0) {
           whereClause.equipmentTag = {
-            in: filters.equipmentTags,
+            in: filters.equipmentTags as EquipmentTags[],
           };
         }
 
         // Add filter for ownership types if provided
         if (filters.ownershipTypes && filters.ownershipTypes.length > 0) {
           whereClause.ownershipType = {
-            in: filters.ownershipTypes,
+            in: filters.ownershipTypes as OwnershipType[],
           };
         }
 
         // Add filter for conditions if provided
         if (filters.conditions && filters.conditions.length > 0) {
           whereClause.acquiredCondition = {
-            in: filters.conditions,
+            in: filters.conditions as Condition[],
           };
         }
 
         // Add filter for statuses if provided
         if (filters.statuses && filters.statuses.length > 0) {
           whereClause.state = {
-            in: filters.statuses,
+            in: filters.statuses as ApprovalStatus[],
           };
         }
-
-        // Get all equipment that matches the filters (no pagination)
-        equipmentSummary = await prisma.equipment.findMany({
-          where: whereClause,
-          select: {
-            id: true,
-            qrId: true,
-            code: true,
-            name: true,
-            description: true,
-            memo: true,
-            ownershipType: true,
-            equipmentTag: true,
-            status: true,
-            approvalStatus: true,
-            state: true,
-            createdAt: true,
-            updatedAt: true,
-            make: true,
-            model: true,
-            year: true,
-            color: true,
-            serialNumber: true,
-            acquiredDate: true,
-            acquiredCondition: true,
-            licensePlate: true,
-            licenseState: true,
-            _count: {
-              select: {
-                EmployeeEquipmentLogs: true,
-                TascoLogs: true,
-                HauledInLogs: true,
-                UsedAsTrailer: true,
-                UsedAsTruck: true,
-                Maintenance: true,
-              },
-            },
-          },
-          orderBy: {
-            code: "asc",
-          },
-        });
-
-        // Set pagination values for response
-        total = equipmentSummary.length;
-        page = 1;
-        pageSize = total;
-        totalPages = 1;
       } catch (error) {
         console.error("Error parsing filters:", error);
         return NextResponse.json(
@@ -179,55 +131,38 @@ export async function GET(req: Request) {
           { status: 400 },
         );
       }
-    } else {
-      page = parseInt(searchParams.get("page") || "1", 10);
-      pageSize = parseInt(searchParams.get("pageSize") || "25", 10);
-      skip = (page - 1) * pageSize;
-      total = await prisma.equipment.count();
-      totalPages = Math.ceil(total / pageSize);
-
-      equipmentSummary = await prisma.equipment.findMany({
-        skip,
-        take: pageSize,
-        select: {
-          id: true,
-          qrId: true,
-          code: true,
-          name: true,
-          description: true,
-          memo: true,
-          ownershipType: true,
-          equipmentTag: true,
-          status: true,
-          approvalStatus: true,
-          state: true,
-          createdAt: true,
-          updatedAt: true,
-          make: true,
-          model: true,
-          year: true,
-          color: true,
-          serialNumber: true,
-          acquiredDate: true,
-          acquiredCondition: true,
-          licensePlate: true,
-          licenseState: true,
-          _count: {
-            select: {
-              EmployeeEquipmentLogs: true,
-              TascoLogs: true,
-              HauledInLogs: true,
-              UsedAsTrailer: true,
-              UsedAsTruck: true,
-              Maintenance: true,
-            },
-          },
-        },
-        orderBy: {
-          code: "asc",
-        },
-      });
     }
+
+    // Count total matching records (for pagination)
+    const total = await prisma.equipment.count({ where: whereClause });
+
+    // Calculate pagination values
+    const isPaginationDisabled =
+      status === "pending" ||
+      searchTerm.trim() !== "" ||
+      (filtersParam && filtersParam !== "{}");
+
+    // Either use pagination or get all results
+    const skip = isPaginationDisabled
+      ? 0
+      : (requestedPage - 1) * requestedPageSize;
+    const take = isPaginationDisabled ? undefined : requestedPageSize;
+    const effectivePage = isPaginationDisabled ? 1 : requestedPage;
+    const effectivePageSize = isPaginationDisabled ? total : requestedPageSize;
+    const totalPages = Math.ceil(total / (effectivePageSize || 1)) || 1;
+
+    // Fetch equipment data
+    const equipmentSummary = await prisma.equipment.findMany({
+      where: whereClause,
+      skip,
+      ...(take !== undefined && { take }),
+      select: equipmentSelectFields,
+      orderBy: {
+        code: "asc",
+      },
+    });
+
+    // Count pending equipment for badge count
     const pendingEquipment = await prisma.equipment.count({
       where: {
         approvalStatus: "PENDING",
@@ -237,8 +172,8 @@ export async function GET(req: Request) {
     return NextResponse.json({
       equipment: equipmentSummary,
       total,
-      page,
-      pageSize,
+      page: effectivePage,
+      pageSize: effectivePageSize,
       totalPages,
       pendingEquipment,
     });

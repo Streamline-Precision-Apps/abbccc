@@ -7,6 +7,7 @@ import TruckSelectorLoading from "../(loading)/truckSelectorLoading";
 
 type Option = {
   id: string; // ID is now required
+  viewpoint?: string;
   code: string;
   label: string;
 };
@@ -28,6 +29,7 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
         .filter((equipment) => equipment.equipmentTag === "TRUCK")
         .map((equipment) => ({
           id: equipment.id,
+          viewpoint: equipment.code,
           code: equipment.qrId,
           label: equipment.name,
         }));

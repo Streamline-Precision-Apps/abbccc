@@ -7,6 +7,7 @@ import EquipmentSelectorLoading from "../(loading)/equipmentSelectorLoading";
 
 type Option = {
   id: string; // Optional ID for compatibility
+  viewpoint?: string; // For compatibility with other selectors
   code: string;
   label: string;
 };
@@ -33,6 +34,7 @@ export const EquipmentSelector = ({
     if (equipmentResults) {
       const options = equipmentResults.map((equipment) => ({
         id: equipment.id,
+        viewpoint: equipment.code,
         code: equipment.qrId,
         label: equipment.name,
       }));
