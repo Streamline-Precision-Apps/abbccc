@@ -301,14 +301,28 @@ export default function useAllTimeSheetData({
   useEffect(() => {
     if (urlParams.jobsiteId || urlParams.costCode || urlParams.id || urlParams.notificationId || urlParams.equipmentId) {
       setNotificationIds(urlParams.notificationId || null);
-      setFilters((prev) => ({
-        ...prev,
-        jobsiteId: urlParams.jobsiteId ? [urlParams.jobsiteId] : prev.jobsiteId,
-        costCode: urlParams.costCode ? [urlParams.costCode] : prev.costCode,
-        id: urlParams.id ? [urlParams.id] : prev.id,
-        notificationId: urlParams.notificationId ? [urlParams.notificationId] : prev.notificationId,
-        equipmentId: urlParams.equipmentId ? [urlParams.equipmentId] : prev.equipmentId,
-      }));
+      setFilters((prev) => {
+        const newFilters = {
+          ...prev,
+          jobsiteId: urlParams.jobsiteId ? [urlParams.jobsiteId] : prev.jobsiteId,
+          costCode: urlParams.costCode ? [urlParams.costCode] : prev.costCode,
+          id: urlParams.id ? [urlParams.id] : prev.id,
+          notificationId: urlParams.notificationId ? [urlParams.notificationId] : prev.notificationId,
+          equipmentId: urlParams.equipmentId ? [urlParams.equipmentId] : prev.equipmentId,
+        };
+        
+        // If equipmentId is provided via URL, auto-select all equipment log types
+        if (urlParams.equipmentId && !prev.equipmentId.includes(urlParams.equipmentId)) {
+          newFilters.equipmentLogTypes = [
+            "employeeEquipmentLogs",
+            "truckingLogs", 
+            "tascoLogs",
+            "mechanicProjects"
+          ];
+        }
+        
+        return newFilters;
+      });
     }
     // Mark URL params as processed (even if none were present)
     setUrlParamsProcessed(true);
@@ -351,9 +365,10 @@ export default function useAllTimeSheetData({
     jobsiteId: filters.jobsiteId.join(','),
     costCode: filters.costCode.join(','),
     equipmentId: filters.equipmentId.join(','),
+    equipmentLogTypes: filters.equipmentLogTypes.join(','),
     id: filters.id.join(','),
     notificationId: filters.notificationId.join(',')
-  }), [filters.jobsiteId, filters.costCode, filters.equipmentId, filters.id, filters.notificationId]);
+  }), [filters.jobsiteId, filters.costCode, filters.equipmentId, filters.equipmentLogTypes, filters.id, filters.notificationId]);
 
   // Fetch timesheets when page/pageSize, search, or explicit refilter triggers change
   useEffect(() => {
@@ -373,6 +388,7 @@ export default function useAllTimeSheetData({
     hasUrlParams ? filterDependencies.jobsiteId : '',
     hasUrlParams ? filterDependencies.costCode : '',
     hasUrlParams ? filterDependencies.equipmentId : '',
+    hasUrlParams ? filterDependencies.equipmentLogTypes : '',
     hasUrlParams ? filterDependencies.id : '',
     hasUrlParams ? filterDependencies.notificationId : ''
   ]);

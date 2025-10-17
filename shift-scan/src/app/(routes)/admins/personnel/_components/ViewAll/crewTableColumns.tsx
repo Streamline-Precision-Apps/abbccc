@@ -28,8 +28,7 @@ const leadUser = (crew: CrewData) => {
     crew.Users.find((u) => u.id === crew.leadId)?.firstName || "";
   const middleName =
     crew.Users.find((u) => u.id === crew.leadId)?.middleName || "";
-  const lastName =
-    crew.Users.find((u) => u.id === crew.leadId)?.lastName || "";
+  const lastName = crew.Users.find((u) => u.id === crew.leadId)?.lastName || "";
   const secondLastName =
     crew.Users.find((u) => u.id === crew.leadId)?.secondLastName || "";
   return `${firstName} ${middleName} ${lastName} ${secondLastName}`;
@@ -40,6 +39,19 @@ const crewType = (crew: CrewData) => {
   if (crew.crewType === "TRUCK_DRIVER") return "Truck Driver";
   if (crew.crewType === "TASCO") return "TASCO";
   else return "General";
+};
+
+const getCrewTypeColor = (crewType: string) => {
+  switch (crewType) {
+    case "MECHANIC":
+      return "bg-blue-400"; // Same as mechanicView
+    case "TRUCK_DRIVER":
+      return "bg-emerald-300"; // Same as truckView
+    case "TASCO":
+      return "bg-red-300"; // Same as tascoView
+    default:
+      return "bg-sky-300"; // Same as laborView/General
+  }
 };
 
 // Define the column configuration
@@ -70,9 +82,10 @@ export const crewTableColumns: ColumnDef<CrewData>[] = [
     accessorKey: "crewType",
     header: "Crew Type",
     cell: ({ row }) => {
+      const bgColor = getCrewTypeColor(row.original.crewType);
       return (
-        <div className="text-xs text-left">
-          <span className="bg-blue-300/70 px-3 py-1 rounded-xl">
+        <div className="text-xs text-center">
+          <span className={`${bgColor} px-3 py-1 rounded-xl`}>
             {row.original.crewType ? crewType(row.original) : ""}
           </span>
         </div>
@@ -85,7 +98,9 @@ export const crewTableColumns: ColumnDef<CrewData>[] = [
     cell: ({ row }) => {
       return (
         <div className="text-xs text-center">
-          {row.original.createdAt ? format(row.original.createdAt, "MM/dd/yy") : ""}
+          {row.original.createdAt
+            ? format(row.original.createdAt, "MM/dd/yy")
+            : ""}
         </div>
       );
     },

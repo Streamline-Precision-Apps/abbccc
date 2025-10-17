@@ -16,6 +16,7 @@ import { createUserAdmin } from "@/actions/adminActions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Permission } from "../../../../../../prisma/generated/prisma";
+import Spinner from "@/components/(animations)/spinner";
 
 // Utility function to get allowed permissions based on current user's permission level
 const getAllowedPermissions = (currentUserPermission: string): string[] => {
@@ -140,7 +141,13 @@ export default function CreateUserModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
+        {/* Loading overlay when submitting */}
+        {submitting && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-lg z-10">
+            <Spinner />
+          </div>
+        )}
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Create Personnel</h2>
@@ -474,15 +481,17 @@ export default function CreateUserModal({
                   type="button"
                   onClick={cancel}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                  disabled={submitting}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="outline"
                   type="submit"
-                  className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${submitting ? "opacity-50" : ""}`}
+                  className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+                  disabled={submitting}
                 >
-                  {submitting ? "Creating..." : "Create Personnel"}
+                  Create Personnel
                 </Button>
               </div>
             </div>
