@@ -420,13 +420,20 @@ export default function useAllTimeSheetData({
 
   // Create stable filter strings for dependency tracking
   const filterDependencies = useMemo(() => ({
-    jobsiteId: filters.jobsiteId.join(','),
-    costCode: filters.costCode.join(','),
-    equipmentId: filters.equipmentId.join(','),
-    equipmentLogTypes: filters.equipmentLogTypes.join(','),
-    id: filters.id.join(','),
-    notificationId: filters.notificationId.join(',')
-  }), [filters.jobsiteId, filters.costCode, filters.equipmentId, filters.equipmentLogTypes, filters.id, filters.notificationId]);
+    jobsiteId: (filters.jobsiteId || []).join(','),
+    costCode: (filters.costCode || []).join(','),
+    equipmentId: (filters.equipmentId || []).join(','),
+    equipmentLogTypes: (filters.equipmentLogTypes || []).join(','),
+    id: (filters.id || []).join(','),
+    notificationId: (filters.notificationId || []).join(',')
+  }), [
+    filters.jobsiteId || [],
+    filters.costCode || [],
+    filters.equipmentId || [],
+    filters.equipmentLogTypes || [],
+    filters.id || [],
+    filters.notificationId || []
+  ]);
 
   // Fetch timesheets when page/pageSize, search, or explicit refilter triggers change
   useEffect(() => {

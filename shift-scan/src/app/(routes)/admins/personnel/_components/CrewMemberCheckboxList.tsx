@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Star, ChevronsUpDownIcon, CheckIcon } from "lucide-react";
+import { Star, ChevronsUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,7 +82,7 @@ export function CrewMemberCheckboxList({
                     .join(", ")
                 : placeholder}
             </span>
-            <ChevronsUpDownIcon className="ml-2 h-5 w-5 md:h-4 md:w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-5 w-5 md:h-4 md:w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[300px] overflow-hidden text-sm md:text-xs">
@@ -122,7 +122,7 @@ export function CrewMemberCheckboxList({
                               : "border-gray-300",
                           )}
                         >
-                          <CheckIcon
+                          <Check
                             className={cn(
                               "h-3.5 w-3.5 text-white",
                               checked ? "opacity-100" : "opacity-0",
