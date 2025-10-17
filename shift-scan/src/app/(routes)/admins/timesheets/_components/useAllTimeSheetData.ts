@@ -616,7 +616,7 @@ export default function useAllTimeSheetData({
   ) => {
     try {
       // Call server action to get filtered data with only the selected fields
-      const filteredTimesheets = await adminExportTimesheets(
+      const exportedData = await adminExportTimesheets(
         dateRange,
         selectedFields,
         selectedUsers,
@@ -624,14 +624,14 @@ export default function useAllTimeSheetData({
         filterByUser,
       );
 
-      if (!filteredTimesheets || filteredTimesheets.length === 0) {
+      if (!exportedData || exportedData.length === 0) {
         toast.error("No timesheets found matching your filters.");
         setExportModal(false);
         return;
       }
 
       // Format dates and times for display
-      const formattedTimesheets = filteredTimesheets.map((ts) => {
+      const formattedTimesheets = exportedData.map((ts) => {
         const result: Record<
           string,
           string | number | Date | null | undefined
