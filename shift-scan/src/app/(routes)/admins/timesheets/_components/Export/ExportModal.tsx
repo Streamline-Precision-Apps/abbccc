@@ -517,7 +517,7 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                               Filter by User
                             </span>
                             <p className="text-xs text-gray-600">
-                              Sort the users by name and then by date.
+                              Sort the data by user name and then by date.
                             </p>
                           </div>
                           <Switch
