@@ -77,6 +77,8 @@ export default function AdminTimesheets() {
     notificationIds,
     setNotificationIds,
     handleClearFilters,
+    crew,
+    users,
   } = useAllTimeSheetData({
     jobsiteId,
     costCode,
@@ -245,6 +247,8 @@ export default function AdminTimesheets() {
         <ExportModal
           onClose={() => setExportModal(false)}
           onExport={handleExport}
+          crew={crew}
+          users={users}
         />
       )}
       {/* ...existing code... */}

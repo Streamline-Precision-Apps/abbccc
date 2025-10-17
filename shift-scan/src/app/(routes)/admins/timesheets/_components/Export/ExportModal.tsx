@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
@@ -9,6 +9,23 @@ import {
 } from "@/components/ui/accordion";
 import { Switch } from "@/components/ui/switch";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
+import { CrewData, User } from "../useAllTimeSheetData";
+import {
+  ArrowUpAZ,
+  ChevronDownIcon,
+  Download,
+  Funnel,
+  Info,
+  Table,
+  X,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Label } from "@radix-ui/react-label";
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
@@ -27,47 +44,41 @@ interface ExportModalProps {
       to?: Date;
     },
     selectedFields?: string[],
+    selectedUsers?: string[],
+    selectedCrew?: string[],
+    filterByUser?: boolean,
     filterData?: FilterData,
   ) => void;
+  crew: CrewData[];
+  users: User[];
 }
-import { useMemo } from "react";
-import {
-  AlertCircle,
-  AlertTriangle,
-  ArrowUpAZ,
-  Asterisk,
-  ChevronDownIcon,
-  CircleQuestionMark,
-  Download,
-  Funnel,
-  Info,
-  PlusIcon,
-  Table,
-  X,
-} from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Label } from "@radix-ui/react-label";
 
-// Sample user and crew data for demo purposes
-export const SAMPLE_USERS: ComboboxOption[] = [
-  { value: "user1", label: "John Doe" },
-  { value: "user2", label: "Jane Smith" },
-  { value: "user3", label: "Alex Johnson" },
-  { value: "user4", label: "Maria Garcia" },
-  { value: "user5", label: "Robert Chen" },
-];
+// Convert actual user and crew data to ComboboxOption format
+const formatUsers = (users: User[]): ComboboxOption[] => {
+  return (
+    users
+      // Filter out users with termination date
+      .filter((user) => !user.terminationDate)
+      // Sort alphabetically by last name
+      .sort((a, b) => a.lastName.localeCompare(b.lastName))
+      .map((user) => ({
+        value: user.id,
+        label: `${user.lastName}, ${user.firstName}`,
+      }))
+  );
+};
 
-export const SAMPLE_CREWS: ComboboxOption[] = [
-  { value: "crew1", label: "Team Alpha" },
-  { value: "crew2", label: "Team Beta" },
-  { value: "crew3", label: "Team Gamma" },
-  { value: "crew4", label: "Team Delta" },
-];
+const formatCrews = (crews: CrewData[]): ComboboxOption[] => {
+  return (
+    crews
+      // Sort alphabetically by name
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((crew) => ({
+        value: crew.id,
+        label: crew.name,
+      }))
+  );
+};
 
 export const EXPORT_FIELDS = [
   { key: "Id", label: "Id" },
@@ -91,7 +102,7 @@ export const EXPORT_FIELDS = [
   { key: "TascoFLoads", label: "F loads" },
 ];
 
-const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
+const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
@@ -335,15 +346,23 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="w-full mb-4">
-                    <div className="w-full bg-slate-50 rounded-lg p-3 border border-gray-200 transition-all duration-200 ease-in-out">
+                    <div className="w-full bg-slate-50 rounded-lg py-1.5 px-1.5 border border-gray-200 transition-all duration-200 ease-in-out">
                       {/* User Selection */}
-                      <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-gray-200">
+                      <div
+                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectCrewEnabled ? "bg-slate-100 border-slate-100 border" : "bg-white border-zinc-950 border-2"}`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">
-                            Select Users
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">Users</span>
+                            {selectCrewEnabled && (
+                              <span className="bg-slate-100 text-slate-600 border border-slate-300 font-medium px-2 py-0.5 rounded-full text-xs text-center">
+                                Disabled
+                              </span>
+                            )}
+                          </div>
                           <Switch
                             checked={selectUserEnabled}
+                            disabled={selectCrewEnabled}
                             onCheckedChange={(checked) => {
                               setSelectUserEnabled(checked);
                               if (!checked) setSelectedUsers([]);
@@ -351,29 +370,41 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                             aria-label="Toggle user selection"
                           />
                         </div>
-                        <p className="text-xs text-gray-600 mb-2">
-                          Exports the data only for the selected users
-                        </p>
+                        <div className="flex flex-row items-center gap-1">
+                          <p className="text-xs text-gray-600 mb-2">
+                            Exports the data only for the selected users
+                          </p>
+                        </div>
 
                         {selectUserEnabled && (
                           <Combobox
-                            options={SAMPLE_USERS}
+                            options={formatUsers(users)}
                             value={selectedUsers}
                             onChange={setSelectedUsers}
                             placeholder="Select users to include"
                             filterKeys={["label"]}
+                            showCount={true}
+                            optionName="User"
                           />
                         )}
                       </div>
 
                       {/* Crew Selection */}
-                      <div className="flex flex-col gap-2 mb-4 pb-3 border-b border-gray-200">
+                      <div
+                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectUserEnabled ? "bg-slate-100 border-slate-100 border" : "bg-white border-zinc-950 border-2"}`}
+                      >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">
-                            Select Crews
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">Crews</span>
+                            {selectUserEnabled && (
+                              <span className="bg-slate-100 text-slate-600 border border-slate-300 font-medium px-2 py-0.5 rounded-full text-xs text-center">
+                                Disabled
+                              </span>
+                            )}
+                          </div>
                           <Switch
                             checked={selectCrewEnabled}
+                            disabled={selectUserEnabled}
                             onCheckedChange={(checked) => {
                               setSelectCrewEnabled(checked);
                               if (!checked) setSelectedCrews([]);
@@ -388,20 +419,22 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
 
                         {selectCrewEnabled && (
                           <Combobox
-                            options={SAMPLE_CREWS}
+                            options={formatCrews(crew)}
                             value={selectedCrews}
                             onChange={setSelectedCrews}
-                            placeholder="Select crews to include"
+                            placeholder="Select crews to export"
                             filterKeys={["label"]}
+                            showCount={true}
+                            optionName="Crew"
                           />
                         )}
                       </div>
 
                       {/* Time Range Override */}
-                      <div className="flex flex-col gap-2">
+                      <div className="bg-white p-2 rounded-md flex flex-col gap-2   border border-gray-200">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">
-                            Time Range Override
+                            Custom Export Hours
                           </span>
                           <Switch
                             checked={useCustomTimeRange}
@@ -409,9 +442,9 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                             aria-label="Toggle time range override"
                           />
                         </div>
-                        <p className="text-xs text-gray-600 mb-2">
-                          By default exports use 12:00 AM to 11:59 PM. Override
-                          to customize times.
+                        <p className="w-full text-xs text-gray-600 mb-2">
+                          By default, exports include all times from 12:00 AM to
+                          11:59 PM. Adjust to narrow or expand the range.
                         </p>
 
                         {useCustomTimeRange && (
@@ -542,11 +575,11 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
               className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
               onClick={() => {
                 if (exportFormat && dateRange.from) {
-                  // Apply time overrides if enabled
-                  let finalDateRange = { ...dateRange };
+                  // Apply time settings based on user selection
+                  const finalDateRange = { ...dateRange };
 
                   if (useCustomTimeRange) {
-                    // Parse the time strings
+                    // Parse the time strings for custom time range
                     const [startHours, startMinutes] = startTime
                       .split(":")
                       .map(Number);
@@ -565,6 +598,24 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                       const newTo = new Date(finalDateRange.to);
                       newTo.setHours(endHours, endMinutes, 0, 0);
                       finalDateRange.to = newTo;
+                    }
+                  } else {
+                    // Set default time range (12:00 AM to 11:59 PM) when custom time range is not enabled
+                    if (finalDateRange.from) {
+                      const newFrom = new Date(finalDateRange.from);
+                      newFrom.setHours(0, 0, 0, 0); // 12:00 AM
+                      finalDateRange.from = newFrom;
+                    }
+
+                    if (finalDateRange.to) {
+                      const newTo = new Date(finalDateRange.to);
+                      newTo.setHours(23, 59, 59, 999); // 11:59 PM
+                      finalDateRange.to = newTo;
+                    } else if (finalDateRange.from) {
+                      // If only from date is selected, set to date to the same day at 11:59 PM
+                      const sameDate = new Date(finalDateRange.from);
+                      sameDate.setHours(23, 59, 59, 999);
+                      finalDateRange.to = sameDate;
                     }
                   }
 
@@ -585,6 +636,9 @@ const ExportModal = ({ onClose, onExport }: ExportModalProps) => {
                     exportFormat,
                     finalDateRange,
                     selectedFields,
+                    selectUserEnabled ? selectedUsers : undefined,
+                    selectCrewEnabled ? selectedCrews : undefined,
+                    exportByUser,
                     filterData,
                   );
                 }
