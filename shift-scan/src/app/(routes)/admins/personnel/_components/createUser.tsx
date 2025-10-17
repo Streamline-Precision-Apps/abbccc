@@ -15,7 +15,6 @@ import { useSession } from "next-auth/react";
 import { createUserAdmin } from "@/actions/adminActions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Permission } from "../../../../../../prisma/generated/prisma";
 import Spinner from "@/components/(animations)/spinner";
 
 // Utility function to get allowed permissions based on current user's permission level
@@ -346,7 +345,10 @@ export default function CreateUserModal({
                   </Label>
                   <p className="text-xs text-gray-600 mb-1">
                     You can only assign permission levels equal to or lower than
-                    your current level ({allowedPermissions[allowedPermissions.length - 1] || "USER"})
+                    your current level (
+                    {allowedPermissions[allowedPermissions.length - 1] ||
+                      "USER"}
+                    )
                   </p>
                   <Select
                     value={formData.permission}

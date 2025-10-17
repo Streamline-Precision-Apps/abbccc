@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MaterialType } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 
 import { X, Plus } from "lucide-react";
@@ -35,7 +34,10 @@ interface EditTascoLogsProps {
   ) => void;
   originalLogs?: TascoLog[];
   onUndoLogField?: (idx: number, field: keyof TascoLog) => void;
-  materialTypes: MaterialType[];
+  materialTypeOptions: {
+    value: string;
+    label: string;
+  }[];
   equipmentOptions: {
     value: string;
     label: string;
@@ -49,7 +51,7 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   onLogChange,
   originalLogs = [],
   onUndoLogField,
-  materialTypes,
+  materialTypeOptions,
   equipmentOptions,
   handleNestedLogChange,
   addTascoRefuelLog,
@@ -61,15 +63,15 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   ) => !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
 
   return (
-    <div className="col-span-2 mt-4 ">
-      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
-        Tasco Summary
-      </h3>
+    <div className="col-span-2 ">
+      <div className="flex flex-col border-t border-gray-100 ">
+        <h3 className="font-semibold text-base py-2">Tasco Summary</h3>
+      </div>
 
       {logs.map((log, idx) => (
         <div
           key={log.id}
-          className="flex flex-col gap-6 relative  p-2  mb-2 border-b "
+          className="flex flex-col gap-6 relative p-2 mb-2 border-b"
         >
           <div className="flex flex-col gap-4 pb-4 border bg-slate-50 rounded p-2">
             {/* Equipment Combobox */}
@@ -213,9 +215,9 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                     <SelectValue placeholder="Select Material" />
                   </SelectTrigger>
                   <SelectContent>
-                    {materialTypes.map((type, index) => (
-                      <SelectItem key={index} value={type.name}>
-                        {type.name}
+                    {materialTypeOptions.map((type, index) => (
+                      <SelectItem key={index} value={type.label}>
+                        {type.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

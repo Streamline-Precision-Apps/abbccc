@@ -20,6 +20,7 @@ export interface FilterOptions {
   ownershipTypes: string[];
   conditions: string[];
   statuses: string[];
+  activityStatuses: string[];
 }
 
 interface FilterPopoverProps {
@@ -53,6 +54,7 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
       localFilters.equipmentTags.length > 0 ||
       localFilters.ownershipTypes.length > 0 ||
       localFilters.statuses.length > 0 ||
+      localFilters.activityStatuses.length > 0 ||
       localFilters.conditions.length > 0;
 
     // Only update parent state when Apply is clicked
@@ -72,6 +74,7 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
       filters.equipmentTags.length +
       filters.ownershipTypes.length +
       filters.conditions.length +
+      filters.activityStatuses.length +
       filters.statuses.length
     );
   };
@@ -82,6 +85,7 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
       localFilters.equipmentTags.length +
       localFilters.ownershipTypes.length +
       localFilters.conditions.length +
+      localFilters.activityStatuses.length +
       localFilters.statuses.length
     );
   };
@@ -146,6 +150,20 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
                   />
                 </div>
                 <div>
+                  <h3 className="font-medium mb-1 text-xs">Activity</h3>
+                  <Combobox
+                    options={[
+                      { value: "ACTIVE", label: "Active" },
+                      { value: "ARCHIVED", label: "Archived" },
+                    ]}
+                    value={localFilters.activityStatuses}
+                    onChange={(vals: string[]) =>
+                      setLocalFilters((f) => ({ ...f, activityStatuses: vals }))
+                    }
+                    placeholder="Select status"
+                  />
+                </div>
+                <div>
                   <h3 className="font-medium mb-1 text-xs">Ownership</h3>
                   <Combobox
                     options={[
@@ -174,23 +192,6 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
                     placeholder="Select condition"
                   />
                 </div>
-
-                <div>
-                  <h3 className="font-medium mb-1 text-xs">Status</h3>
-                  <Combobox
-                    options={[
-                      { value: "PENDING", label: "Pending" },
-                      { value: "APPROVED", label: "Approved" },
-                      { value: "REJECTED", label: "Rejected" },
-                      { value: "DRAFT", label: "Draft" },
-                    ]}
-                    value={localFilters.statuses}
-                    onChange={(vals: string[]) =>
-                      setLocalFilters((f) => ({ ...f, statuses: vals }))
-                    }
-                    placeholder="Select status"
-                  />
-                </div>
               </div>
             </div>
 
@@ -205,6 +206,7 @@ const EquipmentFilters: React.FC<FilterPopoverProps> = ({
                     ownershipTypes: [],
                     conditions: [],
                     statuses: [],
+                    activityStatuses: [],
                   });
                   // Then call parent's clear function
                   handleClearFilters();

@@ -197,7 +197,7 @@ export default function AddEquipmentForm({}) {
                   <option value="VEHICLE">{t("Vehicle")}</option>
                   <option value="TRUCK">{t("Truck")}</option>
                   <option value="EQUIPMENT">{t("Equipment")}</option>
-                  <option value="TRAILER">{t("Trailer")}</option>
+                  {/* <option value="TRAILER">{t("Trailer")}</option> */}
                 </Selects>
               </Holds>
               <Holds className="pb-3">

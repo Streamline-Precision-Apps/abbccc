@@ -207,8 +207,7 @@ export default function TruckDriverForm({
           !isLoadingMileage && (
             <Holds className="absolute -top-6 left-0 right-0 z-10 px-2">
               <Texts size="p6" className="text-red-600 text-center text-xs">
-                Minimum required:{" "}
-                {lastMileageData.lastMileage.toLocaleString()}
+                Minimum required: {lastMileageData.lastMileage.toLocaleString()}
               </Texts>
             </Holds>
           )}

@@ -37,6 +37,8 @@ interface ComboboxProps {
   required?: boolean;
   errorMessage?: string;
   listData?: string[];
+  optionName?: string;
+  showCount?: boolean; // Display count of selected items
 }
 
 export function Combobox({
@@ -51,6 +53,8 @@ export function Combobox({
   required = false,
   errorMessage = "This field is required.",
   listData = [],
+  showCount = false,
+  optionName = "option",
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -105,7 +109,15 @@ export function Combobox({
                     .join(", ")
                 : placeholder}
             </span>
-            <ChevronsUpDownIcon className="ml-2 h-5 w-5 md:h-4 md:w-4 shrink-0 opacity-50" />
+            <div className="flex items-center gap-2">
+              {showCount && options.length > 0 && (
+                <span className="text-xs bg-slate-100 text-slate-600 border border-slate-300 font-medium px-2 py-0.5 rounded-full min-w-[1.5rem] text-center">
+                  {options.length}{" "}
+                  {options.length === 1 ? optionName : `${optionName}s`}
+                </span>
+              )}
+              <ChevronsUpDownIcon className="h-5 w-5 md:h-4 md:w-4 shrink-0 opacity-50" />
+            </div>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 max-h-[300px] overflow-hidden text-sm md:text-xs">
