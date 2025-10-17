@@ -9,8 +9,6 @@ import {
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 import { FilterOptions } from "./ViewAll/EquipmentFilter";
 import { useSearchParams } from "next/navigation";
-import { se } from "date-fns/locale";
-import is from "zod/v4/locales/is.cjs";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
