@@ -878,7 +878,6 @@ export async function adminExportTimesheets(
       orderBy,
     });
 
-    console.log("Fetched Data:", timesheets);
 
     // advanced sorting
     let result: TimesheetExportData[] = [];
