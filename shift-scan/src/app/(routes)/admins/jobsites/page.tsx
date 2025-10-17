@@ -62,14 +62,6 @@ export default function JobsitePage() {
   } = useJobsiteData(isPendingApproval); // Pass initial state to hook
 
   // Handle notification ID if present
-  useEffect(() => {
-    if (notificationId) {
-      console.log("Notification ID:", notificationId);
-      // You can add additional logic here to handle the specific notification
-      // For example, scrolling to a specific jobsite or opening its edit modal
-    }
-  }, [notificationId]);
-
   return (
     <div className="w-full p-4 grid grid-rows-[3rem_2rem_1fr] gap-5">
       <PageHeaderContainer
