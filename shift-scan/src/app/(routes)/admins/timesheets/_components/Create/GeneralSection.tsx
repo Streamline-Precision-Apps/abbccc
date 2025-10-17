@@ -93,7 +93,9 @@ export default function GeneralSection({
     <>
       {/* Creation Date (disabled) */}
       <div className="w-full">
-        <label className="block font-semibold mb-1">Creation Date</label>
+        <label className="block font-semibold text-xs mb-1">
+          Creation Date
+        </label>
         <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -174,7 +176,13 @@ export default function GeneralSection({
           }}
           placeholder="Select cost code"
           filterKeys={["value", "label"]}
+          disabled={!form.jobsite.id}
         />
+        {!form.jobsite.id && (
+          <p className="text-xs text-red-600 mt-1">
+            Please select a jobsite first to see relevant cost codes.
+          </p>
+        )}
       </div>
       {/* Start Date & Time */}
       <div className="mb-2">
@@ -203,7 +211,7 @@ export default function GeneralSection({
         />
       </div>
       {/* Comments */}
-      <div className="w-full mb-4">
+      <div className="w-full mb-2">
         <label className="block font-semibold text-sm mb-1">
           Comments <span className="text-red-600">*</span>
         </label>
@@ -214,7 +222,7 @@ export default function GeneralSection({
         />
       </div>
       {/* work type */}
-      <div className="w-full mb-4">
+      <div className="w-full mb-2">
         <label className="block font-semibold text-sm mb-1">
           Work Type <span className="text-red-600">*</span>
         </label>

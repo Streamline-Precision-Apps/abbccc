@@ -20,6 +20,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { highlight } from "../../../_pages/highlight";
+import { calculateDuration } from "@/utils/calculateDuration";
+import { Flag } from "lucide-react";
 
 // Define the column configuration for the timesheet table
 // We'll now include the search term as part of the context
@@ -43,7 +45,7 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     cell: ({ row }) => {
       return (
         <div className=" text-xs text-center">
-          {format(row.original.date, "MM/dd/yy")}
+          {format(row.original.startTime, "MM/dd/yy")}
         </div>
       );
     },
@@ -156,12 +158,60 @@ export const timesheetTableColumns: ColumnDef<Timesheet>[] = [
     },
   },
   {
-    accessorKey: "comment",
-    header: "Comment",
+    accessorKey: "hoursWorked",
+    header: "Duration",
     cell: ({ row }) => {
-      return <div className=" text-xs text-center">{row.original.comment}</div>;
+      if (!row.original.startTime || !row.original.endTime) {
+        return <div className="text-xs text-center">-</div>;
+      }
+
+      try {
+        // Calculate hours as decimal value directly
+        const startDate = new Date(row.original.startTime);
+        const endDate = new Date(row.original.endTime);
+        const diffMs = endDate.getTime() - startDate.getTime();
+
+        if (diffMs < 0) {
+          return <div className="text-xs text-center">Invalid</div>;
+        }
+
+        // Convert to decimal hours with 1 decimal place
+        const hours = (diffMs / (1000 * 60 * 60)).toFixed(1);
+
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {parseFloat(hours) > 0.1 ? (
+                <div className="text-xs text-center font-medium cursor-default">
+                  {hours} hrs
+                </div>
+              ) : (
+                <div className="w-full flex justify-center">
+                  <Flag className="h-4 w-4 text-red-600" />
+                </div>
+              )}
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              className={`${parseFloat(hours) > 0.1 ? "" : "bg-red-500 p-2 rounded-md"}`}
+            >
+              {parseFloat(hours) > 0.1 ? (
+                <div className="text-xs">
+                  {Math.floor(parseFloat(hours))} hours and{" "}
+                  {Math.round((parseFloat(hours) % 1) * 60)} minutes
+                </div>
+              ) : (
+                <div className="text-xs text-center">{`Flagged under ${Math.round((parseFloat(hours) % 1) * 60)} mins`}</div>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        );
+      } catch (error) {
+        return <div className="text-xs text-center">Error</div>;
+      }
     },
   },
+
   {
     accessorKey: "status",
     header: "Status",

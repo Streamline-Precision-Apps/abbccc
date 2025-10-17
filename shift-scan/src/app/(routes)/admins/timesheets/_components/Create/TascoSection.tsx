@@ -36,10 +36,10 @@ export function TascoSection({
   equipmentOptions,
 }: Props) {
   return (
-    <div className="col-span-2 mt-4">
-      <h3 className="font-semibold text-md mb-2 border-b-2 border-gray-100">
-        Tasco Summary
-      </h3>
+    <div className="col-span-2 ">
+      <div className="flex flex-col border-t border-gray-100 ">
+        <h3 className="font-semibold text-base py-2">Tasco Summary</h3>
+      </div>
       {tascoLogs.map((log, idx) => (
         <div
           key={idx}
@@ -186,7 +186,7 @@ export function TascoSection({
           {/* Refuel Logs Section */}
           <div className="mb-2 border-t pt-4">
             <div className="flex flex-row justify-between ">
-              <p className="text-base font-semibold">Refuel Logs</p>
+              <p className="text-sm font-semibold">Refuel Logs</p>
               <Button
                 type="button"
                 size="icon"

@@ -4,9 +4,12 @@ import {
   WorkType,
 } from "../../../../../../prisma/generated/prisma/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { adminUpdateTimesheetStatus } from "@/actions/records-timesheets";
+import {
+  adminUpdateTimesheetStatus,
+  adminExportTimesheets,
+  adminDeleteTimesheet,
+} from "@/actions/records-timesheets";
 import { toast } from "sonner";
-import { adminDeleteTimesheet } from "@/actions/records-timesheets";
 import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
@@ -84,6 +87,24 @@ export interface FilterOptions {
   id: string[];
 }
 
+export interface CrewData {
+  id: string;
+  name: string;
+  leadId: string;
+  crewType: "MECHANIC" | "TRUCK_DRIVER" | "LABOR" | "TASCO" | "";
+  Users: { id: string; firstName: string; lastName: string }[];
+}
+
+export interface User {
+  id: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  secondLastName: string | null;
+  permission: string;
+  terminationDate: Date | null;
+}
+
 export default function useAllTimeSheetData({
   jobsiteId,
   costCode,
@@ -116,7 +137,6 @@ export default function useAllTimeSheetData({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [approvalInbox, setApprovalInbox] = useState<number>(0);
@@ -152,7 +172,8 @@ export default function useAllTimeSheetData({
   const [equipment, setEquipment] = useState<{ id: string; name: string }[]>(
     [],
   );
-
+  const [crew, setCrew] = useState<CrewData[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -196,7 +217,9 @@ export default function useAllTimeSheetData({
     }
     // Equipment Log Types (array)
     if (filters.equipmentLogTypes && filters.equipmentLogTypes.length > 0) {
-      filters.equipmentLogTypes.forEach((logType) => params.append("equipmentLogTypes", logType));
+      filters.equipmentLogTypes.forEach((logType) =>
+        params.append("equipmentLogTypes", logType),
+      );
     }
     // Status (array)
     if (filters.status && filters.status.length > 0) {
@@ -219,8 +242,6 @@ export default function useAllTimeSheetData({
     } else if (id) {
       params.append("id", id);
     }
-    // UserId (single)
-    // if (userId) params.append("userId", userId);
     return params.toString();
   };
 
@@ -286,28 +307,63 @@ export default function useAllTimeSheetData({
     fetchEquipment();
   }, []);
 
+  useEffect(() => {
+    const fetchCrews = async () => {
+      const response = await fetch("/api/getAllCrews", {
+        next: { tags: ["crews"] },
+      });
+      const data = await response.json();
+      setCrew(data || []);
+    };
+    fetchCrews();
+  }, []);
+
+  useEffect(() => {
+    // Fetch users from the server or context
+    const fetchUsers = async () => {
+      const response = await fetch("/api/getAllEmployees?filter=all");
+      const data = await response.json();
+      setUsers(data as User[]);
+    };
+
+    fetchUsers();
+  }, []);
+
   // Track if URL params have been processed to avoid initial fetch without filters
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
 
   // On mount, apply jobsiteId/costCode from props to filters before first fetch
-  const urlParams = useMemo(() => ({
-    jobsiteId,
-    costCode,
-    id,
-    notificationId,
-    equipmentId,
-  }), [jobsiteId, costCode, id, notificationId, equipmentId]);
+  const urlParams = useMemo(
+    () => ({
+      jobsiteId,
+      costCode,
+      id,
+      notificationId,
+      equipmentId,
+    }),
+    [jobsiteId, costCode, id, notificationId, equipmentId],
+  );
 
   useEffect(() => {
-    if (urlParams.jobsiteId || urlParams.costCode || urlParams.id || urlParams.notificationId || urlParams.equipmentId) {
+    if (
+      urlParams.jobsiteId ||
+      urlParams.costCode ||
+      urlParams.id ||
+      urlParams.notificationId ||
+      urlParams.equipmentId
+    ) {
       setNotificationIds(urlParams.notificationId || null);
       setFilters((prev) => ({
         ...prev,
         jobsiteId: urlParams.jobsiteId ? [urlParams.jobsiteId] : prev.jobsiteId,
         costCode: urlParams.costCode ? [urlParams.costCode] : prev.costCode,
         id: urlParams.id ? [urlParams.id] : prev.id,
-        notificationId: urlParams.notificationId ? [urlParams.notificationId] : prev.notificationId,
-        equipmentId: urlParams.equipmentId ? [urlParams.equipmentId] : prev.equipmentId,
+        notificationId: urlParams.notificationId
+          ? [urlParams.notificationId]
+          : prev.notificationId,
+        equipmentId: urlParams.equipmentId
+          ? [urlParams.equipmentId]
+          : prev.equipmentId,
       }));
     }
     // Mark URL params as processed (even if none were present)
@@ -343,17 +399,32 @@ export default function useAllTimeSheetData({
 
   // Track if we have URL params to determine if we should auto-apply filters
   const hasUrlParams = useMemo(() => {
-    return !!(urlParams.jobsiteId || urlParams.costCode || urlParams.id || urlParams.notificationId || urlParams.equipmentId);
+    return !!(
+      urlParams.jobsiteId ||
+      urlParams.costCode ||
+      urlParams.id ||
+      urlParams.notificationId ||
+      urlParams.equipmentId
+    );
   }, [urlParams]);
 
   // Create stable filter strings for dependency tracking
-  const filterDependencies = useMemo(() => ({
-    jobsiteId: filters.jobsiteId.join(','),
-    costCode: filters.costCode.join(','),
-    equipmentId: filters.equipmentId.join(','),
-    id: filters.id.join(','),
-    notificationId: filters.notificationId.join(',')
-  }), [filters.jobsiteId, filters.costCode, filters.equipmentId, filters.id, filters.notificationId]);
+  const filterDependencies = useMemo(
+    () => ({
+      jobsiteId: filters.jobsiteId.join(","),
+      costCode: filters.costCode.join(","),
+      equipmentId: filters.equipmentId.join(","),
+      id: filters.id.join(","),
+      notificationId: filters.notificationId.join(","),
+    }),
+    [
+      filters.jobsiteId,
+      filters.costCode,
+      filters.equipmentId,
+      filters.id,
+      filters.notificationId,
+    ],
+  );
 
   // Fetch timesheets when page/pageSize, search, or explicit refilter triggers change
   useEffect(() => {
@@ -363,83 +434,19 @@ export default function useAllTimeSheetData({
     }
   }, [
     urlParamsProcessed,
-    page, 
-    pageSize, 
-    showPendingOnly, 
-    searchTerm, 
-    refreshKey, 
+    page,
+    pageSize,
+    showPendingOnly,
+    searchTerm,
+    refreshKey,
     refilterKey,
     // Include filter dependencies only when we have URL params (to auto-apply them)
-    hasUrlParams ? filterDependencies.jobsiteId : '',
-    hasUrlParams ? filterDependencies.costCode : '',
-    hasUrlParams ? filterDependencies.equipmentId : '',
-    hasUrlParams ? filterDependencies.id : '',
-    hasUrlParams ? filterDependencies.notificationId : ''
+    hasUrlParams ? filterDependencies.jobsiteId : "",
+    hasUrlParams ? filterDependencies.costCode : "",
+    hasUrlParams ? filterDependencies.equipmentId : "",
+    hasUrlParams ? filterDependencies.id : "",
+    hasUrlParams ? filterDependencies.notificationId : "",
   ]);
-
-  // Filter timesheets based on searchTerm and date range
-  const filteredTimesheets = useMemo(() => {
-    // Guard against undefined allTimesheets
-    if (!allTimesheets || !Array.isArray(allTimesheets)) {
-      return [];
-    }
-    
-    return allTimesheets.filter((ts) => {
-      const id = ts.id || "";
-      const firstName = ts?.User?.firstName || "";
-      const lastName = ts?.User?.lastName || "";
-      const jobsite = ts?.Jobsite?.name || "";
-      const costCode = ts?.CostCode?.name || "";
-
-      // Split search term into words, ignore empty
-      const terms = searchTerm
-        .toLowerCase()
-        .split(" ")
-        .filter((t) => t.trim().length > 0);
-
-      // Date filter: support single date (entire day) or range
-      let inDateRange = true;
-      if (dateRange.from && !dateRange.to) {
-        const fromStart = new Date(dateRange.from);
-        fromStart.setHours(0, 0, 0, 0);
-        const fromEnd = new Date(dateRange.from);
-        fromEnd.setHours(23, 59, 59, 999);
-        const tsDate = new Date(ts.date);
-        inDateRange = tsDate >= fromStart && tsDate <= fromEnd;
-      } else {
-        if (dateRange.from) {
-          inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
-        }
-        if (dateRange.to) {
-          inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
-        }
-      }
-
-      // Each term must match at least one field
-      const matches = terms.every(
-        (term) =>
-          id.toString().includes(term) ||
-          firstName.toLowerCase().includes(term) ||
-          lastName.toLowerCase().includes(term) ||
-          jobsite.toLowerCase().includes(term) ||
-          costCode.toLowerCase().includes(term),
-      );
-
-      return inDateRange && (terms.length === 0 || matches);
-    });
-  }, [allTimesheets, searchTerm, dateRange]);
-
-  // Use filteredTimesheets, sorted by date descending
-  const sortedTimesheets = useMemo(() => {
-    // Guard against undefined filteredTimesheets (though it should now always be an array)
-    if (!filteredTimesheets || !Array.isArray(filteredTimesheets)) {
-      return [];
-    }
-    
-    return [...filteredTimesheets].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-  }, [filteredTimesheets]);
 
   // Approve or deny a timesheet (no modal)
   const handleApprovalAction = async (
@@ -509,166 +516,9 @@ export default function useAllTimeSheetData({
       setIsDeleting(false);
     }
   };
-
-  // Handler to reset page to 1 when page size changes
   const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPage(1);
     setPageSize(Number(e.target.value));
-  };
-
-  const handleExport = (
-    exportFormat: "csv" | "xlsx",
-    dateRange?: { from?: Date; to?: Date },
-    selectedFields?: string[],
-  ) => {
-    let exportRows = sortedTimesheets.filter((ts) => ts.status === "APPROVED");
-    if (dateRange?.from || dateRange?.to) {
-      // Set from to 12:00am and to to 11:59:59pm
-      const fromDate = dateRange.from
-        ? new Date(dateRange.from.setHours(0, 0, 0, 0))
-        : undefined;
-      const toDate = dateRange.to
-        ? new Date(dateRange.to.setHours(23, 59, 59, 999))
-        : undefined;
-      exportRows = exportRows.filter((ts) => {
-        const tsDate = new Date(ts.date);
-        if (fromDate && tsDate < fromDate) return false;
-        if (toDate && tsDate > toDate) return false;
-        return true;
-      });
-    }
-    const formatDateVal = (d: Date | string | undefined | null) => {
-      if (!d) return "";
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      if (isNaN(dateObj.getTime())) return "";
-      return format(dateObj, "MM/dd/yyyy");
-    };
-    const formatTimeVal = (d: Date | string | undefined | null) => {
-      if (!d) return "";
-      const dateObj = typeof d === "string" ? new Date(d) : d;
-      if (isNaN(dateObj.getTime())) return "";
-      return format(dateObj, "hh:mm a");
-    };
-    // All possible fields (Status removed from export)
-    /**
-     * Field mapping for export. Includes EquipmentId and EquipmentUsage aggregation.
-     */
-    const allFields: Record<string, (ts: Timesheet) => string> = {
-      Id: (ts) => String(ts.id),
-      Date: (ts) => formatDateVal(ts.date),
-      Employee: (ts) =>
-        ts.User ? `${ts.User.firstName} ${ts.User.lastName}` : "",
-      Jobsite: (ts) => `'${(ts.Jobsite?.code || "").trim()}'`, // Force text format to preserve leading zeros
-      CostCode: (ts) => `'${(ts.CostCode?.code || "").trim()}'`, // Force text format to preserve leading zeros
-      NU: () => "NU",
-      FP: () => "FP",
-      Start: (ts) => formatTimeVal(ts.startTime),
-      End: (ts) => formatTimeVal(ts.endTime),
-      Duration: (ts) => {
-        if (!ts.startTime || !ts.endTime) return "";
-        const start = new Date(ts.startTime);
-        const end = new Date(ts.endTime);
-        const durationMs = end.getTime() - start.getTime();
-        const hours = durationMs / (1000 * 60 * 60);
-        return hours.toFixed(1); // Return just the decimal number
-      },
-      Comment: (ts) => ts.comment,
-      EquipmentId: (ts) =>
-        ts.EmployeeEquipmentLogs.map((log) => log.Equipment.name).join(", "),
-      EquipmentUsage: (ts) => {
-        if (
-          !Array.isArray(ts.EmployeeEquipmentLogs) ||
-          ts.EmployeeEquipmentLogs.length === 0
-        )
-          return "";
-        let totalMs = 0;
-        ts.EmployeeEquipmentLogs.forEach((log) => {
-          if (log.startTime && log.endTime) {
-            const start = new Date(log.startTime).getTime();
-            const end = new Date(log.endTime).getTime();
-            if (!isNaN(start) && !isNaN(end) && end > start) {
-              totalMs += end - start;
-            }
-          }
-        });
-        if (totalMs <= 0) return "0.0";
-        const hours = totalMs / (1000 * 60 * 60);
-        return hours.toFixed(1); // Return decimal hours to nearest tenth
-      },
-      TruckNumber: (ts) =>
-        ts.TruckingLogs?.[0]?.truckNumber
-          ? String(ts.TruckingLogs[0].truckNumber)
-          : "",
-      TruckStartingMileage: (ts) =>
-        ts.TruckingLogs?.[0]?.startingMileage != null
-          ? String(ts.TruckingLogs[0].startingMileage)
-          : "",
-      TruckEndingMileage: (ts) =>
-        ts.TruckingLogs?.[0]?.endingMileage != null
-          ? String(ts.TruckingLogs[0].endingMileage)
-          : "",
-      MilesAtFueling: (ts) =>
-        ts.TruckingLogs?.[0]?.RefuelLogs?.[0]?.milesAtFueling != null
-          ? String(ts.TruckingLogs[0].RefuelLogs[0].milesAtFueling)
-          : "",
-      TascoABCDELoads: (ts) =>
-        ts.TascoLogs?.filter(
-          (log) =>
-            log.shiftType === "ABCD Shift" || log.shiftType === "E Shift",
-        )
-          .map((log) => log.LoadQuantity)
-          .join(", ") || "",
-      TascoFLoads: (ts) =>
-        ts.TascoLogs?.filter((log) => log.shiftType === "F Shift")
-          .map((log) => log.LoadQuantity)
-          .join(", ") || "",
-    };
-
-    // Remove 'Status' from selectedFields if present
-    const filteredFields =
-      selectedFields && selectedFields.length > 0
-        ? selectedFields.filter((f) => f !== "Status")
-        : Object.keys(allFields);
-
-    const exportData = exportRows.map((ts) => {
-      const row: Record<string, string> = {};
-      filteredFields.forEach((f) => {
-        row[f] = allFields[f] ? allFields[f](ts) : "";
-      });
-      return row;
-    });
-    if (exportFormat === "csv") {
-      // Get the field labels mapping from the ExportModal's EXPORT_FIELDS
-      const fieldLabels = Object.fromEntries(
-        EXPORT_FIELDS.map((field) => [field.key, field.label]),
-      );
-
-      // Use labels in header instead of keys
-      const header = filteredFields.map((f) => fieldLabels[f] || f).join(",");
-      const rows = exportData
-        .map((row) =>
-          filteredFields
-            .map((f) => {
-              const value = String(row[f] ?? "");
-              // Always use text qualifier to preserve formatting
-              return `"${value.replace(/"/g, '""')}"`;
-            })
-            .join(","),
-        )
-        .join("\n");
-
-      const csv = `${header}\n${rows}`;
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);
-    } else {
-      // XLSX
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Timesheets");
-      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-      const blob = new Blob([wbout], { type: "application/octet-stream" });
-      saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    }
   };
 
   const handleClearFilters = async () => {
@@ -691,6 +541,233 @@ export default function useAllTimeSheetData({
     }, 500);
   };
 
+  //----------------------------------------------------------------------------
+  // Methods to export filtered timesheets
+  //----------------------------------------------------------------------------
+
+  const filteredTimesheets = useMemo(() => {
+    if (!allTimesheets || !Array.isArray(allTimesheets)) {
+      return [];
+    }
+
+    return allTimesheets.filter((ts) => {
+      const id = ts.id || "";
+      const firstName = ts?.User?.firstName || "";
+      const lastName = ts?.User?.lastName || "";
+      const jobsite = ts?.Jobsite?.name || "";
+      const costCode = ts?.CostCode?.name || "";
+
+      // Split search term into words, ignore empty
+      const terms = searchTerm
+        .toLowerCase()
+        .split(" ")
+        .filter((t) => t.trim().length > 0);
+
+      // Date filter: support single date (entire day) or range
+      let inDateRange = true;
+      if (dateRange.from && !dateRange.to) {
+        const fromStart = new Date(dateRange.from);
+        fromStart.setHours(0, 0, 0, 0);
+        const fromEnd = new Date(dateRange.from);
+        fromEnd.setHours(23, 59, 59, 999);
+        const tsDate = new Date(ts.date);
+        inDateRange = tsDate >= fromStart && tsDate <= fromEnd;
+      } else {
+        if (dateRange.from) {
+          inDateRange = inDateRange && new Date(ts.date) >= dateRange.from;
+        }
+        if (dateRange.to) {
+          inDateRange = inDateRange && new Date(ts.date) <= dateRange.to;
+        }
+      }
+
+      // Each term must match at least one field
+      const matches = terms.every(
+        (term) =>
+          id.toString().includes(term) ||
+          firstName.toLowerCase().includes(term) ||
+          lastName.toLowerCase().includes(term) ||
+          jobsite.toLowerCase().includes(term) ||
+          costCode.toLowerCase().includes(term),
+      );
+
+      return inDateRange && (terms.length === 0 || matches);
+    });
+  }, [allTimesheets, searchTerm, dateRange]);
+
+  const sortedTimesheets = useMemo(() => {
+    if (!filteredTimesheets || !Array.isArray(filteredTimesheets)) {
+      return [];
+    }
+
+    return [...filteredTimesheets].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
+  }, [filteredTimesheets]);
+
+  const handleExport = async (
+    exportFormat: "csv" | "xlsx",
+    dateRange?: { from?: Date; to?: Date },
+    selectedFields?: string[],
+    selectedUsers?: string[],
+    selectedCrew?: string[],
+    filterByUser?: boolean,
+  ) => {
+    try {
+      // Call server action to get filtered data with only the selected fields
+      const exportedData = await adminExportTimesheets(
+        dateRange,
+        selectedFields,
+        selectedUsers,
+        selectedCrew,
+        filterByUser,
+      );
+
+      if (!exportedData || exportedData.length === 0) {
+        toast.error("No timesheets found matching your filters.");
+        setExportModal(false);
+        return;
+      }
+
+      // Format dates and times for display
+      const formattedTimesheets = exportedData.map((ts) => {
+        const result: Record<
+          string,
+          string | number | Date | null | undefined
+        > = { ...ts };
+
+        // Format date values if present
+        if (result.Date) {
+          const dateObj = new Date(result.Date as string | Date);
+          if (!isNaN(dateObj.getTime())) {
+            result.Date = format(dateObj, "MM/dd/yyyy");
+          }
+        }
+
+        // Format time values if present
+        if (result.Start) {
+          const dateObj = new Date(result.Start as string | Date);
+          if (!isNaN(dateObj.getTime())) {
+            result.Start = format(dateObj, "hh:mm a");
+          }
+        }
+
+        if (result.End) {
+          const dateObj = new Date(result.End as string | Date);
+          if (!isNaN(dateObj.getTime())) {
+            result.End = format(dateObj, "hh:mm a");
+          }
+        }
+
+        // Format Duration if present (should already be calculated on server)
+        if (typeof result.Duration === "number") {
+          result.Duration = result.Duration.toFixed(1);
+        }
+
+        return result;
+      });
+
+      // Get the field labels mapping from the ExportModal's EXPORT_FIELDS
+      const fieldLabels = Object.fromEntries(
+        EXPORT_FIELDS.map((field) => [field.key, field.label]),
+      );
+
+      // Determine which fields are actually present in our data
+      const availableFields =
+        selectedFields ||
+        Object.keys(formattedTimesheets[0] || {}).filter((k) => k !== "_raw");
+
+      if (exportFormat === "csv") {
+        // Create CSV header with display labels
+        const header = availableFields
+          .map((field) => fieldLabels[field] || field)
+          .join(",");
+
+        // Fields that might contain leading zeros that should be preserved
+        const preserveLeadingZerosFields = ["Jobsite", "CostCode"];
+
+        // Create CSV rows
+        const rows = formattedTimesheets
+          .map((item) =>
+            availableFields
+              .map((field) => {
+                let value = item[field] ?? "";
+
+                // For fields that might have leading zeros, ensure they're treated as text
+                // by adding a special prefix that Excel recognizes
+                if (
+                  preserveLeadingZerosFields.includes(field) &&
+                  value !== null &&
+                  value !== undefined
+                ) {
+                  // Prefix with ="<value>" syntax that Excel uses to force text format
+                  value = `="${String(value).replace(/"/g, '""')}"`;
+                  return value;
+                } else {
+                  value = String(value);
+                  // For other fields, use standard CSV escaping
+                  return `"${value.replace(/"/g, '""')}"`;
+                }
+              })
+              .join(","),
+          )
+          .join("\n");
+
+        const csv = `${header}\n${rows}`;
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);
+      } else {
+        // Export as XLSX
+        // Create a clean object with properly formatted data to avoid type errors
+        const preparedData = formattedTimesheets.map((item) => {
+          // Create a new object with all the existing properties
+          const prepared: Record<string, unknown> = {};
+
+          // Copy all properties, ensuring proper formatting for fields that need it
+          Object.entries(item).forEach(([key, value]) => {
+            if (key === "Jobsite" || key === "CostCode") {
+              // Force these fields to be strings with leading zeros preserved
+              // Add a single quote prefix in the raw data, which Excel interprets as "format as text"
+              const strValue =
+                value !== null && value !== undefined ? String(value) : "";
+              prepared[key] = strValue.startsWith("0")
+                ? `'${strValue}`
+                : strValue;
+            } else {
+              // Keep other fields as they are
+              prepared[key] = value;
+            }
+          });
+
+          return prepared;
+        });
+
+        // Create the worksheet with our prepared data
+        const ws = XLSX.utils.json_to_sheet(preparedData);
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Timesheets");
+
+        // Set options to preserve formatting
+        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+        const blob = new Blob([wbout], { type: "application/octet-stream" });
+        saveAs(
+          blob,
+          `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`,
+        );
+      }
+
+      setExportModal(false);
+      toast.success("Export completed successfully!");
+    } catch (error) {
+      console.error("Error exporting timesheets:", error);
+      toast.error("Error exporting timesheets. Please try again.");
+      setExportModal(false);
+    }
+  };
+
+  // --------------------------------------------------------------------------
   return {
     inputValue,
     setInputValue,
@@ -746,5 +823,7 @@ export default function useAllTimeSheetData({
     notificationIds,
     setNotificationIds,
     handleClearFilters,
+    crew,
+    users,
   };
 }

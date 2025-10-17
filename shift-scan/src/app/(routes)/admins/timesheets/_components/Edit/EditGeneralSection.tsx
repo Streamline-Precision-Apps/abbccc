@@ -11,16 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { DateTimePicker } from "../../../_pages/DateTimePicker";
 import { TimesheetData } from "./hooks/useTimesheetData";
+
+// Skeleton component for loading state
 
 export interface EditGeneralSectionProps {
   form: TimesheetData; // Allow form to be null initially
@@ -57,7 +52,7 @@ export default function EditGeneralSection({
 }: EditGeneralSectionProps) {
   return (
     <>
-      <div className="w-full flex flex-row items-end gap-2  ">
+      {/* <div className="w-full flex flex-row items-end gap-2  ">
         <div className="w-full">
           <Popover>
             <PopoverTrigger asChild>
@@ -83,10 +78,9 @@ export default function EditGeneralSection({
             </PopoverTrigger>
           </Popover>
         </div>
-      </div>
+      </div> */}
       <div className="flex flex-row items-end col-span-2">
         <div className="w-full">
-          {/* Single value combobox for User */}
           <SingleCombobox
             label="User"
             options={userOptions}
@@ -114,6 +108,7 @@ export default function EditGeneralSection({
           />
         </div>
       </div>
+
       {/* Jobsite */}
       <div className="w-full">
         <SingleCombobox
@@ -188,50 +183,51 @@ export default function EditGeneralSection({
           )}
         </div>
       </div>
-
-      <div className="col-span-1 w-full pt-2  flex flex-row flex-wrap items-end">
-        <p className="text-xs text-red-500 break-words">
-          <span className="font-semibold">Warning: </span>
-          Modifying the work type will erase all existing logs tied to the the
-          section below. <br /> Only proceed if you are certain about this
-          update.
-        </p>
-      </div>
-      <div className="flex flex-row items-end">
-        <div className="w-full">
-          <label className="block text-xs font-semibold mb-1">Work Type</label>
-          <Select
-            name="workType"
-            value={form.workType || ""}
-            onValueChange={(val) =>
-              handleChange({
-                target: { name: "workType", value: val },
-              } as React.ChangeEvent<HTMLInputElement>)
-            }
-          >
-            <SelectTrigger className="border rounded px-2 py-1 w-full">
-              <SelectValue placeholder="Select work type" />
-            </SelectTrigger>
-            <SelectContent>
-              {workTypeOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          {originalForm && form.workType !== originalForm.workType && (
-            <Button
-              type="button"
-              size="sm"
-              className="ml-2"
-              onClick={() => handleUndoField("workType")}
+      <div className="w-full">
+        <div className="flex flex-row items-end">
+          <div className="w-full">
+            <label className="block text-xs font-semibold mb-1">
+              Work Type
+            </label>
+            <Select
+              name="workType"
+              value={form.workType || ""}
+              onValueChange={(val) =>
+                handleChange({
+                  target: { name: "workType", value: val },
+                } as React.ChangeEvent<HTMLInputElement>)
+              }
             >
-              Undo
-            </Button>
-          )}
+              <SelectTrigger className="border rounded px-2 py-1 w-full">
+                <SelectValue placeholder="Select work type" />
+              </SelectTrigger>
+              <SelectContent>
+                {workTypeOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            {originalForm && form.workType !== originalForm.workType && (
+              <Button
+                type="button"
+                size="sm"
+                className="ml-2"
+                onClick={() => handleUndoField("workType")}
+              >
+                Undo
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="col-span-1 w-full pt-1 flex flex-row flex-wrap items-end">
+          <p className="text-xs text-red-500 break-words">
+            <span className="font-semibold">Warning: </span>
+            Changing the work type will delete all related logs!
+          </p>
         </div>
       </div>
     </>

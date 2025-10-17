@@ -8,6 +8,7 @@ import {
   Condition,
   EquipmentState,
   EquipmentTags,
+  FormTemplateStatus,
   OwnershipType,
 } from "../../../../../prisma/generated/prisma/client";
 
@@ -78,8 +79,8 @@ export async function GET(req: Request) {
     const searchCondition = searchTerm
       ? {
           OR: [
-            { name: { contains: searchTerm, mode: 'insensitive' } },
-            { code: { contains: searchTerm, mode: 'insensitive' } },
+            { name: { contains: searchTerm, mode: "insensitive" } },
+            { code: { contains: searchTerm, mode: "insensitive" } },
           ],
         }
       : {};
@@ -120,8 +121,14 @@ export async function GET(req: Request) {
 
         // Add filter for statuses if provided
         if (filters.statuses && filters.statuses.length > 0) {
-          whereClause.state = {
+          whereClause.approvalStatus = {
             in: filters.statuses as ApprovalStatus[],
+          };
+        }
+        // Add filter for activity status if provided
+        if (filters.activityStatuses && filters.activityStatuses.length > 0) {
+          whereClause.status = {
+            in: filters.activityStatuses as FormTemplateStatus[],
           };
         }
       } catch (error) {

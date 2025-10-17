@@ -68,10 +68,10 @@ export const MechanicProject: React.FC<MechanicProjectProps> = ({
       mechanicProjects[mechanicProjects.length - 1].hours === null);
 
   return (
-    <div className="col-span-2 mt-4">
+    <div className="col-span-2 mt-2">
       <div className="flex flex-row justify-between items-center mb-4">
         <div className="flex-1">
-          <p className="block font-semibold text-sm">Maintenance Projects</p>
+          <p className="block font-semibold text-base">Maintenance Projects</p>
           <p className="text-xs text-gray-500 pt-1">
             Add maintenance projects performed during this timesheet
           </p>

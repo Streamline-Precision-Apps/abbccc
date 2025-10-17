@@ -120,7 +120,22 @@ export default function EquipmentPage() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={() => setShowPendingOnly(!showPendingOnly)}
+                onClick={() => {
+                  // Toggle the state
+                  setShowPendingOnly(!showPendingOnly);
+
+                  // Check if the URL has the isPendingApproval parameter
+                  if (typeof window !== "undefined") {
+                    const url = new URL(window.location.href);
+                    if (url.searchParams.has("isPendingApproval")) {
+                      // Remove the parameter if it exists
+                      url.searchParams.delete("isPendingApproval");
+
+                      // Update the URL without reloading the page
+                      window.history.replaceState({}, "", url.toString());
+                    }
+                  }
+                }}
                 className={`relative border-none w-fit min-w-16 h-full px-4 bg-gray-900 hover:bg-gray-800 text-white ${
                   showPendingOnly ? "ring-2 ring-red-400" : ""
                 }`}
