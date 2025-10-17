@@ -129,7 +129,6 @@ export const useEquipmentData = () => {
 
         // Build the URL with all applicable parameters
         const url = `/api/getEquipmentDetails?${queryParams.toString()}`;
-        console.log(`Fetching equipment data: ${url}`);
 
         const response = await fetch(url, {
           cache: "no-store",
