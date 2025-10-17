@@ -23,7 +23,7 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
               <p className="">{highlight(row.original.name, "")}</p>
             </div>
           </div>
-          <div className="ml-2">
+          <div className="ml-2 flex flex-row gap-2">
             {row.original.isActive ? (
               <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
                 Active
@@ -33,6 +33,9 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
                 Inactive
               </span>
             )}
+            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+              Updated: {format(new Date(row.original.updatedAt), "MM/dd/yy")}
+            </span>
           </div>
         </div>
       );
@@ -63,17 +66,6 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
           ) : (
             <span className="text-gray-400">-</span>
           )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Updated At",
-    cell: ({ row }) => {
-      return (
-        <div className="text-xs text-center">
-          {format(new Date(row.original.updatedAt), "MM/dd/yy")}
         </div>
       );
     },

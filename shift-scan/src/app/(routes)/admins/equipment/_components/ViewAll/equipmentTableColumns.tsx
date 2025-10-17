@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { highlight } from "@/app/(routes)/admins/_pages/highlight";
 import { ArchiveIcon, ArchiveRestore } from "lucide-react";
+import { format } from "date-fns";
 
 // Define types for action handlers
 interface EquipmentActionHandlers {
@@ -123,6 +124,10 @@ export const createEquipmentTableColumns = (
                     }`}
                   >
                     {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}
+                  </span>
+
+                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+                    Updated: {format(new Date(equipment.updatedAt), "MM/dd/yy")}
                   </span>
                 </div>
               </div>

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { highlight } from "@/app/(routes)/admins/_pages/highlight";
 import Link from "next/link";
+import { format } from "date-fns";
 
 // Define the column configuration as a function that takes router
 export const getJobsiteTableColumns = (
@@ -56,6 +57,9 @@ export const getJobsiteTableColumns = (
                       Rejected
                     </span>
                   )}
+                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+                    Updated: {format(new Date(jobsite.updatedAt), "MM/dd/yy")}
+                  </span>
                 </div>
               </div>
               <p className="truncate max-w-[750px] text-[10px] text-left text-gray-400 italic">
