@@ -545,7 +545,7 @@ export function CreateTimesheetModal({
               <p className="text-xs text-gray-600">
                 Use the form below to enter and submit a new timesheet on behalf
                 of an employee.
-                <br /> Ensure all required fields are accurates.
+                <br /> Ensure all required fields are accurate.
               </p>
             </div>
           </div>

@@ -786,7 +786,7 @@ export async function adminExportTimesheets(
   filterByUser?: boolean,
 ) {
   try {
-    console.log("Export Params:", { dateRange });
+    
     if (!dateRange) {
       throw new Error("Date range is required for exporting timesheets.");
     }
@@ -878,7 +878,6 @@ export async function adminExportTimesheets(
       orderBy,
     });
 
-    console.log("Fetched Data:", timesheets);
 
     // advanced sorting
     let result: TimesheetExportData[] = [];

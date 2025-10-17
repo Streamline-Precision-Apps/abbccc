@@ -9,8 +9,6 @@ import {
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 import { FilterOptions } from "./ViewAll/EquipmentFilter";
 import { useSearchParams } from "next/navigation";
-import { se } from "date-fns/locale";
-import is from "zod/v4/locales/is.cjs";
 
 /**
  * EquipmentSummary type for equipment/vehicle/truck/trailer asset
@@ -131,7 +129,6 @@ export const useEquipmentData = () => {
 
         // Build the URL with all applicable parameters
         const url = `/api/getEquipmentDetails?${queryParams.toString()}`;
-        console.log(`Fetching equipment data: ${url}`);
 
         const response = await fetch(url, {
           cache: "no-store",
