@@ -181,7 +181,6 @@
   },
 
   "Home": {
-    "EnableLocation": "Enable location in Account Settings (top left corner). Make sure your device's location settings are also turned on.",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",
@@ -664,6 +663,9 @@
   },
 
   "Clock": {
+    "GoBack": "Go Back",
+    "RetryPermission": "Try Again",
+    "EnableLocation": "Enable location in Account Settings. Make sure your device's location settings are also turned on.",
     "GeneralLabor": "General Labor",
     "NoResultsFound": "No results found",
     "Equipment": "Equipment",

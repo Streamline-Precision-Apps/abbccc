@@ -10,6 +10,12 @@ enum FormStatus {
   DRAFT = "DRAFT",
 }
 
+// Type for permission response objects that might be passed instead of booleans
+interface PermissionResponse {
+  success?: boolean;
+  [key: string]: unknown;
+}
+
 // Accepts contact info and settings, updates User, Contacts, and UserSettings as needed
 export async function updateSettings(data: {
   userId: string;
@@ -86,9 +92,9 @@ export async function updateSettings(data: {
           "Invalid cameraAccess value:",
           sanitizedSettings.cameraAccess,
         );
-        sanitizedSettings.cameraAccess = Boolean(
-          (sanitizedSettings.cameraAccess as any)?.success,
-        );
+        const permissionResponse =
+          sanitizedSettings.cameraAccess as PermissionResponse;
+        sanitizedSettings.cameraAccess = Boolean(permissionResponse?.success);
       } else {
         sanitizedSettings.cameraAccess = Boolean(
           sanitizedSettings.cameraAccess,
@@ -102,9 +108,9 @@ export async function updateSettings(data: {
           "Invalid locationAccess value:",
           sanitizedSettings.locationAccess,
         );
-        sanitizedSettings.locationAccess = Boolean(
-          (sanitizedSettings.locationAccess as any)?.success,
-        );
+        const permissionResponse =
+          sanitizedSettings.locationAccess as PermissionResponse;
+        sanitizedSettings.locationAccess = Boolean(permissionResponse?.success);
       } else {
         sanitizedSettings.locationAccess = Boolean(
           sanitizedSettings.locationAccess,

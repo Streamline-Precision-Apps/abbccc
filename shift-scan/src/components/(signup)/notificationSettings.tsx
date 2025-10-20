@@ -73,8 +73,9 @@ export default function NotificationSettings({
   const handleLocationToggle = async (isAccepted: boolean) => {
     if (isAccepted) {
       // Request location permission
-      const granted = await requestLocationPermission();
-      handleChange("locationAccess", granted);
+      const result = await requestLocationPermission();
+      // Extract the success property from the response object
+      handleChange("locationAccess", result.success);
     } else {
       // Reset the permission so it can be re-requested if toggled back on
       resetLocationPermission();

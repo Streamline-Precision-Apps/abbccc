@@ -175,7 +175,6 @@
     "CurrentShift": "Cambio actual"
   },
   "Home": {
-    "EnableLocation": "Activa la ubicación en Ajustes de la cuenta (esquina superior izquierda). Asegúrate de que la ubicación de tu dispositivo también esté activada.",
     "EnjoyYourBreak": "¡Disfruta tu descanso!",
     "HitReturnToClockBackIn": "Golpear regresa a reloj de regreso",
     "Today": "Hoy",
@@ -658,6 +657,9 @@
     "Approved": "Aprobado"
   },
   "Clock": {
+    "GoBack": "Regresar",
+    "RetryPermission": "Inténtalo de nuevo",
+    "EnableLocation": "Activa la ubicación en Ajustes de la cuenta. Asegúrate de que la ubicación de tu dispositivo también esté activada.",
     "GeneralLabor": "Trabajo general",
     "NoResultsFound": "No se encontraron resultados",
     "Equipment": "Equipo",

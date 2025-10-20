@@ -24,11 +24,8 @@ type Props = {
 };
 
 export default function WidgetSection({ session, locale, isTerminate }: Props) {
-  // Hooks and state initialization
-  const { permissions } = usePermissions();
   const router = useRouter();
   const [toggle, setToggle] = useState(true);
-  const [isLocationOn, setIsLocationOn] = useState<boolean>(false);
 
   const { setPayPeriodTimeSheets } = usePayPeriodTimeSheet();
   const { payPeriodSheets, pageView, setPageView, loading } = usePayPeriodData(
@@ -53,16 +50,6 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
   // Handlers
   const handleToggle = () => setToggle(!toggle);
 
-  useEffect(() => {
-    if (permissions && permissions.location) {
-      console.log("Location permission granted");
-      setIsLocationOn(true);
-    } else {
-      console.log("Location permission not granted");
-      setIsLocationOn(false);
-    }
-  }, [permissions]);
-
   // Handle page redirects in a separate useEffect
   useEffect(() => {
     if (pageView === "dashboard") {
@@ -76,12 +63,7 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
   // Main render
   return (
     <>
-      <BannerSection
-        pageView={pageView}
-        user={user}
-        date={date}
-        isLocationOn={isLocationOn}
-      />
+      <BannerSection pageView={pageView} user={user} date={date} />
 
       <MainContentSection
         toggle={toggle}
@@ -90,7 +72,6 @@ export default function WidgetSection({ session, locale, isTerminate }: Props) {
         handleToggle={handleToggle}
         loading={loading}
         isTerminate={isTerminate}
-        isLocationOn={isLocationOn}
       />
     </>
   );
@@ -100,23 +81,13 @@ function BannerSection({
   pageView,
   user,
   date,
-  isLocationOn,
 }: {
   pageView: string;
   user: Session["user"];
   date: string;
-  isLocationOn: boolean;
 }) {
-  const t = useTranslations("Home");
   return (
     <Holds className="row-start-2 row-end-4 bg-app-blue bg-opacity-20 w-full h-full justify-center items-center rounded-[10px] relative">
-      {!isLocationOn && (
-        <div className="absolute top-0 bg-white w-full rounded-[10px] px-2 py-2 ">
-          <Texts text={"red"} size={"xs"}>
-            {t("EnableLocation")}
-          </Texts>
-        </div>
-      )}
       {pageView === "" && (
         <DisplayBanner firstName={user.firstName} date={date} />
       )}
@@ -131,7 +102,6 @@ function MainContentSection({
   handleToggle,
   loading,
   isTerminate,
-  isLocationOn,
 }: {
   toggle: boolean;
   pageView: string;
@@ -139,7 +109,6 @@ function MainContentSection({
   handleToggle: () => void;
   loading: boolean;
   isTerminate: boolean;
-  isLocationOn: boolean;
 }) {
   return (
     <Holds
@@ -160,7 +129,6 @@ function MainContentSection({
               pageView={pageView}
               isManager={isManager}
               isTerminate={isTerminate}
-              isLocationOn={isLocationOn}
             />
           )}
         </Grids>
@@ -207,12 +175,10 @@ function WidgetButtonsSection({
   pageView,
   isManager,
   isTerminate,
-  isLocationOn,
 }: {
   pageView: string;
   isManager: boolean;
   isTerminate: boolean;
-  isLocationOn: boolean;
 }) {
   const t = useTranslations("Home");
   return (
