@@ -26,7 +26,11 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
   useEffect(() => {
     if (equipmentResults) {
       const options = equipmentResults
-        .filter((equipment) => equipment.equipmentTag === "TRUCK")
+        .filter(
+          (equipment) =>
+            equipment.equipmentTag === "TRUCK" &&
+            equipment.status !== "ARCHIVED",
+        )
         .map((equipment) => ({
           id: equipment.id,
           viewpoint: equipment.code,

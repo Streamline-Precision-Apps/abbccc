@@ -22,6 +22,7 @@ export async function GET() {
         qrId: true,
         name: true,
         equipmentTag: true,
+        status: true,
       },
     });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { deleteJobsite } from "@/actions/AssetActions";
+import { deleteJobsite, archiveJobsite, restoreJobsite } from "@/actions/AssetActions";
 import QRCode from "qrcode";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
 import {
@@ -54,6 +54,14 @@ export const useJobsiteData = (initialShowPendingOnly: boolean = false) => {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [pendingQrId, setPendingQrId] = useState<string | null>(null);
+
+  // State for archive confirmation dialog
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [pendingArchiveId, setPendingArchiveId] = useState<string | null>(null);
+
+  // State for restore confirmation dialog
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
+  const [pendingRestoreId, setPendingRestoreId] = useState<string | null>(null);
 
   const rerender = () => setRefreshKey((k) => k + 1);
 
@@ -109,6 +117,58 @@ export const useJobsiteData = (initialShowPendingOnly: boolean = false) => {
   const cancelDelete = () => {
     setShowDeleteDialog(false);
     setPendingDeleteId(null);
+  };
+
+  // Archive handlers
+  const openHandleArchive = (id: string) => {
+    setPendingArchiveId(id);
+    setShowArchiveDialog(true);
+  };
+
+  const confirmArchive = async () => {
+    if (pendingArchiveId) {
+      const result = await archiveJobsite(pendingArchiveId);
+      if (result.success) {
+        console.log(result.message);
+      } else {
+        console.error(result.error);
+      }
+      setShowArchiveDialog(false);
+      setPendingArchiveId(null);
+      refresh();
+      rerender();
+    }
+  };
+
+  const cancelArchive = () => {
+    setShowArchiveDialog(false);
+    setPendingArchiveId(null);
+  };
+
+  // Restore handlers
+  const openHandleRestore = (id: string) => {
+    setPendingRestoreId(id);
+    setShowRestoreDialog(true);
+  };
+
+  const confirmRestore = async () => {
+    if (pendingRestoreId) {
+      const result = await restoreJobsite(pendingRestoreId);
+      if (result.success) {
+        console.log(result.message);
+      } else {
+        console.error(result.error);
+      }
+      setShowRestoreDialog(false);
+      setPendingRestoreId(null);
+      refresh();
+      rerender();
+    }
+  };
+
+  const cancelRestore = () => {
+    setShowRestoreDialog(false);
+    setPendingRestoreId(null);
   };
 
   // Count all pending items
@@ -270,5 +330,19 @@ export const useJobsiteData = (initialShowPendingOnly: boolean = false) => {
     cancelDelete,
     pendingCount,
     paginatedJobsites,
+    // Archive functionality
+    showArchiveDialog,
+    setShowArchiveDialog,
+    pendingArchiveId,
+    openHandleArchive,
+    confirmArchive,
+    cancelArchive,
+    // Restore functionality
+    showRestoreDialog,
+    setShowRestoreDialog,
+    pendingRestoreId,
+    openHandleRestore,
+    confirmRestore,
+    cancelRestore,
   };
 };

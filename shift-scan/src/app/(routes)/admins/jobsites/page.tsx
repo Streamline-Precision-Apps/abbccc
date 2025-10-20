@@ -59,6 +59,20 @@ export default function JobsitePage() {
     pendingCount,
     totalPages,
     paginatedJobsites,
+    // Archive functionality
+    showArchiveDialog,
+    setShowArchiveDialog,
+    pendingArchiveId,
+    openHandleArchive,
+    confirmArchive,
+    cancelArchive,
+    // Restore functionality
+    showRestoreDialog,
+    setShowRestoreDialog,
+    pendingRestoreId,
+    openHandleRestore,
+    confirmRestore,
+    cancelRestore,
   } = useJobsiteData(isPendingApproval); // Pass initial state to hook
 
   // Handle notification ID if present
@@ -154,6 +168,8 @@ export default function JobsitePage() {
             onEditClick={openHandleEdit}
             onDeleteClick={openHandleDelete}
             onQrClick={openHandleQr}
+            onArchiveClick={openHandleArchive}
+            onRestoreClick={openHandleRestore}
             showPendingOnly={showPendingOnly}
           />
         </div>
@@ -199,6 +215,48 @@ export default function JobsitePage() {
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Jobsite</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to archive this jobsite? The jobsite will be
+              marked as archived and will no longer be available for new timesheets.
+              Existing timesheets will remain accessible. This action can be undone
+              by restoring the jobsite.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelArchive}>
+              Cancel
+            </Button>
+            <Button onClick={confirmArchive}>
+              Archive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Restore Jobsite</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to restore this jobsite? The jobsite will be
+              reactivated and will be available for new timesheets again.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelRestore}>
+              Cancel
+            </Button>
+            <Button onClick={confirmRestore}>
+              Restore
             </Button>
           </DialogFooter>
         </DialogContent>

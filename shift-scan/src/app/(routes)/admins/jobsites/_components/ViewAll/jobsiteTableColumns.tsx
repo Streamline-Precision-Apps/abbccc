@@ -35,6 +35,10 @@ export const getJobsiteTableColumns = (
                     <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg text-xs">
                       Draft
                     </span>
+                  ) : jobsite.status === "ARCHIVED" ? (
+                    <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
+                      Archived
+                    </span>
                   ) : (
                     <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-lg text-xs">
                       Inactive

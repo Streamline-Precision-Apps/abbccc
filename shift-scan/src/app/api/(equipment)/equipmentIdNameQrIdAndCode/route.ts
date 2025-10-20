@@ -35,6 +35,8 @@ export async function GET() {
             qrId: true,
             name: true,
             code: true,
+            status: true,
+            equipmentTag: true,
           },
         });
       },
