@@ -1,5 +1,6 @@
 "use client";
 import { updateTimeSheet } from "@/actions/timeSheetActions";
+import { usePermissions } from "@/app/context/PermissionsContext";
 import Spinner from "@/components/(animations)/spinner";
 import { Bases } from "@/components/(reusable)/bases";
 import { Buttons } from "@/components/(reusable)/buttons";
@@ -55,18 +56,26 @@ export const LaborClockOut = ({
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { data: session } = useSession();
+  const { permissions, getStoredCoordinates } = usePermissions();
 
   async function handleSubmitTimeSheet() {
     try {
       setLoading(true);
       // Step 1: Get the recent timecard ID.
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
 
+      const coordinates = getStoredCoordinates();
       const formData = new FormData();
       formData.append("id", timeSheetId?.toString() || "");
       formData.append("userId", session?.user.id?.toString() || "");
       formData.append("endTime", new Date().toISOString());
       formData.append("timeSheetComments", commentsValue);
       formData.append("wasInjured", wasInjured.toString());
+      formData.append("clockOutLat", coordinates?.latitude.toString() || "");
+      formData.append("clockOutLng", coordinates?.longitude.toString() || "");
 
       const result = await updateTimeSheet(formData);
       if (result.success) {

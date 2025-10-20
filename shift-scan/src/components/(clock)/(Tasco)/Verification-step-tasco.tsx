@@ -22,6 +22,7 @@ import { Texts } from "@/components/(reusable)/texts";
 import { Titles } from "@/components/(reusable)/titles";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Option = {
   id: string;
@@ -69,29 +70,25 @@ export default function TascoVerificationStep({
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
   const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
-
+  const { permissions, getStoredCoordinates } = usePermissions();
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  // const fetchRecentTimeSheetId = async (): Promise<number | null> => {
-  //   try {
-  //     const res = await fetch("/api/getRecentTimecard");
-  //     const data = await res.json();
-  //     return data?.id || null;
-  //   } catch (error) {
-  //     console.error("Error fetching recent timesheet ID:", error);
-  //     return null;
-  //   }
-  // };
-
   const handleSubmit = async () => {
-    if (!id) {
-      console.error("User ID does not exist");
-      return;
-    }
-    setLoading(true);
-
     try {
+      setLoading(true);
+
+      if (!id) {
+        console.error("User ID does not exist");
+        return;
+      }
+      // Check if location permissions are granted if not clock in does not work
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
+
+      const getStoredCoordinatesResult = getStoredCoordinates();
       const formData = new FormData();
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
@@ -99,6 +96,15 @@ export default function TascoVerificationStep({
       formData.append("jobsiteId", jobsite?.id || "");
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
+      // fetch coordinates from permissions context
+      formData.append(
+        "clockInLat",
+        getStoredCoordinatesResult?.latitude.toString() || "",
+      );
+      formData.append(
+        "clockInLong",
+        getStoredCoordinatesResult?.longitude.toString() || "",
+      );
 
       if (clockInRoleTypes === "tascoAbcdEquipment") {
         formData.append("materialType", materialType || "");
@@ -137,7 +143,15 @@ export default function TascoVerificationStep({
           "timeSheetComments",
           savedCommentData?.id.toString() || "",
         );
-        formData.append("type", "switchJobs"); // added to switch jobs
+        formData.append("type", "switchJobs");
+        formData.append(
+          "clockOutLat",
+          getStoredCoordinatesResult?.latitude.toString() || "",
+        );
+        formData.append(
+          "clockOutLong",
+          getStoredCoordinatesResult?.longitude.toString() || "",
+        );
       }
 
       // Use the new transaction-based function

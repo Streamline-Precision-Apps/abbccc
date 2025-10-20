@@ -4,7 +4,6 @@ import { breakOutTimeSheet } from "@/actions/timeSheetActions";
 import { setCurrentPageView } from "@/actions/cookieActions";
 import { useRouter } from "next/navigation";
 import { Holds } from "@/components/(reusable)/holds";
-import { Grids } from "@/components/(reusable)/grids";
 import { TextAreas } from "@/components/(reusable)/textareas";
 import { Texts } from "@/components/(reusable)/texts";
 import { CheckBox } from "@/components/(inputs)/checkBox";
@@ -15,6 +14,7 @@ import { Contents } from "@/components/(reusable)/contents";
 import { Images } from "@/components/(reusable)/images";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
 import { Bases } from "@/components/(reusable)/bases";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 export default function Comment({
   handleClick,
@@ -37,6 +37,7 @@ export default function Comment({
   currentTimesheetId: number | undefined;
 }) {
   const c = useTranslations("Clock");
+  const { permissions, getStoredCoordinates } = usePermissions();
   const { refetchTimesheet, savedTimeSheetData, setTimeSheetData } =
     useTimeSheetData();
   const router = useRouter();
@@ -46,10 +47,6 @@ export default function Comment({
 
   const processOne = async () => {
     try {
-      // Step 1: Get the recent timecard ID.
-      // const response = await fetch("/api/getRecentTimecard");
-      // const tsId = await response.json();
-      // const timeSheetId = tsId.id;
       let timeSheetId = currentTimesheetId;
 
       if (!timeSheetId) {
@@ -60,11 +57,17 @@ export default function Comment({
         }
         return (timeSheetId = ts);
       }
-
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
+      const coordinates = getStoredCoordinates();
       const formData2 = new FormData();
       formData2.append("id", timeSheetId.toString());
       formData2.append("endTime", new Date().toISOString());
       formData2.append("timesheetComments", commentsValue);
+      formData2.append("clockOutLat", coordinates?.latitude.toString() || "");
+      formData2.append("clockOutLng", coordinates?.longitude.toString() || "");
 
       const isUpdated = await breakOutTimeSheet(formData2);
       if (isUpdated) {

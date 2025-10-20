@@ -2,13 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import { Texts } from "../(reusable)/texts";
-import { Buttons } from "../(reusable)/buttons";
-import { Grids } from "../(reusable)/grids";
 import { Titles } from "../(reusable)/titles";
 import LocaleToggleSwitch from "../(inputs)/toggleSwitch";
-import { Contents } from "../(reusable)/contents";
 import { useTranslations } from "next-intl";
-import { Banners } from "../(reusable)/banners";
 import { setUserPermissions } from "@/actions/userActions";
 import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
@@ -41,47 +37,49 @@ export default function NotificationSettings({
   const t = useTranslations("SignUpPermissions");
   const [showBanner, setShowBanner] = useState(false);
   const [bannerMessage, setBannerMessage] = useState("");
-  const [updatedData, setUpdatedData] = useState<UserSettings | null>(null);
+  const [updatedData, setUpdatedData] = useState<UserSettings>({
+    userId,
+    cameraAccess: false,
+    locationAccess: false,
+    personalReminders: false,
+    generalReminders: false,
+  });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [isRequiredAcessed, setIsRequiredAcessed] = useState(false);
-  const { requestCameraPermission, requestLocationPermission } =
-    usePermissions();
+  const [isRequiredAccessed, setIsRequiredAccessed] = useState(false);
+  const {
+    requestCameraPermission,
+    requestLocationPermission,
+    resetCameraPermission,
+    resetLocationPermission,
+  } = usePermissions();
 
   // Update the state for a particular setting
   const handleChange = (key: keyof UserSettings, value: boolean) => {
-    setUpdatedData((prev) => (prev ? { ...prev, [key]: value } : null));
+    setUpdatedData((prev) => ({ ...prev, [key]: value }));
   };
 
-  useEffect(() => {
-    // Check if consent has already been given
-    const consent = localStorage.getItem("cookieConsent");
-    if (!consent) {
-      handleChange("cookiesAccess", false);
+  const handleCameraToggle = async (isAccepted: boolean) => {
+    if (isAccepted) {
+      // Request camera permission
+      const granted = await requestCameraPermission();
+      handleChange("cameraAccess", granted);
+    } else {
+      // Reset the permission so it can be re-requested if toggled back on
+      resetCameraPermission();
+      handleChange("cameraAccess", false);
     }
-    if (consent === "true") {
-      handleChange("cookiesAccess", true);
-    }
-  }, []);
-
-  const handleAcceptCookies = () => {
-    localStorage.setItem("cookieConsent", "true");
-    handleChange("cookiesAccess", true);
   };
 
-  // Update all settings to true (for the required ones)
-  const handleYesToAll = () => {
-    setUpdatedData((prev) =>
-      prev
-        ? {
-            ...prev,
-            generalReminders: true,
-            personalReminders: true,
-            cameraAccess: true,
-            locationAccess: true,
-            cookiesAccess: true,
-          }
-        : null,
-    );
+  const handleLocationToggle = async (isAccepted: boolean) => {
+    if (isAccepted) {
+      // Request location permission
+      const granted = await requestLocationPermission();
+      handleChange("locationAccess", granted);
+    } else {
+      // Reset the permission so it can be re-requested if toggled back on
+      resetLocationPermission();
+      handleChange("locationAccess", false);
+    }
   };
 
   useEffect(() => {
@@ -93,37 +91,20 @@ export default function NotificationSettings({
     }
   }, [showBanner]);
 
-  // Fetch settings on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/getSettings");
-        if (response.ok) {
-          const settings = await response.json();
-          setUpdatedData(settings);
-        } else {
-          console.error("Failed to fetch settings", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error occurred while fetching settings:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    // Update the flag if required settings (camera, location, cookies) are enabled
+    // Update the flag if required settings (camera, location) are enabled
     if (
       updatedData?.cameraAccess === true &&
-      updatedData?.locationAccess === true &&
-      updatedData?.cookiesAccess === true
+      updatedData?.locationAccess === true
     ) {
-      setIsRequiredAcessed(true);
+      setIsRequiredAccessed(true);
+    } else {
+      setIsRequiredAccessed(false);
     }
   }, [updatedData]);
 
   const handleSubmitSettings = async () => {
-    if (!isRequiredAcessed) {
+    if (!isRequiredAccessed) {
       setBannerMessage(`${t("RequiredPermissionsError")}`);
       setShowBanner(true);
       return;
@@ -137,10 +118,7 @@ export default function NotificationSettings({
         "locationAccess",
         updatedData?.locationAccess?.toString() || "",
       );
-      data.append(
-        "cookiesAccess",
-        updatedData?.cookiesAccess?.toString() || "",
-      );
+
       data.append(
         "generalReminders",
         updatedData?.generalReminders?.toString() || "",
@@ -149,6 +127,7 @@ export default function NotificationSettings({
         "personalReminders",
         updatedData?.personalReminders?.toString() || "",
       );
+      data.append("cookiesAccess", "true");
 
       await setUserPermissions(data);
       handleNextStep();
@@ -186,9 +165,7 @@ export default function NotificationSettings({
               <Holds size={"30"}>
                 <LocaleToggleSwitch
                   data={updatedData?.cameraAccess || false}
-                  onChange={(value: boolean) => {
-                    handleChange("cameraAccess", value);
-                  }}
+                  onChange={handleCameraToggle}
                 />
               </Holds>
             </Holds>
@@ -199,20 +176,7 @@ export default function NotificationSettings({
               <Holds size={"30"}>
                 <LocaleToggleSwitch
                   data={updatedData?.locationAccess || false}
-                  onChange={(value: boolean) => {
-                    handleChange("locationAccess", value);
-                  }}
-                />
-              </Holds>
-            </Holds>
-            <Holds position={"row"}>
-              <Holds size={"70"}>
-                <Texts position={"left"}>{t("Cookies")}</Texts>
-              </Holds>
-              <Holds size={"30"}>
-                <LocaleToggleSwitch
-                  data={updatedData?.cookiesAccess || false}
-                  onChange={handleAcceptCookies}
+                  onChange={handleLocationToggle}
                 />
               </Holds>
             </Holds>
@@ -223,8 +187,8 @@ export default function NotificationSettings({
         <Button
           size={"lg"}
           onClick={handleSubmitSettings}
-          className={`${isRequiredAcessed ? "bg-app-dark-blue" : "bg-gray-300 "} text-white rounded-lg p-2 w-full`}
-          disabled={isSubmitting} // Disable the button while submitting
+          className={`${isRequiredAccessed ? "bg-app-dark-blue" : "bg-gray-300 "} text-white rounded-lg p-2 w-full`}
+          disabled={isSubmitting || !isRequiredAccessed} // Disable the button while submitting
         >
           <p>{isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}</p>
         </Button>

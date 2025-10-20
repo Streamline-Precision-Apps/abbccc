@@ -139,6 +139,7 @@
   },
 
   "SignUpVirtualSignature": {
+    "CompleteSetup": "Complete Setup",
     "AddASignature": "Add A Signature",
     "AddYourBestSignature": "Add your best signature here — we’ll reuse it wherever you need to e-sign documents in the app.",
     "LetsAddASignature": "Let's add an e-signature! make sure you like it, it will be imprinted on every form.",
@@ -180,6 +181,7 @@
   },
 
   "Home": {
+    "EnableLocation": "Enable location in Account Settings (top left corner). Make sure your device's location settings are also turned on.",
     "EnjoyYourBreak": "Enjoy Your Break!",
     "HitReturnToClockBackIn": "Hit Return to Clock Back In",
     "Today": "Today",

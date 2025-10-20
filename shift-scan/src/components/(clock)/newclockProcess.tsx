@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, Suspense, use } from "react";
+import { useEffect, useState } from "react";
 import { Holds } from "../(reusable)/holds";
 import MultipleRoles from "./multipleRoles";
 import QRStep from "./qr-handler";
@@ -25,10 +25,7 @@ import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
 import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
-import JobsiteSelectorLoading from "./(loading)/jobsiteSelectorLoading";
-import CostCodeSelectorLoading from "./(loading)/costCodeSelectorLoading";
-import TrailerSelectorLoading from "./(loading)/trailerSelectorLoading";
-import { set } from "lodash";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -67,6 +64,7 @@ export default function NewClockProcess({
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
+
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [step, setStep] = useState<number>(0);
 
@@ -170,6 +168,7 @@ export default function NewClockProcess({
         "/api/getRecentTimecardReturn",
       ).then((res) => res.json());
       const tId = fetchRecentTimeSheetId.id;
+      // check for location permissions here
       const formData = new FormData();
       formData.append("id", tId?.toString() || "");
       formData.append("userId", session?.user.id?.toString() || "");

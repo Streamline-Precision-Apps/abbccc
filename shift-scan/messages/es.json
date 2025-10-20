@@ -135,6 +135,7 @@
     "TakePicture": "Tomar la foto"
   },
   "SignUpVirtualSignature": {
+    "CompleteSetup": "configuración completa",
     "AddASignature": "Agregar una firma",
     "AddYourBestSignature": "Agregue su mejor firma aquí: la reutilizaremos donde necesite documentos electrónicos en la aplicación.",
     "LetsAddASignature": "¡Agreguemos una firma electrónica! ",
@@ -174,6 +175,7 @@
     "CurrentShift": "Cambio actual"
   },
   "Home": {
+    "EnableLocation": "Activa la ubicación en Ajustes de la cuenta (esquina superior izquierda). Asegúrate de que la ubicación de tu dispositivo también esté activada.",
     "EnjoyYourBreak": "¡Disfruta tu descanso!",
     "HitReturnToClockBackIn": "Golpear regresa a reloj de regreso",
     "Today": "Hoy",

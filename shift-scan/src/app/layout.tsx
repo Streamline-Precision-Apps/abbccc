@@ -5,7 +5,6 @@ import { Providers } from "./providers";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Metadata, Viewport } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import AutoPermissionsManager from "@/components/(settings)/AutoPermissionsManagerClient";
 
 export const viewport: Viewport = {
   themeColor: "#57BDE9",
@@ -58,7 +57,6 @@ export default async function RootLayout({
             <Providers>
               <ErrorBoundary>{children}</ErrorBoundary>
               <SpeedInsights />
-              <AutoPermissionsManager />
             </Providers>
           </NextIntlClientProvider>
         </main>

@@ -64,12 +64,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Optional: Check if the request is authorized
-    // const session = await getServerSession();
-    // if (!session || session.user.id !== userId) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
     // Update or create the user settings
     const updatedSettings = await prisma.userSettings.upsert({
       where: { userId },

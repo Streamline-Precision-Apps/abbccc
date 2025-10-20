@@ -23,6 +23,8 @@ import Spinner from "../(animations)/spinner";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Texts } from "../(reusable)/texts";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
+import { usePermissions } from "@/app/context/PermissionsContext";
+import { get } from "lodash";
 
 type Options = {
   id: string;
@@ -62,18 +64,24 @@ export default function VerificationStep({
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
   const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
+  const { permissions, getStoredCoordinates } = usePermissions();
 
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
   const handleSubmit = async () => {
-    if (!id) {
-      console.error("User ID does not exist");
-      return;
-    }
-    setLoading(true);
-
     try {
+      setLoading(true);
+      if (!id) {
+        console.error("User ID does not exist");
+        return;
+      }
+      // Check if location permissions are granted if not clock in does not work
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
+      const getStoredCoordinatesResult = getStoredCoordinates();
       const formData = new FormData();
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
@@ -82,6 +90,15 @@ export default function VerificationStep({
       formData.append("costcode", cc?.code || "");
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
+      // fetch coordinates from permissions context
+      formData.append(
+        "clockInLat",
+        getStoredCoordinatesResult?.latitude.toString() || "",
+      );
+      formData.append(
+        "clockInLong",
+        getStoredCoordinatesResult?.longitude.toString() || "",
+      );
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
@@ -102,6 +119,14 @@ export default function VerificationStep({
           savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
+        formData.append(
+          "clockOutLat",
+          getStoredCoordinatesResult?.latitude.toString() || "",
+        );
+        formData.append(
+          "clockOutLong",
+          getStoredCoordinatesResult?.longitude.toString() || "",
+        );
       }
 
       // Use the new transaction-based function

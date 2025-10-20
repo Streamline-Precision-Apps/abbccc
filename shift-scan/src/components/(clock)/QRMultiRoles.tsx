@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Title } from "@/app/(routes)/dashboard/mechanic/_components/Title";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Option = {
   id: string;
@@ -63,6 +64,23 @@ export default function QRMultiRoles({
   const [tempClockInRole, setTempClockInRole] = useState<string | undefined>(
     clockInRole,
   );
+  const { requestAllPermissions, permissions } = usePermissions();
+  useEffect(() => {
+    const requestPermissions = async () => {
+      // Skip if both permissions are already granted
+      if (permissions.camera && permissions.location) {
+        return;
+      }
+
+      try {
+        await requestAllPermissions();
+      } catch (error) {
+        console.error("Error requesting permissions:", error);
+      }
+    };
+
+    requestPermissions();
+  }, [requestAllPermissions, permissions]);
 
   const selectView = (selectedRoleType: string) => {
     setClockInRoleTypes(selectedRoleType);

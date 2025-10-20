@@ -1,9 +1,17 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import QrScanner from "qr-scanner";
 import { useRouter } from "next/navigation";
 import { useEQScanData } from "@/app/context/equipmentContext";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Option = {
   id: string;

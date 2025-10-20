@@ -106,10 +106,11 @@ export default function Content({
         />
       )}
 
-      {step === 5 && (
+      {(step === 5 || step === 6) && (
         <SignatureSetup
           id={userId}
           handleNextStep={handleComplete}
+          setStep={setStep}
           totalSteps={totalSteps}
           currentStep={step}
         />

@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma";
 import { FormStatus, WorkType } from "../../prisma/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { formatISO } from "date-fns";
-import { success } from "zod";
 
 // Get all TimeSheets
 type TimesheetUpdate = {
@@ -92,6 +91,8 @@ export async function breakOutTimeSheet(formData: FormData) {
     const id = Number(formData.get("id"));
     const endTime = formatISO(formData.get("endTime") as string);
     const comment = formData.get("timesheetComments") as string;
+    const clockOutLat = Number(formData.get("clockOutLat") as string) || null;
+    const clockOutLng = Number(formData.get("clockOutLng") as string) || null;
 
     // Only DB operations in transaction
     await prisma.$transaction(async (prisma) => {
@@ -101,6 +102,8 @@ export async function breakOutTimeSheet(formData: FormData) {
           endTime,
           comment,
           status: "PENDING",
+          clockOutLat,
+          clockOutLng,
         },
       });
       if (updatedTimeSheet) {
@@ -317,6 +320,11 @@ export async function handleGeneralTimeSheet(formData: FormData) {
     // Extract all needed values before transaction
     const jobsiteId = formData.get("jobsiteId") as string;
     const userId = formData.get("userId") as string;
+    const clockInLat = Number(formData.get("clockInLat") as string) || null;
+    const clockInLong = Number(formData.get("clockInLong") as string) || null;
+    const clockOutLat = Number(formData.get("clockOutLat") as string) || null;
+    const clockOutLong = Number(formData.get("clockOutLong") as string) || null;
+
     previoustimeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
@@ -336,6 +344,8 @@ export async function handleGeneralTimeSheet(formData: FormData) {
           startTime: formatISO(formData.get("startTime") as string),
           workType: "LABOR",
           status: "DRAFT",
+          clockInLat: clockInLat,
+          clockInLng: clockInLong,
         },
         include: {
           User: {
@@ -357,12 +367,14 @@ export async function handleGeneralTimeSheet(formData: FormData) {
         });
       }
       if (type === "switchJobs" && previousTimeSheetId && endTime) {
-        const updatedPrev = await prisma.timeSheet.update({
+        await prisma.timeSheet.update({
           where: { id: previousTimeSheetId },
           data: {
             endTime: formatISO(endTime),
             comment: previoustimeSheetComments,
             status: "PENDING",
+            clockOutLat: clockOutLat,
+            clockOutLng: clockOutLong,
           },
         });
       }
@@ -401,6 +413,11 @@ export async function handleMechanicTimeSheet(formData: FormData) {
     // Extract all needed values before transaction
     const jobsiteId = formData.get("jobsiteId") as string;
     const userId = formData.get("userId") as string;
+    const clockInLat = Number(formData.get("clockInLat") as string) || null;
+    const clockInLong = Number(formData.get("clockInLong") as string) || null;
+    const clockOutLat = Number(formData.get("clockOutLat") as string) || null;
+    const clockOutLong = Number(formData.get("clockOutLong") as string) || null;
+
     previoustimeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
     type = formData.get("type") as string;
@@ -420,6 +437,8 @@ export async function handleMechanicTimeSheet(formData: FormData) {
           startTime: formatISO(formData.get("startTime") as string),
           workType: "MECHANIC",
           status: "DRAFT",
+          clockInLat: clockInLat,
+          clockInLng: clockInLong,
         },
         include: {
           User: {
@@ -446,6 +465,8 @@ export async function handleMechanicTimeSheet(formData: FormData) {
             endTime: formatISO(endTime),
             comment: previoustimeSheetComments,
             status: "PENDING",
+            clockOutLat: clockOutLat,
+            clockOutLng: clockOutLong,
           },
         });
       }
@@ -485,6 +506,10 @@ export async function handleTascoTimeSheet(formData: FormData) {
     const jobsiteId = formData.get("jobsiteId") as string;
     const userId = formData.get("userId") as string;
     const equipmentId = formData.get("equipment") as string;
+    const clockInLat = Number(formData.get("clockInLat") as string) || null;
+    const clockInLong = Number(formData.get("clockInLong") as string) || null;
+    const clockOutLat = Number(formData.get("clockOutLat") as string) || null;
+    const clockOutLong = Number(formData.get("clockOutLong") as string) || null;
 
     previousTimeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
@@ -513,6 +538,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TASCO",
           status: "DRAFT",
+          clockInLat: clockInLat,
+          clockInLng: clockInLong,
           TascoLogs: {
             create: {
               shiftType,
@@ -551,6 +578,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
             endTime: formatISO(endTime),
             comment: previousTimeSheetComments,
             status: "PENDING",
+            clockOutLat: clockOutLat,
+            clockOutLng: clockOutLong,
           },
         });
       }
@@ -587,6 +616,11 @@ export async function handleTruckTimeSheet(formData: FormData) {
     const userId = formData.get("userId") as string;
     previoustimeSheetComments = formData.get("timeSheetComments") as string;
     const costCode = formData.get("costcode") as string;
+    const clockInLat = Number(formData.get("clockInLat") as string) || null;
+    const clockInLong = Number(formData.get("clockInLong") as string) || null;
+    const clockOutLat = Number(formData.get("clockOutLat") as string) || null;
+    const clockOutLong = Number(formData.get("clockOutLong") as string) || null;
+
     type = formData.get("type") as string;
     const startingMileage = parseInt(formData.get("startingMileage") as string);
     const laborType = formData.get("laborType") as string;
@@ -619,6 +653,8 @@ export async function handleTruckTimeSheet(formData: FormData) {
             startTime: formatISO(formData.get("startTime") as string),
             workType: "TRUCK_DRIVER",
             status: "DRAFT",
+            clockInLat: clockInLat,
+            clockInLng: clockInLong,
             TruckingLogs: {
               create: {
                 laborType,
@@ -654,6 +690,8 @@ export async function handleTruckTimeSheet(formData: FormData) {
               endTime: formatISO(formData.get("endTime") as string),
               comment: previoustimeSheetComments,
               status: "PENDING",
+              clockOutLat: clockOutLat,
+              clockOutLng: clockOutLong,
             },
           });
         }
@@ -670,6 +708,8 @@ export async function handleTruckTimeSheet(formData: FormData) {
           startTime: formatISO(formData.get("startTime") as string),
           workType: "TRUCK_DRIVER",
           status: "DRAFT",
+          clockInLat: clockInLat,
+          clockInLng: clockInLong,
           TruckingLogs: {
             create: {
               laborType,
@@ -772,8 +812,6 @@ export async function updateTimeSheet(formData: FormData) {
       throw new Error("Start time not found for the given timesheet ID.");
     }
 
-    const startTime = formatISO(start.startTime); // it was stored correctly in the db so we dont need to fix it.
-
     // Parse endTime from the formData
     const endTimeString = formData.get("endTime") as string;
     if (!endTimeString) {
@@ -790,6 +828,8 @@ export async function updateTimeSheet(formData: FormData) {
         comment: (formData.get("timeSheetComments") as string) || null,
         status: "PENDING", // Set status to PENDING
         wasInjured: formData.get("wasInjured") === "true",
+        clockOutLat: Number(formData.get("clockOutLat") as string) || null,
+        clockOutLng: Number(formData.get("clockOutLng") as string) || null,
       },
       include: {
         User: {

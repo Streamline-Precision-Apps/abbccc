@@ -167,8 +167,8 @@ export default function ProfilePage({ userId }: { userId: string }) {
       // Request camera permission when turning on using the centralized context
       try {
         const granted = await requestCameraPermission();
-        // Update the app setting based on whether permission was granted
-        handleChange("cameraAccess", granted);
+        // Ensure we only pass a boolean value (granted is already a boolean)
+        handleChange("cameraAccess", Boolean(granted));
       } catch (err) {
         console.error("Camera access denied:", err);
         handleChange("cameraAccess", false);
@@ -185,9 +185,10 @@ export default function ProfilePage({ userId }: { userId: string }) {
     if (value) {
       // Request location permission when turning on using the centralized context
       try {
-        const granted = await requestLocationPermission();
-        // Update the app setting based on whether permission was granted
-        handleChange("locationAccess", granted);
+        const result = await requestLocationPermission();
+        // Extract only the success boolean from the response object
+        const grantedAccess = Boolean(result.success);
+        handleChange("locationAccess", grantedAccess);
       } catch (err) {
         console.error("Location access denied:", err);
         handleChange("locationAccess", false);

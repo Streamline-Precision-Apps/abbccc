@@ -1,7 +1,7 @@
 "use client";
 import { Contents } from "@/components/(reusable)/contents";
 import { Holds } from "@/components/(reusable)/holds";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, use, useEffect, useState } from "react";
 import { InjuryReportContent } from "./(components)/injury-report/injuryReportContent";
 import { useCurrentView } from "@/app/context/CurrentViewContext";
 import ReviewYourDay from "./(components)/reviewYourDay/reviewYourDay";
@@ -10,6 +10,8 @@ import { LaborClockOut } from "./(components)/clock-out-Verification/laborClockO
 import { PreInjuryReport } from "./(components)/no-injury";
 import Comment from "./(components)/comment";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
+import { usePermissions } from "@/app/context/PermissionsContext";
+import { get } from "lodash";
 
 type crewUsers = {
   id: string;
@@ -80,6 +82,7 @@ export default function TempClockOutContent({
   const [wasInjured, setWasInjured] = useState<boolean>(false);
   // const [currentTimesheetId, setCurrentTimesheetId] = useState<number>();
   const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
+  const { requestLocationPermission } = usePermissions();
 
   const incrementStep = () => {
     setStep((prevStep) => prevStep + 1); // Increment function
@@ -92,6 +95,11 @@ export default function TempClockOutContent({
   useEffect(() => {
     setCommentsValue(clockOutComment || "");
   }, [clockOutComment]);
+
+  // on mount, request location permission and get stored coordinates
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
 
   // Batch fetch all clock-out details (timesheets, comment, signature)
   useEffect(() => {

@@ -76,9 +76,62 @@ export async function updateSettings(data: {
     (key) => settings[key] !== undefined,
   );
   if (hasSettings) {
+    // Sanitize boolean values to ensure they are actually booleans
+    const sanitizedSettings = { ...settings };
+
+    // Ensure permission access values are pure booleans, not objects
+    if (sanitizedSettings.cameraAccess !== undefined) {
+      if (typeof sanitizedSettings.cameraAccess === "object") {
+        console.error(
+          "Invalid cameraAccess value:",
+          sanitizedSettings.cameraAccess,
+        );
+        sanitizedSettings.cameraAccess = Boolean(
+          (sanitizedSettings.cameraAccess as any)?.success,
+        );
+      } else {
+        sanitizedSettings.cameraAccess = Boolean(
+          sanitizedSettings.cameraAccess,
+        );
+      }
+    }
+
+    if (sanitizedSettings.locationAccess !== undefined) {
+      if (typeof sanitizedSettings.locationAccess === "object") {
+        console.error(
+          "Invalid locationAccess value:",
+          sanitizedSettings.locationAccess,
+        );
+        sanitizedSettings.locationAccess = Boolean(
+          (sanitizedSettings.locationAccess as any)?.success,
+        );
+      } else {
+        sanitizedSettings.locationAccess = Boolean(
+          sanitizedSettings.locationAccess,
+        );
+      }
+    }
+
+    // Ensure other boolean fields are actually booleans
+    if (sanitizedSettings.personalReminders !== undefined) {
+      sanitizedSettings.personalReminders = Boolean(
+        sanitizedSettings.personalReminders,
+      );
+    }
+    if (sanitizedSettings.generalReminders !== undefined) {
+      sanitizedSettings.generalReminders = Boolean(
+        sanitizedSettings.generalReminders,
+      );
+    }
+    if (sanitizedSettings.cookiesAccess !== undefined) {
+      sanitizedSettings.cookiesAccess = Boolean(
+        sanitizedSettings.cookiesAccess,
+      );
+    }
+
     await prisma.userSettings.update({
       where: { userId },
-      data: settings,
+      data: sanitizedSettings,
     });
   }
 

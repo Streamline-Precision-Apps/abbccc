@@ -6,19 +6,34 @@ interface PermissionState {
   camera: boolean;
   location: boolean;
   lastUpdated?: string; // Timestamp for when permissions were last updated
-  // iOS specific flags to prevent repeated prompts
   hasPromptedCamera?: boolean;
   hasPromptedLocation?: boolean;
+}
+
+interface LocationCoordinates {
+  latitude: number;
+  longitude: number;
+  timestamp: string;
 }
 
 interface PermissionsContextType {
   permissions: PermissionState;
   requestCameraPermission: () => Promise<boolean>;
-  requestLocationPermission: () => Promise<boolean>;
+  requestLocationPermission: () => Promise<{
+    success: boolean;
+    coordinates?: LocationCoordinates;
+  }>;
+  requestAllPermissions: () => Promise<{
+    camera: boolean;
+    location: boolean;
+    coordinates?: LocationCoordinates;
+  }>;
   checkPermissions: () => Promise<void>;
   resetPermissions: () => void;
-  isMobileDevice: () => boolean;
-  syncPermissionsWithServer: (userId?: string) => Promise<void>;
+  resetCameraPermission: () => void;
+  resetLocationPermission: () => void;
+  getStoredCoordinates: () => LocationCoordinates | null;
+  clearStoredCoordinates: () => void;
   initialized: boolean;
 }
 
@@ -37,6 +52,243 @@ export function PermissionsProvider({
     location: false,
   });
 
+  // Function to sync permissions with the server database
+  const syncPermissionsWithServer = async (userId?: string) => {
+    try {
+      // Skip if no userId is provided (user not authenticated)
+      if (!userId) {
+        return;
+      }
+
+      // Make API call to update permissions in database
+      const response = await fetch("/api/user-permissions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          cameraAccess: permissions.camera,
+          locationAccess: permissions.location,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to sync permissions with server");
+      }
+    } catch (error) {
+      console.error("Error syncing permissions with server:", error);
+    }
+  };
+
+  // Function to fetch permissions from server
+  const fetchPermissionsFromServer = async (
+    userId: string,
+  ): Promise<PermissionState | null> => {
+    try {
+      const response = await fetch(`/api/user-permissions?userId=${userId}`);
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+
+      if (!data.permissions) {
+        return null;
+      }
+
+      return {
+        camera: data.permissions.cameraAccess,
+        location: data.permissions.locationAccess,
+        lastUpdated: data.permissions.lastUpdated,
+      };
+    } catch (error) {
+      console.error("Error fetching permissions from server:", error);
+      return null;
+    }
+  };
+
+  // Request Functions for permissions
+
+  const requestAllPermissions = async () => {
+    const cameraResult = await requestCameraPermission();
+    const locationResult = await requestLocationPermission();
+
+    return {
+      camera: cameraResult,
+      location: locationResult.success,
+      coordinates: locationResult.coordinates,
+    };
+  };
+  const requestCameraPermission = async (): Promise<boolean> => {
+    try {
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera access is not supported by this browser");
+      }
+
+      // Request camera access
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment",
+        },
+      });
+
+      // Clean up the stream after getting permission
+      stream.getTracks().forEach((track) => track.stop());
+
+      // Update and store permissions
+      const newPermissions = {
+        ...permissions,
+        camera: true,
+      };
+      setPermissions(newPermissions);
+      storePermissions(newPermissions);
+
+      // Try to sync with server if user is logged in
+      const userId =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("userId")
+          : null;
+      if (userId) {
+        await syncPermissionsWithServer(userId);
+      }
+
+      return true;
+    } catch (error) {
+      // Provide better error logging
+      const errorMessage =
+        error instanceof Error ? error.message : JSON.stringify(error);
+      console.error("Error requesting camera permission:", errorMessage);
+
+      // Update permissions to false if request fails
+      const newPermissions = {
+        ...permissions,
+        camera: false,
+      };
+      setPermissions(newPermissions);
+      storePermissions(newPermissions);
+
+      // Try to sync with server if user is logged in
+      const userId =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("userId")
+          : null;
+      if (userId) {
+        await syncPermissionsWithServer(userId);
+      }
+
+      return false;
+    }
+  };
+  const requestLocationPermission = async (): Promise<{
+    success: boolean;
+    coordinates?: LocationCoordinates;
+  }> => {
+    try {
+      // Check if geolocation is available
+      if (!navigator.geolocation) {
+        throw new Error("Geolocation is not supported by this browser");
+      }
+
+      // Request location with a timeout to prevent long-hanging requests
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            reject(new Error("Location permission request timed out"));
+          }, 10000); // 10 second timeout
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              clearTimeout(timeoutId);
+              resolve(position);
+            },
+            (error) => {
+              clearTimeout(timeoutId);
+              // Handle geolocation error with better error message
+              const errorCode = (error as GeolocationPositionError).code;
+              const errorMessage =
+                (error as GeolocationPositionError).message || "Unknown error";
+
+              if (errorCode === 1) {
+                reject(new Error("Location permission denied by user"));
+              } else if (errorCode === 2) {
+                reject(new Error("Location position unavailable"));
+              } else if (errorCode === 3) {
+                reject(new Error("Location request timed out"));
+              } else {
+                reject(new Error(`Location error: ${errorMessage}`));
+              }
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 8000,
+              maximumAge: 0,
+            },
+          );
+        },
+      );
+
+      // Extract and store coordinates
+      const coordinates: LocationCoordinates = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Store coordinates in localStorage
+      storeLocationCoordinates(coordinates);
+
+      // Update and store permissions
+      const newPermissions = {
+        ...permissions,
+        location: true,
+      };
+      setPermissions(newPermissions);
+      storePermissions(newPermissions);
+
+      // Try to sync with server if user is logged in
+      const userId =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("userId")
+          : null;
+      if (userId) {
+        await syncPermissionsWithServer(userId);
+      }
+
+      return { success: true, coordinates };
+    } catch (error) {
+      // Provide better error logging
+      const errorMessage =
+        error instanceof Error ? error.message : JSON.stringify(error);
+      console.error("Error requesting location permission:", errorMessage);
+
+      // Clear any stored coordinates on error
+      clearStoredCoordinates();
+
+      // Update permissions to false if request fails
+      const newPermissions = {
+        ...permissions,
+        location: false,
+      };
+      setPermissions(newPermissions);
+      storePermissions(newPermissions);
+
+      // Try to sync with server if user is logged in
+      const userId =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("userId")
+          : null;
+      if (userId) {
+        await syncPermissionsWithServer(userId);
+      }
+
+      return { success: false };
+    }
+  };
+
+  // Helper Functions for Permissions Context
   const isIOSDevice = (): boolean => {
     if (typeof navigator === "undefined") return false;
     return (
@@ -45,27 +297,20 @@ export function PermissionsProvider({
     );
   };
 
+  // This is a non-intrusive check that won't trigger browser permission prompts
   const checkPermissions = async () => {
     try {
-      // Detect mobile platforms
-      const isIOS = isIOSDevice();
-      const isAndroid =
-        typeof navigator !== "undefined"
-          ? /Android/.test(navigator.userAgent)
-          : false;
-      const isMobile = isMobileDevice();
-
       // First try to get permissions from localStorage for consistency
       const storedPermissions = getStoredPermissions();
 
       // Try to get user ID if available (depends on your auth implementation)
-      // This is a placeholder - replace with your actual auth system
       const userId =
         typeof localStorage !== "undefined"
           ? localStorage.getItem("userId")
           : null;
 
       // If user is logged in, try to fetch permissions from server
+      // This won't trigger browser permission prompts, it just checks the database
       let serverPermissions: PermissionState | null = null;
       if (userId) {
         serverPermissions = await fetchPermissionsFromServer(userId);
@@ -86,85 +331,89 @@ export function PermissionsProvider({
         return;
       }
 
-      // For iOS, always use stored permissions to avoid prompts
-      // iOS doesn't support the Permissions API well and will prompt users repeatedly
-      if (isIOS) {
-        setPermissions(storedPermissions);
-        setInitialized(true);
-        return;
-      }
+      // Use stored permissions without triggering any browser prompts
+      setPermissions(storedPermissions);
+      setInitialized(true);
 
-      // On other mobile devices, prioritize stored permissions to avoid prompts
-      if (
-        isMobile &&
-        (storedPermissions.camera || storedPermissions.location)
-      ) {
-        setPermissions(storedPermissions);
-        setInitialized(true);
-        return;
-      }
-
-      // Only use permissions API if it's properly supported
-      // Many mobile browsers have incomplete implementations
+      // Check permissions state using the Permissions API if available
+      // Note: This is a passive check that doesn't trigger prompts
       if (
         navigator.permissions &&
         typeof navigator.permissions.query === "function" &&
-        !isIOS
+        !isIOSDevice()
       ) {
-        // iOS has issues with Permissions API
         try {
-          // Check camera permission
+          // These queries only check the current state without prompting
           const cameraResult = await navigator.permissions.query({
             name: "camera" as PermissionName,
           });
-
-          // Check geolocation permission
           const locationResult = await navigator.permissions.query({
             name: "geolocation",
           });
 
-          const newPermissions = {
+          // Update our state based on what we find
+          const permissionState = {
+            ...storedPermissions,
             camera: cameraResult.state === "granted",
             location: locationResult.state === "granted",
           };
 
-          setPermissions(newPermissions);
-          storePermissions(newPermissions);
+          setPermissions(permissionState);
+          storePermissions(permissionState);
 
-          // Listen for changes in permission states
-          cameraResult.addEventListener("change", async () => {
-            const newCameraState = cameraResult.state === "granted";
-            const updatedPermissions = {
-              ...permissions,
-              camera: newCameraState,
-            };
-            setPermissions(updatedPermissions);
-            storePermissions(updatedPermissions);
+          // Set up listeners for future changes
+          cameraResult.addEventListener("change", () => {
+            setPermissions((prev) => ({
+              ...prev,
+              camera: cameraResult.state === "granted",
+            }));
           });
 
           locationResult.addEventListener("change", () => {
-            const newLocationState = locationResult.state === "granted";
-            const updatedPermissions = {
-              ...permissions,
-              location: newLocationState,
-            };
-            setPermissions(updatedPermissions);
-            storePermissions(updatedPermissions);
+            setPermissions((prev) => ({
+              ...prev,
+              location: locationResult.state === "granted",
+            }));
           });
         } catch (permError) {
-          // Fall back to localStorage if permissions API fails
-          setPermissions(storedPermissions);
+          console.log(
+            "Permission query failed, using stored values",
+            permError,
+          );
+          // Non-critical error, we already set permissions from storage
         }
-      } else {
-        // Use localStorage-based permissions when Permissions API isn't reliable
-        setPermissions(storedPermissions);
       }
-
-      setInitialized(true);
     } catch (error) {
       console.error("Error checking permissions:", error);
       // Still mark as initialized to not block the app
       setInitialized(true);
+    }
+  };
+  // Helper to store location coordinates in localStorage
+  const storeLocationCoordinates = (coordinates: LocationCoordinates) => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("location_coordinates", JSON.stringify(coordinates));
+    }
+  };
+
+  // Helper to get stored location coordinates
+  const getStoredCoordinates = (): LocationCoordinates | null => {
+    if (typeof localStorage === "undefined") {
+      return null;
+    }
+    try {
+      const storedCoordinates = localStorage.getItem("location_coordinates");
+      return storedCoordinates ? JSON.parse(storedCoordinates) : null;
+    } catch (e) {
+      console.error("Error retrieving stored coordinates:", e);
+      return null;
+    }
+  };
+
+  // Helper to clear stored location coordinates
+  const clearStoredCoordinates = () => {
+    if (typeof localStorage !== "undefined") {
+      localStorage.removeItem("location_coordinates");
     }
   };
 
@@ -198,243 +447,7 @@ export function PermissionsProvider({
     }
   };
 
-  // Function to sync permissions with the server database
-  const syncPermissionsWithServer = async (userId?: string) => {
-    try {
-      // Skip if no userId is provided (user not authenticated)
-      if (!userId) {
-        return;
-      }
-
-      // Make API call to update permissions in database
-      const response = await fetch("/api/user-permissions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          cameraAccess: permissions.camera,
-          locationAccess: permissions.location,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to sync permissions with server");
-      }
-    } catch (error) {
-      console.error("Error syncing permissions with server:", error);
-      // Continue app execution even if sync fails
-    }
-  };
-
-  // Function to fetch permissions from server
-  const fetchPermissionsFromServer = async (
-    userId: string,
-  ): Promise<PermissionState | null> => {
-    try {
-      const response = await fetch(`/api/user-permissions?userId=${userId}`);
-
-      if (!response.ok) {
-        return null;
-      }
-
-      const data = await response.json();
-
-      if (!data.permissions) {
-        return null;
-      }
-
-      return {
-        camera: data.permissions.cameraAccess,
-        location: data.permissions.locationAccess,
-        lastUpdated: data.permissions.lastUpdated,
-      };
-    } catch (error) {
-      console.error("Error fetching permissions from server:", error);
-      return null;
-    }
-  };
-
-  const requestCameraPermission = async (): Promise<boolean> => {
-    try {
-      // Check if permission was already granted previously
-      if (permissions.camera) {
-        return true;
-      }
-
-      // For iOS: If we've already prompted, use the stored permission state
-      // to avoid prompting again, unless it's been explicitly requested
-      if (isIOSDevice() && permissions.hasPromptedCamera) {
-        return permissions.camera;
-      }
-
-      // Request camera access
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment",
-        },
-      });
-
-      // Clean up the stream after getting permission
-      stream.getTracks().forEach((track) => track.stop());
-
-      // Update and store permissions
-      const newPermissions = {
-        ...permissions,
-        camera: true,
-        // Mark that we've prompted for camera permission (for iOS)
-        hasPromptedCamera: true,
-      };
-      setPermissions(newPermissions);
-      storePermissions(newPermissions);
-
-      // Try to sync with server if user is logged in
-      const userId =
-        typeof localStorage !== "undefined"
-          ? localStorage.getItem("userId")
-          : null;
-      if (userId) {
-        await syncPermissionsWithServer(userId);
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error requesting camera permission:", error);
-
-      // Check if it's a NotAllowedError, meaning the user explicitly denied
-      const isDenied =
-        error instanceof DOMException &&
-        (error.name === "NotAllowedError" ||
-          error.name === "PermissionDeniedError");
-
-      // Only update permissions if we have a clear denial
-      if (isDenied) {
-        const newPermissions = {
-          ...permissions,
-          camera: false,
-          // Mark that we've prompted for camera permission (for iOS)
-          hasPromptedCamera: true,
-        };
-        setPermissions(newPermissions);
-        storePermissions(newPermissions);
-
-        // Try to sync with server if user is logged in
-        const userId =
-          typeof localStorage !== "undefined"
-            ? localStorage.getItem("userId")
-            : null;
-        if (userId) {
-          await syncPermissionsWithServer(userId);
-        }
-      }
-
-      return false;
-    }
-  };
-
-  const requestLocationPermission = async (): Promise<boolean> => {
-    try {
-      // Check if permission was already granted previously
-      if (permissions.location) {
-        return true;
-      }
-
-      // For iOS: If we've already prompted, use the stored permission state
-      // to avoid prompting again, unless it's been explicitly requested
-      if (isIOSDevice() && permissions.hasPromptedLocation) {
-        return permissions.location;
-      }
-
-      // Request location with a timeout to prevent long-hanging requests
-      await new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          reject(new Error("Location permission request timed out"));
-        }, 10000); // 10 second timeout
-
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            clearTimeout(timeoutId);
-            resolve(position);
-          },
-          (error) => {
-            clearTimeout(timeoutId);
-            reject(error);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 8000,
-            maximumAge: 0,
-          },
-        );
-      });
-
-      // Update and store permissions
-      const newPermissions = {
-        ...permissions,
-        location: true,
-        // Mark that we've prompted for location permission (for iOS)
-        hasPromptedLocation: true,
-      };
-      setPermissions(newPermissions);
-      storePermissions(newPermissions);
-
-      // Try to sync with server if user is logged in
-      const userId =
-        typeof localStorage !== "undefined"
-          ? localStorage.getItem("userId")
-          : null;
-      if (userId) {
-        await syncPermissionsWithServer(userId);
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error requesting location permission:", error);
-
-      // Check if error is a permission denial
-      const isDenied =
-        error instanceof GeolocationPositionError &&
-        error.code === error.PERMISSION_DENIED;
-
-      // Only update stored permissions if we have a clear denial
-      if (isDenied) {
-        const newPermissions = {
-          ...permissions,
-          location: false,
-          // Mark that we've prompted for location permission (for iOS)
-          hasPromptedLocation: true,
-        };
-        setPermissions(newPermissions);
-        storePermissions(newPermissions);
-
-        // Try to sync with server if user is logged in
-        const userId =
-          typeof localStorage !== "undefined"
-            ? localStorage.getItem("userId")
-            : null;
-        if (userId) {
-          await syncPermissionsWithServer(userId);
-        }
-      }
-
-      return false;
-    }
-  };
-
-  const isMobileDevice = (): boolean => {
-    const userAgent =
-      navigator.userAgent ||
-      (navigator as Navigator & { vendor?: string }).vendor ||
-      (window as Window & { opera?: string }).opera ||
-      "";
-    return (
-      /android|iPad|iPhone|iPod/i.test(userAgent) ||
-      typeof (window as Window & { orientation?: unknown }).orientation !==
-        "undefined"
-    );
-  };
-
+  // Reset all permissions to default (false)
   const resetPermissions = () => {
     const defaultPermissions = {
       camera: false,
@@ -455,15 +468,32 @@ export function PermissionsProvider({
     }
   };
 
+  // Reset only camera permission to allow re-requesting
+  const resetCameraPermission = () => {
+    const updatedPermissions = {
+      ...permissions,
+      camera: false,
+    };
+    setPermissions(updatedPermissions);
+    storePermissions(updatedPermissions);
+  };
+
+  // Reset only location permission to allow re-requesting
+  const resetLocationPermission = () => {
+    const updatedPermissions = {
+      ...permissions,
+      location: false,
+    };
+    setPermissions(updatedPermissions);
+    storePermissions(updatedPermissions);
+  };
+
+  /* initializing the permissions state when the component mounts. */
   useEffect(() => {
-    // For iOS, we initialize with stored values and avoid permission API calls
-    if (typeof window !== "undefined" && isIOSDevice()) {
+    if (typeof window !== "undefined") {
       const storedPermissions = getStoredPermissions();
       setPermissions(storedPermissions);
       setInitialized(true);
-    } else {
-      // For other platforms, proceed with normal permission checking
-      checkPermissions();
     }
   }, []);
 
@@ -473,10 +503,13 @@ export function PermissionsProvider({
         permissions,
         requestCameraPermission,
         requestLocationPermission,
+        requestAllPermissions,
         checkPermissions,
         resetPermissions,
-        isMobileDevice,
-        syncPermissionsWithServer,
+        resetCameraPermission,
+        resetLocationPermission,
+        getStoredCoordinates,
+        clearStoredCoordinates,
         initialized,
       }}
     >

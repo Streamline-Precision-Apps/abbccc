@@ -3,7 +3,7 @@ import { HTMLAttributes, FC } from "react";
 import { cn } from "@/components/(reusable)/utils";
 // add mt-24 to banner to bring it down lower
 const BannerVariants = cva(
-  "p-3", //this applies to all variants
+  "p-3 ", //this applies to all variants
   {
     variants: {
       background: {
@@ -25,7 +25,7 @@ const BannerVariants = cva(
       position: "flex",
       size: "full",
     },
-  }
+  },
 );
 
 interface BannerProps

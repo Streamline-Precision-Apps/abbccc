@@ -1,5 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  use,
+} from "react";
 import { uploadFirstSignature } from "@/actions/userActions";
 import { Texts } from "../(reusable)/texts";
 import { Holds } from "../(reusable)/holds";
@@ -7,15 +13,16 @@ import { useTranslations } from "next-intl";
 import { Images } from "../(reusable)/images";
 import { ProgressBar } from "./progressBar";
 import { Button } from "../ui/button";
-import { NModals } from "../(reusable)/newmodals";
 import Signature from "@/app/(routes)/dashboard/clock-out/(components)/injury-verification/Signature";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import SignatureSetUpModal from "./signatureSetupModal";
 
 interface SignatureSetupProps {
   id: string;
   handleNextStep: () => void;
   totalSteps: number;
   currentStep: number;
+  setStep: Dispatch<SetStateAction<number>>;
 }
 
 const SignatureSetup: React.FC<SignatureSetupProps> = ({
@@ -23,6 +30,7 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
   handleNextStep,
   totalSteps,
   currentStep,
+  setStep,
 }) => {
   const [base64String, setBase64String] = useState<string | null>(null);
   const [editSignatureModalOpen, setEditSignatureModalOpen] = useState(false);
@@ -41,6 +49,12 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
       return () => clearTimeout(timer);
     }
   }, [showBanner]);
+
+  useEffect(() => {
+    if (base64String) {
+      setStep(6); // Move to the next step when a signature is added
+    }
+  }, [base64String]);
 
   const handleSubmitImage = async () => {
     if (!base64String) {
@@ -117,42 +131,38 @@ const SignatureSetup: React.FC<SignatureSetupProps> = ({
           open={editSignatureModalOpen}
           onOpenChange={() => setEditSignatureModalOpen(false)}
         >
+          <DialogHeader>
+            <DialogTitle className="p-0"></DialogTitle>
+          </DialogHeader>
           <DialogContent className="max-w-3xl w-full rounded-lg">
             <div className="mt-4">
-              <Signature
+              <SignatureSetUpModal
                 setBase64String={setBase64String}
                 closeModal={() => setEditSignatureModalOpen(false)}
               />
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* <NModals
-          handleClose={() => setEditSignatureModalOpen(false)}
-          size={"xlWS"}
-          isOpen={editSignatureModalOpen}
-        >
-          <Holds className="w-full h-full justify-center items-center">
-            <Signature
-              setBase64String={setBase64String}
-              closeModal={() => setEditSignatureModalOpen(false)}
-            />
-          </Holds>
-        </NModals> */}
       </div>
 
       {/*Footer - fixed at bottom*/}
       <div className="w-full h-[10%] bg-white border-t border-slate-200 px-4 py-2">
         <Button
           className={
-            base64String ? "bg-app-dark-blue w-full" : "bg-gray-300 w-full"
+            base64String ? "bg-green-500 w-full" : "bg-gray-300 w-full"
           }
           onClick={handleSubmitImage}
           disabled={isSubmitting}
         >
-          <p className="text-white font-semibold text-base">
-            {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
-          </p>
+          {currentStep === totalSteps ? (
+            <p className="text-white font-semibold text-base">
+              {isSubmitting ? `${t("Submitting")}` : `${t("CompleteSetup")}`}
+            </p>
+          ) : (
+            <p className="text-white font-semibold text-base">
+              {isSubmitting ? `${t("Submitting")}` : `${t("Next")}`}
+            </p>
+          )}
         </Button>
       </div>
     </div>

@@ -23,6 +23,7 @@ import { Titles } from "@/components/(reusable)/titles";
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Options = {
   id: string;
@@ -69,29 +70,24 @@ export default function TruckVerificationStep({
   const { savedCommentData, setCommentData } = useCommentData();
   const router = useRouter();
   const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
-
+  const { permissions, getStoredCoordinates } = usePermissions();
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  // const fetchRecentTimeSheetId = async (): Promise<number | null> => {
-  //   try {
-  //     const res = await fetch("/api/getRecentTimecard");
-  //     const data = await res.json();
-  //     return data?.id || null;
-  //   } catch (error) {
-  //     console.error("Error fetching recent timesheet ID:", error);
-  //     return null;
-  //   }
-  // };
-
   const handleSubmit = async () => {
-    if (!id) {
-      console.error("User ID does not exist");
-      return;
-    }
-    setLoading(true);
-
     try {
+      setLoading(true);
+      if (!id) {
+        console.error("User ID does not exist");
+        return;
+      }
+      // Check if location permissions are granted if not clock in does not work
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
+
+      const getStoredCoordinatesResult = getStoredCoordinates();
       const formData = new FormData();
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id?.toString() || "");
@@ -105,6 +101,15 @@ export default function TruckVerificationStep({
       formData.append("truck", truck?.id || ""); // sets truck ID if applicable
       // formData.append("trailer", trailer?.id || ""); // sets trailer ID if applicable
       formData.append("equipment", equipment?.id || ""); // sets equipment Id if applicable
+      // fetch coordinates from permissions context
+      formData.append(
+        "clockInLat",
+        getStoredCoordinatesResult?.latitude.toString() || "",
+      );
+      formData.append(
+        "clockInLong",
+        getStoredCoordinatesResult?.longitude.toString() || "",
+      );
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
@@ -126,6 +131,14 @@ export default function TruckVerificationStep({
           savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
+        formData.append(
+          "clockOutLat",
+          getStoredCoordinatesResult?.latitude.toString() || "",
+        );
+        formData.append(
+          "clockOutLong",
+          getStoredCoordinatesResult?.longitude.toString() || "",
+        );
       }
 
       // Use the new transaction-based function

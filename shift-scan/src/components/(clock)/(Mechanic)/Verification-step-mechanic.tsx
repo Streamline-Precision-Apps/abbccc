@@ -27,6 +27,7 @@ import { useSession } from "next-auth/react";
 import Spinner from "@/components/(animations)/spinner";
 import { TitleBoxes } from "@/components/(reusable)/titleBoxes";
 import { useTimeSheetData } from "@/app/context/TimeSheetIdContext";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Option = {
   id: string;
@@ -65,6 +66,7 @@ export default function MechanicVerificationStep({
   const { setCostCode } = useSavedCostCode();
   const costCode = "#00.50 Mechanics";
   const { savedTimeSheetData, refetchTimesheet } = useTimeSheetData();
+  const { permissions, getStoredCoordinates } = usePermissions();
 
   useEffect(() => {
     setCostCode(costCode);
@@ -73,25 +75,19 @@ export default function MechanicVerificationStep({
   if (!session) return null; // Conditional rendering for session
   const { id } = session.user;
 
-  // const fetchRecentTimeSheetId = async (): Promise<string | null> => {
-  //   try {
-  //     const res = await fetch("/api/getRecentTimecard");
-  //     const data = await res.json();
-  //     return data?.id || null;
-  //   } catch (error) {
-  //     console.error("Error fetching recent timesheet ID:", error);
-  //     return null;
-  //   }
-  // };
-
   const handleSubmit = async () => {
-    if (!id) {
-      console.error("User ID does not exist");
-      return;
-    }
-    setLoading(true);
-
     try {
+      setLoading(true);
+      if (!id) {
+        console.error("User ID does not exist");
+        return;
+      }
+      // Check if location permissions are granted if not clock in does not work
+      if (!permissions.location) {
+        console.error("Location permissions are required to clock in.");
+        return;
+      }
+      const getStoredCoordinatesResult = getStoredCoordinates();
       const formData = new FormData();
       formData.append("submitDate", new Date().toISOString());
       formData.append("userId", id);
@@ -100,6 +96,15 @@ export default function MechanicVerificationStep({
       formData.append("costcode", costCode);
       formData.append("startTime", new Date().toISOString());
       formData.append("workType", role);
+      // fetch coordinates from permissions context
+      formData.append(
+        "clockInLat",
+        getStoredCoordinatesResult?.latitude.toString() || "",
+      );
+      formData.append(
+        "clockInLong",
+        getStoredCoordinatesResult?.longitude.toString() || "",
+      );
 
       // If switching jobs, include the previous timesheet ID
       if (type === "switchJobs") {
@@ -120,6 +125,14 @@ export default function MechanicVerificationStep({
           savedCommentData?.id.toString() || "",
         );
         formData.append("type", "switchJobs"); // added to switch jobs
+        formData.append(
+          "clockOutLat",
+          getStoredCoordinatesResult?.latitude.toString() || "",
+        );
+        formData.append(
+          "clockOutLong",
+          getStoredCoordinatesResult?.longitude.toString() || "",
+        );
       }
 
       // Use the new transaction-based function
