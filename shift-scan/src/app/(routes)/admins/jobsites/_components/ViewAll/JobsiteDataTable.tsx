@@ -26,6 +26,7 @@ import { JobsiteSummary } from "../useJobsiteData";
 import { getJobsiteTableColumns } from "./jobsiteTableColumns";
 import { useRouter } from "next/navigation";
 import LoadingJobsiteTableState from "./loadingJobsiteTableState";
+import { ArchiveIcon, ArchiveRestore } from "lucide-react";
 
 interface JobsiteDataTableProps {
   data: JobsiteSummary[];
@@ -40,6 +41,8 @@ interface JobsiteDataTableProps {
   onEditClick?: (id: string) => void;
   onDeleteClick?: (id: string) => void;
   onQrClick?: (id: string) => void;
+  onArchiveClick?: (id: string) => void;
+  onRestoreClick?: (id: string) => void;
   showPendingOnly: boolean;
 }
 
@@ -56,6 +59,8 @@ export function JobsiteDataTable({
   onEditClick,
   onDeleteClick,
   onQrClick,
+  onArchiveClick,
+  onRestoreClick,
   showPendingOnly,
 }: JobsiteDataTableProps) {
   const router = useRouter();
@@ -107,8 +112,38 @@ export function JobsiteDataTable({
                 <TooltipContent>Edit</TooltipContent>
               </Tooltip>
 
-              {/* Delete button */}
-              {row.original._count?.TimeSheets === 0 ? (
+              {/* Archive/Restore button */}
+              {row.original._count?.TimeSheets > 0 ? (
+                // Show archive/restore if there are linked timesheets
+                item.status === "ACTIVE" ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onArchiveClick?.(item.id)}
+                      >
+                        <ArchiveIcon className="h-4 w-4 cursor-pointer text-red-600" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Archive</TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onRestoreClick?.(item.id)}
+                      >
+                        <ArchiveRestore className="h-4 w-4 cursor-pointer text-green-600" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Unarchive</TooltipContent>
+                  </Tooltip>
+                )
+              ) : (
+                // Show delete button if no linked timesheets
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -125,28 +160,6 @@ export function JobsiteDataTable({
                   </TooltipTrigger>
                   <TooltipContent>Delete</TooltipContent>
                 </Tooltip>
-              ) : (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="opacity-50 "
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {}}
-                    >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Delete"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white text-red-500 border border-red-300">
-                    <span className="">Cannot delete:</span>
-                    <br />
-                    <span className="">linked timesheets</span>
-                  </TooltipContent>
-                </Tooltip>
               )}
             </div>
           );
@@ -154,7 +167,14 @@ export function JobsiteDataTable({
       };
     }
     return cols;
-  }, [router, onEditClick, onDeleteClick, onQrClick]);
+  }, [
+    router,
+    onEditClick,
+    onDeleteClick,
+    onQrClick,
+    onArchiveClick,
+    onRestoreClick,
+  ]);
 
   const table = useReactTable({
     data,

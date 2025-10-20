@@ -517,6 +517,56 @@ export async function deleteJobsite(id: string) {
   }
 }
 
+export async function archiveJobsite(id: string) {
+  try {
+    await prisma.jobsite.update({
+      where: { id },
+      data: {
+        status: "ARCHIVED",
+      },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("jobsites");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+    revalidatePath("/admins/jobsites");
+
+    return { success: true, message: "Jobsite archived successfully" };
+  } catch (error) {
+    console.error("Error archiving jobsite:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function restoreJobsite(id: string) {
+  try {
+    await prisma.jobsite.update({
+      where: { id },
+      data: {
+        status: "ACTIVE",
+      },
+    });
+
+    // Revalidate relevant paths and tags
+    revalidateTag("jobsites");
+    revalidateTag("assets");
+    revalidatePath("/admins/assets");
+    revalidatePath("/admins/jobsites");
+
+    return { success: true, message: "Jobsite restored successfully" };
+  } catch (error) {
+    console.error("Error restoring jobsite:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 /**
  * Server action to delete an equipment asset
  * @param id The ID of the equipment to delete

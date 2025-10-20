@@ -15,6 +15,7 @@ type JobCodes = {
   id: string;
   qrId: string;
   name: string;
+  status?: string;
 };
 
 type CostCodes = {
@@ -28,6 +29,7 @@ type EquipmentCode = {
   qrId: string;
   name: string;
   equipmentTag: EquipmentTags;
+  status?: string;
 };
 
 const JobsitesSchema = z.array(
@@ -62,6 +64,7 @@ const EquipmentSchema = z
       qrId: z.string(),
       name: z.string(),
       equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
+      status: z.string().optional(),
     }),
   )
   .nullable();
