@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { bg } from "date-fns/locale";
 
 // Define the column configuration
 export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
@@ -36,45 +37,60 @@ export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
       const getAccessLevelTag = (permission: string) => {
         const permissionDisplay =
           permission.slice(0, 1) + permission.slice(1).toLowerCase();
-        let bgColor = "bg-gray-100";
+        let bgColor = "bg-white-100";
         let textColor = "text-gray-600";
+        let border = "border-gray-200";
 
         switch (permission) {
           case "SUPERADMIN":
-            bgColor = "bg-purple-100";
+            bgColor = "bg-blue-100";
             textColor = "text-purple-600";
+            border = "border-purple-400";
             break;
           case "ADMIN":
             bgColor = "bg-blue-100";
-            textColor = "text-blue-600";
+            textColor = "text-indigo-600";
+            border = "border-indigo-400";
             break;
           case "MANAGER":
-            bgColor = "bg-orange-100";
-            textColor = "text-orange-600";
+            bgColor = "bg-blue-100";
+            textColor = "text-blue-600";
+            border = "border-blue-400";
             break;
           case "USER":
-            bgColor = "bg-green-100";
-            textColor = "text-green-600";
+            bgColor = "bg-blue-100";
+            textColor = "text-violet-600";
+            border = "border-violet-400";
             break;
         }
 
         return (
-          <span
-            className={`${bgColor} ${textColor} px-2 py-1 rounded-lg text-xs`}
-          >
-            {permissionDisplay}
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={`${bgColor} ${textColor} ${border} border px-2 py-1 rounded-lg text-xs`}
+              >
+                {permissionDisplay}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              className={`bg-white backdrop-blur border text-black border-black`}
+            >
+              Permission
+            </TooltipContent>
+          </Tooltip>
         );
       };
 
       // Helper function to get active/inactive tag
       const getActiveStatusTag = (isActive: boolean) => {
         return isActive ? (
-          <span className="bg-green-100 text-green-600 px-2 py-1 rounded-lg text-xs">
+          <span className="bg-green-100 text-green-600 border-2 border-green-200 px-2 py-1 rounded-lg text-xs">
             Active
           </span>
         ) : (
-          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+          <span className="bg-gray-100 text-gray-600 border-2 border-gray-200 px-2 py-1 rounded-lg text-xs">
             Inactive
           </span>
         );
@@ -130,25 +146,25 @@ export const personnelTableColumns: ColumnDef<PersonnelSummary>[] = [
             </div>
 
             {/* Second row: Roles on left; Account Setup on right (if needed) */}
-            <div className="flex justify-between items-center w-full mt-1">
-              <div className="flex items-center gap-1">
+            <div className="flex justify-between items-center w-full pt-1">
+              <div className="flex items-center gap-2">
                 {personnel.truckView && (
-                  <div className="bg-emerald-300 rounded-full px-2 py-1">
+                  <div className="bg-emerald-100 border border-emerald-500 text-emerald-800 rounded-lg px-2 py-1">
                     <p className="text-xs">Trucking</p>
                   </div>
                 )}
                 {personnel.tascoView && (
-                  <div className="bg-red-300 rounded-full px-2 py-1">
+                  <div className="bg-red-100 border border-red-500 text-red-800 rounded-lg px-2 py-1">
                     <p className="text-xs">Tasco</p>
                   </div>
                 )}
                 {personnel.mechanicView && (
-                  <div className="bg-blue-400 rounded-full px-2 py-1">
+                  <div className="bg-blue-100 border border-blue-500 text-blue-800 rounded-lg px-2 py-1">
                     <p className="text-xs">Mechanic</p>
                   </div>
                 )}
                 {personnel.laborView && (
-                  <div className="bg-sky-300 rounded-full px-2 py-1">
+                  <div className="bg-sky-100 border border-sky-500 text-sky-800 rounded-lg px-2 py-1">
                     <p className="text-xs">General</p>
                   </div>
                 )}

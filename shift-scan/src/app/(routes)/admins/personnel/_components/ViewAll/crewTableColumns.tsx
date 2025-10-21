@@ -44,13 +44,13 @@ const crewType = (crew: CrewData) => {
 const getCrewTypeColor = (crewType: string) => {
   switch (crewType) {
     case "MECHANIC":
-      return "bg-blue-400"; // Same as mechanicView
+      return "bg-blue-100 border-blue-400 text-blue-600"; // Same as mechanicView
     case "TRUCK_DRIVER":
-      return "bg-emerald-300"; // Same as truckView
+      return "bg-emerald-100 border-emerald-400 text-emerald-600"; // Same as truckView
     case "TASCO":
-      return "bg-red-300"; // Same as tascoView
+      return "bg-red-100 border-red-400 text-red-600"; // Same as tascoView
     default:
-      return "bg-sky-300"; // Same as laborView/General
+      return "bg-sky-100 border-sky-400 text-sky-600"; // Same as laborView/General
   }
 };
 
@@ -83,9 +83,10 @@ export const crewTableColumns: ColumnDef<CrewData>[] = [
     header: "Crew Type",
     cell: ({ row }) => {
       const bgColor = getCrewTypeColor(row.original.crewType);
+
       return (
         <div className="text-xs text-center">
-          <span className={`${bgColor} px-3 py-1 rounded-xl`}>
+          <span className={`${bgColor} border px-2 py-1 rounded-lg`}>
             {row.original.crewType ? crewType(row.original) : ""}
           </span>
         </div>

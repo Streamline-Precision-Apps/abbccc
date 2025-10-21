@@ -182,20 +182,20 @@ const PersonnelFilters: React.FC<PersonnelFilterPopoverProps> = ({
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-row gap-2 pt-2 border-t">
+            <div className="flex flex-row justify-between gap-2 pt-2 border-t">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleClearFilters}
-                className="flex-1"
+                onClick={
+                  getActiveFilterCount() > 0
+                    ? handleClearFilters
+                    : () => setOpen(false)
+                }
+                className=""
               >
-                Clear All
+                {getActiveFilterCount() > 0 ? "Clear All" : "Close"}
               </Button>
-              <Button
-                size="sm"
-                onClick={handleApplyFilters}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
-              >
+              <Button size="sm" onClick={handleApplyFilters} className=" ">
                 Apply Filters
               </Button>
             </div>

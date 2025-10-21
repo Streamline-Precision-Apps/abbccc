@@ -121,22 +121,28 @@ export const usePersonnelData = () => {
         setLoading(true);
         let url = "";
         const encodedSearch = encodeURIComponent(searchTerm.trim());
-        
+
         // Build filter query parameters
         const filterParams = new URLSearchParams();
-        
+
         if (useFilters) {
           if (appliedFilters.roles.length > 0) {
-            filterParams.append('roles', appliedFilters.roles.join(','));
+            filterParams.append("roles", appliedFilters.roles.join(","));
           }
           if (appliedFilters.accessLevel.length > 0) {
-            filterParams.append('accessLevel', appliedFilters.accessLevel.join(','));
+            filterParams.append(
+              "accessLevel",
+              appliedFilters.accessLevel.join(","),
+            );
           }
           if (appliedFilters.accountSetup.length > 0) {
-            filterParams.append('accountSetup', appliedFilters.accountSetup.join(','));
+            filterParams.append(
+              "accountSetup",
+              appliedFilters.accountSetup.join(","),
+            );
           }
           if (appliedFilters.crews.length > 0) {
-            filterParams.append('crews', appliedFilters.crews.join(','));
+            filterParams.append("crews", appliedFilters.crews.join(","));
           }
         }
 
@@ -151,12 +157,15 @@ export const usePersonnelData = () => {
             url += `&${filterParams.toString()}`;
           }
         }
-        
+
         const response = await fetch(url);
         if (!response.ok) {
           // Check if we're being redirected to sign-in
-          if (response.status === 200 && response.headers.get('content-type')?.includes('text/html')) {
-            throw new Error('Authentication required - please sign in');
+          if (
+            response.status === 200 &&
+            response.headers.get("content-type")?.includes("text/html")
+          ) {
+            throw new Error("Authentication required - please sign in");
           }
           throw new Error(`HTTP error ${response.status}`);
         }
@@ -177,7 +186,15 @@ export const usePersonnelData = () => {
       }
     };
     fetchPersonnelSummaries();
-  }, [refreshKey, page, pageSize, showInactive, searchTerm, useFilters, appliedFilters]);
+  }, [
+    refreshKey,
+    page,
+    pageSize,
+    showInactive,
+    searchTerm,
+    useFilters,
+    appliedFilters,
+  ]);
 
   const openHandleEdit = (id: string) => {
     setPendingEditId(id);
