@@ -151,6 +151,8 @@ export default function useAllTimeSheetData({
 
   // set Filters  feature
   // Filter options state
+  const [exportFileName, setExportFileName] = useState<string | null>(null);
+
   const [refilterKey, setRefilterKey] = useState(0);
   const [filters, setFilters] = useState<FilterOptions>({
     jobsiteId: [],
@@ -611,6 +613,7 @@ export default function useAllTimeSheetData({
     selectedFields?: string[],
     selectedUsers?: string[],
     selectedCrew?: string[],
+    selectedProfitCenters?: string[],
     filterByUser?: boolean,
   ) => {
     try {
@@ -620,6 +623,7 @@ export default function useAllTimeSheetData({
         selectedFields,
         selectedUsers,
         selectedCrew,
+        selectedProfitCenters,
         filterByUser,
       );
 
@@ -715,7 +719,12 @@ export default function useAllTimeSheetData({
 
         const csv = `${header}\n${rows}`;
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        saveAs(blob, `timesheets_${new Date().toISOString().slice(0, 10)}.csv`);
+        saveAs(
+          blob,
+          exportFileName && exportFileName.length > 0
+            ? `${exportFileName.trim()}.csv`
+            : `timesheets_${new Date().toISOString().slice(0, 10)}.csv`,
+        );
       } else {
         // Export as XLSX
         // Create a clean object with properly formatted data to avoid type errors
@@ -754,7 +763,9 @@ export default function useAllTimeSheetData({
         const blob = new Blob([wbout], { type: "application/octet-stream" });
         saveAs(
           blob,
-          `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`,
+          exportFileName && exportFileName.length > 0
+            ? `${exportFileName.trim()}.xlsx`
+            : `timesheets_${new Date().toISOString().slice(0, 10)}.xlsx`,
         );
       }
 
@@ -825,5 +836,7 @@ export default function useAllTimeSheetData({
     handleClearFilters,
     crew,
     users,
+    exportFileName,
+    setExportFileName,
   };
 }

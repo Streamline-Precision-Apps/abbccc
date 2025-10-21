@@ -783,10 +783,10 @@ export async function adminExportTimesheets(
   selectedFields?: string[],
   selectedUsers?: string[],
   selectedCrew?: string[],
+  selectedProfitCenters?: string[],
   filterByUser?: boolean,
 ) {
   try {
-    
     if (!dateRange) {
       throw new Error("Date range is required for exporting timesheets.");
     }
@@ -818,6 +818,11 @@ export async function adminExportTimesheets(
             id: { in: selectedCrew },
           },
         },
+      };
+    }
+    if (selectedProfitCenters && selectedProfitCenters.length > 0) {
+      whereClause.Jobsite = {
+        code: { in: selectedProfitCenters },
       };
     }
     // Build dynamic orderBy
@@ -877,7 +882,6 @@ export async function adminExportTimesheets(
       },
       orderBy,
     });
-
 
     // advanced sorting
     let result: TimesheetExportData[] = [];

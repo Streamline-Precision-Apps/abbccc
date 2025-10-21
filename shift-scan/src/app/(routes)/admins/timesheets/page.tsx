@@ -79,6 +79,8 @@ export default function AdminTimesheets() {
     handleClearFilters,
     crew,
     users,
+    exportFileName,
+    setExportFileName,
   } = useAllTimeSheetData({
     jobsiteId,
     costCode,
@@ -249,6 +251,9 @@ export default function AdminTimesheets() {
           onExport={handleExport}
           crew={crew}
           users={users}
+          profitCenters={jobsites}
+          exportFileName={exportFileName}
+          setExportFileName={setExportFileName}
         />
       )}
       {/* ...existing code... */}

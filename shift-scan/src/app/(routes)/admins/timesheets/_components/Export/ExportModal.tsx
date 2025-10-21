@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, SetStateAction, Dispatch } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
+import { Input } from "@/components/ui/input";
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
@@ -46,11 +47,18 @@ interface ExportModalProps {
     selectedFields?: string[],
     selectedUsers?: string[],
     selectedCrew?: string[],
+    selectedProfitCenters?: string[],
     filterByUser?: boolean,
     filterData?: FilterData,
   ) => void;
   crew: CrewData[];
   users: User[];
+  profitCenters: {
+    code: string;
+    name: string;
+  }[];
+  exportFileName: string | null;
+  setExportFileName: Dispatch<SetStateAction<string | null>>;
 }
 
 // Convert actual user and crew data to ComboboxOption format
@@ -80,6 +88,23 @@ const formatCrews = (crews: CrewData[]): ComboboxOption[] => {
   );
 };
 
+const formatProfitCenters = (
+  profitCenters: {
+    code: string;
+    name: string;
+  }[],
+): ComboboxOption[] => {
+  return (
+    profitCenters
+      // Sort alphabetically by name
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((job) => ({
+        value: job.code,
+        label: job.name,
+      }))
+  );
+};
+
 export const EXPORT_FIELDS = [
   { key: "Id", label: "Id" },
   { key: "Date", label: "Date Worked" },
@@ -102,7 +127,15 @@ export const EXPORT_FIELDS = [
   { key: "TascoFLoads", label: "F loads" },
 ];
 
-const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
+const ExportModal = ({
+  onClose,
+  onExport,
+  crew,
+  users,
+  profitCenters,
+  exportFileName,
+  setExportFileName,
+}: ExportModalProps) => {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
@@ -116,8 +149,13 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
   const [showExportGuide, setShowExportGuide] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedCrews, setSelectedCrews] = useState<string[]>([]);
+  const [selectedProfitCenters, setSelectedProfitCenters] = useState<string[]>(
+    [],
+  );
   const [selectUserEnabled, setSelectUserEnabled] = useState(false);
   const [selectCrewEnabled, setSelectCrewEnabled] = useState(false);
+  const [selectProfitCenterEnabled, setSelectProfitCenterEnabled] =
+    useState(false);
   const [exportByUser, setExportByUser] = useState(false);
   const [useCustomTimeRange, setUseCustomTimeRange] = useState(false);
   const [startTime, setStartTime] = useState<string>("00:00"); // Default 12:00 AM
@@ -198,10 +236,12 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
 
                 <div className="flex flex-col  bg-blue-50 px-4 py-3 rounded-lg border border-blue-600 relative">
                   <ul className="list-disc list-inside text-sm font-normal text-blue-600 space-y-1.5">
-                    <li>{`Only Approved Timesheets are included`}</li>
-                    <li>{`Automatically applies a date range of 12:00 AM to 11:59 PM`}</li>
-                    <li>{`Selecting one date you will export Timesheets for that day!`}</li>
-                    <li>{`The second date ends the range and includes that entire day as well.`}</li>
+                    <li>{`Only Approved Timesheets are included in the export`}</li>
+                    <li>{`Entering a file name allows you to title the export`}</li>
+                    <li>{`Selecting one date you will export Timesheets for that entire day!`}</li>
+                    <li>{`Selecting a Range will export Timesheets for the entire range`}</li>
+                    <li>{`Every Export applies a default range of 12:00 AM to 11:59 PM`}</li>
+                    <li>{`You can only apply one filter not including the date range option`}</li>
                   </ul>
                   <Button
                     size={"sm"}
@@ -215,6 +255,30 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
               </>
             )}
             <div className="flex flex-col gap-1 pt-4">
+              <div className="flex-col flex pb-1 gap-1">
+                <div className="flex flex-row gap-1 items-center">
+                  <Label
+                    htmlFor="exportFileName"
+                    className="font-semibold text-sm"
+                  >
+                    Export File Name
+                  </Label>
+                  <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-md">
+                    Optional
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  Custom export name (auto-generated if blank)
+                </p>
+              </div>
+              <Input
+                id="exportFileName"
+                placeholder={`timesheets_${new Date().toISOString().slice(0, 10)}`}
+                value={exportFileName || ""}
+                onChange={(e) => setExportFileName(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-1 pt-4 mb-2">
               <Popover>
                 <PopoverTrigger asChild>
                   <div>
@@ -283,7 +347,10 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
               </p>
             </div>
             <Accordion type="single" collapsible className="w-full space-y-2">
-              <AccordionItem value="item-1" className="border rounded-md px-4">
+              <AccordionItem
+                value="Customize"
+                className="border rounded-md px-4"
+              >
                 <AccordionTrigger className="py-3 hover:no-underline">
                   <div className="flex flex-row items-center gap-2 ">
                     <Table className="h-5 w-5" color="blue" />
@@ -330,7 +397,7 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="item-2" className="border rounded-md px-4">
+              <AccordionItem value="filter" className="border rounded-md px-4">
                 <AccordionTrigger className="py-3 hover:no-underline">
                   <div className="flex flex-row items-center gap-2 ">
                     <Funnel className="h-5 w-5" color="blue" />
@@ -349,13 +416,13 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                     <div className="w-full bg-slate-50 rounded-lg py-1.5 px-1.5 border border-gray-200 transition-all duration-200 ease-in-out">
                       {/* User Selection */}
                       <div
-                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectCrewEnabled ? "bg-slate-100 border-slate-100 border" : "bg-white border-zinc-950 border-2"}`}
+                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectCrewEnabled ? "bg-slate-50 border-gray-200 border" : "bg-white border-gray-200 border"}`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">Users</span>
                             {selectCrewEnabled && (
-                              <span className="bg-slate-100 text-slate-600 border border-slate-300 font-medium px-2 py-0.5 rounded-full text-xs text-center">
+                              <span className="bg-slate-100 text-slate-600 border border-slate-300  px-1.5 py-0.5 rounded-lg text-xs text-center">
                                 Disabled
                               </span>
                             )}
@@ -391,13 +458,13 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
 
                       {/* Crew Selection */}
                       <div
-                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectUserEnabled ? "bg-slate-100 border-slate-100 border" : "bg-white border-zinc-950 border-2"}`}
+                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectUserEnabled ? "bg-slate-50 border-gray-200 border" : "bg-white border-gray-200 border"}`}
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <span className="text-sm font-medium">Crews</span>
                             {selectUserEnabled && (
-                              <span className="bg-slate-100 text-slate-600 border border-slate-300 font-medium px-2 py-0.5 rounded-full text-xs text-center">
+                              <span className="bg-slate-100 text-slate-600 border border-slate-300 px-1.5 py-0.5 rounded-lg text-xs text-center">
                                 Disabled
                               </span>
                             )}
@@ -426,6 +493,49 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                             filterKeys={["label"]}
                             showCount={true}
                             optionName="Crew"
+                          />
+                        )}
+                      </div>
+
+                      {/* Jobsite Selection */}
+                      <div
+                        className={`p-2 rounded-md flex flex-col gap-2 mb-4  ${selectUserEnabled ? "bg-slate-50 border-gray-200 border" : "bg-white border-gray-200 border"}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm font-medium">
+                              Profit Centers
+                            </span>
+                            {selectUserEnabled && (
+                              <span className="bg-slate-100 text-slate-600 border border-slate-300 px-1.5 py-0.5 rounded-lg text-xs text-center">
+                                Disabled
+                              </span>
+                            )}
+                          </div>
+                          <Switch
+                            checked={selectProfitCenterEnabled}
+                            disabled={selectUserEnabled || selectCrewEnabled}
+                            onCheckedChange={(checked) => {
+                              setSelectProfitCenterEnabled(checked);
+                              if (!checked) setSelectedProfitCenters([]);
+                            }}
+                            aria-label="Toggle crew selection"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-2">
+                          Exports the data only for all users in the selected
+                          profit centers.
+                        </p>
+
+                        {selectProfitCenterEnabled && (
+                          <Combobox
+                            options={formatProfitCenters(profitCenters)}
+                            value={selectedProfitCenters}
+                            onChange={setSelectedProfitCenters}
+                            placeholder="Select profit centers to export"
+                            filterKeys={["label"]}
+                            showCount={true}
+                            optionName="Profit Center"
                           />
                         )}
                       </div>
@@ -492,7 +602,7 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="item-3" className="border rounded-md px-4">
+              <AccordionItem value="sorting" className="border rounded-md px-4">
                 <AccordionTrigger className="py-3 hover:no-underline">
                   <div className="flex flex-row items-center gap-2 ">
                     <ArrowUpAZ className="h-5 w-5" color="blue" />
@@ -514,10 +624,11 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                         <div className="flex items-center justify-between">
                           <div>
                             <span className="text-sm font-medium">
-                              Filter by User
+                              Sort by User
                             </span>
                             <p className="text-xs text-gray-600">
-                              Sort the data by user name and then by date.
+                              Sort the data by the user last name and then by
+                              date.
                             </p>
                           </div>
                           <Switch
@@ -629,6 +740,11 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                       selectCrewEnabled && selectedCrews.length > 0
                         ? selectedCrews
                         : undefined,
+                    profitCenters:
+                      selectProfitCenterEnabled &&
+                      selectedProfitCenters.length > 0
+                        ? selectedProfitCenters
+                        : undefined,
                     exportByUser: exportByUser,
                   };
                   // Pass the filter data to the onExport function
@@ -638,6 +754,9 @@ const ExportModal = ({ onClose, onExport, crew, users }: ExportModalProps) => {
                     selectedFields,
                     selectUserEnabled ? selectedUsers : undefined,
                     selectCrewEnabled ? selectedCrews : undefined,
+                    selectProfitCenterEnabled
+                      ? selectedProfitCenters
+                      : undefined,
                     exportByUser,
                     filterData,
                   );

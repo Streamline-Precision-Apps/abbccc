@@ -73,8 +73,8 @@ export const FooterPagination = ({
             setPage(1);
           }}
         >
-          {[25, 50, 75, 100, total].map((size) => (
-            <option key={size} value={size}>
+          {[25, 50, 75, 100, total].map((size, index) => (
+            <option key={index} value={size}>
               {size === total ? "All" : size} Rows
             </option>
           ))}
