@@ -673,7 +673,7 @@ export function CreateTimesheetModal({
             <Button
               type="button"
               variant="outline"
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              className="bg-gray-200 hover:bg-gray-300 hover:text-gray-800 text-gray-800 px-4 py-2 rounded"
               onClick={onClose}
               disabled={submitting}
             >
@@ -682,7 +682,7 @@ export function CreateTimesheetModal({
             <Button
               type="submit"
               form="timesheet-form" /* Connect this button to the form */
-              className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+              className="bg-sky-500 hover:bg-sky-400 text-white hover:text-white px-4 py-2 rounded"
               disabled={submitting}
             >
               Create & Approve

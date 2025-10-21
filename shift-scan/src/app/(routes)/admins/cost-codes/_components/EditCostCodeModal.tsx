@@ -16,6 +16,8 @@ import { Combobox } from "@/components/ui/combobox";
 import { CostCode, useCostCodeDataById } from "./useCostCodeDataById";
 import { format } from "date-fns";
 import { X } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function EditCostCodeModal({
   cancel,
@@ -71,8 +73,51 @@ export default function EditCostCodeModal({
   if (loading || !formData || !originalForm) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg min-w-[500px] max-w-[90vw] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="text-lg">Loading...</div>
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={cancel}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+
+            <div className="flex flex-col gap-1">
+              <h2 className="text-lg font-semibold">{`Edit Cost Code`}</h2>
+              <div className="flex flex-row gap-2 items-center">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 w-full px-2 pt-2 pb-10 overflow-y-auto no-scrollbar">
+            <div className="flex flex-col bg-slate-50 w-full justify-center items-center h-full">
+              <Spinner />
+            </div>
+          </div>
+          <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex flex-row justify-end gap-2 w-full">
+              <Button
+                variant="outline"
+                onClick={cancel}
+                disabled={loading}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 hover:text-gray-800 px-4 py-2 rounded-md"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleSaveChanges}
+                disabled={loading}
+                className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded-md hover:text-white"
+              >
+                {"Save Changes"}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -156,7 +201,7 @@ export default function EditCostCodeModal({
           </Button>
 
           <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-semibold">{`Edit ${formData.name}`}</h2>
+            <h2 className="text-lg font-semibold">{`Edit Cost Code`}</h2>
             <div className="flex flex-row gap-2 items-center">
               {formData.isActive ? (
                 <span className="text-xs bg-green-100 px-2 py-1.5 rounded-lg text-green-600">

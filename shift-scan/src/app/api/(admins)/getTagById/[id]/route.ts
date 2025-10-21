@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -12,7 +12,7 @@ export async function GET(
   if (!id || typeof id !== "string") {
     return NextResponse.json(
       { error: "Invalid or missing ID" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -50,7 +50,7 @@ export async function GET(
     console.error("Error fetching tags:", error);
     return NextResponse.json(
       { error: "Failed to fetch tags" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

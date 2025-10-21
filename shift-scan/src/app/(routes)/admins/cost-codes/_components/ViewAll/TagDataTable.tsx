@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TagSummary } from "../useTagData";
-import { tagTableColumns } from "./tagTableColumns";
+import { getTagTableColumns } from "./tagTableColumns";
 import LoadingTagTableState from "./loadingTagTableState";
 
 interface TagDataTableProps {
@@ -54,75 +54,10 @@ export default function TagDataTable({
   openHandleEdit,
 }: TagDataTableProps) {
   // Create column definitions with the action handlers
-  const columns = useMemo(() => {
-    // Copy the base columns
-    const cols = [...tagTableColumns];
-
-    // Find and update the actions column
-    const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
-    if (actionsColumnIndex >= 0) {
-      // Replace with a new definition that includes our handlers
-      cols[actionsColumnIndex] = {
-        ...cols[actionsColumnIndex],
-        cell: ({ row }) => {
-          const item = row.original;
-
-          // Check if this is the 'ALL' tag - protect it from modification/deletion
-          const isAllTag = item.name.toUpperCase() === "ALL";
-
-          return (
-            <div className="flex flex-row justify-center">
-              {/* Edit button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => openHandleEdit(item.id)}
-                    disabled={isAllTag} // Disable for ALL tag
-                    className={isAllTag ? "opacity-30 cursor-not-allowed" : ""}
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isAllTag ? "This tag cannot be edited" : "Edit"}
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Delete button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => openHandleDelete(item.id)}
-                    disabled={isAllTag} // Disable for ALL tag
-                    className={isAllTag ? "opacity-30 cursor-not-allowed" : ""}
-                  >
-                    <img
-                      src="/trash-red.svg"
-                      alt="Delete"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isAllTag ? "This tag cannot be deleted" : "Delete"}
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          );
-        },
-      };
-    }
-
-    return cols;
-  }, [openHandleEdit, openHandleDelete]);
+  const columns = useMemo(
+    () => getTagTableColumns(openHandleEdit, openHandleDelete),
+    [openHandleEdit, openHandleDelete],
+  );
 
   const table = useReactTable({
     data,
@@ -177,21 +112,18 @@ export default function TagDataTable({
               ))}
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
-              <Suspense fallback={<LoadingTagTableState columns={columns} />}>
+              <Suspense
+                fallback={<LoadingTagTableState columnCount={columns.length} />}
+              >
                 {loading ? (
-                  <LoadingTagTableState columns={columns} />
+                  <LoadingTagTableState columnCount={columns.length} />
                 ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => {
-                    // Check if this is the ALL tag
-                    const isAllTag = row.original.name.toUpperCase() === "ALL";
-
                     return (
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
-                        className={`odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2 ${
-                          isAllTag ? "bg-blue-50 hover:bg-blue-100" : ""
-                        }`}
+                        className={`odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2 `}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell

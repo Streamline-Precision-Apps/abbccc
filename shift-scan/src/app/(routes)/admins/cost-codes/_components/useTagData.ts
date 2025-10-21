@@ -85,13 +85,6 @@ export const useTagData = () => {
     setPendingTagDeleteId(null);
   };
   const openHandleTagEdit = (id: string) => {
-    // Find the tag to check if it's the ALL tag
-    const tag = tagDetails.find((tag) => tag.id === id);
-    if (tag && tag.name.toUpperCase() === "ALL") {
-      // Don't allow editing the ALL tag
-      console.warn("The ALL tag cannot be edited");
-      return;
-    }
     setPendingTagEditId(id);
     setEditTagModal(true);
   };

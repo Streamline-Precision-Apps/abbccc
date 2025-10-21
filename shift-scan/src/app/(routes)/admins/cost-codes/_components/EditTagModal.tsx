@@ -7,6 +7,8 @@ import { updateTagAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
 import { Tag, useTagDataById } from "./useTagDataById";
+import { AlertCircle, X } from "lucide-react";
+import Spinner from "@/components/(animations)/spinner";
 
 export default function EditTagModal({
   cancel,
@@ -21,6 +23,7 @@ export default function EditTagModal({
     useTagDataById(pendingEditId);
   const [formData, setFormData] = useState<Tag | null>(null);
   const [originalForm, setOriginalForm] = useState<Tag | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     if (tagDetails) {
@@ -45,11 +48,12 @@ export default function EditTagModal({
   };
 
   const handleSaveChanges = async () => {
-    if (!formData) {
-      toast.error("No form data to save.", { duration: 3000 });
-      return;
-    }
     try {
+      setIsSaving(true);
+      if (!formData) {
+        toast.error("No form data to save.", { duration: 3000 });
+        return;
+      }
       const fd = new FormData();
       fd.append("id", formData.id);
       fd.append("name", formData.name);
@@ -72,14 +76,55 @@ export default function EditTagModal({
     } catch (err) {
       toast.error("Error updating Tag. Please try again.", { duration: 3000 });
       console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
   if (loading || !formData || !originalForm) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="text-lg">Loading...</div>
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={cancel}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <h2 className="text-lg font-semibold">{`Edit Tag`}</h2>
+            <p className="text-xs text-gray-600">
+              Edit the details below to update the tags information.
+            </p>
+          </div>
+
+          <div className="flex-1 w-full gap-4 px-2 pt-2 pb-10 overflow-y-auto no-scrollbar">
+            <div className="w-full bg-slate-50 h-full flex items-center justify-center">
+              <Spinner />
+            </div>
+          </div>
+          <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex flex-row justify-end gap-2 w-full">
+              <Button
+                variant="outline"
+                onClick={cancel}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800  hover:text-gray-800 px-4 py-2 rounded"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleSaveChanges}
+                className={`bg-sky-500 hover:bg-sky-400 hover:text-white  text-white px-4 py-2 rounded`}
+                disabled={loading}
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -106,54 +151,92 @@ export default function EditTagModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-        <div className="flex flex-col w-full ">
-          {/* <div className="flex flex-row justify-between mb-4">
-            <p className="text-xs  text-gray-500">
-              {`last updated at ${format(formData.updatedAt, "PPpp")}`}
-            </p>
-          </div>*/}
-          <div className="flex flex-row justify-between ">
-            <div className="flex flex-col mb-4">
-              <h2 className="text-lg font-semibold">{`Edit ${originalForm.name}`}</h2>
-              <div>
-                <p className="text-sm text-gray-600">
-                  {`Created via: Admin created by System`}
-                </p>
-              </div>
-            </div>
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={cancel}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+          <h2 className="text-lg font-semibold">{`Edit Tag`}</h2>
+          <p className="text-xs text-gray-600">
+            Edit the details below to update the tags information.
+          </p>
+        </div>
+
+        <div className="flex-1 w-full gap-4 px-2 pt-2 pb-10 overflow-y-auto no-scrollbar">
+          <div className="pt-2 space-y-1">
+            <Label htmlFor="name" className="text-sm">
+              Name
+            </Label>
+            <Input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className="w-full text-xs"
+              required
+              disabled={formData.name.toUpperCase() === "ALL"}
+            />
           </div>
-          <div className="flex flex-col gap-4 mb-4">
-            <div>
-              <Label htmlFor="name" className="text-sm">
-                Name
-              </Label>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="description" className="text-sm">
-                Description
-              </Label>
-              <Input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full text-xs"
-              />
-            </div>
-            <div>
-              {jobsiteSummaries && (
-                <div className="my-4 border-t border-gray-200 pt-4">
+          <div className="pt-2 space-y-1">
+            <Label htmlFor="description" className="text-sm">
+              Description
+            </Label>
+            <Input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className="w-full text-xs"
+              disabled={formData.name.toUpperCase() === "ALL"}
+            />
+          </div>
+          <div className="border-b border-gray-200 pb-1 mt-4">
+            <p className="text-sm font-semibold">{`Tag Associations`}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-600 mt-1">
+              Connect Jobsites and Costcode to build the tag associations.{" "}
+            </p>
+            <p className="text-xs text-gray-600 mt-1 mb-4 italic">
+              {`When linking to jobsites, it's best to connect only one tag
+              per jobsite. This helps prevent cost code overlap.`}
+            </p>
+          </div>
+
+          <div>
+            {jobsiteSummaries && (
+              <div className="p-4 bg-slate-50 border border-gray-200 pb-4 rounded-lg">
+                <div className="mb-2 space-y-2">
+                  <Label className="text-sm font-semibold mb-2 ">
+                    Jobsites
+                    <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-lg">
+                      Optional
+                    </span>
+                  </Label>
+                  {formData.name.toUpperCase() === "ALL" && (
+                    <div className="bg-yellow-50 border border-yellow-500  p-4 rounded-lg mb-4">
+                      <div className="flex items-center mb-2 gap-2">
+                        <AlertCircle width={20} height={20} />
+                        <p className="text-sm font-bold">
+                          Please Read Carefully
+                        </p>
+                      </div>
+                      <p className="text-sm font-medium ">
+                        When removing the “All Tag” from a jobsite, make sure to
+                        replace it with another tag. Failing to do so may result
+                        in untagged jobsites, preventing users from accessing
+                        them and clocking in.
+                      </p>
+                    </div>
+                  )}
                   <Combobox
-                    label={`Jobsites (Optional)`}
+                    label={""}
                     options={
                       allJobsites
                         ? allJobsites
@@ -181,126 +264,145 @@ export default function EditTagModal({
                       );
                     }}
                   />
-                  <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
-                    <div className=" flex flex-wrap gap-2">
-                      {formData.Jobsites.map((js) => (
-                        <div
-                          key={js.id}
-                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                </div>
+                <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
+                  <div className=" flex flex-wrap gap-2">
+                    {formData.Jobsites.map((js) => (
+                      <div
+                        key={js.id}
+                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span>{js.name}</span>
+                        <button
+                          type="button"
+                          className="text-blue-800 hover:text-blue-900"
+                          onClick={() => {
+                            setFormData((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    Jobsites: prev.Jobsites.filter(
+                                      (j) => j.id !== js.id,
+                                    ),
+                                  }
+                                : prev,
+                            );
+                          }}
+                          aria-label={`Remove ${js.name}`}
                         >
-                          <span>{js.name}</span>
-                          <button
-                            type="button"
-                            className="text-blue-800 hover:text-blue-900"
-                            onClick={() => {
-                              setFormData((prev) =>
-                                prev
-                                  ? {
-                                      ...prev,
-                                      Jobsites: prev.Jobsites.filter(
-                                        (j) => j.id !== js.id,
-                                      ),
-                                    }
-                                  : prev,
-                              );
-                            }}
-                            aria-label={`Remove ${js.name}`}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {costCodeSummaries && (
-                <div className="mt-2">
-                  <div className="my-4 border-t border-gray-200 pt-4">
-                    <Combobox
-                      label={`Cost Codes (Optional)`}
-                      options={
-                        allCostCodes
-                          ? allCostCodes
-                              .filter(
-                                (costCode) =>
-                                  costCode.name.toLowerCase() !== "all",
-                              )
-                              .map((costCode) => ({
-                                label: costCode.name,
-                                value: costCode.id,
-                              }))
-                          : []
-                      }
-                      // name prop removed, not supported by ComboboxProps
-                      value={formData.CostCodes.map((costCode) => costCode.id)}
-                      onChange={(selectedIds: string[]) => {
-                        setFormData((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                CostCodes: allCostCodes.filter((costCode) =>
-                                  selectedIds.includes(costCode.id),
-                                ),
-                              }
-                            : prev,
-                        );
-                      }}
-                    />
-                    <div className="min-h-[100px] border border-gray-200 rounded p-2 mt-2">
-                      <div className=" flex flex-wrap gap-2">
-                        {formData.CostCodes.map((cc) => (
-                          <div
-                            key={cc.id}
-                            className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
-                          >
-                            <span>{cc.name}</span>
-                            <button
-                              type="button"
-                              className="text-blue-800 hover:text-blue-900"
-                              onClick={() => {
-                                setFormData((prev) =>
-                                  prev
-                                    ? {
-                                        ...prev,
-                                        CostCodes: prev.CostCodes.filter(
-                                          (c) => c.id !== cc.id,
-                                        ),
-                                      }
-                                    : prev,
-                                );
-                              }}
-                              aria-label={`Remove ${cc.name}`}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                          ×
+                        </button>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              )}
-            </div>
-            <div className="flex flex-row justify-end gap-2 w-full">
-              <Button
-                variant="outline"
-                onClick={cancel}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleSaveChanges}
-                className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
-                  loading ? "opacity-50" : ""
-                }`}
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
+              </div>
+            )}
+
+            {costCodeSummaries && (
+              <div className="mt-4 p-4 bg-slate-100 border border-gray-200 pb-4 rounded-lg">
+                <div className="mb-2 space-y-2">
+                  <Label className="text-sm font-semibold mb-2 ">
+                    Cost Codes
+                    <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-lg">
+                      Optional
+                    </span>
+                  </Label>
+                  {formData.name.toUpperCase() === "ALL" && (
+                    <div>
+                      <p className="text-xs text-red-600 font-bold italic mb-3">
+                        You cannot modify Cost Codes for the ALL tag.
+                      </p>
+                    </div>
+                  )}
+
+                  <Combobox
+                    label={""}
+                    options={
+                      allCostCodes
+                        ? allCostCodes
+                            .filter(
+                              (costCode) =>
+                                costCode.name.toLowerCase() !== "all",
+                            )
+                            .map((costCode) => ({
+                              label: costCode.name,
+                              value: costCode.id,
+                            }))
+                        : []
+                    }
+                    // name prop removed, not supported by ComboboxProps
+                    value={formData.CostCodes.map((costCode) => costCode.id)}
+                    onChange={(selectedIds: string[]) => {
+                      setFormData((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              CostCodes: allCostCodes.filter((costCode) =>
+                                selectedIds.includes(costCode.id),
+                              ),
+                            }
+                          : prev,
+                      );
+                    }}
+                    disabled={formData.name.toUpperCase() === "ALL"}
+                  />
+                </div>
+                <div
+                  className={`min-h-[100px] ${formData.name.toUpperCase() === "ALL" ? "bg-slate-50" : "bg-white"} border border-gray-200 rounded p-2 mt-2`}
+                >
+                  <div className=" flex flex-wrap gap-2">
+                    {formData.CostCodes.map((cc) => (
+                      <div
+                        key={cc.id}
+                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center gap-1"
+                      >
+                        <span>{cc.name}</span>
+                        <button
+                          type="button"
+                          className="text-blue-800 hover:text-blue-900"
+                          onClick={() => {
+                            setFormData((prev) =>
+                              prev
+                                ? {
+                                    ...prev,
+                                    CostCodes: prev.CostCodes.filter(
+                                      (c) => c.id !== cc.id,
+                                    ),
+                                  }
+                                : prev,
+                            );
+                          }}
+                          disabled={formData.name.toUpperCase() === "ALL"}
+                          aria-label={`Remove ${cc.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex flex-row justify-end gap-2 w-full">
+            <Button
+              variant="outline"
+              onClick={cancel}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800  hover:text-gray-800 px-4 py-2 rounded"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleSaveChanges}
+              className={`bg-sky-500 hover:bg-sky-400 hover:text-white  text-white px-4 py-2 rounded`}
+              disabled={loading}
+            >
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
         </div>
       </div>

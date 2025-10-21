@@ -11,9 +11,13 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
 
 // Define the column configuration
-export const tagTableColumns: ColumnDef<TagSummary>[] = [
+export const getTagTableColumns = (
+  onEdit: (id: string) => void,
+  onDelete: (id: string) => void,
+): ColumnDef<TagSummary>[] => [
   {
     accessorKey: "nameAndDescription",
     header: "Tag Summary",
@@ -22,20 +26,7 @@ export const tagTableColumns: ColumnDef<TagSummary>[] = [
       return (
         <div className="text-sm text-left">
           <div className="w-full h-full flex flex-col">
-            {isAllTag ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-blue-600 font-semibold">
-                    {highlight(row.original.name, "")}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>System reserved tag - cannot be modified</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <p className="">{highlight(row.original.name, "")}</p>
-            )}
+            <p className="">{highlight(row.original.name, "")}</p>
             <p className="text-[10px] text-gray-400 italic">
               {row.original.description || "No description provided."}
             </p>
@@ -142,10 +133,52 @@ export const tagTableColumns: ColumnDef<TagSummary>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      // This is a placeholder - actual implementation will be in the DataTable component
+      const item = row.original;
+      const isAllTag = item.name.toUpperCase() === "ALL";
+
       return (
-        <div className="flex flex-row justify-center items-center">
-          {/* Action buttons will be replaced */}
+        <div className="flex flex-row justify-center">
+          {/* Edit button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size={"icon"}
+                onClick={() => (isAllTag ? onEdit("All") : onEdit(item.id))}
+              >
+                <img
+                  src="/formEdit.svg"
+                  alt="Edit"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit</TooltipContent>
+          </Tooltip>
+
+          {/* Delete button */}
+          {isAllTag ? null : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size={"icon"}
+                  onClick={() => onDelete(item.id)}
+                  disabled={isAllTag}
+                  className={isAllTag ? "opacity-30 cursor-not-allowed" : ""}
+                >
+                  <img
+                    src="/trash-red.svg"
+                    alt="Delete"
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isAllTag ? "This tag cannot be deleted" : "Delete"}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       );
     },

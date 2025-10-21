@@ -1,12 +1,11 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { tagTableColumns } from "./tagTableColumns";
 
 type Props = {
-  columns: typeof tagTableColumns;
+  columnCount: number;
 };
 
-export default function LoadingTagTableState({ columns }: Props) {
+export default function LoadingTagTableState({ columnCount }: Props) {
   return (
     <>
       {Array.from({ length: 10 }).map((_, index) => (
@@ -15,7 +14,7 @@ export default function LoadingTagTableState({ columns }: Props) {
           className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
         >
           {/* Create skeleton cells for each column */}
-          {columns.map((col, colIndex) => (
+          {Array.from({ length: columnCount }).map((_, colIndex) => (
             <TableCell
               key={`loading-cell-${colIndex}`}
               className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
