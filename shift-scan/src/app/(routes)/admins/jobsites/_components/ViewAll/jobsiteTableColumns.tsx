@@ -10,10 +10,16 @@ import {
 import { highlight } from "@/app/(routes)/admins/_pages/highlight";
 import Link from "next/link";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { ArchiveIcon, ArchiveRestore } from "lucide-react";
 
-// Define the column configuration as a function that takes router
+// Define the column configuration as a function that takes action handlers
 export const getJobsiteTableColumns = (
-  router: ReturnType<typeof import("next/navigation").useRouter>,
+  onEditClick?: (id: string) => void,
+  onDeleteClick?: (id: string) => void,
+  onQrClick?: (id: string) => void,
+  onArchiveClick?: (id: string) => void,
+  onRestoreClick?: (id: string) => void,
 ): ColumnDef<JobsiteSummary>[] => [
   {
     accessorKey: "nameAndDescription",
@@ -61,7 +67,7 @@ export const getJobsiteTableColumns = (
                       Rejected
                     </span>
                   )}
-                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+                  <span className="bg-slate-200 text-slate-700 px-2 py-1 rounded-lg text-xs">
                     Updated: {format(new Date(jobsite.updatedAt), "MM/dd/yy")}
                   </span>
                 </div>
@@ -120,10 +126,100 @@ export const getJobsiteTableColumns = (
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      // This is a placeholder - actual implementation will be in the DataTable component
+      const item = row.original;
       return (
-        <div className="flex flex-row justify-center items-center">
-          {/* Action buttons will be replaced */}
+        <div className="flex flex-row justify-center">
+          {/* QR Code button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onQrClick?.(item.id)}
+              >
+                <img
+                  src="/qrCode.svg"
+                  alt="QR Code"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Print QR Code</TooltipContent>
+          </Tooltip>
+
+          {/* Edit button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEditClick?.(item.id)}
+              >
+                <img
+                  src="/formEdit.svg"
+                  alt="Edit"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit</TooltipContent>
+          </Tooltip>
+
+          {/* Archive/Restore button */}
+          {row.original._count?.TimeSheets > 0 ? (
+            // Show archive/restore if there are linked timesheets
+            item.status === "ACTIVE" ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onArchiveClick?.(item.id)}
+                  >
+                    <ArchiveIcon
+                      className="h-4 w-4 cursor-pointer"
+                      color="blue"
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Archive</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRestoreClick?.(item.id)}
+                  >
+                    <ArchiveRestore
+                      className="h-4 w-4 cursor-pointer"
+                      color="black"
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Unarchive</TooltipContent>
+              </Tooltip>
+            )
+          ) : (
+            // Show delete button if no linked timesheets
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDeleteClick?.(item.id)}
+                >
+                  <img
+                    src="/trash-red.svg"
+                    alt="Delete"
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
+          )}
         </div>
       );
     },

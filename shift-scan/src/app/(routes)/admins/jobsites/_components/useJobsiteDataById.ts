@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ApprovalStatus, FormStatus, FormTemplateStatus } from "../../../../../../prisma/generated/prisma";
+import {
+  ApprovalStatus,
+  FormStatus,
+  FormTemplateStatus,
+} from "../../../../../../prisma/generated/prisma";
 
 export type Jobsite = {
   id: string;
@@ -29,6 +33,10 @@ export type Jobsite = {
     id: string;
     name: string;
   }>;
+  createdBy: {
+    firstName: string;
+    lastName: string;
+  };
 };
 
 export const useJobsiteDataById = (id: string) => {

@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Dialog,
@@ -27,7 +27,7 @@ import { JobsiteDataTable } from "./_components/ViewAll/JobsiteDataTable";
 
 export default function JobsitePage() {
   const searchParams = useSearchParams();
-  
+
   // Check URL parameters before initializing the hook
   const isPendingApproval = searchParams.get("isPendingApproval") === "true";
   const notificationId = searchParams.get("notificationId");
@@ -226,18 +226,16 @@ export default function JobsitePage() {
             <DialogTitle>Archive Jobsite</DialogTitle>
             <DialogDescription>
               Are you sure you want to archive this jobsite? The jobsite will be
-              marked as archived and will no longer be available for new timesheets.
-              Existing timesheets will remain accessible. This action can be undone
-              by restoring the jobsite.
+              marked as archived and will no longer be available for new
+              timesheets. Existing timesheets will remain accessible. This
+              action can be undone by restoring the jobsite.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={cancelArchive}>
               Cancel
             </Button>
-            <Button onClick={confirmArchive}>
-              Archive
-            </Button>
+            <Button onClick={confirmArchive}>Archive</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -255,9 +253,7 @@ export default function JobsitePage() {
             <Button variant="outline" onClick={cancelRestore}>
               Cancel
             </Button>
-            <Button onClick={confirmRestore}>
-              Restore
-            </Button>
+            <Button onClick={confirmRestore}>Restore</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

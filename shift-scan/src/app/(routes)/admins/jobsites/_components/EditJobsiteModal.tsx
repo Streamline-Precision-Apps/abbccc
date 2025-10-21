@@ -5,20 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Jobsite, useJobsiteDataById } from "./useJobsiteDataById";
 import { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { SquareCheck, SquareXIcon } from "lucide-react";
+import { SquareCheck, SquareXIcon, X } from "lucide-react";
 import { format } from "date-fns";
 import { updateJobsiteAdmin } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { Combobox } from "@/components/ui/combobox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
-import { Switch } from "@/components/ui/switch";
+import Spinner from "@/components/(animations)/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EditJobsiteModal({
   cancel,
@@ -97,8 +91,54 @@ export default function EditJobsiteModal({
   if (loading || !formData || !originalForm || !tagSummaries) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="text-lg">Loading...</div>
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-1 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={cancel}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+            <div className="flex flex-row gap-1 items-center">
+              <h3 className="text-lg font-semibold">{`Edit Profit Center`}</h3>
+              <Skeleton className="h-5 w-16 rounded-md" />
+            </div>
+            <div className="flex flex-row mb-2">
+              <p className="text-xs  text-gray-500">{`last updated at ...`}</p>
+            </div>
+            <div className="flex flex-row mb-2 items-center gap-2">
+              <Skeleton className="h-6 w-12 rounded-md" />
+              <Skeleton className="h-6 w-32 rounded-md" />
+            </div>
+          </div>
+          <div className="flex-1 w-full  gap-4 px-2 pt-2 pb-10 overflow-y-auto no-scrollbar">
+            <div className="flex flex-col  justify-center items-center h-full">
+              <Spinner />
+            </div>
+          </div>
+          <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex flex-row justify-end gap-2 w-full">
+              <Button
+                variant="outline"
+                onClick={cancel}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleSaveChanges}
+                className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
+                  loading ? "opacity-50" : ""
+                }`}
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -106,58 +146,46 @@ export default function EditJobsiteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-        <div className="flex flex-col w-full ">
-          <div className="flex flex-row justify-between mb-4">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+        <div className="w-full flex flex-col border-b border-gray-100 pb-1 relative">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={cancel}
+            className="absolute top-0 right-0 cursor-pointer"
+          >
+            <X width={20} height={20} />
+          </Button>
+          <h3 className="text-lg font-semibold">{`Edit Profit Center #${formData.code}`}</h3>
+          <div className="flex flex-row mb-2">
             <p className="text-xs  text-gray-500">
               {`last updated at ${format(formData.updatedAt, "PPpp")}`}
             </p>
-            <div className="flex items-center gap-4">
-              <Label className="ml-2">
-                {formData.status === "ACTIVE" ? "Active" : "Archived"}
-              </Label>
-              <Switch
-                checked={formData.status === "ACTIVE"}
-                onCheckedChange={(value) => {
-                  setFormData((prev) => {
-                    if (!prev) return prev;
-                    return { ...prev, status: value ? "ACTIVE" : "ARCHIVED" };
-                  });
-                }}
-              />
-            </div>
           </div>
-          <div className="flex flex-row justify-between ">
-            <div className="flex flex-col mb-4">
-              <h2 className="text-lg font-semibold">{`Edit ${originalForm.name}`}</h2>
-              <div>
-                <p className="text-sm text-gray-600">
-                  {`Created via: ${
-                    formData.createdVia.toLowerCase() || "Admin"
-                  } by ${formData.createdById || "System"}`}
-                </p>
-                <p className="text-xs text-gray-600">
-                  {`Status: `}
-                  <span
-                    className={`text-sm ${
-                      originalForm.approvalStatus === "APPROVED"
-                        ? "text-green-600"
-                        : originalForm.approvalStatus === "PENDING"
-                          ? "text-sky-600"
-                          : "text-red-600"
-                    }`}
-                  >
-                    {originalForm.approvalStatus
-                      .toLowerCase()
-                      .slice(0, 1)
-                      .toUpperCase() +
-                      originalForm.approvalStatus.toLowerCase().slice(1)}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
+          <div className="flex flex-row mb-2 items-center gap-2">
+            <span
+              className={`text-xs px-2 py-1 rounded-lg ${
+                originalForm.approvalStatus === "APPROVED"
+                  ? "bg-green-100 text-green-600"
+                  : originalForm.approvalStatus === "PENDING"
+                    ? "bg-sky-100 text-sky-600"
+                    : "bg-red-100 text-red-600"
+              }`}
+            >
+              {originalForm.approvalStatus
+                .toLowerCase()
+                .slice(0, 1)
+                .toUpperCase() +
+                originalForm.approvalStatus.toLowerCase().slice(1)}
+            </span>
 
+            <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-lg">
+              {`${formData.createdBy.firstName} ${formData.createdBy.lastName}`}
+            </span>
+          </div>
+        </div>
+        <div className="flex-1 w-full  gap-4 px-2 pt-2 pb-10 overflow-y-auto no-scrollbar">
           <div className="flex flex-col gap-4 mb-4">
             {originalForm.approvalStatus === "PENDING" && (
               <div className="flex flex-col">
@@ -276,6 +304,8 @@ export default function EditJobsiteModal({
               </div>
             )}
           </div>
+        </div>
+        <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
           <div className="flex flex-row justify-end gap-2 w-full">
             {originalForm && originalForm.approvalStatus === "PENDING" && (
               <>
@@ -322,31 +352,31 @@ export default function EditJobsiteModal({
             <Button
               variant="outline"
               onClick={cancel}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 hover:text-gray-800 px-4 py-2 rounded"
             >
               Cancel
             </Button>
             <Button
               variant="outline"
               onClick={handleSaveChanges}
-              className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
-                loading ? "opacity-50" : ""
-              }`}
+              className={`bg-sky-500 hover:bg-sky-400 text-white hover:text-white px-4 py-2 rounded `}
             >
               {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
-          <div className="flex flex-row justify-end mt-4">
-            <p className="text-xs  text-gray-500">
-              {`Marked as ${
-                formData.approvalStatus
-                  .toLowerCase()
-                  .slice(0, 1)
-                  .toUpperCase() +
-                formData.approvalStatus.toLowerCase().slice(1)
-              } save changes to update the status.`}
-            </p>
-          </div>
+          {originalForm && originalForm.approvalStatus === "PENDING" && (
+            <div className="flex flex-row justify-end mt-4">
+              <p className="text-xs  text-gray-500">
+                {`Marked as ${
+                  formData.approvalStatus
+                    .toLowerCase()
+                    .slice(0, 1)
+                    .toUpperCase() +
+                  formData.approvalStatus.toLowerCase().slice(1)
+                } save changes to update the status.`}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

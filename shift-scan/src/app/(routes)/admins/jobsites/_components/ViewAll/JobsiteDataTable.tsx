@@ -24,9 +24,7 @@ import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobsiteSummary } from "../useJobsiteData";
 import { getJobsiteTableColumns } from "./jobsiteTableColumns";
-import { useRouter } from "next/navigation";
 import LoadingJobsiteTableState from "./loadingJobsiteTableState";
-import { ArchiveIcon, ArchiveRestore } from "lucide-react";
 
 interface JobsiteDataTableProps {
   data: JobsiteSummary[];
@@ -63,118 +61,18 @@ export function JobsiteDataTable({
   onRestoreClick,
   showPendingOnly,
 }: JobsiteDataTableProps) {
-  const router = useRouter();
   // Create column definitions with the action handlers
-  const columns = useMemo(() => {
-    const cols = getJobsiteTableColumns(router);
-    // Find and update the actions column
-    const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
-    if (actionsColumnIndex >= 0) {
-      cols[actionsColumnIndex] = {
-        ...cols[actionsColumnIndex],
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex flex-row justify-center">
-              {/* QR Code button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onQrClick?.(item.id)}
-                  >
-                    <img
-                      src="/qrCode.svg"
-                      alt="QR Code"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Print QR Code</TooltipContent>
-              </Tooltip>
-
-              {/* Edit button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onEditClick?.(item.id)}
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-
-              {/* Archive/Restore button */}
-              {row.original._count?.TimeSheets > 0 ? (
-                // Show archive/restore if there are linked timesheets
-                item.status === "ACTIVE" ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onArchiveClick?.(item.id)}
-                      >
-                        <ArchiveIcon className="h-4 w-4 cursor-pointer text-red-600" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Archive</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onRestoreClick?.(item.id)}
-                      >
-                        <ArchiveRestore className="h-4 w-4 cursor-pointer text-green-600" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Unarchive</TooltipContent>
-                  </Tooltip>
-                )
-              ) : (
-                // Show delete button if no linked timesheets
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDeleteClick?.(item.id)}
-                    >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Delete"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete</TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          );
-        },
-      };
-    }
-    return cols;
-  }, [
-    router,
-    onEditClick,
-    onDeleteClick,
-    onQrClick,
-    onArchiveClick,
-    onRestoreClick,
-  ]);
+  const columns = useMemo(
+    () =>
+      getJobsiteTableColumns(
+        onEditClick,
+        onDeleteClick,
+        onQrClick,
+        onArchiveClick,
+        onRestoreClick,
+      ),
+    [onEditClick, onDeleteClick, onQrClick, onArchiveClick, onRestoreClick],
+  );
 
   const table = useReactTable({
     data,
@@ -230,10 +128,12 @@ export function JobsiteDataTable({
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-100 bg-white">
               <Suspense
-                fallback={<LoadingJobsiteTableState columns={columns} />}
+                fallback={
+                  <LoadingJobsiteTableState columnCount={columns.length} />
+                }
               >
                 {loading ? (
-                  <LoadingJobsiteTableState columns={columns} />
+                  <LoadingJobsiteTableState columnCount={columns.length} />
                 ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow

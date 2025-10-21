@@ -37,6 +37,12 @@ export async function GET(
             name: true,
           },
         },
+        createdBy: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
 
