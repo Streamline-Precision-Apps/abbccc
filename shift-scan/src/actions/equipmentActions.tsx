@@ -91,20 +91,57 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
   console.log("Creating Employee Equipment Log with formData:", formData);
   try {
     const equipmentId = formData.get("equipmentId") as string;
+    console.log("Looking for equipment with ID:", equipmentId);
 
-    // First validate that the equipment exists
-    const equipmentExists = await prisma.equipment.findUnique({
-      where: { qrId: equipmentId },
+    // Try to determine if this is a QR ID or database ID
+    // QR IDs are typically formatted like "EQ-XXXXXX" or just the UUID from QR scanning
+    // Database IDs are UUIDs from the selector
+    let equipmentExists;
+
+    // First try to find by database ID (for manual selection)
+    equipmentExists = await prisma.equipment.findFirst({
+      where: {
+        id: equipmentId,
+        status: "ACTIVE",
+      },
     });
 
+    // If not found, try to find by QR ID (for QR scanning)
     if (!equipmentExists) {
-      throw new Error(
-        `Equipment with ID ${equipmentId} not found. Please scan a valid QR code.`,
-      );
+      equipmentExists = await prisma.equipment.findFirst({
+        where: {
+          qrId: equipmentId,
+          status: "ACTIVE",
+        },
+      });
+    }
+
+    console.log("Equipment found:", equipmentExists ? "Yes" : "No");
+
+    // If still not found, check if equipment exists but is archived
+    if (!equipmentExists) {
+      const equipmentAnyStatus = await prisma.equipment.findFirst({
+        where: {
+          OR: [{ id: equipmentId }, { qrId: equipmentId }],
+        },
+        select: { status: true, id: true, qrId: true },
+      });
+
+      console.log("Equipment with any status:", equipmentAnyStatus);
+
+      if (equipmentAnyStatus) {
+        throw new Error(
+          `Equipment with ID ${equipmentId} is ${equipmentAnyStatus.status.toLowerCase()}. Please scan an active equipment QR code.`,
+        );
+      } else {
+        throw new Error(
+          `Equipment with ID ${equipmentId} not found. Please scan a valid equipment QR code.`,
+        );
+      }
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // Get timesheet ID from form data (which will be provided from cookie/localStorage on the client side)
+      // Get timesheet ID from form data
       const timeSheetId = formData.get("timeSheetId") as string | null;
 
       if (!timeSheetId) {
@@ -131,20 +168,10 @@ export async function CreateEmployeeEquipmentLog(formData: FormData) {
         );
       }
 
-      // Get the correct equipment ID (database ID) using the qrId from the scan
-      const equipment = await tx.equipment.findUnique({
-        where: { qrId: equipmentId },
-        select: { id: true },
-      });
-
-      if (!equipment) {
-        throw new Error(`Equipment with QR ID ${equipmentId} not found`);
-      }
-
       const newLog = await tx.employeeEquipmentLog.create({
         data: {
-          equipmentId: equipment.id, // Use the actual database ID, not the QR ID
-          timeSheetId: timeSheet?.id ?? "", // fallback to empty string if undefined
+          equipmentId: equipmentExists.id, // Use the database ID from the found equipment
+          timeSheetId: timeSheet.id,
           startTime: new Date().toISOString(),
           endTime: formData.get("endTime")
             ? new Date(formData.get("endTime") as string)

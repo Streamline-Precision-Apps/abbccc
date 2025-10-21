@@ -45,16 +45,41 @@ export default function EquipmentSelectorView({
     e.preventDefault();
     if (submitRef.current) return;
     submitRef.current = true;
-    const formData = new FormData();
-    formData.append("equipmentId", equipment?.id || "");
-    formData.append("jobsiteId", jobSite?.id || "");
-    formData.append("userId", id);
 
-    const result = await CreateEmployeeEquipmentLog(formData);
-    if (result) {
-      router.push("/dashboard/equipment");
+    try {
+      // Get timesheet ID from local storage (same logic as EquipmentScanner)
+      const timeSheetData = localStorage.getItem("timesheetId");
+      let timeSheetId: string | null = null;
+
+      if (timeSheetData) {
+        try {
+          const parsedData = JSON.parse(timeSheetData);
+          timeSheetId = parsedData.id.toString();
+        } catch (e) {
+          console.error("Error parsing timesheet data from localStorage:", e);
+        }
+      }
+
+      if (!timeSheetId) {
+        throw new Error("No active timesheet found. Please clock in first.");
+      }
+
+      const formData = new FormData();
+      formData.append("equipmentId", equipment?.id || "");
+      formData.append("jobsiteId", jobSite?.id || "");
+      formData.append("userId", id);
+      formData.append("timeSheetId", timeSheetId);
+
+      const result = await CreateEmployeeEquipmentLog(formData);
+      if (result) {
+        router.push("/dashboard/equipment");
+      }
+    } catch (error) {
+      console.error("Error creating equipment log:", error);
+      // You might want to show an error message to the user here
+    } finally {
+      submitRef.current = false;
     }
-    submitRef.current = false;
   };
 
   return (

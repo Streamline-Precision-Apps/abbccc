@@ -60,7 +60,7 @@ export default function AdminReports() {
       id: "tasco-report",
       label: "Tasco Report",
       description:
-        "Sorts all Tasco data by date and shows,[ Id, shift Type, Submitted Date, Employee, Date worked, Labor Type, Equipment, Loads-ABCDE, Loads-F, Materials, Start Time, End Time, Screened or Unscreened]",
+        "Sorts all Tasco data by date and shows: Shift Type, Submitted Date, Employee, Date worked, Labor Type, Equipment, Loads-ABCDE (for ABCD & E shifts), Loads-F (for F shifts), Materials, Start Time, End Time, Screened or Unscreened",
       render: () => (
         <TascoReport
           showExportModal={showExportModal}

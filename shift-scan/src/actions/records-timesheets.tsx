@@ -195,9 +195,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
           shiftType: tlog.shiftType,
           laborType: tlog.laborType,
           materialType: tlog.materialType,
-          LoadQuantity: tlog.loadsHauled
-            ? parseInt(tlog.loadsHauled)
-            : undefined,
+          LoadQuantity: tlog.loadsHauled ? parseInt(tlog.loadsHauled) : 0,
           equipmentId:
             tlog.equipment && tlog.equipment.length > 0
               ? tlog.equipment[0].id
@@ -572,9 +570,7 @@ export async function adminUpdateTimesheet(formData: FormData) {
           shiftType: tlog.shiftType,
           laborType: tlog.laborType,
           materialType: tlog.materialType,
-          LoadQuantity: tlog.LoadQuantity
-            ? Number(tlog.LoadQuantity)
-            : undefined,
+          LoadQuantity: tlog.LoadQuantity ? Number(tlog.LoadQuantity) : 0,
           equipmentId: tlog.Equipment?.id ?? undefined,
         },
       });
@@ -786,7 +782,6 @@ export async function adminExportTimesheets(
   filterByUser?: boolean,
 ) {
   try {
-    
     if (!dateRange) {
       throw new Error("Date range is required for exporting timesheets.");
     }
@@ -877,7 +872,6 @@ export async function adminExportTimesheets(
       },
       orderBy,
     });
-
 
     // advanced sorting
     let result: TimesheetExportData[] = [];
