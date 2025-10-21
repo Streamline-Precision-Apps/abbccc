@@ -2,16 +2,23 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CostCodeSummary } from "../useCostCodeData";
 import { format } from "date-fns";
 import { highlight } from "../../../_pages/highlight";
-import { SquareCheck, SquareX } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Archive, ArchiveRestore } from "lucide-react";
+import { on } from "events";
 
 // Define the column configuration
-export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
+export const getCostCodeTableColumns = (
+  onEdit: (id: string) => void,
+  onDelete: (id: string) => void,
+  onArchive: (id: string) => void,
+  onRestore: (id: string) => void,
+): ColumnDef<CostCodeSummary>[] => [
   {
     accessorKey: "nameAndStatus",
     header: "Cost Code Summary",
@@ -30,7 +37,7 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
               </span>
             ) : (
               <span className="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">
-                Inactive
+                Archived
               </span>
             )}
           </div>
@@ -109,10 +116,86 @@ export const costCodeTableColumns: ColumnDef<CostCodeSummary>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      // This is a placeholder - actual implementation will be in the DataTable component
+      const item = row.original;
       return (
-        <div className="flex flex-row justify-center items-center">
-          {/* Action buttons will be replaced */}
+        <div className="flex flex-row justify-center">
+          {/* Edit button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size={"icon"}
+                onClick={() => onEdit(item.id)}
+              >
+                <img
+                  src="/formEdit.svg"
+                  alt="Edit"
+                  className="h-4 w-4 cursor-pointer"
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit</TooltipContent>
+          </Tooltip>
+
+          {/* Delete button */}
+          {row.original._count?.Timesheets === 0 ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size={"icon"}
+                  onClick={() => onDelete(item.id)}
+                >
+                  <img
+                    src="/trash-red.svg"
+                    alt="Delete"
+                    className="h-4 w-4 cursor-pointer"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              {row.original.isActive ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => onArchive(item.id)}
+                    >
+                      <Archive
+                        className="h-4 w-4 cursor-pointer"
+                        color="blue"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <span className="">Archive</span>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size={"icon"}
+                      onClick={() => onRestore(item.id)}
+                    >
+                      <ArchiveRestore
+                        className="h-4 w-4 cursor-pointer"
+                        color="blue"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <span className="">Restore Cost Code</span>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </>
+          )}
         </div>
       );
     },

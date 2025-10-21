@@ -53,6 +53,16 @@ export default function CostCodePage() {
     openHandleDelete,
     cancelDelete,
     filteredCostCodes,
+    showArchiveDialog,
+    setShowArchiveDialog,
+    openHandleArchive,
+    confirmArchive,
+    cancelArchive,
+    showRestoreDialog,
+    setShowRestoreDialog,
+    openHandleRestore,
+    confirmRestore,
+    cancelRestore,
   } = useCostCodeData();
 
   const {
@@ -210,6 +220,8 @@ export default function CostCodePage() {
               pageSize={pageSize}
               setPage={setPage}
               setPageSize={setPageSize}
+              openHandleArchive={openHandleArchive}
+              openHandleRestore={openHandleRestore}
             />
           ) : (
             <TagDataTable
@@ -278,6 +290,45 @@ export default function CostCodePage() {
           rerender={tagRerender}
         />
       )}
+
+      <Dialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Archive Cost Code</DialogTitle>
+            <DialogDescription>
+              {`If you archive this Cost Code, it will no longer be available for new timesheets but can be restored later if needed.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelArchive}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmArchive}>
+              Archive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Restore Cost Code</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to restore this Cost Code? Restoring a Cost
+              Code will make it available for use in future Timesheets.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={cancelRestore}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRestore}>
+              Restore
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>

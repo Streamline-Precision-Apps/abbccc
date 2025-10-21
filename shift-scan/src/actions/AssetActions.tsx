@@ -775,6 +775,31 @@ export async function deleteCostCode(id: string) {
     };
   }
 }
+export async function archiveCostCode(id: string) {
+  try {
+    await prisma.costCode.update({
+      where: { id },
+      data: {
+        isActive: false,
+      },
+    });
+  } catch (error) {
+    console.error("Error archiving cost code:", error);
+  }
+}
+
+export async function restoreCostCode(id: string) {
+  try {
+    await prisma.costCode.update({
+      where: { id },
+      data: {
+        isActive: true,
+      },
+    });
+  } catch (error) {
+    console.error("Error restoring cost code:", error);
+  }
+}
 
 export async function updateTagAdmin(formData: FormData) {
   try {

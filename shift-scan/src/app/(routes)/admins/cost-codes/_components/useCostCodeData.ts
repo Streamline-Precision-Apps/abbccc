@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { deleteCostCode } from "@/actions/AssetActions";
+import {
+  deleteCostCode,
+  archiveCostCode,
+  restoreCostCode,
+} from "@/actions/AssetActions";
 export type CostCodeSummary = {
   id: string;
   code: string;
@@ -30,6 +34,11 @@ export const useCostCodeData = () => {
 
   // State for modals, dialogs, and pending actions
   // Cost Codes
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
+  const [pendingArchiveId, setPendingArchiveId] = useState<string | null>(null);
+  const [pendingRestoreId, setPendingRestoreId] = useState<string | null>(null);
+
   const [editCostCodeModal, setEditCostCodeModal] = useState(false);
   const [createCostCodeModal, setCreateCostCodeModal] = useState(false);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
@@ -74,6 +83,42 @@ export const useCostCodeData = () => {
     setPendingEditId(id);
     setEditCostCodeModal(true);
   };
+  // archive, restore
+  const openHandleArchive = (id: string) => {
+    setPendingArchiveId(id);
+    setShowArchiveDialog(true);
+  };
+  const confirmArchive = async () => {
+    if (pendingArchiveId) {
+      await archiveCostCode(pendingArchiveId);
+      setShowArchiveDialog(false);
+      setPendingArchiveId(null);
+      rerender();
+    }
+  };
+  const cancelArchive = () => {
+    setShowArchiveDialog(false);
+    setPendingArchiveId(null);
+  };
+
+  const openHandleRestore = (id: string) => {
+    setPendingRestoreId(id);
+    setShowRestoreDialog(true);
+  };
+  const confirmRestore = async () => {
+    if (pendingRestoreId) {
+      await restoreCostCode(pendingRestoreId);
+      setShowRestoreDialog(false);
+      setPendingRestoreId(null);
+      rerender();
+    }
+  };
+  const cancelRestore = () => {
+    setShowRestoreDialog(false);
+    setPendingRestoreId(null);
+  };
+
+  // deletion handlers
   const confirmDelete = async () => {
     if (pendingDeleteId) {
       await deleteCostCode(pendingDeleteId);
@@ -124,5 +169,15 @@ export const useCostCodeData = () => {
     openHandleDelete,
     cancelDelete,
     filteredCostCodes,
+    showArchiveDialog,
+    setShowArchiveDialog,
+    openHandleArchive,
+    confirmArchive,
+    cancelArchive,
+    showRestoreDialog,
+    setShowRestoreDialog,
+    openHandleRestore,
+    confirmRestore,
+    cancelRestore,
   };
 };

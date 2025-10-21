@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import React, { Dispatch, SetStateAction, useMemo, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CostCodeSummary } from "../useCostCodeData";
-import { costCodeTableColumns } from "./costCodeTableColumns";
+import { getCostCodeTableColumns } from "./costCodeTableColumns";
 import LoadingCostCodeTableState from "./loadingCostCodeTableState";
 
 interface CostCodeDataTableProps {
@@ -38,6 +38,8 @@ interface CostCodeDataTableProps {
   setPageSize: Dispatch<SetStateAction<number>>;
   openHandleDelete: (id: string) => void;
   openHandleEdit: (id: string) => void;
+  openHandleArchive: (id: string) => void;
+  openHandleRestore: (id: string) => void;
 }
 
 export default function CostCodeDataTable({
@@ -52,89 +54,20 @@ export default function CostCodeDataTable({
   setPageSize,
   openHandleEdit,
   openHandleDelete,
+  openHandleArchive,
+  openHandleRestore,
 }: CostCodeDataTableProps) {
   // Create column definitions with the action handlers
-  const columns = useMemo(() => {
-    // Copy the base columns
-    const cols = [...costCodeTableColumns];
-
-    // Find and update the actions column
-    const actionsColumnIndex = cols.findIndex((col) => col.id === "actions");
-    if (actionsColumnIndex >= 0) {
-      // Replace with a new definition that includes our handlers
-      cols[actionsColumnIndex] = {
-        ...cols[actionsColumnIndex],
-        cell: ({ row }) => {
-          const item = row.original;
-          return (
-            <div className="flex flex-row justify-center">
-              {/* Edit button */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size={"icon"}
-                    onClick={() => openHandleEdit(item.id)}
-                  >
-                    <img
-                      src="/formEdit.svg"
-                      alt="Edit"
-                      className="h-4 w-4 cursor-pointer"
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-
-              {/* Delete button */}
-              {row.original._count?.Timesheets === 0 ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => openHandleDelete(item.id)}
-                    >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Delete"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete</TooltipContent>
-                </Tooltip>
-              ) : (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      className="opacity-50"
-                      variant="ghost"
-                      size={"icon"}
-                      onClick={() => {}}
-                    >
-                      <img
-                        src="/trash-red.svg"
-                        alt="Delete"
-                        className="h-4 w-4 cursor-pointer"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white text-red-500 border border-red-300">
-                    <span className="">Cannot delete:</span>
-                    <br />
-                    <span className="">linked timesheets</span>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          );
-        },
-      };
-    }
-
-    return cols;
-  }, [openHandleEdit, openHandleDelete]);
+  const columns = useMemo(
+    () =>
+      getCostCodeTableColumns(
+        openHandleEdit,
+        openHandleDelete,
+        openHandleArchive,
+        openHandleRestore,
+      ),
+    [openHandleEdit, openHandleDelete, openHandleArchive, openHandleRestore],
+  );
 
   const table = useReactTable({
     data,
@@ -190,10 +123,12 @@ export default function CostCodeDataTable({
             </TableHeader>
             <TableBody className="h-full divide-y divide-gray-200 bg-white">
               <Suspense
-                fallback={<LoadingCostCodeTableState columns={columns} />}
+                fallback={
+                  <LoadingCostCodeTableState columnCount={columns.length} />
+                }
               >
                 {loading ? (
-                  <LoadingCostCodeTableState columns={columns} />
+                  <LoadingCostCodeTableState columnCount={columns.length} />
                 ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow

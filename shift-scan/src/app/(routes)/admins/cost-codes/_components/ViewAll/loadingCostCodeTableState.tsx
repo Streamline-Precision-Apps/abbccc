@@ -1,12 +1,13 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { costCodeTableColumns } from "./costCodeTableColumns";
+import { ColumnDef } from "@tanstack/react-table";
+import { CostCodeSummary } from "../useCostCodeData";
 
 type Props = {
-  columns: typeof costCodeTableColumns;
+  columnCount: number;
 };
 
-export default function LoadingCostCodeTableState({ columns }: Props) {
+export default function LoadingCostCodeTableState({ columnCount }: Props) {
   return (
     <>
       {Array.from({ length: 10 }).map((_, index) => (
@@ -15,7 +16,7 @@ export default function LoadingCostCodeTableState({ columns }: Props) {
           className="odd:bg-white even:bg-gray-100 border-r border-gray-200 text-xs text-center py-2"
         >
           {/* Create skeleton cells for each column */}
-          {columns.map((col, colIndex) => (
+          {Array.from({ length: columnCount }).map((_, colIndex) => (
             <TableCell
               key={`loading-cell-${colIndex}`}
               className="whitespace-nowrap border-r border-gray-200 text-xs text-center"
