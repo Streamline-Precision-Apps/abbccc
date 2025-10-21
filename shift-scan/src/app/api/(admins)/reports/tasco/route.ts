@@ -58,32 +58,37 @@ export async function GET(req: Request) {
       (item) => Array.isArray(item.TascoLogs) && item.TascoLogs.length > 0,
     );
 
-    const tascoReport = filteredReport.map((log) => ({
-      id: log.TascoLogs[0].id, // Assuming you want the first log's ID
-      shiftType: log.TascoLogs[0].shiftType,
-      submittedDate: log.date,
-      employee: `${log.User.firstName} ${log.User.lastName}`,
-      dateWorked: log.date,
-      laborType: log.TascoLogs[0].laborType,
-      equipment: log.TascoLogs[0].Equipment?.name ?? "",
-      loadsABCDE:
-        log.TascoLogs[0].laborType === "tascoEEquipment" ||
-        log.TascoLogs[0].laborType === "tascoAbcdEquipment" ||
-        log.TascoLogs[0].laborType === "tascoAbcdLabor"
-          ? log.TascoLogs[0].LoadQuantity
-          : null,
-      loadsF:
-        log.TascoLogs[0].laborType === "tascoF"
-          ? log.TascoLogs[0].LoadQuantity
-          : null,
-      materials: log.TascoLogs[0].materialType ?? "",
-      startTime: log.startTime,
-      endTime: log.endTime,
-      LoadType:
-        log.TascoLogs[0].screenType === "SCREENED"
-          ? LoadType.SCREENED
-          : LoadType.UNSCREENED,
-    }));
+    const tascoReport = filteredReport.map((log) => {
+      const shiftType = log.TascoLogs[0].shiftType;
+      const laborType = log.TascoLogs[0].laborType;
+      const loadQuantity = log.TascoLogs[0].LoadQuantity ?? 0; // Default to 0 if null/undefined
+      
+      // Determine loads based on shiftType instead of laborType
+      const loadsABCDE = (shiftType === "ABCD Shift" || shiftType === "E Shift") 
+        ? loadQuantity : null;
+          
+      const loadsF = (shiftType === "F Shift") 
+        ? loadQuantity : null;
+      
+      return {
+        id: log.TascoLogs[0].id, // Assuming you want the first log's ID
+        shiftType: shiftType,
+        submittedDate: log.date,
+        employee: `${log.User.firstName} ${log.User.lastName}`,
+        dateWorked: log.date,
+        laborType: laborType,
+        equipment: log.TascoLogs[0].Equipment?.name ?? "",
+        loadsABCDE: loadsABCDE,
+        loadsF: loadsF,
+        materials: log.TascoLogs[0].materialType ?? "",
+        startTime: log.startTime,
+        endTime: log.endTime,
+        LoadType:
+          log.TascoLogs[0].screenType === "SCREENED"
+            ? LoadType.SCREENED
+            : LoadType.UNSCREENED,
+      };
+    });
 
     if (!tascoReport.length) {
       return NextResponse.json(

@@ -15,8 +15,8 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch jobsite codes
-    const jobCodes = await prisma.jobsite.findMany({
+    // Fetch all jobsites (filtering will be done in components as needed)
+    const jobsites = await prisma.jobsite.findMany({
       select: {
         id: true,
         qrId: true,
@@ -25,19 +25,19 @@ export async function GET() {
       },
     });
 
-    if (!jobCodes || jobCodes.length === 0) {
+    if (!jobsites || jobsites.length === 0) {
       return NextResponse.json(
-        { message: "No job codes found." },
+        { message: "No jobsites found." },
         { status: 404 },
       );
     }
 
-    return NextResponse.json(jobCodes);
+    return NextResponse.json(jobsites);
   } catch (error) {
     Sentry.captureException(error);
-    console.error("Error fetching job codes:", error);
+    console.error("Error fetching jobsites:", error);
 
-    let errorMessage = "Failed to fetch job codes";
+    let errorMessage = "Failed to fetch jobsites";
     if (error instanceof Error) {
       errorMessage = error.message;
     }

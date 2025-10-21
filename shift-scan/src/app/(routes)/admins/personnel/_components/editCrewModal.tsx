@@ -11,12 +11,15 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
 import Spinner from "@/components/(animations)/spinner";
 import { useCrewDataById } from "./useCrewDataById";
 import { CrewData } from "./useCrewDataById";
 import { editCrew } from "@/actions/adminActions";
+import { CrewMemberCheckboxList } from "./CrewMemberCheckboxList";
+import {
+  SingleCombobox,
+  ComboboxOption,
+} from "@/components/ui/single-combobox";
 
 export default function EditCrewModal({
   cancel,
@@ -59,6 +62,15 @@ export default function EditCrewModal({
       },
     ];
   };
+
+  // Create user options for the combobox
+  const userOptions = users
+    ? users.map((user) => ({
+        value: user.id,
+        label:
+          `${user.firstName ? `${user.firstName}` : ""}${user.middleName ? ` ${user.middleName}` : ""}${user.lastName ? ` ${user.lastName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}`.trim(),
+      }))
+    : [];
 
   const handleUpdateCrew = async () => {
     setSubmitting(true);
@@ -130,7 +142,13 @@ export default function EditCrewModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full  max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
+        {/* Loading overlay when submitting */}
+        {submitting && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-lg z-10">
+            <Spinner />
+          </div>
+        )}
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Edit Crew</h2>
@@ -211,149 +229,112 @@ export default function EditCrewModal({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="leadId">
-                    Crew Lead <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={crewData?.leadId}
-                    onValueChange={(value) => {
+                  <SingleCombobox
+                    label="Crew Lead"
+                    options={users
+                      .filter((user) => user.permission !== "USER")
+                      .map(
+                        (user): ComboboxOption => ({
+                          value: user.id,
+                          label: `${user.firstName} ${user.lastName}${user.middleName ? ` ${user.middleName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}${user.permission ? ` (${user.permission})` : ""}`,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          middleName: user.middleName || "",
+                          permission: user.permission,
+                        }),
+                      )}
+                    value={crewData?.leadId || ""}
+                    onChange={(value) => {
+                      // Update the lead ID
                       updateCrewData("leadId", value);
+
+                      // Ensure the new lead is also added to the crew members
+                      setCrewData((prev) => {
+                        if (!prev) return prev;
+
+                        // Check if new lead is already in the crew
+                        const leadAlreadyInCrew = prev.Users.some(
+                          (u) => u.id === value,
+                        );
+
+                        if (!leadAlreadyInCrew && value) {
+                          // Find the user data for the new lead
+                          const leadUser = users?.find((u) => u.id === value);
+                          if (leadUser) {
+                            // Add the new lead to the crew members
+                            const updatedUsers = [
+                              ...prev.Users,
+                              {
+                                id: leadUser.id,
+                                firstName: leadUser.firstName,
+                                middleName: leadUser.middleName,
+                                lastName: leadUser.lastName,
+                                secondLastName: leadUser.secondLastName,
+                              },
+                            ];
+
+                            return { ...prev, Users: updatedUsers };
+                          }
+                        }
+
+                        return prev;
+                      });
                     }}
+                    placeholder="Search and select a crew lead"
+                    filterKeys={[
+                      "firstName",
+                      "lastName",
+                      "middleName",
+                      "permission",
+                    ]}
                     disabled={loading}
-                  >
-                    <SelectTrigger
-                      className="w-full text-xs"
-                      id="leadId"
-                      name="leadId"
-                    >
-                      <SelectValue
-                        placeholder="Select a crew lead"
-                        {...(crewData?.leadId
-                          ? {
-                              children: (() => {
-                                const leadUser = users.find(
-                                  (u) => u.id === crewData.leadId,
-                                );
-                                if (!leadUser) return "Select a crew lead";
-                                return `${leadUser.firstName ? leadUser.firstName : ""}${leadUser.middleName ? " " + leadUser.middleName : ""}${leadUser.lastName ? " " + leadUser.lastName : ""}${leadUser.secondLastName ? " " + leadUser.secondLastName : ""}`.trim();
-                              })(),
-                            }
-                          : {})}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {users
-                        .filter((user) => user.permission !== "USER")
-                        .map((user) => (
-                          <SelectItem
-                            key={user.id}
-                            value={user.id}
-                            className="text-xs"
-                          >
-                            {user.firstName} {user.lastName}
-                            {user.middleName ? ` ${user.middleName}` : ""}
-                            {user.secondLastName
-                              ? ` ${user.secondLastName}`
-                              : ""}
-                            {user.permission ? ` (${user.permission})` : ""}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                    required={true}
+                  />
                 </div>
               </div>
 
               <div className="flex-1 min-w-[280px] flex flex-col gap-6">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <Label>
-                      Select Crew Members{" "}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <span className="text-xs text-gray-500 ">
-                      {users.length === 0 ? (
-                        <div className="mr-1">
-                          <Spinner size={10} />
-                        </div>
-                      ) : crewData.Users?.length > 0 ? (
-                        `${crewData.Users.length} selected`
-                      ) : (
-                        users.length
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-2 h-64   overflow-y-auto border rounded p-2 bg-gray-50">
-                    {users.length === 0
-                      ? Array.from({ length: 10 }).map((_, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <Skeleton className="h-4 w-4 rounded" />
-                            <Skeleton className="h-4 w-32 rounded" />
-                          </div>
-                        ))
-                      : [...users]
-                          .sort((a, b) => {
-                            const lastA = a.lastName?.toLowerCase() || "";
-                            const lastB = b.lastName?.toLowerCase() || "";
-                            if (lastA < lastB) return -1;
-                            if (lastA > lastB) return 1;
-                            return 0;
-                          })
-                          .map((user) => {
-                            const isChecked = crewData.Users.some(
-                              (u) => u.id === user.id,
-                            );
-                            return (
-                              <label
-                                key={user.id}
-                                className="flex items-center gap-2 text-xs cursor-pointer"
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={(checked) => {
-                                    setCrewData((prev) => {
-                                      if (!prev) return prev;
+                  <Label>
+                    Select Crew Members <span className="text-red-500">*</span>
+                  </Label>
+                  <CrewMemberCheckboxList
+                    options={userOptions}
+                    value={crewData?.Users?.map((u) => u.id) || []}
+                    onChange={(selectedIds: string[]) => {
+                      setCrewData((prev) => {
+                        if (!prev) return prev;
 
-                                      // Always keep the lead user in the crew members
-                                      if (user.id === prev.leadId) return prev;
+                        // Ensure the lead is always included
+                        const uniqueIds = new Set(selectedIds);
+                        if (prev.leadId && !uniqueIds.has(prev.leadId)) {
+                          uniqueIds.add(prev.leadId);
+                        }
 
-                                      let updatedUsers = [...prev.Users];
+                        // Create updated users array with full user data
+                        const updatedUsers = Array.from(uniqueIds).map((id) => {
+                          const existingUser = prev.Users.find(
+                            (u) => u.id === id,
+                          );
+                          if (existingUser) return existingUser;
 
-                                      if (checked) {
-                                        // Add user if not already in the list
-                                        if (
-                                          !updatedUsers.some(
-                                            (u) => u.id === user.id,
-                                          )
-                                        ) {
-                                          updatedUsers.push({
-                                            id: user.id,
-                                            firstName: user.firstName,
-                                            middleName: user.middleName,
-                                            lastName: user.lastName,
-                                            secondLastName: user.secondLastName,
-                                          });
-                                        }
-                                      } else {
-                                        // Remove user unless they're the lead
-                                        updatedUsers = updatedUsers.filter(
-                                          (u) =>
-                                            u.id !== user.id ||
-                                            u.id === prev.leadId,
-                                        );
-                                      }
+                          // Find user data from users array
+                          const userData = users?.find((u) => u.id === id);
+                          return {
+                            id: userData?.id || id,
+                            firstName: userData?.firstName || "",
+                            middleName: userData?.middleName || null,
+                            lastName: userData?.lastName || "",
+                            secondLastName: userData?.secondLastName || null,
+                          };
+                        });
 
-                                      return { ...prev, Users: updatedUsers };
-                                    });
-                                  }}
-                                  disabled={user.id === crewData.leadId}
-                                />
-                                <span>
-                                  {`${user.firstName ? ` ${user.firstName}` : ""}${user.middleName ? ` ${user.middleName}` : ""}${user.lastName ? ` ${user.lastName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}`}
-                                </span>
-                              </label>
-                            );
-                          })}
-                  </div>
+                        return { ...prev, Users: updatedUsers };
+                      });
+                    }}
+                    placeholder="Search crew members..."
+                    leadId={crewData?.leadId}
+                  />
                 </div>
               </div>
             </div>
@@ -364,17 +345,17 @@ export default function EditCrewModal({
                   type="button"
                   onClick={cancel}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
-                  disabled={submitting}
+                  disabled={submitting || loading}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="outline"
                   type="submit"
-                  className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${submitting ? "opacity-50" : ""}`}
+                  className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
                   disabled={submitting || loading}
                 >
-                  {submitting ? "Saving..." : "Save Changes"}
+                  Save Changes
                 </Button>
               </div>
             </div>

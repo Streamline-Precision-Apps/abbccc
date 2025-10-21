@@ -21,12 +21,14 @@ const JobCodesSchema = z.object({
   id: z.string(),
   qrId: z.string(),
   name: z.string(),
+  status: z.string(),
 });
 
 type Option = {
   id: string;
   label: string;
   code: string;
+  status?: string;
 };
 
 // Zod schema for EquipmentCodes
@@ -35,6 +37,7 @@ const EquipmentCodesSchema = z.object({
   qrId: z.string(),
   name: z.string(),
   code: z.string().nullable().optional(),
+  status: z.string(),
 });
 
 // Zod schema for equipment list response
@@ -93,6 +96,7 @@ export default function QRGeneratorContent() {
               id: item.id,
               label: `${item.code ? item.code.toUpperCase() : "Pending"} - ${item.name.toUpperCase()}`,
               code: item.qrId.toUpperCase(),
+              status: item.status,
             })),
           );
         } catch (error) {
@@ -124,6 +128,7 @@ export default function QRGeneratorContent() {
               id: item.id,
               label: item.name.toUpperCase(),
               code: item.qrId.toUpperCase(),
+              status: item.status,
             })),
           );
         } catch (error) {

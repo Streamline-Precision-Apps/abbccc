@@ -32,7 +32,12 @@ export const EquipmentSelector = ({
 
   useEffect(() => {
     if (equipmentResults) {
-      const options = equipmentResults.map((equipment) => ({
+      // Filter out archived equipment for the selector
+      const activeEquipment = equipmentResults.filter(
+        (equipment) => equipment.status !== "ARCHIVED",
+      );
+
+      const options = activeEquipment.map((equipment) => ({
         id: equipment.id,
         viewpoint: equipment.code,
         code: equipment.qrId,

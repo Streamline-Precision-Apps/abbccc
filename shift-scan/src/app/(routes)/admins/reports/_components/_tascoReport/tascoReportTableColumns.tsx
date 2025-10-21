@@ -23,13 +23,6 @@ export interface TascoReportRow {
 // Create the columns for the TanStack table
 export const tascoReportColumns: ColumnDef<TascoReportRow>[] = [
   {
-    accessorKey: "id",
-    header: () => <div className="text-center">Id</div>,
-    cell: ({ row }) => (
-      <div className="text-xs text-center">{row.getValue("id")}</div>
-    ),
-  },
-  {
     accessorKey: "shiftType",
     header: () => <div className="text-center">Shift Type</div>,
     cell: ({ row }) => {
@@ -86,10 +79,10 @@ export const tascoReportColumns: ColumnDef<TascoReportRow>[] = [
           {laborType === "tascoAbcdEquipment"
             ? "Equipment Operator"
             : laborType === "tascoEEquipment"
-              ? "-"
+              ? "Equipment Operator" // Changed from "-" to "Equipment Operator"
               : laborType === "tascoAbcdLabor"
-                ? "Equipment Operator"
-                : "-"}
+                ? "Manual Labor" // Changed from "Equipment Operator" to "Manual Labor" for clarity
+                : laborType || "-"}
         </div>
       );
     },
@@ -107,7 +100,12 @@ export const tascoReportColumns: ColumnDef<TascoReportRow>[] = [
     header: () => <div className="text-center">Loads - ABCDE</div>,
     cell: ({ row }) => {
       const loadsABCDE = row.getValue("loadsABCDE") as number;
-      return <div className="text-xs text-center">{loadsABCDE || "-"}</div>;
+      // Show 0 as "0" instead of "-", and handle null/undefined properly
+      return (
+        <div className="text-xs text-center">
+          {loadsABCDE !== null && loadsABCDE !== undefined ? loadsABCDE : "-"}
+        </div>
+      );
     },
   },
   {
@@ -115,7 +113,12 @@ export const tascoReportColumns: ColumnDef<TascoReportRow>[] = [
     header: () => <div className="text-center">Loads - F</div>,
     cell: ({ row }) => {
       const loadsF = row.getValue("loadsF") as number;
-      return <div className="text-xs text-center">{loadsF || "-"}</div>;
+      // Show 0 as "0" instead of "-", and handle null/undefined properly
+      return (
+        <div className="text-xs text-center">
+          {loadsF !== null && loadsF !== undefined ? loadsF : "-"}
+        </div>
+      );
     },
   },
   {

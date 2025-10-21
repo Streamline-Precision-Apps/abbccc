@@ -3,6 +3,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import TrailerSelectorLoading from "../(loading)/trailerSelectorLoading";
+import { useDBEquipment } from "@/app/context/dbCodeContext";
 
 type Option = {
   id: string;
@@ -22,51 +23,32 @@ const TrailerSelector = ({
   const [selectedTrailer, setSelectedTrailer] = useState<Option | null>(null);
   const [trailerOptions, setTrailerOptions] = useState<Option[]>([]);
   const t = useTranslations("Clock");
+  const { equipmentResults } = useDBEquipment();
 
   useEffect(() => {
-    // Fetch all equipment (since trailer type is not yet in DB)
-    fetch("/api/getAllEquipment")
-      .then((res) => res.json())
-      .then(
-        (
-          data: {
-            id: string;
-            qrId?: string;
-            name: string;
-            equipmentTag: string;
-          }[],
-        ) => {
-          const noTrailerOption: Option = {
-            id: "none",
-            code: "none",
-            label: t("NoTrailerOption", { default: "No Trailer" }),
-          };
-          const trailerFilteredData = data.filter(
-            (item) => item.equipmentTag === "TRAILER",
-          );
-          const options: Option[] = trailerFilteredData
-            .map((item) => ({
-              id: item.qrId || item.id,
-              code: item.qrId || item.id,
-              label: item.name,
-            }))
-            .filter((item: Option) => item.id !== "none")
-            .sort((a: Option, b: Option) => a.label.localeCompare(b.label));
-          // Pin 'No Trailer' to the top
-          const finalOptions = [noTrailerOption, ...options];
-          setTrailerOptions(finalOptions);
-        },
-      )
-      .catch(() => {
-        setTrailerOptions([
-          {
-            id: "none",
-            code: "none",
-            label: t("NoTrailerOption", { default: "No Trailer" }),
-          },
-        ]);
-      });
-  }, [t]);
+    if (equipmentResults) {
+      const noTrailerOption: Option = {
+        id: "none",
+        code: "none",
+        label: t("NoTrailerOption", { default: "No Trailer" }),
+      };
+      
+      const options: Option[] = equipmentResults
+        .filter((equipment) => 
+          equipment.equipmentTag === "TRAILER" && equipment.status !== "ARCHIVED"
+        )
+        .map((equipment) => ({
+          id: equipment.id,
+          code: equipment.qrId,
+          label: equipment.name,
+        }))
+        .sort((a: Option, b: Option) => a.label.localeCompare(b.label));
+      
+      // Pin 'No Trailer' to the top
+      const finalOptions = [noTrailerOption, ...options];
+      setTrailerOptions(finalOptions);
+    }
+  }, [equipmentResults, t]);
 
   useEffect(() => {
     if (initialValue && trailerOptions.length > 0) {

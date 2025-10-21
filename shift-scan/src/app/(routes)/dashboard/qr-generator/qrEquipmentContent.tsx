@@ -16,6 +16,7 @@ type Option = {
   id: string;
   label: string;
   code: string;
+  status?: string;
 };
 
 type QrEquipmentContentProps = {
@@ -61,6 +62,7 @@ export default function QrEquipmentContent({
         id: selectedOption.id,
         label: selectedOption.label,
         code: selectedOption.code,
+        status: selectedOption.status,
       });
     } else {
       setSelectedEquipment(null);
@@ -78,7 +80,8 @@ export default function QrEquipmentContent({
           selectedOption={selectedEquipment}
           onSelect={handleSearchSelectChange}
           placeholder={t("TypeHere")}
-          label="Select Job Site"
+          label="Select Equipment"
+          showStatusTags={true}
         />
       </Holds>
 

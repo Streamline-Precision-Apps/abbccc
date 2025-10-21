@@ -27,7 +27,12 @@ export const JobsiteSelector = ({
   const { jobsiteResults } = useDBJobsite();
   const t = useTranslations("Clock");
   useEffect(() => {
-    const options = jobsiteResults.map((jobSite) => ({
+    // Filter out archived jobsites for the selector, but keep all for QR scanning
+    const activeJobsites = jobsiteResults.filter(
+      (jobSite) => jobSite.status !== "ARCHIVED",
+    );
+
+    const options = activeJobsites.map((jobSite) => ({
       id: jobSite.id,
       code: jobSite.qrId,
       label: jobSite.name,

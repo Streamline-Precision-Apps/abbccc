@@ -12,10 +12,13 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createCrew } from "@/actions/adminActions";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
 import { WorkType } from "../../../../../../prisma/generated/prisma";
 import Spinner from "@/components/(animations)/spinner";
+import { CrewMemberCheckboxList } from "./CrewMemberCheckboxList";
+import {
+  SingleCombobox,
+  ComboboxOption,
+} from "@/components/ui/single-combobox";
 
 type User = {
   id: string;
@@ -44,6 +47,7 @@ export default function CreateCrewModal({
   rerender: () => void;
 }) {
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<CrewData>({
     name: "",
@@ -55,13 +59,26 @@ export default function CreateCrewModal({
   useEffect(() => {
     // Fetch users from the server or context
     const fetchUsers = async () => {
-      const response = await fetch("/api/getAllEmployees?filter=all");
-      const data = await response.json();
-      setUsers(data as User[]);
+      try {
+        const response = await fetch("/api/getAllEmployees?filter=all");
+        const data = await response.json();
+        setUsers(data as User[]);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUsers();
   }, []);
+
+  // Create user options for the combobox
+  const userOptions = users.map((user) => ({
+    value: user.id,
+    label:
+      `${user.firstName ? `${user.firstName}` : ""}${user.middleName ? ` ${user.middleName}` : ""}${user.lastName ? ` ${user.lastName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}`.trim(),
+  }));
 
   // Helper to ensure lead is always in Users
   const ensureLeadInUsers = (leadId: string, users: { id: string }[]) => {
@@ -112,9 +129,38 @@ export default function CreateCrewModal({
     }
   };
 
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-lg font-semibold">Create Crew</h2>
+              <p className="text-xs text-gray-600">
+                Fill in the details to create a new crew.
+              </p>
+              <p className="text-xs text-red-500">
+                All fields marked with * are required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+          <Spinner />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full  max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg max-w-[1000px] w-full max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center relative">
+        {/* Loading overlay when submitting */}
+        {submitting && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-lg z-10">
+            <Spinner />
+          </div>
+        )}
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold">Create Crew</h2>
@@ -198,12 +244,22 @@ export default function CreateCrewModal({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="leadId">
-                    Crew Lead <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
+                  <SingleCombobox
+                    label="Crew Lead"
+                    options={users
+                      .filter((user) => user.permission !== "USER")
+                      .map(
+                        (user): ComboboxOption => ({
+                          value: user.id,
+                          label: `${user.firstName} ${user.lastName}${user.middleName ? ` ${user.middleName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}${user.permission ? ` (${user.permission})` : ""}`,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          middleName: user.middleName || "",
+                          permission: user.permission,
+                        }),
+                      )}
                     value={formData.leadId}
-                    onValueChange={(value) => {
+                    onChange={(value) => {
                       setFormData((prev) => {
                         // Remove previous lead from Users if present
                         let updatedUsers = prev.Users.filter(
@@ -218,116 +274,35 @@ export default function CreateCrewModal({
                         return { ...prev, leadId: value, Users: updatedUsers };
                       });
                     }}
-                  >
-                    <SelectTrigger
-                      className="w-full text-xs"
-                      id="leadId"
-                      name="leadId"
-                    >
-                      <SelectValue placeholder="Select a crew lead" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {users
-                        .filter((user) => user.permission !== "USER")
-                        .map((user) => (
-                          <SelectItem
-                            key={user.id}
-                            value={user.id}
-                            className="text-xs"
-                          >
-                            {user.firstName} {user.lastName}
-                            {user.middleName ? ` ${user.middleName}` : ""}
-                            {user.secondLastName
-                              ? ` ${user.secondLastName}`
-                              : ""}
-                            {user.permission ? ` (${user.permission})` : ""}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Search and select a crew lead"
+                    filterKeys={[
+                      "firstName",
+                      "lastName",
+                      "middleName",
+                      "permission",
+                    ]}
+                    required={true}
+                  />
                 </div>
               </div>
 
               <div className="flex-1 min-w-[280px] flex flex-col gap-6">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <Label>
-                      Select Crew Members{" "}
-                      <span className="text-red-500">*</span>
-                    </Label>
-                    <span className="text-xs text-gray-500 ">
-                      {users.length === 0 ? (
-                        <div className="mr-1">
-                          <Spinner size={10} />
-                        </div>
-                      ) : formData.Users.length > 0 ? (
-                        `${formData.Users.length} selected`
-                      ) : (
-                        users.length
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-2 h-64   overflow-y-auto border rounded p-2 bg-gray-50">
-                    {users.length === 0
-                      ? Array.from({ length: 10 }).map((_, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <Skeleton className="h-4 w-4 rounded" />
-                            <Skeleton className="h-4 w-32 rounded" />
-                          </div>
-                        ))
-                      : [...users]
-                          .sort((a, b) => {
-                            const lastA = a.lastName?.toLowerCase() || "";
-                            const lastB = b.lastName?.toLowerCase() || "";
-                            if (lastA < lastB) return -1;
-                            if (lastA > lastB) return 1;
-                            return 0;
-                          })
-                          .map((user) => {
-                            const isChecked = formData.Users.some(
-                              (u) => u.id === user.id,
-                            );
-                            return (
-                              <label
-                                key={user.id}
-                                className="flex items-center gap-2 text-xs cursor-pointer"
-                              >
-                                <Checkbox
-                                  checked={isChecked}
-                                  onCheckedChange={(checked) => {
-                                    setFormData((prev) => {
-                                      let updatedUsers;
-                                      if (checked) {
-                                        // Add user if not already present
-                                        if (
-                                          !prev.Users.some(
-                                            (u) => u.id === user.id,
-                                          )
-                                        ) {
-                                          updatedUsers = [
-                                            ...prev.Users,
-                                            { id: user.id },
-                                          ];
-                                        } else {
-                                          updatedUsers = prev.Users;
-                                        }
-                                      } else {
-                                        // Remove user
-                                        updatedUsers = prev.Users.filter(
-                                          (u) => u.id !== user.id,
-                                        );
-                                      }
-                                      return { ...prev, Users: updatedUsers };
-                                    });
-                                  }}
-                                />
-                                <span>
-                                  {`${user.firstName ? ` ${user.firstName}` : ""}${user.middleName ? ` ${user.middleName}` : ""}${user.lastName ? ` ${user.lastName}` : ""}${user.secondLastName ? ` ${user.secondLastName}` : ""}`}
-                                </span>
-                              </label>
-                            );
-                          })}
-                  </div>
+                  <Label>
+                    Select Crew Members <span className="text-red-500">*</span>
+                  </Label>
+                  <CrewMemberCheckboxList
+                    options={userOptions}
+                    value={formData.Users.map((u) => u.id)}
+                    onChange={(selectedIds: string[]) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        Users: selectedIds.map((id) => ({ id })),
+                      }));
+                    }}
+                    placeholder="Search crew members..."
+                    leadId={formData.leadId}
+                  />
                 </div>
               </div>
             </div>
@@ -338,15 +313,17 @@ export default function CreateCrewModal({
                   type="button"
                   onClick={cancel}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                  disabled={submitting}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="outline"
                   type="submit"
-                  className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${submitting ? "opacity-50" : ""}`}
+                  className="bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded"
+                  disabled={submitting}
                 >
-                  {submitting ? "Creating..." : "Create Crew"}
+                  Create Crew
                 </Button>
               </div>
             </div>

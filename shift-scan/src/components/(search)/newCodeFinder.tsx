@@ -13,6 +13,7 @@ type Option = {
   viewpoint?: string;
   code: string;
   label: string;
+  status?: string;
 };
 
 type CodeFinderProps = {
@@ -24,6 +25,7 @@ type CodeFinderProps = {
   className?: string;
   onRefresh?: () => Promise<void>;
   isLoading?: boolean;
+  showStatusTags?: boolean;
 };
 
 export default function CodeFinder({
@@ -35,6 +37,7 @@ export default function CodeFinder({
   className = "",
   onRefresh,
   isLoading,
+  showStatusTags = false,
 }: CodeFinderProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const t = useTranslations("CodeFinder");
@@ -107,6 +110,7 @@ export default function CodeFinder({
               onSelect={onSelect}
               clearSelection={clearSelection}
               isLoading={isLoading}
+              showStatusTags={showStatusTags}
             />
           </PullToRefresh>
         ) : (
@@ -117,6 +121,7 @@ export default function CodeFinder({
               onSelect={onSelect}
               clearSelection={clearSelection}
               isLoading={isLoading}
+              showStatusTags={showStatusTags}
             />
           </div>
         )}
@@ -132,12 +137,14 @@ const OptionsList = ({
   onSelect,
   clearSelection,
   isLoading,
+  showStatusTags = false,
 }: {
   filteredOptions: Option[];
   selectedOption: Option | null;
   onSelect: (option: Option | null) => void;
   clearSelection: () => void;
   isLoading?: boolean;
+  showStatusTags?: boolean;
 }) => {
   const t = useTranslations("Clock");
   if (filteredOptions.length > 0) {
@@ -154,12 +161,31 @@ const OptionsList = ({
               : onSelect(option)
           }
         >
-          <Titles size={"sm"} className="max-w-[200px] truncate ">
-            <span className="text-base">
-              {option.viewpoint ? `${option.viewpoint} - ` : null}
-            </span>
-            {option.label}
-          </Titles>
+          <div className="flex items-center justify-between w-full">
+            <Titles size={"sm"} className="max-w-[200px] truncate ">
+              <span className="text-base">
+                {option.viewpoint ? `${option.viewpoint} - ` : null}
+              </span>
+              {option.label}
+            </Titles>
+            {showStatusTags && option.status && option.status !== "ACTIVE" && (
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded ml-2 ${
+                  option.status === "ARCHIVED"
+                    ? "bg-gray-200 text-gray-600"
+                    : option.status === "DRAFT"
+                      ? "bg-blue-100 text-blue-600"
+                      : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {option.status === "ARCHIVED"
+                  ? "Archived"
+                  : option.status === "DRAFT"
+                    ? "Draft"
+                    : option.status}
+              </span>
+            )}
+          </div>
         </Buttons>
       </Holds>
     ));

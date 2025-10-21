@@ -799,7 +799,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/devunfox/abbccc/shift-scan/prisma/generated/prisma",
+      "value": "C:\\Users\\SBwal\\Documents\\git\\abbccc\\shift-scan\\prisma\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -808,12 +808,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/devunfox/abbccc/shift-scan/prisma/schema/schema.prisma",
+    "sourceFilePath": "C:\\Users\\SBwal\\Documents\\git\\abbccc\\shift-scan\\prisma\\schema\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

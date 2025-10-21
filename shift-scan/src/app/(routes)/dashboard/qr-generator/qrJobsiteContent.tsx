@@ -16,6 +16,7 @@ type Option = {
   id: string;
   label: string;
   code: string;
+  status?: string;
 };
 
 type QrJobsiteProps = {
@@ -61,6 +62,7 @@ export default function QrJobsiteContent({
         id: selectedOption.id,
         label: selectedOption.label,
         code: selectedOption.code,
+        status: selectedOption.status,
       });
     } else {
       setSelectedJobSite(null);
@@ -79,6 +81,7 @@ export default function QrJobsiteContent({
           onSelect={handleSearchSelectChange}
           placeholder={t("TypeHere")}
           label="Select Job Site"
+          showStatusTags={true}
         />
       </Holds>
       <Holds className="row-start-7 row-end-8 col-start-1 col-end-2 h-full">

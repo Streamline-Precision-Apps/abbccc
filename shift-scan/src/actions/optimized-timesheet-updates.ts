@@ -565,7 +565,7 @@ async function updateTascoLogs(
         shiftType: log.shiftType,
         laborType: log.laborType,
         materialType: log.materialType,
-        LoadQuantity: log.LoadQuantity ? Number(log.LoadQuantity) : undefined,
+        LoadQuantity: log.LoadQuantity ? Number(log.LoadQuantity) : 0,
         equipmentId: log.Equipment?.id ?? undefined,
       },
     });
@@ -598,7 +598,7 @@ async function updateTascoLogs(
         shiftType: log.shiftType,
         laborType: log.laborType,
         materialType: log.materialType,
-        LoadQuantity: log.LoadQuantity ? Number(log.LoadQuantity) : undefined,
+        LoadQuantity: log.LoadQuantity ? Number(log.LoadQuantity) : 0,
         equipmentId: log.Equipment?.id ?? undefined,
       },
     });

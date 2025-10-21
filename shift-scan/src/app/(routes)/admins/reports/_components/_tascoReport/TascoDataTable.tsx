@@ -60,6 +60,19 @@ export function TascoDataTable({ data, loading }: TascoDataTableProps) {
     },
   });
 
+  React.useEffect(() => {
+    setTotal(data.length);
+    setTotalPages(Math.ceil(data.length / pageSize));
+  }, [data, pageSize]);
+
+  React.useEffect(() => {
+    table.setPageSize(pageSize);
+  }, [pageSize, table]);
+
+  React.useEffect(() => {
+    table.setPageIndex(page - 1);
+  }, [page, table]);
+
   return (
     <div className="h-[85vh] rounded-lg w-full relative bg-white overflow-hidden">
       <div className="h-full w-full overflow-auto pb-10">

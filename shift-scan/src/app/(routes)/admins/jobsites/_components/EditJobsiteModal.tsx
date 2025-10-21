@@ -114,7 +114,7 @@ export default function EditJobsiteModal({
             </p>
             <div className="flex items-center gap-4">
               <Label className="ml-2">
-                {formData.status === "ACTIVE" ? "Active" : "Disabled"}
+                {formData.status === "ACTIVE" ? "Active" : "Archived"}
               </Label>
               <Switch
                 checked={formData.status === "ACTIVE"}
