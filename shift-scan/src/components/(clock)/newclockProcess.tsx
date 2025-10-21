@@ -399,9 +399,9 @@ export default function NewClockProcess({
                     className="h-fit "
                   ></TitleBoxes>
                 </Holds>
-                <Holds className="row-start-2 row-end-8 p-4 h-full w-full justify-center items-center">
+                <Holds className="row-start-2 row-end-7 p-4 h-full w-full justify-center items-center">
                   <Contents width="section">
-                    <Grids rows={"5"} gap={"5"} className="h-full w-full">
+                    <Grids rows={"5"} gap={"2"} className="h-full w-full">
                       {/* Error Message */}
                       <Holds className="row-start-1 row-end-2 justify-center">
                         <Texts text={"red"} size={"md"} className="font-bold">
@@ -409,20 +409,9 @@ export default function NewClockProcess({
                         </Texts>
                       </Holds>
 
-                      {/* Retry Button */}
-                      <Holds className="row-start-2 row-end-3 justify-center">
-                        <Buttons
-                          background="orange"
-                          onClick={handleRetryLocationPermission}
-                          className="py-2 px-4"
-                        >
-                          <Titles size={"sm"}>{t("RetryPermission")}</Titles>
-                        </Buttons>
-                      </Holds>
-
                       {/* Instructions based on retry count */}
                       {locationRetryCount > 0 && (
-                        <Holds className="row-start-3 row-end-6 justify-center items-start">
+                        <Holds className="row-start-2 row-end-5 justify-center items-start">
                           <Holds
                             background="orange"
                             className="w-full p-4 rounded-lg border border-orange-300"
@@ -445,7 +434,19 @@ export default function NewClockProcess({
                           </Holds>
                         </Holds>
                       )}
+                      {/* Retry Button */}
                     </Grids>
+                  </Contents>
+                </Holds>
+                <Holds className="row-start-7 row-end-8 justify-center">
+                  <Contents width="section">
+                    <Buttons
+                      background="orange"
+                      onClick={handleRetryLocationPermission}
+                      className="py-2 px-4"
+                    >
+                      <Titles size={"sm"}>{t("RetryPermission")}</Titles>
+                    </Buttons>
                   </Contents>
                 </Holds>
               </Grids>
