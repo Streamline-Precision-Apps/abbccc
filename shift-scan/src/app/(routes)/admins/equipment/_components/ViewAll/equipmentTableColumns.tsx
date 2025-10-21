@@ -126,7 +126,7 @@ export const createEquipmentTableColumns = (
                     {os ? os.charAt(0) + os.slice(1).toLowerCase() : " "}
                   </span>
 
-                  <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">
+                  <span className="bg-slate-200 text-slate-700 px-2 py-1 rounded-lg text-xs">
                     Updated: {format(new Date(equipment.updatedAt), "MM/dd/yy")}
                   </span>
                 </div>

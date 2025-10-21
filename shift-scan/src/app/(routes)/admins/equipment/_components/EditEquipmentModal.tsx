@@ -18,6 +18,8 @@ import { format } from "date-fns";
 import { updateEquipmentAsset } from "@/actions/AssetActions";
 import { toast } from "sonner";
 import { useDashboardData } from "../../_pages/sidebar/DashboardDataContext";
+import Spinner from "@/components/(animations)/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Equipment = {
   id: string;
@@ -268,8 +270,59 @@ export default function EditEquipmentModal({
   if (loading || !formData || !originalForm) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-        <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto no-scrollbar p-8 flex flex-col items-center">
-          <div className="text-lg">Loading...</div>
+        <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
+          <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
+            <div className="flex flex-col">
+              <h3 className="text-lg font-semibold">{`Edit Equipment`}</h3>
+              <div className="flex flex-col gap-2 mt-1">
+                <div className="flex flex-row gap-2 items-center">
+                  <Skeleton className="h-4 w-12 rounded-full" />
+                  <Skeleton className="h-4 w-12 rounded-full" />
+                </div>
+                <div className="flex flex-row gap-2  justify-between items-center">
+                  <Skeleton className="h-4 w-16 rounded-full" />
+                </div>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant={"ghost"}
+              size={"icon"}
+              onClick={cancel}
+              className="absolute top-0 right-0 cursor-pointer"
+            >
+              <X width={20} height={20} />
+            </Button>
+          </div>
+          {/* Content - Form */}
+          <div className="flex-1 w-full px-2 pb-10 overflow-y-auto no-scrollbar">
+            <div className="flex flex-row items-center justify-center h-full">
+              <Spinner />
+            </div>
+          </div>
+          <div className="w-full flex flex-col justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className="flex flex-row justify-end gap-2 w-full">
+              <Button
+                variant="outline"
+                size={"sm"}
+                onClick={cancel}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outline"
+                size={"sm"}
+                onClick={handleSaveChanges}
+                className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -277,10 +330,10 @@ export default function EditEquipmentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white rounded-lg shadow-lg w-[600px] max-h-[80vh]  px-6 py-4 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg w-[600px] h-[80vh]  px-6 py-4 flex flex-col items-center">
         <div className="w-full flex flex-col border-b border-gray-100 pb-3 relative">
           <div className="flex flex-col">
-            <h2 className="text-lg font-semibold">{`Edit ${originalForm.name}`}</h2>
+            <h3 className="text-lg font-semibold">{`Edit Equipment`}</h3>
             <div className="flex flex-col gap-2 mt-1">
               <div className="flex flex-row gap-2 items-center">
                 <span
@@ -751,7 +804,7 @@ export default function EditEquipmentModal({
               variant="outline"
               size={"sm"}
               onClick={cancel}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 hover:text-gray-800 px-4 py-2 rounded"
             >
               Cancel
             </Button>
@@ -759,7 +812,7 @@ export default function EditEquipmentModal({
               variant="outline"
               size={"sm"}
               onClick={handleSaveChanges}
-              className={`bg-sky-500 hover:bg-sky-400 text-white px-4 py-2 rounded ${
+              className={`bg-sky-500 hover:bg-sky-400 text-white hover:text-white px-4 py-2 rounded ${
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
