@@ -40,6 +40,9 @@ export default function TascoReport({
       if (!response.ok) {
         throw new Error(json.message || "Failed to fetch Tasco report data");
       }
+
+      // Debug logging
+      console.log("Received Tasco data:", json);
       setAllData(json);
     } catch (error) {
       console.error("Error fetching Tasco report data:", error);
@@ -115,7 +118,6 @@ export default function TascoReport({
     const exportData = filteredData;
 
     const tableHeaders = [
-      "Id",
       "Shift Type",
       "Submitted Date",
       "Employee",
@@ -135,7 +137,6 @@ export default function TascoReport({
         tableHeaders.join(","),
         ...exportData.map((row) =>
           [
-            row.id,
             row.shiftType === "ABCD Shift"
               ? "TASCO - A, B, C, D Shift"
               : row.shiftType === "E Shift"
@@ -147,13 +148,15 @@ export default function TascoReport({
             row.laborType === "tascoAbcdEquipment"
               ? "Equipment Operator"
               : row.laborType === "tascoEEquipment"
-                ? "-"
+                ? "Equipment Operator"
                 : row.laborType === "tascoAbcdLabor"
-                  ? "Equipment Operator"
-                  : "-",
+                  ? "Manual Labor"
+                  : row.laborType || "-",
             row.equipment || "-",
-            row.loadsABCDE || "-",
-            row.loadsF || "-",
+            row.loadsABCDE !== null && row.loadsABCDE !== undefined
+              ? row.loadsABCDE
+              : "-",
+            row.loadsF !== null && row.loadsF !== undefined ? row.loadsF : "-",
             row.materials || "-",
             format(new Date(row.startTime), "HH:mm") || "-",
             format(new Date(row.endTime), "HH:mm") || "-",
@@ -185,7 +188,6 @@ export default function TascoReport({
       import("xlsx").then((XLSX) => {
         const ws = XLSX.utils.json_to_sheet(
           exportData.map((row) => ({
-            Id: row.id,
             "Shift Type":
               row.shiftType === "ABCD Shift"
                 ? "TASCO - A, B, C, D Shift"
@@ -199,13 +201,19 @@ export default function TascoReport({
               row.laborType === "tascoAbcdEquipment"
                 ? "Equipment Operator"
                 : row.laborType === "tascoEEquipment"
-                  ? "-"
+                  ? "Equipment Operator"
                   : row.laborType === "tascoAbcdLabor"
-                    ? "Equipment Operator"
-                    : "-",
+                    ? "Manual Labor"
+                    : row.laborType || "-",
             Equipment: row.equipment || "-",
-            "Loads - ABCDE": row.loadsABCDE || "-",
-            "Loads - F": row.loadsF || "-",
+            "Loads - ABCDE":
+              row.loadsABCDE !== null && row.loadsABCDE !== undefined
+                ? row.loadsABCDE
+                : "-",
+            "Loads - F":
+              row.loadsF !== null && row.loadsF !== undefined
+                ? row.loadsF
+                : "-",
             Materials: row.materials || "-",
             "Start Time": format(new Date(row.startTime), "HH:mm") || "-",
             "End Time": format(new Date(row.endTime), "HH:mm") || "-",
