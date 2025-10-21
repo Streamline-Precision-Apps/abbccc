@@ -42,7 +42,7 @@ export default function TascoReport({
       }
 
       // Debug logging
-      console.log("Received Tasco data:", json);
+      
       setAllData(json);
     } catch (error) {
       console.error("Error fetching Tasco report data:", error);

@@ -61,7 +61,7 @@ export async function GET(req: Request) {
     const tascoReport = filteredReport.map((log) => {
       const shiftType = log.TascoLogs[0].shiftType;
       const laborType = log.TascoLogs[0].laborType;
-      const loadQuantity = log.TascoLogs[0].LoadQuantity || 0; // Default to 0 if null/undefined
+      const loadQuantity = log.TascoLogs[0].LoadQuantity ?? 0; // Default to 0 if null/undefined
       
       // Determine loads based on shiftType instead of laborType
       const loadsABCDE = (shiftType === "ABCD Shift" || shiftType === "E Shift") 
