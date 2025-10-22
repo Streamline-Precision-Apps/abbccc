@@ -1110,8 +1110,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.15.0
-   * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
+   * Prisma Client JS version: 6.18.0
+   * Query Engine version: 34b5a692b7bd79939a9a2c3ef97d816e749cda2f
    */
   export type PrismaVersion = {
     client: string
@@ -1124,6 +1124,7 @@ export namespace Prisma {
    */
 
 
+  export import Bytes = runtime.Bytes
   export import JsonObject = runtime.JsonObject
   export import JsonArray = runtime.JsonArray
   export import JsonValue = runtime.JsonValue
@@ -4664,6 +4665,10 @@ export namespace Prisma {
       timeout?: number
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
+    /**
+     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     */
+    adapter?: runtime.SqlDriverAdapterFactory | null
     /**
      * Global configuration for omitting model fields by default.
      * 
@@ -10270,7 +10275,7 @@ export namespace Prisma {
     qrId: string | null
     fileName: string | null
     description: string | null
-    fileData: Uint8Array | null
+    fileData: Bytes | null
     contentType: string | null
     size: number | null
     isActive: boolean | null
@@ -10283,7 +10288,7 @@ export namespace Prisma {
     qrId: string | null
     fileName: string | null
     description: string | null
-    fileData: Uint8Array | null
+    fileData: Bytes | null
     contentType: string | null
     size: number | null
     isActive: boolean | null
@@ -10445,7 +10450,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType: string
     size: number
     isActive: boolean
@@ -10544,7 +10549,7 @@ export namespace Prisma {
       qrId: string
       fileName: string
       description: string | null
-      fileData: Uint8Array
+      fileData: Prisma.Bytes
       contentType: string
       size: number
       isActive: boolean
@@ -55451,7 +55456,7 @@ export namespace Prisma {
     qrId?: StringFilter<"PdfDocument"> | string
     fileName?: StringFilter<"PdfDocument"> | string
     description?: StringNullableFilter<"PdfDocument"> | string | null
-    fileData?: BytesFilter<"PdfDocument"> | Uint8Array
+    fileData?: BytesFilter<"PdfDocument"> | Bytes
     contentType?: StringFilter<"PdfDocument"> | string
     size?: IntFilter<"PdfDocument"> | number
     isActive?: BoolFilter<"PdfDocument"> | boolean
@@ -55482,7 +55487,7 @@ export namespace Prisma {
     NOT?: PdfDocumentWhereInput | PdfDocumentWhereInput[]
     fileName?: StringFilter<"PdfDocument"> | string
     description?: StringNullableFilter<"PdfDocument"> | string | null
-    fileData?: BytesFilter<"PdfDocument"> | Uint8Array
+    fileData?: BytesFilter<"PdfDocument"> | Bytes
     contentType?: StringFilter<"PdfDocument"> | string
     size?: IntFilter<"PdfDocument"> | number
     isActive?: BoolFilter<"PdfDocument"> | boolean
@@ -55517,7 +55522,7 @@ export namespace Prisma {
     qrId?: StringWithAggregatesFilter<"PdfDocument"> | string
     fileName?: StringWithAggregatesFilter<"PdfDocument"> | string
     description?: StringNullableWithAggregatesFilter<"PdfDocument"> | string | null
-    fileData?: BytesWithAggregatesFilter<"PdfDocument"> | Uint8Array
+    fileData?: BytesWithAggregatesFilter<"PdfDocument"> | Bytes
     contentType?: StringWithAggregatesFilter<"PdfDocument"> | string
     size?: IntWithAggregatesFilter<"PdfDocument"> | number
     isActive?: BoolWithAggregatesFilter<"PdfDocument"> | boolean
@@ -58761,7 +58766,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description?: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType?: string
     size: number
     isActive?: boolean
@@ -58775,7 +58780,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description?: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType?: string
     size: number
     isActive?: boolean
@@ -58789,7 +58794,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -58803,7 +58808,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -58817,7 +58822,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description?: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType?: string
     size: number
     isActive?: boolean
@@ -58830,7 +58835,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -58843,7 +58848,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -62327,10 +62332,10 @@ export namespace Prisma {
   }
 
   export type BytesFilter<$PrismaModel = never> = {
-    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
-    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Uint8Array
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -62402,10 +62407,10 @@ export namespace Prisma {
   }
 
   export type BytesWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
-    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Uint8Array
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBytesFilter<$PrismaModel>
     _max?: NestedBytesFilter<$PrismaModel>
@@ -65215,7 +65220,7 @@ export namespace Prisma {
   }
 
   export type BytesFieldUpdateOperationsInput = {
-    set?: Uint8Array
+    set?: Bytes
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -68532,17 +68537,17 @@ export namespace Prisma {
   }
 
   export type NestedBytesFilter<$PrismaModel = never> = {
-    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
-    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Uint8Array
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
   }
 
   export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Uint8Array | BytesFieldRefInput<$PrismaModel>
-    in?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Uint8Array[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Uint8Array
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBytesFilter<$PrismaModel>
     _max?: NestedBytesFilter<$PrismaModel>
@@ -69853,7 +69858,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description?: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType?: string
     size: number
     isActive?: boolean
@@ -69866,7 +69871,7 @@ export namespace Prisma {
     qrId: string
     fileName: string
     description?: string | null
-    fileData: Uint8Array
+    fileData: Bytes
     contentType?: string
     size: number
     isActive?: boolean
@@ -69953,7 +69958,7 @@ export namespace Prisma {
     qrId?: StringFilter<"PdfDocument"> | string
     fileName?: StringFilter<"PdfDocument"> | string
     description?: StringNullableFilter<"PdfDocument"> | string | null
-    fileData?: BytesFilter<"PdfDocument"> | Uint8Array
+    fileData?: BytesFilter<"PdfDocument"> | Bytes
     contentType?: StringFilter<"PdfDocument"> | string
     size?: IntFilter<"PdfDocument"> | number
     isActive?: BoolFilter<"PdfDocument"> | boolean
@@ -80338,7 +80343,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -80351,7 +80356,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
@@ -80364,7 +80369,7 @@ export namespace Prisma {
     qrId?: StringFieldUpdateOperationsInput | string
     fileName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    fileData?: BytesFieldUpdateOperationsInput | Uint8Array
+    fileData?: BytesFieldUpdateOperationsInput | Bytes
     contentType?: StringFieldUpdateOperationsInput | string
     size?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
