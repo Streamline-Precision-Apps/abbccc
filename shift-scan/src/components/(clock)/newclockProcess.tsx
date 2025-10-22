@@ -390,6 +390,7 @@ export default function NewClockProcess({
       {step === 1 && (
         <>
           {/*Comment out isLocationOn to eliminate restriction */}
+          {/* COMMENTED OUT: Location permission requirement
           {!isLocationOn && (
             <Holds background={"white"} className="h-full w-full">
               <Grids rows={"7"} gap={"5"} className="h-full w-full p-3 pb-5">
@@ -402,14 +403,12 @@ export default function NewClockProcess({
                 <Holds className="row-start-2 row-end-7 p-4 h-full w-full justify-center items-center">
                   <Contents width="section">
                     <Grids rows={"5"} gap={"2"} className="h-full w-full">
-                      {/* Error Message */}
                       <Holds className="row-start-1 row-end-2 justify-center">
                         <Texts text={"red"} size={"md"} className="font-bold">
                           {t("EnableLocation")}
                         </Texts>
                       </Holds>
 
-                      {/* Instructions based on retry count */}
                       {locationRetryCount > 0 && (
                         <Holds className="row-start-2 row-end-5 justify-center items-start">
                           <Holds
@@ -434,7 +433,6 @@ export default function NewClockProcess({
                           </Holds>
                         </Holds>
                       )}
-                      {/* Retry Button */}
                     </Grids>
                   </Contents>
                 </Holds>
@@ -452,8 +450,9 @@ export default function NewClockProcess({
               </Grids>
             </Holds>
           )}
+          */}
 
-          {type === "switchJobs" && isLocationOn && (
+          {type === "switchJobs" && (
             <SwitchJobsMultiRoles
               handleNextStep={handleNextStep}
               clockInRoleTypes={clockInRoleTypes}
@@ -469,7 +468,7 @@ export default function NewClockProcess({
             />
           )}
 
-          {type === "jobsite" && isLocationOn && (
+          {type === "jobsite" && (
             <MultipleRoles
               numberOfRoles={numberOfRoles}
               handleNextStep={handleNextStep}
