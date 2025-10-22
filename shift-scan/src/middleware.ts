@@ -70,12 +70,12 @@ export async function middleware(request: NextRequest) {
       if (pathname.startsWith("/api/")) {
         return NextResponse.next();
       }
-      
+
       // If admin is trying to access admin paths on mobile/tablet, redirect to home
       if (isAdmin && pathname.startsWith("/admins")) {
         return NextResponse.redirect(new URL("/", request.url));
       }
-      
+
       // On mobile, check if the current path starts with any allowed mobile path
       const isMobileAllowedPath = MOBILE_ALLOWED_PATHS.some((path) => {
         // For root path, only exact match is allowed
@@ -133,7 +133,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // runtime: "nodejs",
+  runtime: "nodejs",
   matcher: [
     // Match all paths except Next.js internal paths and static files
     "/((?!_next|.*\\..*).*)",

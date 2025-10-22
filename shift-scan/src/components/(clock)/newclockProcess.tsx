@@ -26,9 +26,6 @@ import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
 import { usePermissions } from "@/app/context/PermissionsContext";
-import { Texts } from "../(reusable)/texts";
-import { Buttons } from "../(reusable)/buttons";
-import is from "zod/v4/locales/is.cjs";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
