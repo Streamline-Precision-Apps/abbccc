@@ -170,8 +170,12 @@ export default function BannerRotating() {
                 ) : equipment.shiftType === "E shift" ? (
                   <Holds className="h-full justify-center items-center space-y-1">
                     <h3>{t("EShift")} </h3>
-
                     <p>{t("MudConditioning")}</p>
+                  </Holds>
+                ) : equipment.shiftType === "F Shift" ? (
+                  <Holds className="h-full justify-center items-center space-y-1">
+                    <h3>{t("FShift")} </h3>
+                    <p>{t("LimeRock")}</p>
                   </Holds>
                 ) : equipment.shiftType === "ABCD Shift" &&
                   equipment.laborType === "Manual Labor" ? (

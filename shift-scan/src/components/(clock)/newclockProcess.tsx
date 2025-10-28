@@ -25,6 +25,8 @@ import MechanicVerificationStep from "./(Mechanic)/Verification-step-mechanic";
 import TascoVerificationStep from "./(Tasco)/Verification-step-tasco";
 import TascoClockInForm from "./(Tasco)/tascoClockInForm";
 import TruckVerificationStep from "./(Truck)/Verification-step-truck";
+import TascoMaterialSelector from "./(Tasco)/TascoMaterialSelector";
+import TascoEquipmentSelector from "./(Tasco)/TascoEquipmentSelector";
 import JobsiteSelectorLoading from "./(loading)/jobsiteSelectorLoading";
 import CostCodeSelectorLoading from "./(loading)/costCodeSelectorLoading";
 import TrailerSelectorLoading from "./(loading)/trailerSelectorLoading";
@@ -114,6 +116,8 @@ export default function NewClockProcess({
   const [materialType, setMaterialType] = useState<string>("");
   const [shiftType, setShiftType] = useState<string>("");
   const [returnPathUsed, setReturnPathUsed] = useState(false);
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
+  const [manuallyOnStep4, setManuallyOnStep4] = useState(false);
 
   useEffect(() => {
     setStep(0);
@@ -156,9 +160,28 @@ export default function NewClockProcess({
   //------------------------------------------------------------------
   // Helper functions
 
-  const handleNextStep = () => setStep((prevStep) => prevStep + 1);
-  const handlePrevStep = () => setStep((prevStep) => prevStep - 1);
+  const handleNextStep = () => {
+    setIsNavigatingBack(false);
+    setManuallyOnStep4(false);
+    setStep((prevStep) => prevStep + 1);
+  };
+  const handlePrevStep = () => {
+    setIsNavigatingBack(true);
+    const newStep = step - 1;
+
+    // Special handling for ABCD Labor manual step 4
+    if (
+      newStep === 4 &&
+      clockInRole === "tasco" &&
+      clockInRoleTypes === "tascoAbcdLabor"
+    ) {
+      setManuallyOnStep4(true);
+    }
+
+    setStep(newStep);
+  };
   const handleAlternativePath = () => {
+    setIsNavigatingBack(false);
     setStep(3);
   };
 
@@ -229,6 +252,13 @@ export default function NewClockProcess({
             setClockInRoleTypes("tascoEEquipment");
           }
 
+          if (
+            firstTascoLog.shiftType === "F Shift" &&
+            firstTascoLog.laborType === ""
+          ) {
+            setClockInRoleTypes("tascoFEquipment");
+          }
+
           if (firstTascoLog.Equipment) {
             setEquipment({
               id: firstTascoLog.Equipment.id, // Use qrId as id
@@ -277,7 +307,7 @@ export default function NewClockProcess({
             setStep(6);
             break;
           case "tasco":
-            setStep(6);
+            setStep(5);
             break;
           default:
             throw new Error("Unknown work type");
@@ -359,6 +389,16 @@ export default function NewClockProcess({
       )}
       {step === 2 && (
         <>
+          {/* Auto-advance F-shift directly to equipment selection (step 4) */}
+          {clockInRole === "tasco" &&
+            clockInRoleTypes === "tascoFEquipment" &&
+            (() => {
+              setTimeout(() => {
+                setStep(4);
+              }, 100);
+              return null;
+            })()}
+
           {numberOfRoles === 1 &&
             clockInRole !== "tasco" &&
             clockInRole !== "truck" && (
@@ -397,12 +437,16 @@ export default function NewClockProcess({
               setClockInRoleTypes={setClockInRoleTypes}
               clockInRoleTypes={clockInRoleTypes}
               setJobsite={setJobsite}
+              setCC={setCC}
+              setMaterialType={setMaterialType}
+              setShiftType={setShiftType}
+              setLaborType={setLaborType}
             />
           )}
         </>
       )}
 
-      {step === 3 && (
+      {step === 3 && clockInRole !== "tasco" && (
         <Holds background={"white"} className="h-full w-full">
           <Grids rows={"7"} gap={"5"} className="h-full w-full">
             <Holds className="row-start-1 row-end-2 h-full w-full">
@@ -562,61 +606,96 @@ export default function NewClockProcess({
       )}
       {/* ------------ End of Trucking Role section */}
 
-      {step === 4 && clockInRole === "tasco" && (
-        <Holds background={"white"} className="h-full w-full">
-          <Grids rows={"7"} gap={"5"} className="h-full w-full">
-            <Holds className="row-start-1 row-end-2 h-full w-full">
-              <TitleBoxes onClick={handlePrevStep}>
-                <Titles size={"h4"}>{t(`Title-costcode`)}</Titles>
-              </TitleBoxes>
-            </Holds>
+      {/* --------------------- Tasco Role Start */}
+      {/* Step 3: Material Selection (only for ABCD Equipment Operator and ABCD Shift Labor) */}
+      {step === 3 &&
+        clockInRole === "tasco" &&
+        (clockInRoleTypes === "tascoAbcdEquipment" ||
+          clockInRoleTypes === "tascoAbcdLabor") && (
+          <TascoMaterialSelector
+            handleNextStep={handleNextStep}
+            handlePrevStep={handlePrevStep}
+            materialType={materialType}
+            setMaterialType={setMaterialType}
+            setJobsite={setJobsite}
+          />
+        )}
 
-            <Holds className={"row-start-2 row-end-8 h-full w-full"}>
-              <Contents width="section">
-                <Grids rows={"7"} gap={"5"} className="h-full w-full pb-5">
-                  <Holds className={"row-start-1 row-end-7 h-full w-full "}>
-                    <CostCodeSelector
-                      onCostCodeSelect={(costCode) => {
-                        if (costCode) {
-                          setCC(costCode); // Update the equipment state with the full Option object
-                        } else {
-                          setCC({ id: "", code: "", label: "" }); // Reset if null
-                        }
-                      }}
-                      initialValue={cc}
-                    />
-                  </Holds>
+      {/* Handle step progression for Tasco E and F shifts - skip material selection, go to equipment */}
+      {step === 3 &&
+        clockInRole === "tasco" &&
+        (clockInRoleTypes === "tascoEEquipment" ||
+          clockInRoleTypes === "tascoFEquipment") &&
+        !isNavigatingBack &&
+        (() => {
+          // Auto-advance to equipment selection for E and F shifts
+          setTimeout(() => {
+            setIsNavigatingBack(false);
+            setStep(4);
+          }, 100);
+          return null;
+        })()}
 
-                  <Holds className="row-start-7 row-end-8 w-full justify-center">
+      {/* Step 4: Equipment Selection for roles that need it (include F-shift) */}
+      {step === 4 &&
+        clockInRole === "tasco" &&
+        (clockInRoleTypes === "tascoAbcdEquipment" ||
+          clockInRoleTypes === "tascoEEquipment" ||
+          clockInRoleTypes === "tascoFEquipment") && (
+          <TascoEquipmentSelector
+            handleNextStep={handleNextStep}
+            handlePrevStep={handlePrevStep}
+            equipment={equipment}
+            setEquipment={setEquipment}
+          />
+        )}
+
+      {/* For ABCD Labor: Only auto-advance when NOT navigating back and NOT manually on step 4 */}
+      {step === 4 &&
+        clockInRole === "tasco" &&
+        clockInRoleTypes === "tascoAbcdLabor" &&
+        (() => {
+          if (!isNavigatingBack && !manuallyOnStep4) {
+            // Auto-advance to verification for ABCD Labor (no equipment needed)
+            setTimeout(() => setStep(5), 100);
+          }
+          return null;
+        })()}
+
+      {/* Show step 4 interface for ABCD Labor when manually navigated */}
+      {step === 4 &&
+        clockInRole === "tasco" &&
+        clockInRoleTypes === "tascoAbcdLabor" &&
+        manuallyOnStep4 && (
+          <Holds background={"white"} className="h-full w-full">
+            <Grids rows={"7"} gap={"5"} className="h-full w-full">
+              <Holds className="row-start-1 row-end-2 h-full w-full">
+                <TitleBoxes onClick={handlePrevStep}>
+                  <Titles size={"h4"}>Tasco ABCD Labor - Equipment</Titles>
+                </TitleBoxes>
+              </Holds>
+              <Holds className="row-start-2 row-end-8 h-full w-full flex items-center justify-center">
+                <Contents width="section">
+                  <div className="text-center">
+                    <p className="mb-4">
+                      ABCD Labor does not require equipment selection.
+                    </p>
+                    <p className="mb-4 text-sm text-gray-600">
+                      Click Continue to proceed to verification.
+                    </p>
                     <StepButtons
                       handleNextStep={handleNextStep}
-                      disabled={cc.code === ""}
+                      disabled={false}
                     />
-                  </Holds>
-                </Grids>
-              </Contents>
-            </Holds>
-          </Grids>
-        </Holds>
-      )}
+                  </div>
+                </Contents>
+              </Holds>
+            </Grids>
+          </Holds>
+        )}
+
+      {/* Step 5: Verification */}
       {step === 5 && clockInRole === "tasco" && (
-        <TascoClockInForm
-          handleNextStep={handleNextStep}
-          handlePrevStep={handlePrevStep}
-          setLaborType={setLaborType}
-          laborType={laborType}
-          materialType={materialType}
-          setMaterialType={setMaterialType}
-          shiftType={shiftType}
-          setShiftType={setShiftType}
-          clockInRoleTypes={clockInRoleTypes}
-          returnPathUsed={returnPathUsed}
-          setStep={setStep}
-          equipment={equipment}
-          setEquipment={setEquipment}
-        />
-      )}
-      {step === 6 && clockInRole === "tasco" && (
         <TascoVerificationStep
           jobsite={jobsite}
           type={type}

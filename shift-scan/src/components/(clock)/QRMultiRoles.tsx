@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Title } from "@/app/(routes)/dashboard/mechanic/_components/Title";
+import { useDBCostcode, useDBJobsite } from "@/app/context/dbCodeContext";
 
 type Option = {
   id: string;
@@ -33,6 +34,10 @@ type QRStepProps = {
   clockInRoleTypes: string | undefined;
   setClockInRoleTypes: Dispatch<SetStateAction<string | undefined>>;
   setJobsite: Dispatch<SetStateAction<Option>>;
+  setCC?: Dispatch<SetStateAction<Option>>;
+  setMaterialType?: Dispatch<SetStateAction<string>>;
+  setShiftType?: Dispatch<SetStateAction<string>>;
+  setLaborType?: Dispatch<SetStateAction<string>>;
 };
 
 export default function QRMultiRoles({
@@ -45,14 +50,19 @@ export default function QRMultiRoles({
   url,
   clockInRole,
   setClockInRole,
-
   clockInRoleTypes,
   setClockInRoleTypes,
   setJobsite,
+  setCC,
+  setMaterialType,
+  setShiftType,
+  setLaborType,
 }: QRStepProps) {
   const t = useTranslations("Clock");
   const [startCamera, setStartCamera] = useState<boolean>(false);
   const { data: session } = useSession();
+  const { costcodeResults } = useDBCostcode();
+  const { jobsiteResults } = useDBJobsite();
   const tascoView = session?.user.tascoView;
   const truckView = session?.user.truckView;
   const mechanicView = session?.user.mechanicView;
@@ -72,7 +82,8 @@ export default function QRMultiRoles({
     if (
       selectedRoleType === "tascoAbcdLabor" ||
       selectedRoleType === "tascoAbcdEquipment" ||
-      selectedRoleType === "tascoEEquipment"
+      selectedRoleType === "tascoEEquipment" ||
+      selectedRoleType === "tascoFShift"
     ) {
       newRole = "tasco";
     } else if (
@@ -92,6 +103,120 @@ export default function QRMultiRoles({
 
     // Only update local state
     setTempClockInRole(newRole);
+  };
+
+  const handleTascoContinue = () => {
+    if (!clockInRoleTypes || !costcodeResults || !jobsiteResults) return;
+
+    // Helper function to find cost code by exact name match
+    const findCostCodeByExactName = (exactName: string) => {
+      const foundCostCode = costcodeResults.find((cc) => cc.name === exactName);
+      return foundCostCode
+        ? {
+            id: foundCostCode.id,
+            label: foundCostCode.name,
+            code: foundCostCode.name,
+          }
+        : null;
+    };
+
+    // Helper function to find jobsite by name pattern
+    const findJobsiteByName = (namePattern: string) => {
+      console.log(
+        "QRMultiRoles - Looking for jobsite with pattern:",
+        namePattern,
+      );
+      console.log(
+        "QRMultiRoles - Available jobsites:",
+        jobsiteResults.map((js) => ({
+          name: js.name,
+          qrId: js.qrId,
+          status: js.status,
+        })),
+      );
+
+      const foundJobsite = jobsiteResults.find((js) =>
+        js.name.toLowerCase().includes(namePattern.toLowerCase()),
+      );
+
+      console.log("QRMultiRoles - Found jobsite:", foundJobsite);
+
+      return foundJobsite
+        ? {
+            id: foundJobsite.id,
+            label: foundJobsite.name,
+            code: foundJobsite.qrId,
+          }
+        : null;
+    };
+
+    // Set predefined data based on selected Tasco shift type
+    switch (clockInRoleTypes) {
+      case "tascoAbcdEquipment":
+        // ABCD Equipment Operator → #80.40 Amalgamated Equipment
+        const equipmentCostCode = findCostCodeByExactName(
+          "#80.40 Amalgamated Equipment",
+        );
+        if (equipmentCostCode) {
+          setCC?.(equipmentCostCode);
+        }
+        setShiftType?.("ABCD Shift");
+        setLaborType?.("Operator");
+        break;
+
+      case "tascoAbcdLabor":
+        // ABCD Shift Labor → #80.20 Amalgamated Labor
+        const laborCostCode = findCostCodeByExactName(
+          "#80.20 Amalgamated Labor",
+        );
+        if (laborCostCode) {
+          setCC?.(laborCostCode);
+        }
+        setShiftType?.("ABCD Shift");
+        setLaborType?.("Manual Labor");
+        break;
+
+      case "tascoEEquipment":
+        // E Shift - Mud Conditioning → #80.40 Amalgamated Equipment
+        const eMudCostCode = findCostCodeByExactName(
+          "#80.40 Amalgamated Equipment",
+        );
+        if (eMudCostCode) {
+          setCC?.(eMudCostCode);
+        }
+        const eJobsite = findJobsiteByName("MH2526");
+        if (eJobsite) {
+          setJobsite?.(eJobsite);
+        }
+        setShiftType?.("E Shift");
+        setMaterialType?.("Mud Conditioning");
+        break;
+
+      case "tascoFShift":
+      case "tascoFEquipment":
+        // F Shift - Lime Rock → #80.40 Amalgamated Equipment (same as E shift but different material)
+        const fCostCode = findCostCodeByExactName(
+          "#80.40 Amalgamated Equipment",
+        );
+        if (fCostCode) {
+          setCC?.(fCostCode);
+        }
+        const fJobsite = findJobsiteByName("MH2526");
+        if (fJobsite) {
+          setJobsite?.(fJobsite);
+        }
+        setShiftType?.("F Shift");
+        setMaterialType?.("Lime Rock");
+        break;
+    }
+
+    // Update parent state with our local role state
+    if (tempClockInRole) {
+      setClockInRole(tempClockInRole);
+    }
+
+    // Move to next step
+    handleNextStep();
   };
 
   useEffect(() => {
@@ -114,6 +239,80 @@ export default function QRMultiRoles({
   useEffect(() => {
     setTempClockInRole(clockInRole);
   }, [clockInRole]);
+
+  // Auto-set predefined data when clockInRoleTypes is already set (e.g., from switch jobs)
+  useEffect(() => {
+    if (
+      (clockInRoleTypes === "tascoFShift" ||
+        clockInRoleTypes === "tascoFEquipment") &&
+      jobsiteResults &&
+      costcodeResults
+    ) {
+      // Helper function to find cost code by exact name
+      const findCostCodeByExactName = (namePattern: string) => {
+        const foundCostCode = costcodeResults.find((cc) =>
+          cc.name.toLowerCase().includes(namePattern.toLowerCase()),
+        );
+        return foundCostCode
+          ? {
+              id: foundCostCode.id,
+              label: foundCostCode.name,
+              code: foundCostCode.name,
+            }
+          : null;
+      };
+
+      // Helper function to find jobsite by name pattern (same as E-shift)
+      const findJobsiteByName = (namePattern: string) => {
+        console.log(
+          "QRMultiRoles (F-shift) - Looking for jobsite with pattern:",
+          namePattern,
+        );
+        console.log(
+          "QRMultiRoles (F-shift) - Available jobsites:",
+          jobsiteResults.map((js) => ({
+            name: js.name,
+            qrId: js.qrId,
+            status: js.status,
+          })),
+        );
+
+        const foundJobsite = jobsiteResults.find((js) =>
+          js.name.toLowerCase().includes(namePattern.toLowerCase()),
+        );
+
+        console.log("QRMultiRoles (F-shift) - Found jobsite:", foundJobsite);
+
+        return foundJobsite
+          ? {
+              id: foundJobsite.id,
+              label: foundJobsite.name,
+              code: foundJobsite.qrId,
+            }
+          : null;
+      };
+
+      // F Shift - Lime Rock → #80.40 Amalgamated Equipment (same as E shift but different material)
+      const fCostCode = findCostCodeByExactName("#80.40 Amalgamated Equipment");
+      if (fCostCode) {
+        setCC?.(fCostCode);
+      }
+      const fJobsite = findJobsiteByName("MH2526");
+      if (fJobsite) {
+        setJobsite?.(fJobsite);
+      }
+      setShiftType?.("F Shift");
+      setMaterialType?.("Lime Rock");
+    }
+  }, [
+    clockInRoleTypes,
+    jobsiteResults,
+    costcodeResults,
+    setCC,
+    setJobsite,
+    setShiftType,
+    setMaterialType,
+  ]);
 
   return (
     <>
@@ -151,6 +350,9 @@ export default function QRMultiRoles({
                               <option value="tascoEEquipment">
                                 {t("TASCOEEquipmentOperator")}
                               </option>
+                              <option value="tascoFShift">
+                                {t("TASCOFShift")}
+                              </option>
                             </>
                           )}
                           {truckView === true && (
@@ -187,9 +389,6 @@ export default function QRMultiRoles({
                           <option value="">{t("SelectWorkType")}</option>
                           {tascoView === true && (
                             <>
-                              <option value="general">
-                                {t("GeneralLabor")}
-                              </option>
                               <option value="tascoAbcdLabor">
                                 {t("TASCOABCDLabor")}
                               </option>
@@ -198,6 +397,9 @@ export default function QRMultiRoles({
                               </option>
                               <option value="tascoEEquipment">
                                 {t("TASCOEEquipmentOperator")}
+                              </option>
+                              <option value="tascoFShift">
+                                {t("TASCOFShift")}
                               </option>
                             </>
                           )}
@@ -216,9 +418,6 @@ export default function QRMultiRoles({
                           <option value="">{t("SelectWorkType")}</option>
                           {truckView === true && (
                             <>
-                              <option value="general">
-                                {t("GeneralLabor")}
-                              </option>
                               <option value="truckDriver">
                                 {t("TruckDriver")}
                               </option>
@@ -296,11 +495,27 @@ export default function QRMultiRoles({
                   <Contents width={"section"}>
                     <Buttons
                       onClick={() => {
-                        // Update parent state with our local role state only when starting camera
-                        if (tempClockInRole) {
-                          setClockInRole(tempClockInRole);
+                        // Check if it's a Tasco role
+                        const isTascoRole =
+                          tempClockInRole === "tasco" ||
+                          (clockInRoleTypes &&
+                            [
+                              "tascoAbcdLabor",
+                              "tascoAbcdEquipment",
+                              "tascoEEquipment",
+                              "tascoFShift",
+                            ].includes(clockInRoleTypes));
+
+                        if (isTascoRole) {
+                          // Handle Tasco continue logic
+                          handleTascoContinue();
+                        } else {
+                          // Handle regular camera start logic
+                          if (tempClockInRole) {
+                            setClockInRole(tempClockInRole);
+                          }
+                          setStartCamera(!startCamera);
                         }
-                        setStartCamera(!startCamera);
                       }}
                       // Only enable the button if a role is selected when multiple views are available
                       disabled={
@@ -315,7 +530,18 @@ export default function QRMultiRoles({
                       }
                       className="py-2"
                     >
-                      <Titles size={"md"}>{t("StartCamera")}</Titles>
+                      <Titles size={"md"}>
+                        {tempClockInRole === "tasco" ||
+                        (clockInRoleTypes &&
+                          [
+                            "tascoAbcdLabor",
+                            "tascoAbcdEquipment",
+                            "tascoEEquipment",
+                            "tascoFShift",
+                          ].includes(clockInRoleTypes))
+                          ? t("Continue")
+                          : t("StartCamera")}
+                      </Titles>
                     </Buttons>
                   </Contents>
                 </Holds>

@@ -39,6 +39,7 @@ type TascoLog = {
   laborType: string | null;
   loadQuantity: number | null;
   refueled: boolean;
+  fLoads: boolean;
 };
 
 export async function GET() {
@@ -143,6 +144,13 @@ export async function GET() {
               select: {
                 id: true,
                 gallonsRefueled: true,
+              },
+            },
+            FLoads: {
+              select: {
+                id: true,
+                weight: true,
+                screenType: true,
               },
             },
           },
@@ -316,11 +324,14 @@ export async function GET() {
           refueled: log.RefuelLogs.some(
             (item) => !validateField.positiveNumber(item.gallonsRefueled)
           ),
+          fLoads: log.FLoads.some(
+            (item) => !validateField.positiveNumber(item.weight) || !validateField.required(item.screenType)
+          ),
         };
       })
       .filter((log) => {
         // Filter logs with incomplete fields
-        return log.refueled;
+        return log.refueled || log.fLoads;
       });
 
     // Combine All Logs

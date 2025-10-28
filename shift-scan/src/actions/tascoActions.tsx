@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import { LoadType } from "@prisma/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 export interface UpdateRefuelLogParams extends RefuelLogBase {
@@ -23,6 +24,29 @@ export interface CreateRefuelLogParams {
 }
 
 export type RefuelLogType = "tasco" | "equipment";
+
+/* TascoFLoads Interfaces */
+//------------------------------------------------------------------
+export interface CreateTascoFLoadParams {
+  tascoLogId: string;
+}
+
+export interface UpdateTascoFLoadParams {
+  id: number;
+  weight?: number;
+  screenType?: LoadType;
+}
+
+export interface DeleteTascoFLoadParams {
+  id: number;
+}
+
+export type TascoFLoad = {
+  id: number;
+  tascoLogId: string;
+  weight: number | null;
+  screenType: LoadType | null;
+};
 
 /* LOADS Hauled */
 //------------------------------------------------------------------
@@ -146,5 +170,74 @@ function revalidatePaths() {
     revalidateTag("load");
   } catch (error) {
     console.error("Failed to revalidate paths:", error);
+  }
+}
+
+/* TascoFLoads CRUD Operations */
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+
+/**
+ * Creates a new TascoFLoad
+ */
+export async function createTascoFLoad(params: CreateTascoFLoadParams) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const result = await tx.tascoFLoads.create({
+        data: {
+          tascoLogId: params.tascoLogId,
+          weight: null,
+          screenType: null,
+        },
+      });
+      revalidatePaths();
+      return result;
+    });
+  } catch (error) {
+    console.error("Failed to create TascoFLoad:", error);
+    throw new Error("Failed to create TascoFLoad");
+  }
+}
+
+/**
+ * Updates an existing TascoFLoad
+ */
+export async function updateTascoFLoad(params: UpdateTascoFLoadParams) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const data: { weight?: number; screenType?: LoadType } = {};
+      if (params.weight !== undefined) data.weight = params.weight;
+      if (params.screenType !== undefined) data.screenType = params.screenType;
+
+      const result = await tx.tascoFLoads.update({
+        where: { id: params.id },
+        data,
+      });
+
+      revalidatePaths();
+      return result;
+    });
+  } catch (error) {
+    console.error("Failed to update TascoFLoad:", error);
+    throw new Error("Failed to update TascoFLoad");
+  }
+}
+
+/**
+ * Deletes a TascoFLoad
+ */
+export async function deleteTascoFLoad(params: DeleteTascoFLoadParams) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const result = await tx.tascoFLoads.delete({
+        where: { id: params.id },
+      });
+
+      revalidatePaths();
+      return result;
+    });
+  } catch (error) {
+    console.error("Failed to delete TascoFLoad:", error);
+    throw new Error("Failed to delete TascoFLoad");
   }
 }

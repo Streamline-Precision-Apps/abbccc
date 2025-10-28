@@ -774,6 +774,7 @@ export const initialUserSettings: Prisma.UserSettingsCreateInput[] = [
 /* TASCO MATERIAL TYPES */
 export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] =
   [
+    // Original material types
     { name: "Rock" },
     { name: "Elimco" },
     { name: "Coal" },
@@ -781,6 +782,15 @@ export const initialTascoMaterialTypes: Prisma.TascoMaterialTypesCreateInput[] =
     { name: "Ag Waste" },
     { name: "Belt Mud" },
     { name: "End Of Campaign Clean Up" },
+    
+    // Additional material types for expanded Tasco operations
+    { name: "Mud Conditioning" },
+    { name: "Lime Rock" },
+    { name: "Dust Control" },
+    { name: "Push PCC" },
+    { name: "Rip West" },
+    { name: "Rip Center" },
+    { name: "Rip East" },
   ];
 
 // /* TRUCKING LOGS */

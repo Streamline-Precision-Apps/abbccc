@@ -111,7 +111,13 @@ export default function TascoVerificationStep({
         formData.append("laborType", "Manual Labor");
       }
       if (clockInRoleTypes === "tascoEEquipment") {
+        formData.append("materialType", materialType || "");
         formData.append("shiftType", "E shift");
+        formData.append("laborType", "");
+      }
+      if (clockInRoleTypes === "tascoFEquipment") {
+        formData.append("materialType", materialType || "");
+        formData.append("shiftType", "F Shift");
         formData.append("laborType", "");
       }
       formData.append("workType", role);
@@ -165,7 +171,13 @@ export default function TascoVerificationStep({
       await Promise.all([
         setCurrentPageView("dashboard"),
         setWorkRole(role),
-        setLaborType(clockInRoleTypes || ""),
+        setLaborType(
+          clockInRoleTypes === "tascoEEquipment"
+            ? ""
+            : clockInRoleTypes === "tascoFEquipment"
+              ? "FShift"
+              : clockInRoleTypes || "",
+        ),
         refetchTimesheet(),
       ]).then(() => router.push("/dashboard"));
     } catch (error) {
@@ -244,7 +256,9 @@ export default function TascoVerificationStep({
                                 ? "TASCO ABCD EQ Operator"
                                 : clockInRoleTypes === "tascoEEquipment"
                                   ? "TASCO E EQ Operator"
-                                  : clockInRoleTypes
+                                  : clockInRoleTypes === "tascoFEquipment"
+                                    ? "TASCO F EQ Operator"
+                                    : clockInRoleTypes
                           }
                           className="text-center text-base"
                         />
@@ -282,24 +296,22 @@ export default function TascoVerificationStep({
                         />
                       </Holds>
 
-                      {clockInRoleTypes !== "tascoEEquipment" && (
-                        <Holds className="pb-2">
-                          <Labels
-                            htmlFor="materialType-label"
-                            size={"p3"}
-                            position={"left"}
-                          >
-                            {t("MaterialType")}
-                          </Labels>
-                          <Inputs
-                            state="disabled"
-                            name="materialType-label"
-                            variant={"white"}
-                            data={materialType || ""}
-                            className="text-center text-base"
-                          />
-                        </Holds>
-                      )}
+                      <Holds className="pb-2">
+                        <Labels
+                          htmlFor="materialType-label"
+                          size={"p3"}
+                          position={"left"}
+                        >
+                          {t("MaterialType")}
+                        </Labels>
+                        <Inputs
+                          state="disabled"
+                          name="materialType-label"
+                          variant={"white"}
+                          data={materialType || ""}
+                          className="text-center text-base"
+                        />
+                      </Holds>
                       {equipment?.label && (
                         <Holds className="pb-2">
                           <Labels
