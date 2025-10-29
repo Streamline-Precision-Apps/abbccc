@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState, Suspense } from "react";
-import { useTranslations } from "next-intl";
 import NewCodeFinder from "@/components/(search)/newCodeFinder";
 import { useDBJobsite } from "@/app/context/dbCodeContext";
 import { Holds } from "../../(reusable)/holds";

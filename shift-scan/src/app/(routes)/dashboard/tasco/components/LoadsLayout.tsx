@@ -3,7 +3,6 @@ import { Holds } from "@/components/(reusable)/holds";
 import { Texts } from "@/components/(reusable)/texts";
 import LoadsList from "./LoadsList";
 import { createTascoFLoad } from "@/actions/tascoActions";
-import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";

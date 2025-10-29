@@ -172,11 +172,9 @@ export default function TascoVerificationStep({
         setCurrentPageView("dashboard"),
         setWorkRole(role),
         setLaborType(
-          clockInRoleTypes === "tascoEEquipment"
+          clockInRoleTypes === "tascoEEquipment" || clockInRoleTypes === "tascoFEquipment"
             ? ""
-            : clockInRoleTypes === "tascoFEquipment"
-              ? "FShift"
-              : clockInRoleTypes || "",
+            : clockInRoleTypes || "",
         ),
         refetchTimesheet(),
       ]).then(() => router.push("/dashboard"));
