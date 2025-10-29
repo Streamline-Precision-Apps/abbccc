@@ -31,7 +31,6 @@ export default function LoadsList({
   setLoadCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [editedLoads, setEditedLoads] = useState<TascoFLoad[]>(fLoads || []);
-  const t = useTranslations("Tasco");
 
   const handleDelete = async (id: number) => {
     try {
