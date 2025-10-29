@@ -83,7 +83,7 @@ export default function QRMultiRoles({
       selectedRoleType === "tascoAbcdLabor" ||
       selectedRoleType === "tascoAbcdEquipment" ||
       selectedRoleType === "tascoEEquipment" ||
-      selectedRoleType === "tascoFShift"
+      selectedRoleType === "tascoFEquipment"
     ) {
       newRole = "tasco";
     } else if (
