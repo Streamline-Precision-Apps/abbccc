@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslations } from "next-intl";
 import { Titles } from "../../(reusable)/titles";
 import { Holds } from "../../(reusable)/holds";
