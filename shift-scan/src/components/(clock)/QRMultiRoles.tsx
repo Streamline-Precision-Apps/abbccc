@@ -122,24 +122,11 @@ export default function QRMultiRoles({
 
     // Helper function to find jobsite by name pattern
     const findJobsiteByName = (namePattern: string) => {
-      console.log(
-        "QRMultiRoles - Looking for jobsite with pattern:",
-        namePattern,
-      );
-      console.log(
-        "QRMultiRoles - Available jobsites:",
-        jobsiteResults.map((js) => ({
-          name: js.name,
-          qrId: js.qrId,
-          status: js.status,
-        })),
-      );
 
       const foundJobsite = jobsiteResults.find((js) =>
         js.name.toLowerCase().includes(namePattern.toLowerCase()),
       );
 
-      console.log("QRMultiRoles - Found jobsite:", foundJobsite);
 
       return foundJobsite
         ? {
@@ -190,6 +177,7 @@ export default function QRMultiRoles({
         }
         setShiftType?.("E Shift");
         setMaterialType?.("Mud Conditioning");
+        setLaborType?.("EShift");
         break;
 
       case "tascoFShift":
@@ -207,6 +195,7 @@ export default function QRMultiRoles({
         }
         setShiftType?.("F Shift");
         setMaterialType?.("Lime Rock");
+        setLaborType?.("FShift");
         break;
     }
 
@@ -264,24 +253,10 @@ export default function QRMultiRoles({
 
       // Helper function to find jobsite by name pattern (same as E-shift)
       const findJobsiteByName = (namePattern: string) => {
-        console.log(
-          "QRMultiRoles (F-shift) - Looking for jobsite with pattern:",
-          namePattern,
-        );
-        console.log(
-          "QRMultiRoles (F-shift) - Available jobsites:",
-          jobsiteResults.map((js) => ({
-            name: js.name,
-            qrId: js.qrId,
-            status: js.status,
-          })),
-        );
 
         const foundJobsite = jobsiteResults.find((js) =>
           js.name.toLowerCase().includes(namePattern.toLowerCase()),
         );
-
-        console.log("QRMultiRoles (F-shift) - Found jobsite:", foundJobsite);
 
         return foundJobsite
           ? {

@@ -113,12 +113,12 @@ export default function TascoVerificationStep({
       if (clockInRoleTypes === "tascoEEquipment") {
         formData.append("materialType", materialType || "");
         formData.append("shiftType", "E shift");
-        formData.append("laborType", "");
+        formData.append("laborType", "EShift");
       }
       if (clockInRoleTypes === "tascoFEquipment") {
         formData.append("materialType", materialType || "");
         formData.append("shiftType", "F Shift");
-        formData.append("laborType", "");
+        formData.append("laborType", "FShift");
       }
       formData.append("workType", role);
       formData.append("equipment", equipment?.id || "");
@@ -172,8 +172,10 @@ export default function TascoVerificationStep({
         setCurrentPageView("dashboard"),
         setWorkRole(role),
         setLaborType(
-          clockInRoleTypes === "tascoEEquipment" || clockInRoleTypes === "tascoFEquipment"
-            ? ""
+          clockInRoleTypes === "tascoEEquipment"
+            ? "EShift"
+            : clockInRoleTypes === "tascoFEquipment"
+            ? "FShift"
             : clockInRoleTypes || "",
         ),
         refetchTimesheet(),

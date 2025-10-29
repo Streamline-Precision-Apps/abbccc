@@ -31,6 +31,7 @@ import JobsiteSelectorLoading from "./(loading)/jobsiteSelectorLoading";
 import CostCodeSelectorLoading from "./(loading)/costCodeSelectorLoading";
 import TrailerSelectorLoading from "./(loading)/trailerSelectorLoading";
 import { set } from "lodash";
+import { useDBEquipment } from "@/app/context/dbCodeContext";
 
 type NewClockProcessProps = {
   mechanicView: boolean;
@@ -69,6 +70,7 @@ export default function NewClockProcess({
 }: NewClockProcessProps) {
   // State management
   const { data: session } = useSession();
+  const { equipmentResults } = useDBEquipment();
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
   const [step, setStep] = useState<number>(0);
 
@@ -162,7 +164,9 @@ export default function NewClockProcess({
     if (
       step === 2 &&
       clockInRole === "tasco" &&
-      clockInRoleTypes === "tascoFEquipment"
+      clockInRoleTypes === "tascoFEquipment" &&
+      equipmentResults && // Wait for equipment to be loaded
+      equipmentResults.length > 0 // Make sure we have equipment
     ) {
       const timer = setTimeout(() => {
         setStep(4);
@@ -170,7 +174,7 @@ export default function NewClockProcess({
 
       return () => clearTimeout(timer);
     }
-  }, [step, clockInRole, clockInRoleTypes]);
+  }, [step, clockInRole, clockInRoleTypes, equipmentResults]);
 
   // Auto-advance E and F shifts from step 3 to step 4 (equipment selection)
   useEffect(() => {

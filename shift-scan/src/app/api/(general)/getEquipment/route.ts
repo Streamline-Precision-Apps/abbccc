@@ -11,10 +11,14 @@ export async function GET() {
     const session = await auth();
     const userId = session?.user?.id;
 
+    console.log("Equipment API: Session check - userId:", userId);
+
     if (!userId) {
+      console.log("Equipment API: No userId found, returning 401");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log("Equipment API: Fetching equipment from database");
     const equipment = await prisma.equipment.findMany({
       select: {
         id: true,
@@ -26,16 +30,20 @@ export async function GET() {
       },
     });
 
+    console.log("Equipment API: Found", equipment.length, "equipment items");
+
     if (!equipment || equipment.length === 0) {
+      console.log("Equipment API: No equipment found, returning 404");
       return NextResponse.json(
         { message: "No equipment found." },
         { status: 404 },
       );
     }
 
+    console.log("Equipment API: Returning equipment data");
     return NextResponse.json(equipment);
   } catch (error) {
-    console.error("Error fetching equipment data:", error);
+    console.error("Equipment API: Error fetching equipment data:", error);
 
     let errorMessage = "Failed to fetch equipment data";
     if (error instanceof Error) {
