@@ -56,38 +56,35 @@ export default function TascoEQClientPage({
         const tascoLogId = await idRes.json();
         setTascoLogId(tascoLogId);
 
-        // Then fetch all related data in parallel
-        const requests = [
-          fetch(`/api/getTascoLog/comment/${tascoLogId}`),
-          fetch(`/api/getTascoLog/loadCount/${tascoLogId}`),
-          fetch(`/api/getTascoLog/refueledLogs/${tascoLogId}`),
-        ];
+        // Fetch core data that all shifts need using named promises
+        const coreDataPromises = {
+          comment: fetch(`/api/getTascoLog/comment/${tascoLogId}`).then((res) =>
+            res.json(),
+          ),
+          loadCount: fetch(`/api/getTascoLog/loadCount/${tascoLogId}`).then(
+            (res) => res.json(),
+          ),
+          refuelLogs: fetch(`/api/getTascoLog/refueledLogs/${tascoLogId}`).then(
+            (res) => res.json(),
+          ),
+        };
 
-        // Add F-loads request for F-shift
-        if (isFShift) {
-          requests.push(fetch(`/api/getTascoLog/fLoads/${tascoLogId}`));
-        }
+        // Use Promise.all with Object.values to maintain type safety
+        const [commentData, loadData, refuelData] = await Promise.all([
+          coreDataPromises.comment,
+          coreDataPromises.loadCount,
+          coreDataPromises.refuelLogs,
+        ]);
 
-        const responses = await Promise.all(requests);
-        const [commentRes, loadRes, refuelRes, fLoadsRes] = responses;
-
-        const dataPromises = [
-          commentRes.json(),
-          loadRes.json(),
-          refuelRes.json(),
-        ];
-
-        if (isFShift && fLoadsRes) {
-          dataPromises.push(fLoadsRes.json());
-        }
-
-        const dataResults = await Promise.all(dataPromises);
-        const [commentData, loadData, refuelData, fLoadsData] = dataResults;
-
+        // Set core data
         setComment(commentData || "");
         setRefuelLogs(refuelData);
 
+        // Handle F-shift specific data separately for clarity
         if (isFShift) {
+          const fLoadsData = await fetch(
+            `/api/getTascoLog/fLoads/${tascoLogId}`,
+          ).then((res) => res.json());
           setFLoads(fLoadsData || []);
           setLoadCount(fLoadsData?.length || 0); // For F-shift, count is based on number of loads
         } else {
@@ -102,7 +99,7 @@ export default function TascoEQClientPage({
     };
 
     fetchInitialData();
-  }, [isFShift, tascoLogId]); // Add isFShift and tascoLogId to dependency array
+  }, [isFShift]);
 
   const saveDraftData = async (values: {
     tascoLogId: string;
