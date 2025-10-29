@@ -1,11 +1,8 @@
-import { Contents } from "@/components/(reusable)/contents";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { deleteTascoFLoad, updateTascoFLoad } from "@/actions/tascoActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
-import { Holds } from "@/components/(reusable)/holds";
 import { Inputs } from "@/components/(reusable)/inputs";
 import { useTranslations } from "next-intl";
-import Spinner from "@/components/(animations)/spinner";
 import { LoadType } from "@prisma/client";
 
 export type TascoFLoad = {

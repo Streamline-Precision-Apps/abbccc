@@ -28,7 +28,6 @@ export default function LoadsLayout({
   setFLoads: React.Dispatch<React.SetStateAction<TascoFLoad[] | undefined>>;
   setLoadCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const t = useTranslations("Tasco");
 
   const AddFLoad = async () => {
     if (!tascoLog) return;
