@@ -111,7 +111,6 @@ export default function TascoMaterialSelector({
   setMaterialType,
   setJobsite,
 }: TascoMaterialSelectorProps) {
-  const t = useTranslations("Clock");
   const [selectedMaterial, setSelectedMaterial] = useState<Option | null>(null);
   const { jobsiteResults } = useDBJobsite();
 
