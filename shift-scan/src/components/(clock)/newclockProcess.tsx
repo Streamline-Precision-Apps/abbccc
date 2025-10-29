@@ -157,6 +157,56 @@ export default function NewClockProcess({
     }
   }, [session, mechanicView, laborView, truckView, tascoView, type, option]);
 
+  // Auto-advance F-shift from step 2 to step 4 (equipment selection)
+  useEffect(() => {
+    if (
+      step === 2 &&
+      clockInRole === "tasco" &&
+      clockInRoleTypes === "tascoFEquipment"
+    ) {
+      const timer = setTimeout(() => {
+        setStep(4);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [step, clockInRole, clockInRoleTypes]);
+
+  // Auto-advance E and F shifts from step 3 to step 4 (equipment selection)
+  useEffect(() => {
+    if (
+      step === 3 &&
+      clockInRole === "tasco" &&
+      (clockInRoleTypes === "tascoEEquipment" ||
+        clockInRoleTypes === "tascoFEquipment") &&
+      !isNavigatingBack
+    ) {
+      const timer = setTimeout(() => {
+        setIsNavigatingBack(false);
+        setStep(4);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [step, clockInRole, clockInRoleTypes, isNavigatingBack]);
+
+  // Auto-advance ABCD Labor from step 4 to step 5 (verification)
+  useEffect(() => {
+    if (
+      step === 4 &&
+      clockInRole === "tasco" &&
+      clockInRoleTypes === "tascoAbcdLabor" &&
+      !isNavigatingBack &&
+      !manuallyOnStep4
+    ) {
+      const timer = setTimeout(() => {
+        setStep(5);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [step, clockInRole, clockInRoleTypes, isNavigatingBack, manuallyOnStep4]);
+
   //------------------------------------------------------------------
   // Helper functions
 
@@ -389,16 +439,6 @@ export default function NewClockProcess({
       )}
       {step === 2 && (
         <>
-          {/* Auto-advance F-shift directly to equipment selection (step 4) */}
-          {clockInRole === "tasco" &&
-            clockInRoleTypes === "tascoFEquipment" &&
-            (() => {
-              setTimeout(() => {
-                setStep(4);
-              }, 100);
-              return null;
-            })()}
-
           {numberOfRoles === 1 &&
             clockInRole !== "tasco" &&
             clockInRole !== "truck" && (
@@ -622,19 +662,7 @@ export default function NewClockProcess({
         )}
 
       {/* Handle step progression for Tasco E and F shifts - skip material selection, go to equipment */}
-      {step === 3 &&
-        clockInRole === "tasco" &&
-        (clockInRoleTypes === "tascoEEquipment" ||
-          clockInRoleTypes === "tascoFEquipment") &&
-        !isNavigatingBack &&
-        (() => {
-          // Auto-advance to equipment selection for E and F shifts
-          setTimeout(() => {
-            setIsNavigatingBack(false);
-            setStep(4);
-          }, 100);
-          return null;
-        })()}
+      {/* Auto-advance logic moved to useEffect hook */}
 
       {/* Step 4: Equipment Selection for roles that need it (include F-shift) */}
       {step === 4 &&
@@ -650,17 +678,7 @@ export default function NewClockProcess({
           />
         )}
 
-      {/* For ABCD Labor: Only auto-advance when NOT navigating back and NOT manually on step 4 */}
-      {step === 4 &&
-        clockInRole === "tasco" &&
-        clockInRoleTypes === "tascoAbcdLabor" &&
-        (() => {
-          if (!isNavigatingBack && !manuallyOnStep4) {
-            // Auto-advance to verification for ABCD Labor (no equipment needed)
-            setTimeout(() => setStep(5), 100);
-          }
-          return null;
-        })()}
+      {/* For ABCD Labor: Auto-advance logic moved to useEffect hook */}
 
       {/* Show step 4 interface for ABCD Labor when manually navigated */}
       {step === 4 &&
