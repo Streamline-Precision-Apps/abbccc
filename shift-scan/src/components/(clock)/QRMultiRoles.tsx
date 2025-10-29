@@ -122,11 +122,9 @@ export default function QRMultiRoles({
 
     // Helper function to find jobsite by name pattern
     const findJobsiteByName = (namePattern: string) => {
-
       const foundJobsite = jobsiteResults.find((js) =>
         js.name.toLowerCase().includes(namePattern.toLowerCase()),
       );
-
 
       return foundJobsite
         ? {
@@ -253,7 +251,6 @@ export default function QRMultiRoles({
 
       // Helper function to find jobsite by name pattern (same as E-shift)
       const findJobsiteByName = (namePattern: string) => {
-
         const foundJobsite = jobsiteResults.find((js) =>
           js.name.toLowerCase().includes(namePattern.toLowerCase()),
         );

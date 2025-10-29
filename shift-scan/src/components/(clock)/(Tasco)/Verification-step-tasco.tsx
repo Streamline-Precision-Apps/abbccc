@@ -175,8 +175,8 @@ export default function TascoVerificationStep({
           clockInRoleTypes === "tascoEEquipment"
             ? "EShift"
             : clockInRoleTypes === "tascoFEquipment"
-            ? "FShift"
-            : clockInRoleTypes || "",
+              ? "FShift"
+              : clockInRoleTypes || "",
         ),
         refetchTimesheet(),
       ]).then(() => router.push("/dashboard"));
