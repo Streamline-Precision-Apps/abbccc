@@ -102,7 +102,7 @@ export default function TascoEQClientPage({
     };
 
     fetchInitialData();
-  }, [isFShift]); // Add isFShift to dependency array
+  }, [isFShift, tascoLogId]); // Add isFShift and tascoLogId to dependency array
 
   const saveDraftData = async (values: {
     tascoLogId: string;
