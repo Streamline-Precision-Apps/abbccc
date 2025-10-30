@@ -29,11 +29,12 @@ const TruckSelector = ({ onTruckSelect, initialValue }: TruckSelectorProps) => {
         .filter(
           (equipment) =>
             equipment.equipmentTag === "TRUCK" &&
-            equipment.status !== "ARCHIVED",
+            equipment.status !== "ARCHIVED" &&
+            equipment.code != null, // Filter out trucks with null codes
         )
         .map((equipment) => ({
           id: equipment.id,
-          viewpoint: equipment.code,
+          viewpoint: equipment.code!, // Non-null assertion is safe due to filter above
           code: equipment.qrId,
           label: equipment.name,
         }));

@@ -32,14 +32,15 @@ export const EquipmentSelector = ({
 
   useEffect(() => {
     if (equipmentResults) {
-      // Filter out archived equipment for the selector
+      // Filter out archived equipment and equipment with null/undefined codes
       const activeEquipment = equipmentResults.filter(
-        (equipment) => equipment.status !== "ARCHIVED",
+        (equipment) =>
+          equipment.status !== "ARCHIVED" && equipment.code != null,
       );
 
       const options = activeEquipment.map((equipment) => ({
         id: equipment.id,
-        viewpoint: equipment.code,
+        viewpoint: equipment.code!, // Non-null assertion is safe due to filter above
         code: equipment.qrId,
         label: equipment.name,
       }));

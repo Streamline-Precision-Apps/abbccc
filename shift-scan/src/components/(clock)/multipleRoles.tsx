@@ -123,6 +123,9 @@ export default function MultipleRoles({
                           <option value="tascoEEquipment">
                             {t("TASCOEEquipmentOperator")}
                           </option>
+                          <option value="tascoFEquipment">
+                            {t("TASCOFEquipmentOperator")}
+                          </option>
                         </>
                       )}
                       {truckView === true && (

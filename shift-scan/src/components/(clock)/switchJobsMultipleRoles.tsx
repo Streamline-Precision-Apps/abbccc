@@ -60,7 +60,8 @@ export default function SwitchJobsMultiRoles({
     if (
       selectedRoleType === "tascoAbcdLabor" ||
       selectedRoleType === "tascoAbcdEquipment" ||
-      selectedRoleType === "tascoEEquipment"
+      selectedRoleType === "tascoEEquipment" ||
+      selectedRoleType === "tascoFEquipment"
     ) {
       newRole = "tasco";
     } else if (
@@ -216,7 +217,6 @@ export default function SwitchJobsMultiRoles({
             <option value="">{t("SelectWorkType")}</option>
             {tascoView === true && (
               <>
-                <option value="general">{t("GeneralLabor")}</option>
                 <option value="tascoAbcdLabor">{t("TASCOABCDLabor")}</option>
                 <option value="tascoAbcdEquipment">
                   {t("TASCOABCDEquipmentOperator")}
@@ -224,12 +224,12 @@ export default function SwitchJobsMultiRoles({
                 <option value="tascoEEquipment">
                   {t("TASCOEEquipmentOperator")}
                 </option>
+                <option value="tascoFEquipment">{t("TASCOFEquipmentOperator")}</option>
               </>
             )}
             {truckView === true && (
               <>
                 <option value="truckDriver">{t("TruckDriver")}</option>
-                <option value="general">{t("General")}</option>
                 {/* <option value="truckEquipmentOperator">
                           {t("TruckEquipmentOperator")}
                         </option>

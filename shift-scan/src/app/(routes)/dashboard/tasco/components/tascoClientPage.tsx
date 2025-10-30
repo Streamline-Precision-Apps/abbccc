@@ -7,12 +7,14 @@ import { Titles } from "@/components/(reusable)/titles";
 import { Grids } from "@/components/(reusable)/grids";
 import { Contents } from "@/components/(reusable)/contents";
 import RefuelLayout from "./RefuelLayout";
+import LoadsLayout from "./LoadsLayout";
 import TascoComments from "./tascoComments";
 import TascoCommentsSkeleton from "./TascoCommentsSkeleton";
 import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
 import { Texts } from "@/components/(reusable)/texts";
+import { TascoFLoad } from "@/lib/types";
 
 export type Refueled = {
   id: string;
@@ -20,14 +22,21 @@ export type Refueled = {
   gallonsRefueled: number;
 };
 
-export default function TascoEQClientPage() {
+export default function TascoEQClientPage({
+  laborType,
+}: {
+  laborType: string;
+}) {
   const t = useTranslations("Tasco");
   const [isLoading, setIsLoading] = useState(false);
   const [loadCount, setLoadCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState(1);
   const [tascoLogId, setTascoLogId] = useState<string>();
   const [refuelLogs, setRefuelLogs] = useState<Refueled[]>();
+  const [fLoads, setFLoads] = useState<TascoFLoad[]>(); // New state for F-shift loads
   const [comment, setComment] = useState<string>("");
+
+  const isFShift = laborType === "FShift";
 
   // Combine the initial data fetching into a single useEffect
   useEffect(() => {
@@ -40,22 +49,40 @@ export default function TascoEQClientPage() {
         const tascoLogId = await idRes.json();
         setTascoLogId(tascoLogId);
 
-        // Then fetch all related data in parallel
-        const [commentRes, loadRes, refuelRes] = await Promise.all([
-          fetch(`/api/getTascoLog/comment/${tascoLogId}`),
-          fetch(`/api/getTascoLog/loadCount/${tascoLogId}`),
-          fetch(`/api/getTascoLog/refueledLogs/${tascoLogId}`),
-        ]);
+        // Fetch core data that all shifts need using named promises
+        const coreDataPromises = {
+          comment: fetch(`/api/getTascoLog/comment/${tascoLogId}`).then((res) =>
+            res.json(),
+          ),
+          loadCount: fetch(`/api/getTascoLog/loadCount/${tascoLogId}`).then(
+            (res) => res.json(),
+          ),
+          refuelLogs: fetch(`/api/getTascoLog/refueledLogs/${tascoLogId}`).then(
+            (res) => res.json(),
+          ),
+        };
 
+        // Use Promise.all with Object.values to maintain type safety
         const [commentData, loadData, refuelData] = await Promise.all([
-          commentRes.json(),
-          loadRes.json(),
-          refuelRes.json(),
+          coreDataPromises.comment,
+          coreDataPromises.loadCount,
+          coreDataPromises.refuelLogs,
         ]);
 
+        // Set core data
         setComment(commentData || "");
-        setLoadCount(Number(loadData.LoadQuantity));
         setRefuelLogs(refuelData);
+
+        // Handle F-shift specific data separately for clarity
+        if (isFShift) {
+          const fLoadsData = await fetch(
+            `/api/getTascoLog/fLoads/${tascoLogId}`,
+          ).then((res) => res.json());
+          setFLoads(fLoadsData || []);
+          setLoadCount(fLoadsData?.length || 0); // For F-shift, count is based on number of loads
+        } else {
+          setLoadCount(Number(loadData.LoadQuantity)); // For regular shifts, use LoadQuantity
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         // Consider adding error state handling here
@@ -65,7 +92,7 @@ export default function TascoEQClientPage() {
     };
 
     fetchInitialData();
-  }, []);
+  }, [isFShift]);
 
   const saveDraftData = async (values: {
     tascoLogId: string;
@@ -91,8 +118,11 @@ export default function TascoEQClientPage() {
   // Trigger auto-save when formValues or formTitle changes
   useEffect(() => {
     if (!tascoLogId) return;
-    autoSave.autoSave({ values: { tascoLogId, loadCount } });
-  }, [loadCount]);
+    // For F-shift, don't auto-save the counter since it's managed by individual loads
+    if (!isFShift) {
+      autoSave.autoSave({ values: { tascoLogId, loadCount } });
+    }
+  }, [loadCount, isFShift]);
 
   return (
     // <Holds className="h-full overflow-y-hidden no-scrollbar">
@@ -108,6 +138,7 @@ export default function TascoEQClientPage() {
               count={loadCount}
               setCount={setLoadCount}
               isLoading={isLoading}
+              isFShift={isFShift}
             />
           </Holds>
         </Holds>
@@ -136,6 +167,23 @@ export default function TascoEQClientPage() {
             >
               <Texts size={"lg"}>{t("RefuelLogs")}</Texts>
             </NewTab>
+            {isFShift && (
+              <NewTab
+                titleImage="/tasco.svg"
+                titleImageAlt="Loads"
+                onClick={() => setActiveTab(3)}
+                isActive={activeTab === 3}
+                isComplete={
+                  fLoads === undefined ||
+                  fLoads.length === 0 ||
+                  fLoads.every(
+                    (load) => load.weight !== null && load.weight > 0,
+                  )
+                }
+              >
+                <Texts size={"lg"}>Loads</Texts>
+              </NewTab>
+            )}
           </Holds>
 
           <Holds
@@ -160,6 +208,14 @@ export default function TascoEQClientPage() {
                 tascoLog={tascoLogId}
                 refuelLogs={refuelLogs}
                 setRefuelLogs={setRefuelLogs}
+              />
+            )}
+            {activeTab === 3 && isFShift && (
+              <LoadsLayout
+                tascoLog={tascoLogId}
+                fLoads={fLoads}
+                setFLoads={setFLoads}
+                setLoadCount={setLoadCount}
               />
             )}
           </Holds>

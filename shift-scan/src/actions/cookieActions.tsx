@@ -95,6 +95,8 @@ export async function setLaborType(laborType: string) {
     "tascoAbcdLabor",
     "tascoAbcdEquipment",
     "tascoEEquipment",
+    "tascoFEquipment",
+    "FShift",
     "",
   ];
 
@@ -106,6 +108,15 @@ export async function setLaborType(laborType: string) {
       (await cookies()).set({
         name: "laborType",
         value: "",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Expires in 30 days - made this to not have errors occur is logging out is forgotten
+      });
+    } else if (laborType === "tascoFEquipment") {
+      (await cookies()).set({
+        name: "laborType",
+        value: "FShift",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         path: "/",

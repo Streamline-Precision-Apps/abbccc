@@ -1,6 +1,18 @@
 import { Session } from "next-auth";
 import { FormStatus, WorkType } from "../../prisma/generated/prisma/client";
 
+// Tasco-related type definitions
+// These mirror the Prisma enums but are safe to use in client components
+
+export type LoadType = "UNSCREENED" | "SCREENED";
+
+export type TascoFLoad = {
+  id: number;
+  tascoLogId: string;
+  weight: number | null;
+  screenType: LoadType | null;
+};
+
 export type LogItem = {
   id: string;
   userId: string;

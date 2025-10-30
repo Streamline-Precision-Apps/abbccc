@@ -35,7 +35,7 @@ export default async function TascoPage() {
               </TitleBoxes>
             </Holds>
             <Holds background={"white"} className="row-span-6 h-full">
-              <TascoClientPage />
+              <TascoClientPage laborType={laborType} />
             </Holds>
           </Grids>
         </Contents>
@@ -65,7 +65,7 @@ export default async function TascoPage() {
               </TitleBoxes>
             </Holds>
             <Holds className="row-span-6 h-full">
-              <TascoClientPage />
+              <TascoClientPage laborType={laborType} />
             </Holds>
           </Grids>
         </Contents>

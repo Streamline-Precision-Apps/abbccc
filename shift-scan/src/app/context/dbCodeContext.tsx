@@ -25,7 +25,7 @@ type CostCodes = {
 
 type EquipmentCode = {
   id: string;
-  code: string;
+  code?: string | null; // Allow null/undefined code values
   qrId: string;
   name: string;
   equipmentTag: EquipmentTags;
@@ -60,7 +60,7 @@ const EquipmentSchema = z
   .array(
     z.object({
       id: z.string(),
-      code: z.string(),
+      code: z.string().nullable().optional(), // Allow null/undefined code values
       qrId: z.string(),
       name: z.string(),
       equipmentTag: z.enum(["EQUIPMENT", "VEHICLE", "TRUCK", "TRAILER"]),
@@ -220,7 +220,6 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
 
           // Check for error status
           if (!response.ok) {
-            console.error("API error:", response.status);
             setEquipmentResults(null);
             return;
           }
@@ -242,10 +241,12 @@ export const EquipmentProvider = ({ children }: { children: ReactNode }) => {
           setEquipmentResults(validatedEquipment);
         }
       } catch (error) {
-        console.error("Error fetching equipment:", error);
         setEquipmentResults(null);
         if (error instanceof z.ZodError) {
-          console.error("Validation error in Equipment schema:", error);
+          console.error(
+            "EquipmentProvider: Validation error in Equipment schema:",
+            error,
+          );
         }
       }
     };
