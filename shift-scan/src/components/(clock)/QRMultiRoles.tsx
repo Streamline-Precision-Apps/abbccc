@@ -14,6 +14,7 @@ import { Contents } from "../(reusable)/contents";
 import { TitleBoxes } from "../(reusable)/titleBoxes";
 import { Title } from "@/app/(routes)/dashboard/mechanic/_components/Title";
 import { useDBCostcode, useDBJobsite } from "@/app/context/dbCodeContext";
+import { usePermissions } from "@/app/context/PermissionsContext";
 
 type Option = {
   id: string;

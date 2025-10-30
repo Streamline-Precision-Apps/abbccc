@@ -69,6 +69,7 @@ export default function NewClockProcess({
   clockOutComment,
 }: NewClockProcessProps) {
   // State management
+
   const { data: session } = useSession();
   const { equipmentResults } = useDBEquipment();
   const [clockInRole, setClockInRole] = useState<string | undefined>(workRole);
@@ -76,37 +77,37 @@ export default function NewClockProcess({
   const [isLocationOn, setIsLocationOn] = useState<boolean>(false);
   const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
 
-  // Update location status based on permissions (only when initialized)
-  // comment out for no required location services
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
+  // // Update location status based on permissions (only when initialized)
+  // // comment out for no required location services
+  // useEffect(() => {
+  //   if (!initialized) {
+  //     return;
+  //   }
 
-    if (permissions && permissions.location) {
-      console.log("Location permission granted");
-      setIsLocationOn(true);
-    } else {
-      console.log("Location permission not granted");
-      setIsLocationOn(false);
+  //   if (permissions && permissions.location) {
+  //     console.log("Location permission granted");
+  //     setIsLocationOn(true);
+  //   } else {
+  //     console.log("Location permission not granted");
+  //     setIsLocationOn(false);
 
-      // Only request location once on initial load
-      if (!hasRequestedLocation) {
-        console.log("Requesting location permission");
-        requestLocationPermission();
-        setHasRequestedLocation(true);
-      }
-    }
-  }, [initialized]); // Only depend on initialized, not permissions or requestLocationPermission
+  //     // Only request location once on initial load
+  //     if (!hasRequestedLocation) {
+  //       console.log("Requesting location permission");
+  //       requestLocationPermission();
+  //       setHasRequestedLocation(true);
+  //     }
+  //   }
+  // }, [initialized]); // Only depend on initialized, not permissions or requestLocationPermission
 
-  // Update location status when permissions change
-  useEffect(() => {
-    if (permissions?.location) {
-      setIsLocationOn(true);
-    } else {
-      setIsLocationOn(false);
-    }
-  }, [permissions?.location]);
+  // // Update location status when permissions change
+  // useEffect(() => {
+  //   if (permissions?.location) {
+  //     setIsLocationOn(true);
+  //   } else {
+  //     setIsLocationOn(false);
+  //   }
+  // }, [permissions?.location]);
 
   const [clockInRoleTypes, setClockInRoleTypes] = useState<string | undefined>(
     switchLaborType,
@@ -436,21 +437,21 @@ export default function NewClockProcess({
   };
 
   // Handle retrying location permission request
-  const handleRetryLocationPermission = async () => {
-    try {
-      const result = await requestLocationPermission();
-      if (result.success) {
-        console.log("Location permission granted on retry");
-        setIsLocationOn(true);
-      } else {
-        console.log("Location permission denied again");
-        setLocationRetryCount((prev) => prev + 1);
-      }
-    } catch (error) {
-      console.error("Error retrying location permission:", error);
-      setLocationRetryCount((prev) => prev + 1);
-    }
-  };
+  // const handleRetryLocationPermission = async () => {
+  //   try {
+  //     const result = await requestLocationPermission();
+  //     if (result.success) {
+  //       console.log("Location permission granted on retry");
+  //       setIsLocationOn(true);
+  //     } else {
+  //       console.log("Location permission denied again");
+  //       setLocationRetryCount((prev) => prev + 1);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error retrying location permission:", error);
+  //     setLocationRetryCount((prev) => prev + 1);
+  //   }
+  // };
 
   // Detect device type for user instructions
   const isIOSDevice = (): boolean => {
