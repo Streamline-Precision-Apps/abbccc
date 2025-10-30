@@ -389,7 +389,7 @@ model TascoLog {
 model TascoFLoads {
   id         Int       @id @default(autoincrement())
   tascoLogId String
-  weight     Float?
+  weight     Float? //This is in tons
   screenType LoadType?
   TascoLog   TascoLog  @relation("TascoLogToFLoads", fields: [tascoLogId], references: [id], onDelete: Cascade)
 }

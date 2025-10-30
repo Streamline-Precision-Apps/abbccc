@@ -515,13 +515,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
     const costCode = formData.get("costcode") as string;
     const shiftType = formData.get("shiftType") as string;
     type = formData.get("type") as string;
-    let materialType;
+    const materialType = formData.get("materialType") as string;
     const laborType = formData.get("laborType") as string;
-    if (shiftType === "ABCD Shift") {
-      materialType = formData.get("materialType") as string;
-    } else {
-      materialType = undefined;
-    }
     if (type === "switchJobs") {
       previousTimeSheetId = Number(formData.get("id"));
       endTime = formData.get("endTime") as string;
@@ -544,12 +539,8 @@ export async function handleTascoTimeSheet(formData: FormData) {
             create: {
               shiftType,
               laborType: laborType,
-              ...(equipmentId && {
-                Equipment: { connect: { id: equipmentId } },
-              }),
-              ...(materialType && {
-                TascoMaterialTypes: { connect: { name: materialType } },
-              }),
+              TascoMaterialTypes: materialType && materialType.trim() ? { connect: { name: materialType } } : undefined,
+              Equipment: equipmentId ? { connect: { id: equipmentId } } : undefined,
             },
           },
         },
