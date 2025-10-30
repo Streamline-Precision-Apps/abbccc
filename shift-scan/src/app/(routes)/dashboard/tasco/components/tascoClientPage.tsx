@@ -14,19 +14,12 @@ import { SetLoad } from "@/actions/tascoActions";
 import { useAutoSave } from "@/hooks/(inbox)/useAutoSave";
 import { useTranslations } from "next-intl";
 import { Texts } from "@/components/(reusable)/texts";
-import { LoadType } from "@prisma/client";
+import { TascoFLoad } from "@/lib/types";
 
 export type Refueled = {
   id: string;
   tascoLogId: string;
   gallonsRefueled: number;
-};
-
-export type TascoFLoad = {
-  id: number;
-  tascoLogId: string;
-  weight: number | null;
-  screenType: LoadType | null;
 };
 
 export default function TascoEQClientPage({

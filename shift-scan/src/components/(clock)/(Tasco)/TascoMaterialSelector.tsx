@@ -134,19 +134,7 @@ export default function TascoMaterialSelector({
       // Set jobsite based on material selection using real jobsite data
       const materialOption = materialOptions.find((m) => m.id === material.id);
       if (materialOption) {
-        console.log("Material selected:", material.code);
-        console.log(
-          "Looking for jobsite with name pattern:",
-          materialOption.jobsiteName,
-        );
-        console.log(
-          "Available jobsites:",
-          jobsiteResults.map((js) => ({
-            name: js.name,
-            qrId: js.qrId,
-            status: js.status,
-          })),
-        );
+
 
         // Find the actual jobsite from the database by name pattern (case-insensitive includes)
         const foundJobsite = jobsiteResults.find((js) =>
@@ -158,11 +146,6 @@ export default function TascoMaterialSelector({
         console.log("Found jobsite:", foundJobsite);
 
         if (foundJobsite) {
-          console.log("Setting jobsite to:", {
-            id: foundJobsite.id,
-            label: foundJobsite.name,
-            code: foundJobsite.qrId,
-          });
           setJobsite({
             id: foundJobsite.id, // Use the actual database ID
             label: foundJobsite.name,

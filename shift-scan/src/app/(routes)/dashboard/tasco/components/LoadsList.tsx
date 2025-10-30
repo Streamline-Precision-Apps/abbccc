@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import { deleteTascoFLoad, updateTascoFLoad } from "@/actions/tascoActions";
 import SlidingDiv from "@/components/(animations)/slideDelete";
 import { Inputs } from "@/components/(reusable)/inputs";
-import { LoadType } from "@prisma/client";
-
-export type TascoFLoad = {
-  id: number;
-  tascoLogId: string;
-  weight: number | null;
-  screenType: LoadType | null;
-};
+import { LoadType, TascoFLoad } from "@/lib/types";
 
 const SCREEN_TYPE_OPTIONS = [
   { value: "", label: "Select Screen Type" },

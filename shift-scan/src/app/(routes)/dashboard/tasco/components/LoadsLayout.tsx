@@ -7,14 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
 import Spinner from "@/components/(animations)/spinner";
-import { LoadType } from "@prisma/client";
-
-export type TascoFLoad = {
-  id: number;
-  tascoLogId: string;
-  weight: number | null;
-  screenType: LoadType | null;
-};
+import { TascoFLoad } from "@/lib/types";
 
 export default function LoadsLayout({
   tascoLog,
@@ -27,7 +20,6 @@ export default function LoadsLayout({
   setFLoads: React.Dispatch<React.SetStateAction<TascoFLoad[] | undefined>>;
   setLoadCount: React.Dispatch<React.SetStateAction<number>>;
 }) {
-
   const AddFLoad = async () => {
     if (!tascoLog) return;
 
