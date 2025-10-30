@@ -20,14 +20,14 @@ export async function POST() {
       "Mud Conditioning",
       "Lime Rock",
       "Coal",
-      "Lime Kiln", 
+      "Lime Kiln",
       "Ag Waste",
       "Belt Mud",
       "End Of Campaign Clean Up",
       "Dust Control",
       "Push PCC",
       "Rip West",
-      "Rip Center", 
+      "Rip Center",
       "Rip East"
     ];
 
