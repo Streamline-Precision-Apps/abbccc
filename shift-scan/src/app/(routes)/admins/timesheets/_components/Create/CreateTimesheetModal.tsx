@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { TruckingSection } from "./TruckingSection";
-import { TascoSection } from "./TascoSection";
+import { TascoSection, TascoLogDraft } from "./TascoSection";
 import { LaborSection } from "./LaborSection";
 import GeneralSection from "./GeneralSection";
 import { adminCreateTimesheet } from "@/actions/records-timesheets";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import Spinner from "@/components/(animations)/spinner";
 import { X } from "lucide-react";
 import { MechanicProject } from "./MechanicProject";
+import { useTimesheetAutoSelection } from "../hooks/useTimesheetAutoSelection";
 
 // Type for mechanic project summary (expand as needed)
 // type MechanicProjectSummary = { id: string };
@@ -121,16 +122,7 @@ export function CreateTimesheetModal({
       stateMileages: [{ state: "", stateLineMileage: "" }],
     },
   ]);
-  // Tasco log type
-  type TascoLogDraft = {
-    shiftType: "ABCD Shift" | "E Shift" | "F Shift" | "";
-    laborType: "Equipment Operator" | "Labor" | "";
-    materialType: string; // id from materialTypes
-    loadQuantity: string;
-    screenType: "SCREENED" | "UNSCREENED" | "";
-    refuelLogs: { gallonsRefueled: string }[];
-    equipment: { id: string; name: string }[];
-  };
+
   const [tascoLogs, setTascoLogs] = useState<TascoLogDraft[]>([
     {
       shiftType: "",
@@ -140,6 +132,7 @@ export function CreateTimesheetModal({
       screenType: "",
       refuelLogs: [{ gallonsRefueled: "" }],
       equipment: [{ id: "", name: "" }],
+      TascoFLoads: [],
     },
   ]);
   // Labor log type
@@ -431,7 +424,11 @@ export function CreateTimesheetModal({
       // Map tascoLogs to match server expectations (convert types accordingly)
       const mappedTascoLogs = tascoLogs.map((log) => ({
         ...log,
-        loadsHauled: log.loadQuantity, // Keep loadsHauled for API compatibility
+        // For F-Shift, use TascoFLoads count as loadsHauled, otherwise use loadQuantity
+        loadsHauled:
+          log.shiftType === "F Shift"
+            ? (log.TascoFLoads?.length || 0).toString()
+            : log.loadQuantity,
         loadQuantity: undefined, // Remove loadQuantity
         // Convert screenType for API compatibility
         screenType:
@@ -440,6 +437,19 @@ export function CreateTimesheetModal({
             : log.screenType === "UNSCREENED"
               ? "unscreened"
               : "",
+        // Map TascoFLoads to proper format (only include if not empty)
+        TascoFLoads:
+          log.TascoFLoads && log.TascoFLoads.length > 0
+            ? log.TascoFLoads.map((fLoad) => ({
+                weight: fLoad.weight ? parseFloat(fLoad.weight) : null,
+                screenType:
+                  fLoad.screenType === "SCREENED"
+                    ? ("screened" as const)
+                    : fLoad.screenType === "UNSCREENED"
+                      ? ("unscreened" as const)
+                      : null,
+              }))
+            : [],
       }));
 
       // Map trucking logs to convert loadType to lowercase for API compatibility
@@ -525,6 +535,41 @@ export function CreateTimesheetModal({
       });
     }
   }, [form.workType]);
+
+  // Auto-selection logic for TASCO shifts
+  useTimesheetAutoSelection({
+    workType: form.workType.toLowerCase(),
+    tascoLogs: tascoLogs.map((log) => ({
+      shiftType: log.shiftType,
+      materialType: log.materialType,
+      laborType: log.laborType || undefined,
+      equipment: log.equipment.length > 0 ? log.equipment[0] : undefined,
+    })),
+    costCodes: costCode,
+    materialTypes,
+    jobsites,
+    setJobsite: (jobsite) => {
+      setForm((prev) => ({ ...prev, jobsite }));
+    },
+    setCostCode: (costcode) => {
+      // Convert cost code to expected format
+      if ("value" in costcode && "label" in costcode) {
+        setForm((prev) => ({
+          ...prev,
+          costcode: { id: costcode.value, name: costcode.label },
+        }));
+      } else {
+        setForm((prev) => ({ ...prev, costcode }));
+      }
+    },
+    setMaterial: (material, logIndex = 0) => {
+      setTascoLogs((prev) =>
+        prev.map((log, index) =>
+          index === logIndex ? { ...log, materialType: material } : log,
+        ),
+      );
+    },
+  });
 
   if (loading) {
     return (

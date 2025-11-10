@@ -65,6 +65,10 @@ export type TimesheetSubmission = {
     loadsHauled: string;
     refuelLogs: Array<{ gallonsRefueled: string }>;
     equipment: Array<{ id: string; name: string }>;
+    TascoFLoads?: Array<{
+      weight: number | null;
+      screenType: "screened" | "unscreened" | null;
+    }>;
   }>;
   laborLogs: Array<{
     equipment: { id: string; name: string };
@@ -154,7 +158,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             unit: mat.unit ? (mat.unit as materialUnit) : null,
             loadType: mat.loadType
               ? (mat.loadType.toUpperCase() as LoadType)
-              : undefined,
+              : null,
           },
         });
       }
@@ -165,10 +169,10 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             truckingLogId: truckingLog.id,
             gallonsRefueled: ref.gallonsRefueled
               ? parseFloat(ref.gallonsRefueled)
-              : undefined,
+              : null,
             milesAtFueling: ref.milesAtFueling
               ? parseInt(ref.milesAtFueling)
-              : undefined,
+              : null,
           },
         });
       }
@@ -189,19 +193,44 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
     // Tasco Logs
     for (const tlog of data.tascoLogs) {
       if (!tlog.shiftType) continue;
+
+      // Set laborType to "FShift" for F-Shift logs, otherwise use the provided laborType
+      const finalLaborType =
+        tlog.shiftType === "F Shift" ? "FShift" : tlog.laborType;
+
       const tascoLog = await tx.tascoLog.create({
         data: {
           timeSheetId: timesheet.id,
           shiftType: tlog.shiftType,
-          laborType: tlog.laborType,
+          laborType: finalLaborType,
           materialType: tlog.materialType,
           LoadQuantity: tlog.loadsHauled ? parseInt(tlog.loadsHauled) : 0,
           equipmentId:
             tlog.equipment && tlog.equipment.length > 0
               ? tlog.equipment[0].id
-              : undefined,
+              : null,
         },
       });
+
+      // Create TascoFLoads for F-Shift logs only
+      if (
+        tlog.shiftType === "F Shift" &&
+        tlog.TascoFLoads &&
+        tlog.TascoFLoads.length > 0
+      ) {
+        for (const fLoad of tlog.TascoFLoads) {
+          await tx.tascoFLoads.create({
+            data: {
+              tascoLogId: tascoLog.id,
+              weight: fLoad.weight,
+              screenType: fLoad.screenType
+                ? (fLoad.screenType.toUpperCase() as LoadType)
+                : null,
+            },
+          });
+        }
+      }
+
       // Refuel Logs for Tasco
       for (const ref of tlog.refuelLogs) {
         await tx.refuelLog.create({
@@ -209,7 +238,7 @@ export async function adminCreateTimesheet(data: TimesheetSubmission) {
             tascoLogId: tascoLog.id,
             gallonsRefueled: ref.gallonsRefueled
               ? parseFloat(ref.gallonsRefueled)
-              : undefined,
+              : null,
           },
         });
       }

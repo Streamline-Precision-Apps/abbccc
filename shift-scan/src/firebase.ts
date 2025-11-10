@@ -23,8 +23,20 @@ const messaging = async () => {
   return supported ? getMessaging(app) : null;
 };
 
+// Track if we've already logged FCM errors to reduce console noise
+let fcmErrorLogged = false;
+
 export const fetchToken = async () => {
   try {
+    // Check if VAPID key is configured
+    if (!process.env.NEXT_PUBLIC_FIREBASE_FCM_VAPID_KEY) {
+      if (!fcmErrorLogged) {
+        console.warn("Firebase FCM VAPID key not configured. Skipping token fetch.");
+        fcmErrorLogged = true;
+      }
+      return null;
+    }
+
     const fcmMessaging = await messaging();
     if (fcmMessaging) {
       const token = await getToken(fcmMessaging, {
@@ -32,13 +44,25 @@ export const fetchToken = async () => {
       });
       // Add FCM token to the user's profile
       if (token) {
-        await setFCMToken({ token });
+        try {
+          await setFCMToken({ token });
+        } catch (serverActionError) {
+          if (!fcmErrorLogged) {
+            console.warn("Failed to save FCM token to server:", serverActionError);
+            fcmErrorLogged = true;
+          }
+          // Still return the token even if saving failed
+        }
       }
       return token;
     }
     return null;
   } catch (err) {
-    console.error("An error occurred while fetching the token:", err);
+    // Reduce console noise - only log once per session
+    if (!fcmErrorLogged) {
+      console.warn("Firebase FCM not available or configured properly. Push notifications disabled.", err);
+      fcmErrorLogged = true;
+    }
     return null;
   }
 };

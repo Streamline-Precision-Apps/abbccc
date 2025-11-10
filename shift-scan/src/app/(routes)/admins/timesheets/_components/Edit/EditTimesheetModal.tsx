@@ -15,6 +15,7 @@ import {
   TimesheetData,
   useTimesheetData,
 } from "./hooks/useTimesheetData";
+import { TascoFLoad, TascoLog } from "./types";
 import { useTimesheetChanges } from "./hooks/useTimesheetChanges";
 import { useTimesheetLogs } from "./hooks/useTimesheetLogs";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ import { useDashboardData } from "../../../_pages/sidebar/DashboardDataContext";
 import { format } from "date-fns";
 import Spinner from "@/components/(animations)/spinner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTimesheetAutoSelection } from "../hooks/useTimesheetAutoSelection";
 
 // Define types for change logs
 interface ChangeLogEntry {
@@ -85,8 +87,20 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         return res.json();
       })
       .then((json) => {
-        setForm(json); // Pre-populate form
-        setOriginalForm(json); // Store original for undo
+        // Transform API response to match component expectations
+        const transformedJson = {
+          ...json,
+          TascoLogs:
+            json.TascoLogs?.map(
+              (log: TascoLog & { FLoads?: TascoFLoad[] }) => ({
+                ...log,
+                // Map FLoads from API to TascoFLoads expected by component
+                TascoFLoads: log.FLoads || [],
+              }),
+            ) || [],
+        };
+        setForm(transformedJson); // Pre-populate form
+        setOriginalForm(transformedJson); // Store original for undo
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -105,6 +119,53 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
         // Don't set the error state for this, as it's not critical
       });
   }, [isOpen, timesheetId]);
+
+  // Auto-selection logic for TASCO shifts
+  useTimesheetAutoSelection({
+    workType: form?.workType?.toLowerCase() || "",
+    tascoLogs: form?.TascoLogs || [],
+    costCodes: costCodeOptions,
+    materialTypes: materialTypeOptions.map((m) => ({
+      id: m.value,
+      name: m.label,
+    })),
+    jobsites: jobsites,
+    setJobsite: (jobsite) => {
+      if (form) {
+        setForm((prev) => (prev ? { ...prev, Jobsite: jobsite } : prev));
+      }
+    },
+    setCostCode: (costcode) => {
+      if (form) {
+        // Convert cost code to expected format
+        if ("value" in costcode && "label" in costcode) {
+          setForm((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  CostCode: { id: costcode.value, name: costcode.label },
+                }
+              : prev,
+          );
+        } else {
+          setForm((prev) => (prev ? { ...prev, CostCode: costcode } : prev));
+        }
+      }
+    },
+    setMaterial: (material, logIndex = 0) => {
+      if (form && form.TascoLogs.length > logIndex) {
+        setForm((prev) => {
+          if (!prev) return prev;
+          const updatedLogs = [...prev.TascoLogs];
+          updatedLogs[logIndex] = {
+            ...updatedLogs[logIndex],
+            materialType: material,
+          };
+          return { ...prev, TascoLogs: updatedLogs };
+        });
+      }
+    },
+  });
 
   // Work type options and log section mapping
   const workTypeOptions = [
@@ -231,6 +292,7 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                 materialType: "",
                 LoadQuantity: 0,
                 RefuelLogs: [],
+                TascoFLoads: [],
                 Equipment: null,
               },
             ],
@@ -526,6 +588,8 @@ export const EditTimesheetModal: React.FC<EditTimesheetModalProps> = ({
                             }
                             addTascoRefuelLog={logs.addTascoRefuelLog}
                             deleteTascoRefuelLog={logs.deleteTascoRefuelLog}
+                            addTascoFLoad={logs.addTascoFLoad}
+                            deleteTascoFLoad={logs.deleteTascoFLoad}
                             originalLogs={originalForm?.TascoLogs || []}
                             onUndoLogField={logs.handleUndoTascoLogField}
                           />

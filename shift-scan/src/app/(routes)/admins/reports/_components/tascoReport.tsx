@@ -6,44 +6,133 @@ import { TascoReportRow } from "./_tascoReport/tascoReportTableColumns";
 import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
 import { TascoDataTable } from "./_tascoReport/TascoDataTable";
+import TascoFilterModal, { TascoFilterOptions } from "./TascoFilterModal";
 
 interface TascoReportProps {
   showExportModal: boolean;
   setShowExportModal: (show: boolean) => void;
+  showFilterModal?: boolean;
+  setShowFilterModal?: (show: boolean) => void;
   dateRange?: { from: Date | undefined; to: Date | undefined };
   registerReload?: (reloadFn: () => Promise<void>) => void;
   isRefreshing?: boolean;
+  externalFilters?: TascoFilterOptions;
 }
 
 type DateRange = { from: Date | undefined; to: Date | undefined };
 
+interface FilterOptionsData {
+  jobsites: { id: string; name: string }[];
+  employees: { id: string; name: string }[];
+  equipment: { id: string; name: string }[];
+  materialTypes: { name: string }[];
+}
+
 export default function TascoReport({
   showExportModal,
   setShowExportModal,
+  showFilterModal,
+  setShowFilterModal,
   dateRange: externalDateRange,
   registerReload,
   isRefreshing,
+  externalFilters,
 }: TascoReportProps) {
-  const [allData, setAllData] = useState<TascoReportRow[]>([]);
-  const [filteredData, setFilteredData] = useState<TascoReportRow[]>([]);
+  const [data, setData] = useState<TascoReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: undefined,
-    to: undefined,
+  const [filterOptions, setFilterOptions] = useState<FilterOptionsData>({
+    jobsites: [],
+    employees: [],
+    equipment: [],
+    materialTypes: [],
   });
 
-  const fetchData = async () => {
+  // Filter state
+  const [filters, setFilters] = useState<TascoFilterOptions>({
+    jobsiteId: [],
+    shiftType: [],
+    employeeId: [],
+    laborType: [],
+    equipmentId: [],
+    materialType: [],
+  });
+
+  // Update data when external date range changes
+  useEffect(() => {
+    fetchData();
+  }, [externalDateRange]);
+
+  // Update data when external filters change
+  useEffect(() => {
+    if (externalFilters) {
+      fetchData();
+    }
+  }, [externalFilters]);
+
+  // Fetch filter options
+  const fetchFilterOptions = async () => {
+    try {
+      const response = await fetch("/api/reports/tasco", {
+        method: "POST",
+      });
+      if (response.ok) {
+        const options = await response.json();
+        setFilterOptions(options);
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+  };
+
+  // Build query string from filters
+  const buildQueryString = (activeFilters: TascoFilterOptions) => {
+    const params = new URLSearchParams();
+
+    // Add external date range if provided
+    if (externalDateRange?.from) {
+      params.set("dateFrom", externalDateRange.from.toISOString());
+    }
+    if (externalDateRange?.to) {
+      params.set("dateTo", externalDateRange.to.toISOString());
+    }
+
+    if (activeFilters.jobsiteId.length > 0) {
+      params.set("jobsiteIds", activeFilters.jobsiteId.join(","));
+    }
+    if (activeFilters.shiftType.length > 0) {
+      params.set("shiftTypes", activeFilters.shiftType.join(","));
+    }
+    if (activeFilters.employeeId.length > 0) {
+      params.set("employeeIds", activeFilters.employeeId.join(","));
+    }
+    if (activeFilters.laborType.length > 0) {
+      params.set("laborTypes", activeFilters.laborType.join(","));
+    }
+    if (activeFilters.equipmentId.length > 0) {
+      params.set("equipmentIds", activeFilters.equipmentId.join(","));
+    }
+    if (activeFilters.materialType.length > 0) {
+      params.set("materialTypes", activeFilters.materialType.join(","));
+    }
+
+    return params.toString();
+  };
+
+  const fetchData = async (useFilters = true) => {
     try {
       setLoading(true);
-      const response = await fetch("/api/reports/tasco");
+      // Use external filters if available, otherwise use internal filters
+      const activeFilters = externalFilters || filters;
+      const queryString = useFilters ? buildQueryString(activeFilters) : "";
+      const url = `/api/reports/tasco${queryString ? `?${queryString}` : ""}`;
+
+      const response = await fetch(url);
       const json = await response.json();
       if (!response.ok) {
         throw new Error(json.message || "Failed to fetch Tasco report data");
       }
 
-      // Debug logging
-      
-      setAllData(json);
+      setData(json);
     } catch (error) {
       console.error("Error fetching Tasco report data:", error);
     } finally {
@@ -51,76 +140,56 @@ export default function TascoReport({
     }
   };
 
-  // Filter data based on external date range
-  useEffect(() => {
-    if (!allData.length) {
-      setFilteredData([]);
-      return;
-    }
+  // Handle filter changes
+  const handleFilterChange = (newFilters: TascoFilterOptions) => {
+    setFilters(newFilters);
+    fetchData();
+  };
 
-    let filtered = allData;
-
-    if (externalDateRange?.from && externalDateRange?.to) {
-      // If from and to are the same day, filter by the full day
-      const isSameDay =
-        externalDateRange.from.toDateString() ===
-        externalDateRange.to.toDateString();
-      if (isSameDay) {
-        const startOfDay = new Date(externalDateRange.from);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(externalDateRange.from);
-        endOfDay.setHours(23, 59, 59, 999);
-        filtered = allData.filter((row) => {
-          const date = new Date(row.dateWorked);
-          return date >= startOfDay && date <= endOfDay;
-        });
-      } else {
-        filtered = allData.filter((row) => {
-          const date = new Date(row.dateWorked);
-          return (
-            date >= externalDateRange.from! && date <= externalDateRange.to!
-          );
-        });
-      }
-    } else if (externalDateRange?.from) {
-      // Only start date provided
-      filtered = allData.filter((row) => {
-        const date = new Date(row.dateWorked);
-        return date >= externalDateRange.from!;
-      });
-    } else if (externalDateRange?.to) {
-      // Only end date provided
-      filtered = allData.filter((row) => {
-        const date = new Date(row.dateWorked);
-        return date <= externalDateRange.to!;
-      });
-    }
-
-    setFilteredData(filtered);
-  }, [allData, externalDateRange]);
+  // Handle clear filters
+  const handleClearFilters = () => {
+    const clearedFilters: TascoFilterOptions = {
+      jobsiteId: [],
+      shiftType: [],
+      employeeId: [],
+      laborType: [],
+      equipmentId: [],
+      materialType: [],
+    };
+    setFilters(clearedFilters);
+    fetchData();
+  };
 
   // Register reload function on mount
   useEffect(() => {
     if (registerReload) {
-      registerReload(fetchData);
+      registerReload(() => fetchData(true));
     }
+    fetchFilterOptions();
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registerReload]);
+
+  // Re-fetch data when filters change
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
 
   const onExport = (
     exportFormat: "csv" | "xlsx",
     _dateRange?: { from?: Date; to?: Date },
     selectedFields?: string[],
   ) => {
-    if (!filteredData.length) return;
-    // Use the already filtered data for export
-    const exportData = filteredData;
+    if (!data.length) return;
+    // Use the current filtered data for export
+    const exportData = data;
 
     const tableHeaders = [
       "Shift Type",
       "Submitted Date",
       "Employee",
+      "Profit ID",
       "Date Worked",
       "Labor Type",
       "Equipment Details [equipment moved: starting location -> ending location (mileage)]",
@@ -144,6 +213,7 @@ export default function TascoReport({
                 : row.shiftType,
             format(new Date(row.submittedDate), "yyyy-MM-dd"),
             row.employee,
+            row.profitId || "-",
             format(new Date(row.dateWorked), "yyyy-MM-dd"),
             row.laborType === "tascoAbcdEquipment"
               ? "Equipment Operator"
@@ -196,6 +266,7 @@ export default function TascoReport({
                   : row.shiftType,
             "Submitted Date": format(new Date(row.submittedDate), "yyyy/MM/dd"),
             Employee: row.employee,
+            "Profit ID": row.profitId || "-",
             "Date Worked": format(new Date(row.dateWorked), "yyyy/MM/dd"),
             "Labor Type":
               row.laborType === "tascoAbcdEquipment"
@@ -234,7 +305,7 @@ export default function TascoReport({
 
   return (
     <>
-      <TascoDataTable data={filteredData} loading={loading} />
+      <TascoDataTable data={data} loading={loading} />
 
       {showExportModal && (
         <ExportReportModal

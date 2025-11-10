@@ -42,35 +42,44 @@ const useFcmToken = () => {
     if (isLoading.current) return;
     isLoading.current = true;
 
-    const Token = await getNotificationPermissionAndToken();
-    if (Notification.permission === "denied") {
-      setNotificationPermissionStatus("denied");
-      console.info(
-        "%cPush Notifications issue - permission denied",
-        "color: green; background: #c7c7c7; padding: 8px; font-size: 20px",
-      );
-      isLoading.current = false;
-      return;
-    }
-    if (!Token) {
-      if (retryLoadToken.current >= 3) {
-        alert("Unable to load token, refresh the browser");
+    try {
+      const Token = await getNotificationPermissionAndToken();
+      if (Notification.permission === "denied") {
+        setNotificationPermissionStatus("denied");
         console.info(
-          "%cPush Notifications issue - unable to load token after 3 retries",
+          "%cPush Notifications issue - permission denied",
           "color: green; background: #c7c7c7; padding: 8px; font-size: 20px",
         );
         isLoading.current = false;
         return;
       }
-      retryLoadToken.current += 1;
-      console.error("An error occurred while retrieving token. Retrying...");
+      if (!Token) {
+        if (retryLoadToken.current >= 1) {
+          // Reduced from 3 to 1 retry
+          // Silently fail instead of showing alert - FCM is not critical for core functionality
+          console.info(
+            "%cPush Notifications disabled - unable to load FCM token",
+            "color: orange; background: #f0f0f0; padding: 4px; font-size: 12px",
+          );
+          setNotificationPermissionStatus("default"); // Set to default instead of leaving null
+          isLoading.current = false;
+          return;
+        }
+        retryLoadToken.current += 1;
+        console.error("An error occurred while retrieving token. Retrying...");
+        isLoading.current = false;
+        // Add delay before retry to prevent rapid-fire requests
+        setTimeout(() => loadToken(), 2000);
+        return;
+      }
+      setNotificationPermissionStatus(Notification.permission);
+      setToken(Token);
+    } catch (error) {
+      console.warn("FCM token loading failed:", error);
+      setNotificationPermissionStatus("default");
+    } finally {
       isLoading.current = false;
-      await loadToken();
-      return;
     }
-    setNotificationPermissionStatus(Notification.permission);
-    setToken(Token);
-    isLoading.current = false;
   };
 
   useEffect(() => {

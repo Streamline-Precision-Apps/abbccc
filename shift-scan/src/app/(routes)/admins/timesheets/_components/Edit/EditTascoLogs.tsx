@@ -5,6 +5,8 @@ import {
   TruckingNestedTypeMap,
   TimesheetData,
   TruckingNestedType,
+  TascoNestedType,
+  TascoNestedTypeMap,
 } from "./types";
 import {
   Select,
@@ -24,12 +26,12 @@ interface EditTascoLogsProps {
     field: keyof TascoLog,
     value: string | number | null | { id: string; name: string },
   ) => void;
-  handleNestedLogChange: <T extends TruckingNestedType>(
+  handleNestedLogChange: <T extends TascoNestedType>(
     logType: keyof TimesheetData,
     logIndex: number,
     nestedType: T,
     nestedIndex: number,
-    field: keyof TruckingNestedTypeMap[T],
+    field: keyof TascoNestedTypeMap[T],
     value: string | number | null,
   ) => void;
   originalLogs?: TascoLog[];
@@ -44,6 +46,8 @@ interface EditTascoLogsProps {
   }[];
   addTascoRefuelLog: (logIdx: number) => void;
   deleteTascoRefuelLog: (logIdx: number, refIdx: number) => void;
+  addTascoFLoad: (logIdx: number) => void;
+  deleteTascoFLoad: (logIdx: number, fLoadIdx: number) => void;
 }
 
 export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
@@ -56,11 +60,21 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
   handleNestedLogChange,
   addTascoRefuelLog,
   deleteTascoRefuelLog,
+  addTascoFLoad,
+  deleteTascoFLoad,
 }) => {
   // Helper function to check completeness of a Tasco RefuelLog
   const isTascoRefuelLogComplete = (
     ref: TimesheetData["TascoLogs"][number]["RefuelLogs"][number],
   ) => !!(ref.gallonsRefueled && ref.gallonsRefueled > 0);
+
+  // Helper function to check completeness of a TascoFLoad
+  const isTascoFLoadComplete = (
+    load: TimesheetData["TascoLogs"][number]["TascoFLoads"][number],
+  ) => !!(load.weight && load.weight > 0 && load.screenType);
+
+  // Helper function to check if this is an F-shift
+  const isFShift = (log: TascoLog) => log.shiftType === "F Shift";
 
   return (
     <div className="col-span-2 ">
@@ -165,40 +179,47 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   )}
               </div>
 
-              <div className="flex flex-row gap-4">
-                <div className="w-[350px]">
-                  <label htmlFor="laborType" className="block text-xs">
-                    Labor Type
-                  </label>
-                  <Select
-                    name="laborType"
-                    value={log.laborType || ""}
-                    onValueChange={(val) => onLogChange(idx, "laborType", val)}
-                  >
-                    <SelectTrigger className="bg-white w-[350px] text-xs">
-                      <SelectValue placeholder="Select Labor Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Operator">Operator</SelectItem>
-                      <SelectItem value="Manual Labor">Manual Labor</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {/* Labor Type - Only show for ABCD Shift */}
+              {log.shiftType === "ABCD Shift" && (
+                <div className="flex flex-row gap-4">
+                  <div className="w-[350px]">
+                    <label htmlFor="laborType" className="block text-xs">
+                      Labor Type
+                    </label>
+                    <Select
+                      name="laborType"
+                      value={log.laborType || ""}
+                      onValueChange={(val) =>
+                        onLogChange(idx, "laborType", val)
+                      }
+                    >
+                      <SelectTrigger className="bg-white w-[350px] text-xs">
+                        <SelectValue placeholder="Select Labor Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Operator">Operator</SelectItem>
+                        <SelectItem value="Manual Labor">
+                          Manual Labor
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {originalLogs[idx] &&
+                    log.laborType !== originalLogs[idx].laborType &&
+                    onUndoLogField && (
+                      <div className="flex items-end">
+                        <Button
+                          type="button"
+                          size="default"
+                          className="w-fit"
+                          onClick={() => onUndoLogField(idx, "laborType")}
+                        >
+                          <p className="text-xs">Undo</p>
+                        </Button>
+                      </div>
+                    )}
                 </div>
-                {originalLogs[idx] &&
-                  log.laborType !== originalLogs[idx].laborType &&
-                  onUndoLogField && (
-                    <div className="flex items-end">
-                      <Button
-                        type="button"
-                        size="default"
-                        className="w-fit"
-                        onClick={() => onUndoLogField(idx, "laborType")}
-                      >
-                        <p className="text-xs">Undo</p>
-                      </Button>
-                    </div>
-                  )}
-              </div>
+              )}
             </div>
 
             <div className="flex flex-row gap-4">
@@ -238,35 +259,196 @@ export const EditTascoLogs: React.FC<EditTascoLogsProps> = ({
                   </div>
                 )}
             </div>
-            <div className="flex flex-row gap-4">
-              <div className="w-[350px]">
-                <label className="block text-xs">Number of Loads</label>
-                <Input
-                  type="number"
-                  placeholder={"Enter number of loads"}
-                  value={log.LoadQuantity ? log.LoadQuantity : ""}
-                  onChange={(e) =>
-                    onLogChange(idx, "LoadQuantity", Number(e.target.value))
-                  }
-                  className="bg-white border rounded px-2 py-1 w-full text-xs"
-                />
+            {/* Load Count - Only show for non-F-shift */}
+            {!isFShift(log) && (
+              <div className="flex flex-row gap-4">
+                <div className="w-[350px]">
+                  <label className="block text-xs">Number of Loads</label>
+                  <Input
+                    type="number"
+                    placeholder={"Enter number of loads"}
+                    value={log.LoadQuantity ? log.LoadQuantity : ""}
+                    onChange={(e) =>
+                      onLogChange(idx, "LoadQuantity", Number(e.target.value))
+                    }
+                    className="bg-white border rounded px-2 py-1 w-full text-xs"
+                  />
+                </div>
+                {originalLogs[idx] &&
+                  log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
+                  onUndoLogField && (
+                    <div className="flex items-end">
+                      <Button
+                        type="button"
+                        size="default"
+                        className="w-fit"
+                        onClick={() => onUndoLogField(idx, "LoadQuantity")}
+                      >
+                        <p className="text-xs">Undo</p>
+                      </Button>
+                    </div>
+                  )}
               </div>
-              {originalLogs[idx] &&
-                log.LoadQuantity !== originalLogs[idx].LoadQuantity &&
-                onUndoLogField && (
-                  <div className="flex items-end">
-                    <Button
-                      type="button"
-                      size="default"
-                      className="w-fit"
-                      onClick={() => onUndoLogField(idx, "LoadQuantity")}
-                    >
-                      <p className="text-xs">Undo</p>
-                    </Button>
-                  </div>
-                )}
-            </div>
+            )}
+            {/* F-Shift Load Count Display - Read Only */}
+            {isFShift(log) && (
+              <div className="flex flex-row gap-4">
+                <div className="w-[350px]">
+                  <label className="block text-xs">
+                    Number of Loads (F-Shift)
+                  </label>
+                  <Input
+                    type="number"
+                    value={log.TascoFLoads?.length || 0}
+                    readOnly
+                    className="bg-gray-100 border rounded px-2 py-1 w-full text-xs"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Load count is managed by adding/removing individual loads
+                    below
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* F-Shift Loads Section - Only show for F-shift */}
+          {isFShift(log) && (
+            <div className="mb-2 border-t pt-4">
+              <div className="flex flex-row justify-between">
+                <p className="text-base font-semibold">F-Shift Loads</p>
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={() => addTascoFLoad(idx)}
+                  disabled={
+                    log.TascoFLoads &&
+                    log.TascoFLoads.length > 0 &&
+                    !isTascoFLoadComplete(
+                      log.TascoFLoads[log.TascoFLoads.length - 1],
+                    )
+                  }
+                  className={
+                    log.TascoFLoads &&
+                    log.TascoFLoads.length > 0 &&
+                    !isTascoFLoadComplete(
+                      log.TascoFLoads[log.TascoFLoads.length - 1],
+                    )
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
+                  title={
+                    log.TascoFLoads &&
+                    log.TascoFLoads.length > 0 &&
+                    !isTascoFLoadComplete(
+                      log.TascoFLoads[log.TascoFLoads.length - 1],
+                    )
+                      ? "Please complete the previous F-Load entry before adding another."
+                      : ""
+                  }
+                >
+                  <Plus className="h-8 w-8" color="white" />
+                </Button>
+              </div>
+              {log.TascoFLoads && log.TascoFLoads.length > 0
+                ? log.TascoFLoads.map((fLoad, fLoadIdx) => {
+                    // Find the original value for this F-load (by index)
+                    const originalFLoad =
+                      originalLogs[idx]?.TascoFLoads &&
+                      originalLogs[idx].TascoFLoads[fLoadIdx];
+                    const showUndo =
+                      originalFLoad &&
+                      (fLoad.weight !== originalFLoad.weight ||
+                        fLoad.screenType !== originalFLoad.screenType) &&
+                      onUndoLogField;
+                    return (
+                      <div
+                        key={
+                          fLoad.id
+                            ? fLoad.id.toString()
+                            : `fload-${idx}-${fLoadIdx}`
+                        }
+                        className="bg-slate-50 flex gap-2 my-2 items-end border p-2 rounded relative"
+                      >
+                        <div>
+                          <label className="block text-xs">Weight (tons)</label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            placeholder="Enter weight"
+                            value={
+                              fLoad.weight && fLoad.weight > 0
+                                ? fLoad.weight
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNestedLogChange(
+                                "TascoLogs", // logType
+                                idx, // logIndex
+                                "TascoFLoads", // nestedType
+                                fLoadIdx, // nestedIndex
+                                "weight", // field
+                                Number(e.target.value),
+                              )
+                            }
+                            className="bg-white w-[150px] text-xs"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs">Screen Type</label>
+                          <Select
+                            value={fLoad.screenType || ""}
+                            onValueChange={(val) =>
+                              handleNestedLogChange(
+                                "TascoLogs", // logType
+                                idx, // logIndex
+                                "TascoFLoads", // nestedType
+                                fLoadIdx, // nestedIndex
+                                "screenType", // field
+                                val || null,
+                              )
+                            }
+                          >
+                            <SelectTrigger className="bg-white w-[200px] text-xs">
+                              <SelectValue placeholder="Select Screen Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="UNSCREENED">
+                                Unscreened
+                              </SelectItem>
+                              <SelectItem value="SCREENED">Screened</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {showUndo && (
+                          <div className="w-fit ml-2">
+                            <Button
+                              type="button"
+                              size="default"
+                              className="w-fit"
+                              onClick={() => onUndoLogField(idx, "TascoFLoads")}
+                            >
+                              <p className="text-xs">Undo</p>
+                            </Button>
+                          </div>
+                        )}
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => deleteTascoFLoad(idx, fLoadIdx)}
+                          className="absolute top-0 right-0"
+                        >
+                          <X className="w-4 h-4" color="red" />
+                        </Button>
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
+          )}
+
           {/* Refuel Logs Section */}
           <div className="mb-2 border-t pt-4">
             <div className="flex flex-row justify-between ">

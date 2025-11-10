@@ -584,6 +584,24 @@ async function updateTascoLogs(
         },
       });
     }
+
+    // Delete and recreate TascoFLoads (F-Shift loads)
+    await tx.tascoFLoads.deleteMany({ where: { tascoLogId: id } });
+
+    // Only create TascoFLoads if this is an F-Shift
+    if (log.shiftType === "F Shift") {
+      for (const fLoad of log.TascoFLoads || []) {
+        await tx.tascoFLoads.create({
+          data: {
+            tascoLogId: updatedLog.id,
+            weight: fLoad.weight ? Number(fLoad.weight) : null,
+            screenType: fLoad.screenType
+              ? (fLoad.screenType.toUpperCase() as LoadType)
+              : null,
+          },
+        });
+      }
+    }
   }
 
   // Handle added tasco logs
@@ -613,6 +631,21 @@ async function updateTascoLogs(
             : undefined,
         },
       });
+    }
+
+    // Create TascoFLoads (F-Shift loads) - only for F-Shift
+    if (log.shiftType === "F Shift") {
+      for (const fLoad of log.TascoFLoads || []) {
+        await tx.tascoFLoads.create({
+          data: {
+            tascoLogId: tascoLog.id,
+            weight: fLoad.weight ? Number(fLoad.weight) : null,
+            screenType: fLoad.screenType
+              ? (fLoad.screenType.toUpperCase() as LoadType)
+              : null,
+          },
+        });
+      }
     }
   }
 }
