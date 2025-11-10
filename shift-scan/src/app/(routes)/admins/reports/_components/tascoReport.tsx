@@ -52,24 +52,96 @@ export default function TascoReport({
   });
 
   // Filter options state
+  const [filterOptions, setFilterOptions] = useState<FilterOptionsData>({
+    jobsites: [],
+    employees: [],
+    equipment: [],
+    materialTypes: [],
+  });
 
   // Debounce timer ref
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounced fetch data function
-  const debouncedFetchData = useCallback((useFilters = true, delay = 300) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      fetchData(useFilters);
-      debounceTimerRef.current = null;
-    }, delay);
-  }, []);
-
   // Track if this is the initial mount
   const isInitialMount = useRef(true);
+
+  // Build query string from filters
+  const buildQueryString = useCallback(
+    (activeFilters: TascoFilterOptions) => {
+      const params = new URLSearchParams();
+
+      // Add external date range if provided
+      if (externalDateRange?.from) {
+        params.set("dateFrom", externalDateRange.from.toISOString());
+      }
+      if (externalDateRange?.to) {
+        params.set("dateTo", externalDateRange.to.toISOString());
+      }
+
+      if (activeFilters.jobsiteId.length > 0) {
+        params.set("jobsiteIds", activeFilters.jobsiteId.join(","));
+      }
+      if (activeFilters.shiftType.length > 0) {
+        params.set("shiftTypes", activeFilters.shiftType.join(","));
+      }
+      if (activeFilters.employeeId.length > 0) {
+        params.set("employeeIds", activeFilters.employeeId.join(","));
+      }
+      if (activeFilters.laborType.length > 0) {
+        params.set("laborTypes", activeFilters.laborType.join(","));
+      }
+      if (activeFilters.equipmentId.length > 0) {
+        params.set("equipmentIds", activeFilters.equipmentId.join(","));
+      }
+      if (activeFilters.materialType.length > 0) {
+        params.set("materialTypes", activeFilters.materialType.join(","));
+      }
+
+      return params.toString();
+    },
+    [externalDateRange],
+  );
+
+  // Memoized fetch data function with proper dependencies
+  const fetchData = useCallback(
+    async (useFilters = true) => {
+      try {
+        setLoading(true);
+        // Use external filters if available, otherwise use internal filters
+        const activeFilters = externalFilters || filters;
+        const queryString = useFilters ? buildQueryString(activeFilters) : "";
+        const url = `/api/reports/tasco${queryString ? `?${queryString}` : ""}`;
+
+        const response = await fetch(url);
+        const json = await response.json();
+        if (!response.ok) {
+          throw new Error(json.message || "Failed to fetch Tasco report data");
+        }
+
+        setData(json);
+      } catch (error) {
+        console.error("Error fetching Tasco report data:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [externalFilters, filters, buildQueryString],
+  );
+
+  // Debounced fetch data function with proper dependencies
+  const debouncedFetchData = useCallback(
+    (useFilters = true, delay = 300) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        fetchData(useFilters);
+        debounceTimerRef.current = null;
+      }, delay);
+    },
+    [fetchData],
+  );
 
   // Consolidated effect for all data-affecting changes
   useEffect(() => {
@@ -88,7 +160,7 @@ export default function TascoReport({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [externalDateRange, externalFilters, filters, debouncedFetchData]);
+  }, [debouncedFetchData]);
 
   // Fetch filter options
   const fetchFilterOptions = async () => {
@@ -104,64 +176,6 @@ export default function TascoReport({
       console.error("Error fetching filter options:", error);
     }
   };
-
-  // Build query string from filters
-  const buildQueryString = (activeFilters: TascoFilterOptions) => {
-    const params = new URLSearchParams();
-
-    // Add external date range if provided
-    if (externalDateRange?.from) {
-      params.set("dateFrom", externalDateRange.from.toISOString());
-    }
-    if (externalDateRange?.to) {
-      params.set("dateTo", externalDateRange.to.toISOString());
-    }
-
-    if (activeFilters.jobsiteId.length > 0) {
-      params.set("jobsiteIds", activeFilters.jobsiteId.join(","));
-    }
-    if (activeFilters.shiftType.length > 0) {
-      params.set("shiftTypes", activeFilters.shiftType.join(","));
-    }
-    if (activeFilters.employeeId.length > 0) {
-      params.set("employeeIds", activeFilters.employeeId.join(","));
-    }
-    if (activeFilters.laborType.length > 0) {
-      params.set("laborTypes", activeFilters.laborType.join(","));
-    }
-    if (activeFilters.equipmentId.length > 0) {
-      params.set("equipmentIds", activeFilters.equipmentId.join(","));
-    }
-    if (activeFilters.materialType.length > 0) {
-      params.set("materialTypes", activeFilters.materialType.join(","));
-    }
-
-    return params.toString();
-  };
-
-  const fetchData = async (useFilters = true) => {
-    try {
-      setLoading(true);
-      // Use external filters if available, otherwise use internal filters
-      const activeFilters = externalFilters || filters;
-      const queryString = useFilters ? buildQueryString(activeFilters) : "";
-      const url = `/api/reports/tasco${queryString ? `?${queryString}` : ""}`;
-
-      const response = await fetch(url);
-      const json = await response.json();
-      if (!response.ok) {
-        throw new Error(json.message || "Failed to fetch Tasco report data");
-      }
-
-      setData(json);
-    } catch (error) {
-      console.error("Error fetching Tasco report data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle filter changes
 
   // Initial load and register reload function
   useEffect(() => {
