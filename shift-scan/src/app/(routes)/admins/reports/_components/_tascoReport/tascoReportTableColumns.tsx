@@ -9,9 +9,13 @@ export interface TascoReportRow {
   shiftType: string;
   submittedDate: string;
   employee: string;
+  employeeId: string;
   dateWorked: string;
   laborType: string;
   equipment: string;
+  equipmentId: string;
+  profitId: string; // Add Profit ID (jobsite name)
+  jobsiteId: string;
   loadsABCDE: number;
   loadsF: number;
   materials: string;
@@ -56,6 +60,14 @@ export const tascoReportColumns: ColumnDef<TascoReportRow>[] = [
     cell: ({ row }) => (
       <div className="text-xs text-center">{row.getValue("employee")}</div>
     ),
+  },
+  {
+    accessorKey: "profitId",
+    header: () => <div className="text-center">Profit ID</div>,
+    cell: ({ row }) => {
+      const profitId = row.getValue("profitId") as string;
+      return <div className="text-xs text-center">{profitId || "-"}</div>;
+    },
   },
   {
     accessorKey: "dateWorked",

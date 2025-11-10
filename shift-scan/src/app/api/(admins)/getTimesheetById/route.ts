@@ -130,6 +130,14 @@ export async function GET(req: Request) {
             laborType: true,
             materialType: true,
             LoadQuantity: true,
+            // TascoFLoads (F-Shift loads)
+            FLoads: {
+              select: {
+                id: true,
+                weight: true,
+                screenType: true,
+              },
+            },
             // Refuel Logs
             RefuelLogs: {
               select: {

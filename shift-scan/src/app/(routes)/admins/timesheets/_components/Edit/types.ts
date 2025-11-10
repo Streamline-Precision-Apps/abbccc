@@ -1,5 +1,8 @@
 import { ApprovalStatus } from "../../../../../../../prisma/generated/prisma/client";
 
+// Local type definitions to avoid Prisma client issues
+type LoadType = "UNSCREENED" | "SCREENED";
+
 export interface EditTimesheetModalProps {
   timesheetId: number;
   isOpen: boolean;
@@ -29,6 +32,13 @@ export interface RefuelLog {
   gallonsRefueled: number;
   milesAtFueling?: number;
 }
+
+export interface TascoFLoad {
+  id: string;
+  weight: number | null;
+  screenType: LoadType | null;
+}
+
 export interface StateMileage {
   id: string;
   state: string;
@@ -52,6 +62,7 @@ export interface TascoLog {
   materialType: string;
   LoadQuantity: number;
   RefuelLogs: RefuelLog[];
+  TascoFLoads: TascoFLoad[];
   Equipment: { id: string; name: string } | null;
 }
 export interface EmployeeEquipmentLog {
@@ -75,8 +86,8 @@ export type TruckingNestedItem =
   | RefuelLog
   | StateMileage;
 // For TascoLogs
-export type TascoNestedType = "RefuelLogs";
-export type TascoNestedItem = RefuelLog;
+export type TascoNestedType = "RefuelLogs" | "TascoFLoads";
+export type TascoNestedItem = RefuelLog | TascoFLoad;
 
 // Mapping type for nested log types
 export type TruckingNestedTypeMap = {
@@ -88,6 +99,7 @@ export type TruckingNestedTypeMap = {
 // Mapping type for Tasco nested log types
 export type TascoNestedTypeMap = {
   RefuelLogs: RefuelLog;
+  TascoFLoads: TascoFLoad;
 };
 
 export interface TimesheetData {

@@ -177,7 +177,12 @@ export default function TascoEQClientPage({
                   fLoads === undefined ||
                   fLoads.length === 0 ||
                   fLoads.every(
-                    (load) => load.weight !== null && load.weight > 0,
+                    (load) =>
+                      load.weight !== null &&
+                      load.weight > 0 &&
+                      load.screenType !== null &&
+                      (load.screenType === "UNSCREENED" ||
+                        load.screenType === "SCREENED"),
                   )
                 }
               >
