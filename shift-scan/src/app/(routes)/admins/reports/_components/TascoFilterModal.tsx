@@ -3,7 +3,6 @@
 import React, { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { Combobox } from "@/components/ui/combobox";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 
 export interface TascoFilterOptions {
@@ -57,26 +56,17 @@ const TascoFilterModal: React.FC<TascoFilterModalProps> = ({
   >([]);
 
   useEffect(() => {
-    console.log("TascoFilterModal - received data:", {
-      jobsites,
-      employees,
-      equipment,
-      materialTypes,
-    });
-
     const formattedJobsites = jobsites.map((js) => ({
       value: js.id,
       label: js.name,
     }));
     setJobsiteOptions(formattedJobsites);
-    console.log("TascoFilterModal - formatted jobsites:", formattedJobsites);
 
     const formattedEmployees = employees.map((emp) => ({
       value: emp.id,
       label: emp.name,
     }));
     setEmployeeOptions(formattedEmployees);
-    console.log("TascoFilterModal - formatted employees:", formattedEmployees);
 
     const formattedEquipment = equipment.map((eq) => ({
       value: eq.id,
