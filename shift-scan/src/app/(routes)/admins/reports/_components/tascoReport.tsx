@@ -52,12 +52,6 @@ export default function TascoReport({
   });
 
   // Filter options state
-  const [filterOptions, setFilterOptions] = useState<FilterOptionsData>({
-    jobsites: [],
-    employees: [],
-    equipment: [],
-    materialTypes: [],
-  });
 
   // Debounce timer ref
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -168,24 +162,6 @@ export default function TascoReport({
   };
 
   // Handle filter changes
-  const handleFilterChange = (newFilters: TascoFilterOptions) => {
-    setFilters(newFilters);
-    // Data will be fetched automatically by the consolidated effect
-  };
-
-  // Handle clear filters
-  const handleClearFilters = () => {
-    const clearedFilters: TascoFilterOptions = {
-      jobsiteId: [],
-      shiftType: [],
-      employeeId: [],
-      laborType: [],
-      equipmentId: [],
-      materialType: [],
-    };
-    setFilters(clearedFilters);
-    // Data will be fetched automatically by the consolidated effect
-  };
 
   // Initial load and register reload function
   useEffect(() => {

@@ -54,8 +54,8 @@ const useFcmToken = () => {
         return;
       }
       if (!Token) {
-        if (retryLoadToken.current >= 1) {
-          // Reduced from 3 to 1 retry
+        if (retryLoadToken.current >= 2) {
+          // Reduced from 3 to 1 retry (2 total attempts)
           // Silently fail instead of showing alert - FCM is not critical for core functionality
           console.info(
             "%cPush Notifications disabled - unable to load FCM token",

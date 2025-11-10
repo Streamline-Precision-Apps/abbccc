@@ -56,17 +56,17 @@ export const useTimesheetAutoSelection = ({
   // Memoize stable values to prevent unnecessary effect executions
   const currentShiftType = useMemo(() => 
     tascoLogs.length > 0 ? tascoLogs[0].shiftType : '', 
-    [tascoLogs.length > 0 ? tascoLogs[0]?.shiftType : '']
+    [tascoLogs[0]?.shiftType]
   );
 
   const currentLaborType = useMemo(() => 
     tascoLogs.length > 0 ? tascoLogs[0].laborType : '', 
-    [tascoLogs.length > 0 ? tascoLogs[0]?.laborType : '']
+    [tascoLogs[0]?.laborType]
   );
 
   const currentMaterialType = useMemo(() => 
     tascoLogs.length > 0 ? tascoLogs[0].materialType : '', 
-    [tascoLogs.length > 0 ? tascoLogs[0]?.materialType : '']
+    [tascoLogs[0]?.materialType]
   );
 
   // Memoize equipment status with efficient comparison
