@@ -6,7 +6,7 @@ import { TascoReportRow } from "./_tascoReport/tascoReportTableColumns";
 import { ExportReportModal } from "./ExportModal";
 import { format } from "date-fns";
 import { TascoDataTable } from "./_tascoReport/TascoDataTable";
-import TascoFilterModal, { TascoFilterOptions } from "./TascoFilterModal";
+import { TascoFilterOptions } from "./TascoFilterModal";
 
 interface TascoReportProps {
   showExportModal: boolean;
@@ -40,12 +40,6 @@ export default function TascoReport({
 }: TascoReportProps) {
   const [data, setData] = useState<TascoReportRow[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [filterOptions, setFilterOptions] = useState<FilterOptionsData>({
-    jobsites: [],
-    employees: [],
-    equipment: [],
-    materialTypes: [],
-  });
 
   // Filter state
   const [filters, setFilters] = useState<TascoFilterOptions>({
@@ -55,6 +49,14 @@ export default function TascoReport({
     laborType: [],
     equipmentId: [],
     materialType: [],
+  });
+
+  // Filter options state
+  const [filterOptions, setFilterOptions] = useState<FilterOptionsData>({
+    jobsites: [],
+    employees: [],
+    equipment: [],
+    materialTypes: [],
   });
 
   // Debounce timer ref
