@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 
 interface AutoSelectionOptions {
   id: string;
@@ -19,7 +19,7 @@ interface TascoLog {
   shiftType: string;
   materialType: string;
   laborType?: string;
-  equipment?: Equipment;
+  equipment?: Equipment[];
 }
 
 interface UseTimesheetAutoSelectionProps {
@@ -52,6 +52,34 @@ export const useTimesheetAutoSelection = ({
     laborType: '',
     hasEquipment: false
   });
+
+  // Memoize stable values to prevent unnecessary effect executions
+  const currentShiftType = useMemo(() => 
+    tascoLogs.length > 0 ? tascoLogs[0].shiftType : '', 
+    [tascoLogs.length > 0 ? tascoLogs[0]?.shiftType : '']
+  );
+
+  const currentLaborType = useMemo(() => 
+    tascoLogs.length > 0 ? tascoLogs[0].laborType : '', 
+    [tascoLogs.length > 0 ? tascoLogs[0]?.laborType : '']
+  );
+
+  const currentMaterialType = useMemo(() => 
+    tascoLogs.length > 0 ? tascoLogs[0].materialType : '', 
+    [tascoLogs.length > 0 ? tascoLogs[0]?.materialType : '']
+  );
+
+  // Memoize equipment status with efficient comparison
+  const hasAnyEquipment = useMemo(() => {
+    return tascoLogs.some(log => {
+      return log.equipment && 
+        Array.isArray(log.equipment) && 
+        log.equipment.length > 0 && 
+        log.equipment.some((eq: Equipment) => eq.id && eq.id.trim() !== '');
+    });
+  }, [tascoLogs.map(log => 
+    log.equipment?.map((eq: Equipment) => eq.id).join(',') || ''
+  ).join('|')]);
 
   // Helper function to handle cost code format differences
   const findCostCode = (searchTerm: string) => {
@@ -88,9 +116,6 @@ export const useTimesheetAutoSelection = ({
   // Auto-selection for E-shift and F-shift
   useEffect(() => {
     if (workType !== 'tasco' || tascoLogs.length === 0) return;
-    
-    const currentLog = tascoLogs[0];
-    const currentShiftType = currentLog.shiftType;
     
     // Check if we've already processed this shift type
     if (prevValuesRef.current.workType === workType && 
@@ -147,31 +172,30 @@ export const useTimesheetAutoSelection = ({
     // Update ref to track processed values
     prevValuesRef.current.workType = workType;
     prevValuesRef.current.shiftType = currentShiftType;
-  }, [workType, tascoLogs.length > 0 ? tascoLogs[0].shiftType : '', costCodes.length, materialTypes.length, jobsites.length]);
+  }, [workType, currentShiftType, costCodes.length, materialTypes.length, jobsites.length]);
 
   // Auto-selection for Labor Type changes (ABCD shifts only)
   useEffect(() => {
     if (workType !== 'tasco' || tascoLogs.length === 0) return;
     
-    const currentLog = tascoLogs[0];
-    const isABCDShift = currentLog.shiftType === 'ABCD Shift';
+    const isABCDShift = currentShiftType === 'ABCD Shift';
     
-    if (!isABCDShift || !currentLog.laborType) return;
+    if (!isABCDShift || !currentLaborType) return;
     
     // Check if labor type has changed
-    if (prevValuesRef.current.laborType === currentLog.laborType && 
+    if (prevValuesRef.current.laborType === currentLaborType && 
         prevValuesRef.current.workType === workType) {
       return;
     }
     
     // Set cost code based on labor type
-    if (currentLog.laborType === 'Labor' || currentLog.laborType === 'Manual Labor') {
+    if (currentLaborType === 'Labor' || currentLaborType === 'Manual Labor') {
       // Set to Amalgamated Labor
       const amalgamatedLaborCC = findLaborCostCode();
       if (amalgamatedLaborCC) {
         setCostCode(amalgamatedLaborCC);
       }
-    } else if (currentLog.laborType === 'Equipment Operator' || currentLog.laborType === 'Operator') {
+    } else if (currentLaborType === 'Equipment Operator' || currentLaborType === 'Operator') {
       // Set to Amalgamated Equipment
       const amalgamatedEquipmentCC = findCostCode('amalgamated equipment');
       if (amalgamatedEquipmentCC) {
@@ -180,26 +204,18 @@ export const useTimesheetAutoSelection = ({
     }
     
     // Update ref
-    prevValuesRef.current.laborType = currentLog.laborType;
+    prevValuesRef.current.laborType = currentLaborType;
     prevValuesRef.current.workType = workType;
   }, [
     workType, 
-    tascoLogs.length > 0 ? tascoLogs[0].shiftType : '',
-    tascoLogs.length > 0 ? tascoLogs[0].laborType : '',
+    currentShiftType,
+    currentLaborType,
     costCodes.length
   ]);
 
   // Auto-selection for equipment-based cost code (applies to all TASCO logs)
   useEffect(() => {
     if (workType !== 'tasco' || tascoLogs.length === 0) return;
-    
-    // Check all TASCO logs for equipment selection
-    const hasAnyEquipment = tascoLogs.some(log => {
-      return log.equipment && 
-        Array.isArray(log.equipment) && 
-        log.equipment.length > 0 && 
-        log.equipment.some(eq => eq.id && eq.id.trim() !== '');
-    });
     
     // Check if equipment status has changed
     if (prevValuesRef.current.hasEquipment === hasAnyEquipment && 
@@ -208,8 +224,7 @@ export const useTimesheetAutoSelection = ({
     }
     
     // For non-ABCD shifts, always set based on equipment
-    const currentLog = tascoLogs[0];
-    const isABCDShift = currentLog.shiftType === 'ABCD Shift';
+    const isABCDShift = currentShiftType === 'ABCD Shift';
     
     if (!isABCDShift) {
       if (hasAnyEquipment) {
@@ -221,12 +236,12 @@ export const useTimesheetAutoSelection = ({
       }
     } else {
       // For ABCD shifts, only set if no labor type is selected yet
-      if (hasAnyEquipment && !currentLog.laborType) {
+      if (hasAnyEquipment && !currentLaborType) {
         const amalgamatedEquipmentCC = findCostCode('amalgamated equipment');
         if (amalgamatedEquipmentCC) {
           setCostCode(amalgamatedEquipmentCC);
         }
-      } else if (!hasAnyEquipment && !currentLog.laborType) {
+      } else if (!hasAnyEquipment && !currentLaborType) {
         // Set to Amalgamated Labor when no equipment and no labor type
         const amalgamatedLaborCC = findLaborCostCode();
         if (amalgamatedLaborCC) {
@@ -240,7 +255,7 @@ export const useTimesheetAutoSelection = ({
     prevValuesRef.current.workType = workType;
   }, [
     workType, 
-    tascoLogs.map(log => log.equipment ? JSON.stringify(log.equipment) : '').join('|'),
+    hasAnyEquipment,
     costCodes.length
   ]);
 
@@ -248,17 +263,16 @@ export const useTimesheetAutoSelection = ({
   useEffect(() => {
     if (workType !== 'tasco' || tascoLogs.length === 0) return;
     
-    const currentLog = tascoLogs[0];
-    const isABCDShift = ['ABCD Shift'].includes(currentLog.shiftType || '');
+    const isABCDShift = ['ABCD Shift'].includes(currentShiftType || '');
     
-    if (!isABCDShift || !currentLog.materialType) return;
+    if (!isABCDShift || !currentMaterialType) return;
     
     // Check if material has changed
-    if (prevValuesRef.current.materialType === currentLog.materialType) {
+    if (prevValuesRef.current.materialType === currentMaterialType) {
       return;
     }
     
-    const material = currentLog.materialType;
+    const material = currentMaterialType;
     
     // Materials for MH2526
     const mh2526Materials = [
@@ -292,11 +306,11 @@ export const useTimesheetAutoSelection = ({
     }
     
     // Update ref
-    prevValuesRef.current.materialType = currentLog.materialType;
+    prevValuesRef.current.materialType = currentMaterialType;
   }, [
     workType, 
-    tascoLogs.length > 0 ? tascoLogs[0].shiftType : '',
-    tascoLogs.length > 0 ? tascoLogs[0].materialType : '',
+    currentShiftType,
+    currentMaterialType,
     jobsites.length
   ]);
 };

@@ -543,7 +543,7 @@ export function CreateTimesheetModal({
       shiftType: log.shiftType,
       materialType: log.materialType,
       laborType: log.laborType || undefined,
-      equipment: log.equipment.length > 0 ? log.equipment[0] : undefined,
+      equipment: log.equipment.length > 0 ? log.equipment : undefined,
     })),
     costCodes: costCode,
     materialTypes,

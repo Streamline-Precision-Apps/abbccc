@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import { TascoReportRow } from "./_tascoReport/tascoReportTableColumns";
 import { ExportReportModal } from "./ExportModal";
@@ -57,17 +57,42 @@ export default function TascoReport({
     materialType: [],
   });
 
-  // Update data when external date range changes
-  useEffect(() => {
-    fetchData();
-  }, [externalDateRange]);
+  // Debounce timer ref
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Update data when external filters change
-  useEffect(() => {
-    if (externalFilters) {
-      fetchData();
+  // Debounced fetch data function
+  const debouncedFetchData = useCallback((useFilters = true, delay = 300) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
-  }, [externalFilters]);
+
+    debounceTimerRef.current = setTimeout(() => {
+      fetchData(useFilters);
+      debounceTimerRef.current = null;
+    }, delay);
+  }, []);
+
+  // Track if this is the initial mount
+  const isInitialMount = useRef(true);
+
+  // Consolidated effect for all data-affecting changes
+  useEffect(() => {
+    // Skip initial mount as it's handled by the registerReload effect
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Debounce subsequent fetches to prevent duplicate calls
+    debouncedFetchData();
+
+    // Cleanup on unmount
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [externalDateRange, externalFilters, filters, debouncedFetchData]);
 
   // Fetch filter options
   const fetchFilterOptions = async () => {
@@ -143,7 +168,7 @@ export default function TascoReport({
   // Handle filter changes
   const handleFilterChange = (newFilters: TascoFilterOptions) => {
     setFilters(newFilters);
-    fetchData();
+    // Data will be fetched automatically by the consolidated effect
   };
 
   // Handle clear filters
@@ -157,24 +182,19 @@ export default function TascoReport({
       materialType: [],
     };
     setFilters(clearedFilters);
-    fetchData();
+    // Data will be fetched automatically by the consolidated effect
   };
 
-  // Register reload function on mount
+  // Initial load and register reload function
   useEffect(() => {
     if (registerReload) {
       registerReload(() => fetchData(true));
     }
     fetchFilterOptions();
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [registerReload]);
 
-  // Re-fetch data when filters change
-  useEffect(() => {
+    // Initial load - don't debounce the first fetch
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, [registerReload]);
 
   const onExport = (
     exportFormat: "csv" | "xlsx",
