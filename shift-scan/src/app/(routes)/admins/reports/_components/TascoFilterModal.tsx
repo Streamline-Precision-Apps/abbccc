@@ -92,7 +92,10 @@ const TascoFilterModal: React.FC<TascoFilterModalProps> = ({
   }, [jobsites, employees, equipment, materialTypes]);
 
   const handleApplyFilters = () => {
-    console.log("TascoFilterModal - Apply button clicked, localFilters:", localFilters);
+    console.log(
+      "TascoFilterModal - Apply button clicked, localFilters:",
+      localFilters,
+    );
     onFilterChange({ ...localFilters });
     onClose();
   };

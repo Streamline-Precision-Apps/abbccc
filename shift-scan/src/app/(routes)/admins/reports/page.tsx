@@ -145,10 +145,12 @@ export default function AdminReports() {
           const options = await response.json();
           // Transform employees data to match expected format
           const formattedEmployees =
-            options.employees?.map((emp: Employee): Employee => ({
-              id: emp.id,
-              name: emp.name,
-            })) || [];
+            options.employees?.map(
+              (emp: Employee): Employee => ({
+                id: emp.id,
+                name: emp.name,
+              }),
+            ) || [];
 
           setFilterOptions((prev) => ({
             ...prev,
